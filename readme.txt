@@ -5,7 +5,7 @@ Donate link: http://www.nextscritps.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -84,6 +84,9 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+= 1.5.3 =
+* Bug fix - Correct Message after the post.
+
 = 1.5.2 =
 * Bug fixes - default checkboxes.
 
@@ -115,7 +118,6 @@ Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
 Author: Next Scripts
-
 
 Author URL: http://www.nextscripts.com
 

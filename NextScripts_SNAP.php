@@ -4,14 +4,14 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.2
+Version: 1.5.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
-if (file_exists("apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
+if (file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
 
-define( 'NextScripts_SNAP_Version' , '1.5.2' );
+define( 'NextScripts_SNAP_Version' , '1.5.3' );
 if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -100,7 +100,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <!-- G+ -->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
             
-            <?php if (!file_exists("apis/postToGooglePlus.php")){?> Google+ don't have a built-in API for automated posts yet. You need to get a special <a href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish to Google+. <br/>Please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <?php } else {?>
+            <?php if (!file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) {?> Google+ don't have a built-in API for automated posts yet. You need to get a special <a href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish to Google+. <br/>Please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <?php } else {?>
             
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['doGP'] == 1) echo "checked"; ?> /> 
               <strong>Auto-publish your Posts to your Google+ Page or Profile</strong>                                 
@@ -409,7 +409,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) return "BAD USER/PASS";    
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if ($src!='') $lnk['img'] = $src;                                     
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
-      echo $ret;
+      if ($ret!='OK') echo $ret;
   }
 }
 // Add function to pubslih to FaceBook
@@ -438,7 +438,7 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
       $tmhOAuth = new tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));
-      if ($code == 200) { echo "Twitter - OK";/*tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/} else { tmhUtilities::pr($tmhOAuth->response['response']);}      
+      if ($code == 200) { /* echo "Twitter - OK";tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/} else { tmhUtilities::pr($tmhOAuth->response['response']);}      
   }
 }
 
