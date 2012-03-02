@@ -1,12 +1,11 @@
 === Next Scripts Social Networks Auto-Poster ===
 
 Contributors: NextScripts
-Contributors: markjaquith, mdawaffe (this should be a list of wordpress.org userid's)
-Donate link: http://example.com/
+Donate link: http://www.nextscritps.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3
-Stable tag: 4.3
+Stable tag: 1.5.1
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -18,11 +17,13 @@ Social Networks Auto Poster can automatically publish nicely formatted announcem
 
 You need to have accounts with Facebook, Google+ and Twitter.
 
-Social Networks Auto Poster {SNAP}.
+Social Networks Auto Poster (SNAP).
+
 1. Upload plugin folder to the /wp-content/plugins/.
 2. Login to your Wordpress Admin Panel, Go to the Plugins->Installed Plugins, Find "Next Scripts Google+ AutoPoster" in your list, click "Activate"
 
 Facebook.
+
 1. Create an app and community page for your website.
    1. Login to your Facebook account.
    2. Go to the Facebook Developers page: https://developers.facebook.com/apps
@@ -41,6 +42,7 @@ Facebook.
 4. Your facebook is ready to use.
 
 Twitter.
+
 1. Create a Twitter App for your website.
    1. Login to your Twitter account.
    2. Go to the Twitter Developers website: https://dev.twitter.com/ Sign in again if asked.
@@ -53,7 +55,9 @@ Twitter.
 3. Your Twitter is ready to use.
 
 Google+.
+
 Google+ don't yet have API for automated posts. You need to get special library module to be able to publish Google+ posts.
+
 1. Create Google+ page for your website.
    1. Login to your Google+ account.
    2. Click "Create a Google+ page" link from the right panel. Choose category, fill details, click "Create".
@@ -100,17 +104,26 @@ Just replace all files.
 Options format has Changed
 
 
-== A brief Markdown Example ==
+== More/Copyright Info ==
 
 Plugin Name: Next Scripts Social Networks Auto-Poster
+
+License: GPL v2
+
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
+
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
+
 Author: Next Scripts
+
 Version: 1.5.1
+
 Author URI: http://www.nextscripts.com
+
 Copyright 2012  Next Scripts, Inc
 
 PHP Twitter API: Copyright 2012 -  themattharris - tmhOAuth
+
 PHP Facebook API: Copyright 2011 Facebook, Inc.
 
 
