@@ -1,10 +1,10 @@
-=== Next Scripts Social Networks Auto-Poster ===
+﻿=== Next Scripts Social Networks Auto-Poster ===
 
 Contributors: NextScripts
 Donate link: http://www.nextscritps.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
-Tested up to: 3.3
+Tested up to: 3.3.1
 Stable tag: 1.5.1
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
@@ -104,11 +104,9 @@ Just replace all files.
 Options format has Changed
 
 
-== More/Copyright Info ==
+== Other/Copyrights ==
 
 Plugin Name: Next Scripts Social Networks Auto-Poster
-
-License: GPL v2
 
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 
