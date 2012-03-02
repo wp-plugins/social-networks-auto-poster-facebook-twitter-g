@@ -5,7 +5,7 @@ Donate link: http://www.nextscritps.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -84,6 +84,8 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+= 1.5.2 =
+* Bug fixes - default checkboxes.
 
 = 1.5.1 =
 * Initial public release
@@ -114,15 +116,13 @@ Description: This plugin automatically publishes posts from your blog to your Fa
 
 Author: Next Scripts
 
-Version: 1.5.1
 
-Author URI: http://www.nextscripts.com
+Author URL: http://www.nextscripts.com
 
 Copyright 2012  Next Scripts, Inc
 
 PHP Twitter API: Copyright 2012 -  themattharris - tmhOAuth
 
 PHP Facebook API: Copyright 2011 Facebook, Inc.
-
 
 NextScripts, Inc

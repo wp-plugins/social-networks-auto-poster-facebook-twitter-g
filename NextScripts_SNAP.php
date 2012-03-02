@@ -4,14 +4,14 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.1
+Version: 1.5.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
 if (file_exists("apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
 
-define( 'NextScripts_SNAP_Version' , '1.5.1' );
+define( 'NextScripts_SNAP_Version' , '1.5.2' );
 if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -100,7 +100,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <!-- G+ -->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
             
-            <?php if (!file_exists("apis/postToGooglePlus.php")){?> Google+ don't have a built-in API for automated posts yet. You need to get a special <a href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish to Google+. Please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/NextScripts_SNAP/apis/</b> folder to activate Google+ publishing functionality.  <?php } else {?>
+            <?php if (!file_exists("apis/postToGooglePlus.php")){?> Google+ don't have a built-in API for automated posts yet. You need to get a special <a href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish to Google+. <br/>Please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <?php } else {?>
             
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['doGP'] == 1) echo "checked"; ?> /> 
               <strong>Auto-publish your Posts to your Google+ Page or Profile</strong>                                 
@@ -193,9 +193,6 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the body(text) of your post.</p>
               </div><input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
-              
-            
-            
             </div>
             <br/><hr/>
             
@@ -222,7 +219,9 @@ if (!class_exists("NS_SNAutoPoster")) {
             }
         }
         function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName.$optionsAppend);    
-            $doGP = $options['doGP'];   $doFB = $options['doGP'];   $doTW = $options['doGP'];              
+            $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doFB'];       $isAvailGP =  $options['gpUName']!='' && $options['gpPass']!='';
+            $isAvailFB =  $options['fbURL']!='' && $options['fbAppID']!='' && $options['fbAppSec']!='';
+            $isAvailTW =  $options['twURL']!='' && $options['twConsKey']!='' && $options['twConsSec']!='' && $options['twAccToken']!='';
             $t = get_post_meta($post_id, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
             $t = get_post_meta($post_id, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];            
             $t = get_post_meta($post_id, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat'];
@@ -246,7 +245,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 </td></tr>
                 
                 
-                <?php if ((int)$isAvailGP == 1) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Google+ Account to AutoPost to Google+</b>
+                <?php if (!$isAvailGP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Google+ Account to AutoPost to Google+</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input value="1" type="checkbox" name="SNAPincludeGP" <?php if ((int)$doGP == 1) echo "checked"; ?> /></th>
@@ -265,7 +264,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                     if ($post->post_status == "publish") { ?><input style="float: right;" type="button" class="button" name="rePostToFB_repostButton" id="rePostToFB_button" value="<?php _e('Repost to FaceBook', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToFB', 'rePostToFB_wpnonce' ); } ?>
                 </td></tr>
-                <?php if ((int)$isAvailFB == 1) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your FaceBook Account to AutoPost to FaceBook</b>
+                <?php if (!$isAvailFB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your FaceBook Account to AutoPost to FaceBook</b>
                 <?php } elseif ($post->post_status != "publish") {?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input value="1" type="checkbox" name="SNAPincludeFB" <?php if ((int)$doFB == 1) echo "checked"; ?> /></th>
@@ -284,11 +283,11 @@ if (!class_exists("NS_SNAutoPoster")) {
                     if ($post->post_status == "publish") { ?><input style="float: right;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); } ?>
                 </td></tr>
-                <?php if ((int)$isAvailTW == 1) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
+                <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input value="1" type="checkbox" name="SNAPincludeTW" <?php if ((int)$doTW == 1) echo "checked"; ?> /></th>
-                <td><b><?php _e('Publish this Post to FaceBook', 'NS_SPAP'); ?></b></td>
+                <td><b><?php _e('Publish this Post to Twitter', 'NS_SPAP'); ?></b></td>
                 </tr>                
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $twMsgFormat ?>" type="text" name="SNAPformat" size="60px"/></td></tr>
