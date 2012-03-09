@@ -4,14 +4,14 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.3
+Version: 1.5.4
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
 if (file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
 
-define( 'NextScripts_SNAP_Version' , '1.5.3' );
+define( 'NextScripts_SNAP_Version' , '1.5.4' );
 if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -240,7 +240,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <table style="margin-bottom:40px" border="0">
                 <!-- G+ -->
                 <tr><th style="text-align:left;" colspan="2">Google+ AutoPoster Options</th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish") { ?><input style="float: right;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 're-post') ?>" />
+                    if ($post->post_status == "publish" && $isAvailGP) { ?><input style="float: right;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToGP', 'rePostToGP_wpnonce' ); } ?>
                 </td></tr>
                 
@@ -261,7 +261,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <?php } ?>
                 <!-- FB -->
                 <tr><th style="text-align:left;" colspan="2">FaceBook AutoPoster Options</th><td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish") { ?><input style="float: right;" type="button" class="button" name="rePostToFB_repostButton" id="rePostToFB_button" value="<?php _e('Repost to FaceBook', 're-post') ?>" />
+                    if ($post->post_status == "publish" && $isAvailFB) { ?><input style="float: right;" type="button" class="button" name="rePostToFB_repostButton" id="rePostToFB_button" value="<?php _e('Repost to FaceBook', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToFB', 'rePostToFB_wpnonce' ); } ?>
                 </td></tr>
                 <?php if (!$isAvailFB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your FaceBook Account to AutoPost to FaceBook</b>
@@ -280,7 +280,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <?php } ?>
                 <!-- TW -->
                 <tr><th style="text-align:left;" colspan="2">Twitter AutoPoster Options</th><td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish") { ?><input style="float: right;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
+                    if ($post->post_status == "publish" && $isAvailTW) { ?><input style="float: right;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); } ?>
                 </td></tr>
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
@@ -331,8 +331,8 @@ if (!function_exists("jsPostToSNAP")) {
             $('body').append("<div id='test_results' style='" + style + "'></div>");
             $('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='/wp-includes/js/thickbox/loadingAnimation.gif' /></p>");
             $('#test_results').show();            
-            jQuery.post(ajaxurl, data, function(response) {
-                $('#test_results').html('<p>Message Posted ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
+            jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
+                $('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
                 $('#results_ok_button').click(remove_results);
             });
             
@@ -406,7 +406,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       $msg = nsFormatMessage($gpMsgFormat, $postID);
       if ($isAttachGP=='1'){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = $options['gpPass'];                
-      $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) return "BAD USER/PASS";    
+      $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";}
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if ($src!='') $lnk['img'] = $src;                                     
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
       if ($ret!='OK') echo $ret;

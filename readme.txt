@@ -1,11 +1,11 @@
-﻿=== Next Scripts Social Networks Auto-Poster ===
+=== Next Scripts Social Networks Auto-Poster ===
 
 Contributors: NextScripts
-Donate link: http://www.nextscritps.com/
+Donate link: http://www.nextscripts.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -29,7 +29,9 @@ Facebook.
    2. Go to the Facebook Developers page: https://developers.facebook.com/apps
    3. Click "+ Create New App" button. Fill "App Name", "App Namespace", agree to policies and click "Continue", fill captcha, click "Continue".
      - Notice App ID and App Secret on this page.
-   4. Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. it will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
+   4. Click "Website", enter your website URL
+   5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 5.   
+   6. Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. it will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
 2. Connect Facebook to your Wordpress.
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Facebook Page or Profile" checkbox.
@@ -84,6 +86,10 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+= 1.5.4 =
+* Bug fix - Wrong Re-Post Buttons.
+* Improvement - Better G+ Compatibility.
+ 
 = 1.5.3 =
 * Bug fix - Correct Message after the post.
 
