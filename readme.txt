@@ -28,14 +28,14 @@ Facebook.
    1. Login to your Facebook account.
    2. Go to the Facebook Developers page: https://developers.facebook.com/apps
    3. Click "+ Create New App" button. Fill "App Name", "App Namespace", agree to policies and click "Continue", fill captcha, click "Continue".
-     - Notice App ID and App Secret on this page.
+     ***Notice App ID and App Secret on this page.
    4. Click "Website", enter your website URL
    5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 5.   
    6. Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. it will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
 2. Connect Facebook to your Wordpress.
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Facebook Page or Profile" checkbox.
-   3. Fill URL of your Community page from step 4 above.
+   3. Fill URL of your Community page from step 6 above.
    4. Fill "App ID" and "App Secret" from step 3 above.
    5. Fill "Your Facebook Page ID". If your FaceBook page URL is http://www.facebook.com/pages/Your-Site-Community/304945439569358, your Page ID is 304945439569358.
 3. Authorize Facebook for your Wordpress.
@@ -49,7 +49,7 @@ Twitter.
    1. Login to your Twitter account.
    2. Go to the Twitter Developers website: https://dev.twitter.com/ Sign in again if asked.
    3. Click "Create an app" link from the right panel. Fill details, click "Create your Twitter application".
-     - Notice Consumer key and Consumer secret on this page.    4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to "Read and Write". Click "Update this Twitter application settings".    5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have "Read and Write" access level. 2. Connect Twitter to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
+     ***Notice Consumer key and Consumer secret on this page.    4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to "Read and Write". Click "Update this Twitter application settings".    5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have "Read and Write" access level. 2. Connect Twitter to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Twitter Page or Profile" checkbox.
    3. Fill your Twitter URL.
    4. Fill "Consumer key" and "Consumer secret" from step 3 above.
@@ -63,7 +63,7 @@ Google+ don't yet have API for automated posts. You need to get special library 
 1. Create Google+ page for your website.
    1. Login to your Google+ account.
    2. Click "Create a Google+ page" link from the right panel. Choose category, fill details, click "Create".
-     - Notice the URL of your page. 2. Connect Google+ to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
+     ***Notice the URL of your page. 2. Connect Google+ to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Google+ Page or Profile" checkbox.
    3. Fill Google+ Login and Password. Please note that Wordpress is not storing your Google+ password in very secure manner, so you better create a separate G+ account for your website.
    4. Fill the ID of your page. You can get this ID from your URL (Step 2 above). If your URL is https://plus.google.com/u/0/b/117008619877691455570/ - your ID is 117008619877691455570
@@ -108,12 +108,7 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 
 == Upgrade Notice ==
 
-= 1.5 =
-Just replace all files.
-
-= 1.2.0 =
-Options format has Changed
-
+Please note, that if you have postToGooglePlus.php installed, auto-update from wordpress will remove it. You will need to put it back manually.
 
 == Other/Copyrights ==
 
