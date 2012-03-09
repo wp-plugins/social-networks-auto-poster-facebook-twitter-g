@@ -49,7 +49,12 @@ Twitter.
    1. Login to your Twitter account.
    2. Go to the Twitter Developers website: https://dev.twitter.com/ Sign in again if asked.
    3. Click "Create an app" link from the right panel. Fill details, click "Create your Twitter application".
-     ***Notice Consumer key and Consumer secret on this page.    4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to "Read and Write". Click "Update this Twitter application settings".    5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have "Read and Write" access level. 2. Connect Twitter to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
+     ***Notice Consumer key and Consumer secret on this page.    
+   4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to "Read and Write". Click "Update this Twitter application settings".    
+   5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have "Read and Write" access level. 
+   
+2. Connect Twitter to your Wordpress.    
+   1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Twitter Page or Profile" checkbox.
    3. Fill your Twitter URL.
    4. Fill "Consumer key" and "Consumer secret" from step 3 above.
@@ -63,7 +68,9 @@ Google+ don't yet have API for automated posts. You need to get special library 
 1. Create Google+ page for your website.
    1. Login to your Google+ account.
    2. Click "Create a Google+ page" link from the right panel. Choose category, fill details, click "Create".
-     ***Notice the URL of your page. 2. Connect Google+ to your Wordpress.    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
+     ***Notice the URL of your page. 
+2. Connect Google+ to your Wordpress.
+   1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Google+ Page or Profile" checkbox.
    3. Fill Google+ Login and Password. Please note that Wordpress is not storing your Google+ password in very secure manner, so you better create a separate G+ account for your website.
    4. Fill the ID of your page. You can get this ID from your URL (Step 2 above). If your URL is https://plus.google.com/u/0/b/117008619877691455570/ - your ID is 117008619877691455570
