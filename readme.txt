@@ -30,17 +30,17 @@ Facebook.
    3. Click "+ Create New App" button. Fill "App Name", "App Namespace", agree to policies and click "Continue", fill captcha, click "Continue".
      ***Notice App ID and App Secret on this page.
    4. Click "Website", enter your website URL
-   5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 5.   
-   6. Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. it will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
+   5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 4.   
+   6. [Optional - you can skip this step and use existing page] Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. It will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
+   
 2. Connect Facebook to your Wordpress.
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
    2. Check "Auto-publish your Posts to your Facebook Page or Profile" checkbox.
    3. Fill URL of your Community page from step 6 above.
    4. Fill "App ID" and "App Secret" from step 3 above.
-   5. Fill "Your Facebook Page ID". If your FaceBook page URL is http://www.facebook.com/pages/Your-Site-Community/304945439569358, your Page ID is 304945439569358.
 3. Authorize Facebook for your Wordpress.
    1. Click "Update Settings". Notice new link "Authorize Your FaceBook Account".
-   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard.
+   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard. If you get any errors at this step, please make sure that domain for your Wordpress site is enetred to your App as "App Domain".
 4. Your facebook is ready to use.
 
 Twitter.
