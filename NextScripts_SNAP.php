@@ -4,14 +4,14 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.4
+Version: 1.5.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
 if (file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
 
-define( 'NextScripts_SNAP_Version' , '1.5.4' );
+define( 'NextScripts_SNAP_Version' , '1.5.5' );
 if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -54,8 +54,11 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['apGPAttch']))   $options['gpAttch'] = $_POST['apGPAttch'];                                
                 if (isset($_POST['apGPMsgFrmt'])) $options['gpMsgFormat'] = $_POST['apGPMsgFrmt'];                                
                 
-                if (isset($_POST['apFBURL']))     $options['fbURL'] = $_POST['apFBURL'];
-                if (isset($_POST['apFBPgID']))    $options['fbPgID'] = $_POST['apFBPgID'];
+                if (isset($_POST['apFBURL']))  {   $options['fbURL'] = $_POST['apFBURL'];
+                  $fbPgID = $options['fbURL']; if (substr($fbPgID, -1)=='/') $fbPgID = substr($fbPgID, 0, -1);  $fbPgID = substr(strrchr($fbPgID, "/"), 1);
+                  $options['fbPgID'] = $fbPgID; //echo $fbPgID;
+                }
+                
                 if (isset($_POST['apFBAppID']))   $options['fbAppID'] = $_POST['apFBAppID'];                                
                 if (isset($_POST['apFBAppSec']))  $options['fbAppSec'] = $_POST['apFBAppSec'];        
                 if (isset($_POST['apFBAttch']))   $options['fbAttch'] = $_POST['apFBAttch'];        
@@ -68,7 +71,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['apTWAccTokenSec']))$options['twAccTokenSec'] = $_POST['apTWAccTokenSec'];                                
                 if (isset($_POST['apTWMsgFrmt']))    $options['twMsgFormat'] = $_POST['apTWMsgFrmt'];                                
                 
-                if (isset($_POST['apCats']))      $options['cats'] = $_POST['apCats'];
+                if (isset($_POST['apCats']))      $options['apCats'] = $_POST['apCats'];
                 
                 if ($emptyUser) { //## then we're dealing with the main Admin options
                     $options[$this->NextScripts_GPAutoPosterAllUsers] = $_POST['NS_SNAutoPosterallusers'];
@@ -132,10 +135,11 @@ if (!class_exists("NS_SNAutoPoster")) {
             </p>
             <div id="doFBDiv" style="margin-left: 10px;<?php if ((int)$options['doFB'] != 1) echo "display:none"; ?> ">
                            
-            <div style="width:100%;"><strong>Your Facebook URL:</strong> </div><input name="apFBURL" id="apFBURL" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbURL']), 'NS_SNAutoPoster') ?>" />                
+            <div style="width:100%;"><strong>Your Facebook URL:</strong> </div><input name="apFBURL" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbURL']), 'NS_SNAutoPoster') ?>" />                
+            
             <div style="width:100%;"><strong>Your Facebook App ID:</strong> </div><input name="apFBAppID" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbAppID']), 'NS_SNAutoPoster') ?>" />  
             <div style="width:100%;"><strong>Your Facebook App Secret:</strong> </div><input name="apFBAppSec" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbAppSec']), 'NS_SNAutoPoster') ?>" />
-            <div style="width:100%;"><strong>Your Facebook Page ID:</strong> </div><input name="apFBPgID" id="apFBPgID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbPgID']), 'NS_SNAutoPoster') ?>" />
+            
             
             <br/><br/>
             <p style="margin: 0px;"><input value="1"  id="apFBAttch" onchange="doShowHideAltFormat();" type="checkbox" name="apFBAttch"  <?php if ((int)$options['fbAttch'] == 1) echo "checked"; ?> /> 
@@ -147,6 +151,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the body(text) of your post.</p>
               </div><input name="apFBMsgFrmt" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbMsgFormat']), 'NS_SNAutoPoster') ?>" />
             </div><br/>   
+            <?php if ($options['fbPgID']!='') {?><div style="width:100%;"><strong>Your Facebook Page ID:</strong> <?php _e(apply_filters('format_to_edit',$options['fbPgID']), 'NS_SNAutoPoster') ?> </div><?php } ?>
             <?php 
             if($options['fbAppSec']=='') { ?>
             <b>Authorize Your FaceBook Account</b>. Please save your settings and come back here to Authorize your account.
@@ -199,7 +204,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <p><div style="width:100%;"><strong>Categories to Include/Exclude:</strong> 
             <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
             
-            </div><input name="NS_SNAutoPostercats" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options[$this->NextScripts_GPAutoPosterCats]), 'NS_SNAutoPoster') ?>" /></p>
+            </div><input name="apCats" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
              
            
         <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
@@ -210,7 +215,8 @@ if (!class_exists("NS_SNAutoPoster")) {
         //## END OF showSNAutoPosterOptionsPage()
         
         function NS_SNAP_SavePostMetaTags($id) { $awmp_edit = $_POST["SNAPEdit"]; //prr($_POST);
-            if (isset($awmp_edit) && !empty($awmp_edit)) { $format = $_POST["SNAPformat"];  $exclude = $_POST["SNAPexclude"];  $include = $_POST["SNAPinclude"]; $isAttachPost = $_POST["SNAPAttachPost"];
+            if (isset($awmp_edit) && !empty($awmp_edit)) { $format = $_POST["SNAPformat"];  $exclude = isset($_POST["SNAPexclude"])?$_POST["SNAPexclude"]:'';  $include =  isset($_POST["SNAPinclude"])?$_POST["SNAPinclude"]:''; 
+              $isAttachPost = $_POST["SNAPAttachPost"];
                 delete_post_meta($id, 'SNAPformat');  delete_post_meta($id, 'SNAPexclude');  delete_post_meta($id, 'SNAPinclude'); delete_post_meta($id, 'SNAPAttachPost');
                 if (isset($format) && !empty($format))   add_post_meta($id, 'SNAPformat', $format);                
                 if (isset($exclude) && !empty($exclude)) add_post_meta($id, 'SNAPexclude', $exclude);
@@ -377,8 +383,8 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
   function nsPublishTo($postID, $type='', $aj=false) { $post = get_post($postID);  $maxLen = 1000; // prr($post); 
     if ($post->post_type == 'post') { $options = get_option('NS_SNAutoPoster'); //prr($options);
       //## Check if need to publish it
-      if (!$aj && $type!='' && (int)$options['do'.$type]!=1) return; $chCats = trim($options['cats']); $continue = true;
-      if ($chCats!=''){ $cats = split(",", $options['cats']);  $continue = false;
+      if (!$aj && $type!='' && (int)$options['do'.$type]!=1) return; $chCats = isset($options['apCats'])?trim($options['apCats']):''; $continue = true;
+      if ($chCats!=''){ $cats = split(",", $options['apCats']);  $continue = false;
         foreach ($cats as $cat) { if (preg_match('/^-\d+/', $cat)) { $cat = preg_replace('/^-/', '', $cat);
             //## if in the exluded category, return.
             if (in_category( (int)$cat, $post )) return; else  $continue = true; 

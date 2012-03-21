@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
-Stable tag: 1.5.4
+Stable tag: 1.5.5
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -93,6 +93,11 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+
+= 1.5.5 =
+* Bug fix - Included/Excluded Categories.
+* Improvement - Easier Facebook setup.
+
 = 1.5.4 =
 * Bug fix - Wrong Re-Post Buttons.
 * Improvement - Better G+ Compatibility.
