@@ -4,14 +4,14 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.5
+Version: 1.5.6
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
 if (file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
 
-define( 'NextScripts_SNAP_Version' , '1.5.5' );
+define( 'NextScripts_SNAP_Version' , '1.5.6' );
 if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -43,15 +43,15 @@ if (!class_exists("NS_SNAutoPoster")) {
             //## Get the user options
             $options = $this->getAPOptions($user_login);    
             if (isset($_POST['update_NS_SNAutoPoster_settings'])) { 
-                if (isset($_POST['apDoGP']))   $options['doGP'] = $_POST['apDoGP'];
-                if (isset($_POST['apDoFB']))   $options['doFB'] = $_POST['apDoFB'];
-                if (isset($_POST['apDoTW']))   $options['doTW'] = $_POST['apDoTW'];
+                if (isset($_POST['apDoGP']))   $options['doGP'] = $_POST['apDoGP']; else $options['doGP'] = 0; 
+                if (isset($_POST['apDoFB']))   $options['doFB'] = $_POST['apDoFB']; else $options['doFB'] = 0;
+                if (isset($_POST['apDoTW']))   $options['doTW'] = $_POST['apDoTW']; else $options['doTW'] = 0;
                 
                 
                 if (isset($_POST['apGPUName']))   $options['gpUName'] = $_POST['apGPUName'];
                 if (isset($_POST['apGPPass']))    $options['gpPass'] = $_POST['apGPPass'];                                
                 if (isset($_POST['apGPPage']))    $options['gpPageID'] = $_POST['apGPPage'];                
-                if (isset($_POST['apGPAttch']))   $options['gpAttch'] = $_POST['apGPAttch'];                                
+                if (isset($_POST['apGPAttch']))   $options['gpAttch'] = $_POST['apGPAttch'];  else $options['gpAttch'] = 0;                               
                 if (isset($_POST['apGPMsgFrmt'])) $options['gpMsgFormat'] = $_POST['apGPMsgFrmt'];                                
                 
                 if (isset($_POST['apFBURL']))  {   $options['fbURL'] = $_POST['apFBURL'];
@@ -61,7 +61,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 
                 if (isset($_POST['apFBAppID']))   $options['fbAppID'] = $_POST['apFBAppID'];                                
                 if (isset($_POST['apFBAppSec']))  $options['fbAppSec'] = $_POST['apFBAppSec'];        
-                if (isset($_POST['apFBAttch']))   $options['fbAttch'] = $_POST['apFBAttch'];        
+                if (isset($_POST['apFBAttch']))   $options['fbAttch'] = $_POST['apFBAttch'];    else $options['apFBAttch'] = 0;                                    
                 if (isset($_POST['apFBMsgFrmt'])) $options['fbMsgFormat'] = $_POST['apFBMsgFrmt'];                                
                 
                 if (isset($_POST['apTWURL']))        $options['twURL'] = $_POST['apTWURL'];
@@ -98,7 +98,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                     
             }
             </script>
-           <div class=wrap><h2>Next Scripts Social Networks AutoPoster Options for WordPress user <?php if ($emptyUser) { echo 'Admin'; } else { echo $user_login; } ?></h2>
+           <div class=wrap><h2>Next Scripts: Social Networks AutoPoster Options for WordPress user <?php if ($emptyUser) { echo 'Admin'; } else { echo $user_login; } ?></h2>
             <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">                
             <!-- G+ -->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
@@ -225,7 +225,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             }
         }
         function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName.$optionsAppend);    
-            $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doFB'];       $isAvailGP =  $options['gpUName']!='' && $options['gpPass']!='';
+            $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doTW'];       $isAvailGP =  $options['gpUName']!='' && $options['gpPass']!='';
             $isAvailFB =  $options['fbURL']!='' && $options['fbAppID']!='' && $options['fbAppSec']!='';
             $isAvailTW =  $options['twURL']!='' && $options['twConsKey']!='' && $options['twConsSec']!='' && $options['twAccToken']!='';
             $t = get_post_meta($post_id, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
@@ -313,8 +313,8 @@ if (class_exists("NS_SNAutoPoster")) {$plgn_NS_SNAutoPoster = new NS_SNAutoPoste
 if (!function_exists("NS_SNAutoPoster_ap")) {
   function NS_SNAutoPoster_ap() { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return;        
     if (function_exists('add_options_page')) {
-      add_options_page('Social Networks AutoPoster Options', 'Social Networks AutoPoster Options', 9, basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));
-      add_submenu_page('users.php', 'Social Networks AutoPoster Options', 'Social Networks AutoPoster Options', 2, basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterUsersOptionsPage'));
+      add_options_page('Social Networks Auto Poster', 'Social Networks Auto Poster', 9, basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));
+     // add_submenu_page('users.php', 'Social Networks AutoPoster', 'Social Networks AutoPoster', 2, basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterUsersOptionsPage'));
     }        
     if (function_exists('add_option')) { 
       add_option('SNAPformat',  '', 'Social Networks AutoPoster Meta Tags Format', 'yes');    
@@ -424,7 +424,7 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];
       $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];
       $msg = nsFormatMessage($fbMsgFormat, $postID);
-      if ($isAttachFB=='1'){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}   // prr($post);              
+      if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}   // prr($post);              
       require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
       $postSubtitle = site_url();
       $facebook = new Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
