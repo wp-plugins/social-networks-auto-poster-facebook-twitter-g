@@ -4,15 +4,16 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.6
+Version: 1.5.8
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
-if (file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) require "apis/postToGooglePlus.php";
-
-define( 'NextScripts_SNAP_Version' , '1.5.6' );
-if ( !function_exists('prr') ){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
+if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
+  elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
+    
+define( 'NextScripts_SNAP_Version' , '1.5.8' );
+if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
 if (!class_exists("NS_SNAutoPoster")) {
@@ -98,14 +99,25 @@ if (!class_exists("NS_SNAutoPoster")) {
                     
             }
             </script>
-           <div class=wrap><h2>Next Scripts: Social Networks AutoPoster Options for WordPress user <?php if ($emptyUser) { echo 'Admin'; } else { echo $user_login; } ?></h2>
+            <div style="float:right; padding-top: 10px; padding-right: 10px;">
+              <div style="float:right;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"></a></div>
+              <div style="float:right; text-align: right; padding-right: 10px;"><a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">Contact support</a>
+              <br/><a target="_blank" href="http://www.owssoftware.com/startcouponwebsite">Make Money with Your Own<br/> Free Deals/Coupons Website</a>
+              </div>
+            </div>
+            
+           <div class=wrap><h2>Next Scripts: Social Networks AutoPoster Options</h2>
+            
             <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">                
             <!-- G+ -->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
             
-            <?php if (!file_exists(dirname( __FILE__ )."/apis/postToGooglePlus.php")) {?> Google+ don't have a built-in API for automated posts yet. You need to get a special <a href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish to Google+. <br/>Please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <?php } else {?>
+            <?php if(!function_exists('doPostToGooglePlus')) {?> Google+ don't have a built-in API for automated posts yet. The current <a href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can't be used for posting.  <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish your content to Google+. <br/><br/>When you get the library, please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/</b> or <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <br/>
+            <b>*****</b> If you have <b>upgraded</b> the script from WordPress.org and lost Google+ functionality, please upload <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/</b> That will keep it from getting removed again with the next update.
             
-            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['doGP'] == 1) echo "checked"; ?> /> 
+            <?php } else {?>
+            
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['doGP'] == 1) echo "checked"; $nxsOne = "?g=1" ?> /> 
               <strong>Auto-publish your Posts to your Google+ Page or Profile</strong>                                 
             </p>
             <div id="doGPDiv" style="margin-left: 10px;<?php if ((int)$options['doGP'] != 1) echo "display:none"; ?> ">
@@ -158,10 +170,10 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php } else { if($options['fbAppAuthUser']>0) { ?>
             Your FaceBook Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit',$options['fbAppAuthUser']), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
-            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?=$options['fbAppID']?>&client_secret=<?=$options['fbAppSec']?>&redirect_uri=<?=site_url()?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a>             
+            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?=$options['fbAppID']?>&client_secret=<?=$options['fbAppSec']?>&redirect_uri=<?=site_url()?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> <br/> If you get Facebook message : "Error. An error occurred. Please try again later." please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.
             <?php }
             
-            if ($_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
+            if ( isset($_GET['code']) && $_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
                 $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$options['fbAppID'].'&redirect_uri='.urlencode(site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php').'&client_secret='.$options['fbAppSec'].'&code='.$at); prr($response);
                 parse_str($response['body'], $params); $at = $params['access_token'];
                 $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$options['fbAppSec'].'&client_id='.$options['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at); 
@@ -197,14 +209,15 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the body(text) of your post.</p>
-              </div><input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
+              </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
+              <input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
             </div>
             <br/><hr/>
             
             <p><div style="width:100%;"><strong>Categories to Include/Exclude:</strong> 
             <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
             
-            </div><input name="apCats" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
+            </div><input name="apCats" style="width: 30%;" value="<?php if (isset($options['apCats'])) _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
              
            
         <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
@@ -410,7 +423,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       $t = get_post_meta($postID, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat'];
       $t = get_post_meta($postID, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
       $msg = nsFormatMessage($gpMsgFormat, $postID);
-      if ($isAttachGP=='1'){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}      
+      if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = $options['gpPass'];                
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";}
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if ($src!='') $lnk['img'] = $src;                                     
@@ -428,8 +441,9 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
       $postSubtitle = site_url();
       $facebook = new Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
+      $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
-       'description' => $dsc, 'actions' => array(array('name' => htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES), 'link' => site_url())) );  
+       'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
        
       $ret = $facebook->api("/$page_id/feed","post", $mssg); 
