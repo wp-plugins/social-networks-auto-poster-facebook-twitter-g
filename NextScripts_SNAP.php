@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.8
+Version: 1.5.9
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.5.8' );
+define( 'NextScripts_SNAP_Version' , '1.5.9' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -40,7 +40,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         }
         function showSNAutoPosterUsersOptionsPage($user_login = "") { global $current_user; get_currentuserinfo(); $this->showSNAutoPosterOptionsPage($current_user->user_login); }
         //## Print the admin page for the plugin
-        function showSNAutoPosterOptionsPage($user_login = "") { $emptyUser = empty($user_login);            
+        function showSNAutoPosterOptionsPage($user_login = "") { $emptyUser = empty($user_login); $nxsOne = '';        
             //## Get the user options
             $options = $this->getAPOptions($user_login);    
             if (isset($_POST['update_NS_SNAutoPoster_settings'])) { 
@@ -107,13 +107,19 @@ if (!class_exists("NS_SNAutoPoster")) {
             </div>
             
            <div class=wrap><h2>Next Scripts: Social Networks AutoPoster Options</h2>
+           
+           <?php
+           
+           if (!function_exists('curl_init')) {  echo ('<br/><b style=\'font-size:16px; color:red;\'>Error: No CURL Found</b> <br/><i>Social Networks AutoPoster needs the CURL PHP extension. Please install it or contact your hosting company to install it.</i><br/>'); }
+           
+           ?>
             
             <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">                
             <!-- G+ -->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
             
             <?php if(!function_exists('doPostToGooglePlus')) {?> Google+ don't have a built-in API for automated posts yet. The current <a href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can't be used for posting.  <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish your content to Google+. <br/><br/>When you get the library, please place the <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/</b> or <b>/wp-content/plugins/social-networks-auto-poster-facebook-twitter-g/apis/</b> folder to activate Google+ publishing functionality.  <br/>
-            <b>*****</b> If you have <b>upgraded</b> the script from WordPress.org and lost Google+ functionality, please upload <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/</b> That will keep it from getting removed again with the next update.
+            <i><b>*****</b> If you have <b>upgraded</b> the script from WordPress.org and lost Google+ functionality, please upload <b>postToGooglePlus.php</b> file to the <b>/wp-content/plugins/</b> That will keep it from getting removed again with the next update.</i>
             
             <?php } else {?>
             
@@ -170,7 +176,9 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php } else { if($options['fbAppAuthUser']>0) { ?>
             Your FaceBook Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit',$options['fbAppAuthUser']), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
-            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?=$options['fbAppID']?>&client_secret=<?=$options['fbAppSec']?>&redirect_uri=<?=site_url()?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> <br/> If you get Facebook message : "Error. An error occurred. Please try again later." please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.
+            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?=$options['fbAppID']?>&client_secret=<?=$options['fbAppSec']?>&redirect_uri=<?=site_url()?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> 
+            
+            <br/><br/><i> If you get Facebook message : <b>"Error. An error occurred. Please try again later."</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i>
             <?php }
             
             if ( isset($_GET['code']) && $_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
@@ -179,7 +187,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$options['fbAppSec'].'&client_id='.$options['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at); 
                 parse_str($response['body'], $params); $at = $params['access_token']; $options['fbAppAuthToken'] = $at; 
                 require_once ('apis/facebook.php'); echo "Using API";
-                $facebook = new Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true)); 
+                $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true)); 
                     $facebook -> setAccessToken($options['fbAppAuthToken']); $user = $facebook->getUser(); echo "USER:"; prr($user);
                     if ($user) {
                         try { $page_id = $options['fbPgID']; $page_info = $facebook->api("/$page_id?fields=access_token");
@@ -440,7 +448,7 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}   // prr($post);              
       require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
       $postSubtitle = site_url();
-      $facebook = new Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
+      $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
       $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
@@ -456,9 +464,9 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       $t = get_post_meta($postID, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];      
       $msg = nsFormatMessage($twMsgFormat, $postID);
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
-      $tmhOAuth = new tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
+      $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));
-      if ($code == 200) { /* echo "Twitter - OK";tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/} else { tmhUtilities::pr($tmhOAuth->response['response']);}      
+      if ($code == 200) { /* echo "Twitter - OK";NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
   }
 }
 

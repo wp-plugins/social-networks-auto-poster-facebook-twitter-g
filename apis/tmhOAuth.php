@@ -11,7 +11,7 @@
  *
  * 16 January 2012
  */
-class tmhOAuth {
+class NXS_tmhOAuth {
   const VERSION = 0.61;
 
   /**

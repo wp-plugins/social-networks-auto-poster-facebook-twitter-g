@@ -9,7 +9,7 @@
  *
  * 29 September 2011
  */
-class tmhUtilities {
+class NXS_tmhUtilities {
   /**
    * Entifies the tweet using the given entities element
    *

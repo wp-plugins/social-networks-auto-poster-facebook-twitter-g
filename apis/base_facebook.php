@@ -27,7 +27,7 @@ if (!function_exists('json_decode')) {
  *
  * @author Naitik Shah <naitik@facebook.com>
  */
-class FacebookApiException extends Exception
+class NXS_FacebookApiException extends Exception
 {
   /**
    * The result from the API server that represents the exception information.
@@ -115,7 +115,7 @@ class FacebookApiException extends Exception
  *
  * @author Naitik Shah <naitik@facebook.com>
  */
-abstract class BaseFacebook
+abstract class NXS_BaseFacebook
 {
   /**
    * Version.
