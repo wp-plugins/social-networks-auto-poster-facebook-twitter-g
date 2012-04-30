@@ -607,7 +607,7 @@ abstract class NXS_BaseFacebook
     try {
       $user_info = $this->api('/me');
       return $user_info['id'];
-    } catch (FacebookApiException $e) {
+    } catch (NXS_FacebookApiException $e) {
       return 0;
     }
   }
@@ -666,7 +666,7 @@ abstract class NXS_BaseFacebook
                           'client_secret' => $this->getApiSecret(),
                           'redirect_uri' => $redirect_uri,
                           'code' => $code));
-    } catch (FacebookApiException $e) {
+    } catch (NXS_FacebookApiException $e) {
       // most likely that user very recently revoked authorization.
       // In any event, we don't have an access token, so say so.
       return false;
@@ -691,7 +691,7 @@ abstract class NXS_BaseFacebook
    * @param array $params Method call object
    *
    * @return mixed The decoded response object
-   * @throws FacebookApiException
+   * @throws NXS_FacebookApiException
    */
   protected function _restserver($params) {
     // generic application level parameters
@@ -705,7 +705,7 @@ abstract class NXS_BaseFacebook
 
     // results are returned, errors are thrown
     if (is_array($result) && isset($result['error_code'])) {
-      throw new FacebookApiException($result);
+      throw new NXS_FacebookApiException($result);
     }
 
     return $result;
@@ -719,7 +719,7 @@ abstract class NXS_BaseFacebook
    * @param array $params The query/post data
    *
    * @return mixed The decoded response object
-   * @throws FacebookApiException
+   * @throws NXS_FacebookApiException
    */
   protected function _graph($path, $method = 'GET', $params = array()) {
     if (is_array($method) && empty($params)) {
@@ -748,7 +748,7 @@ abstract class NXS_BaseFacebook
    * @param array $params The query/post data
    *
    * @return string The decoded response object
-   * @throws FacebookApiException
+   * @throws NXS_FacebookApiException
    */
   protected function _oauthRequest($url, $params) {
     if (!isset($params['access_token'])) {
@@ -811,7 +811,7 @@ abstract class NXS_BaseFacebook
     }
 
     if ($result === false) {
-      $e = new FacebookApiException(array(
+      $e = new NXS_FacebookApiException(array(
         'error_code' => curl_errno($ch),
         'error' => array(
         'message' => curl_error($ch),
@@ -1025,7 +1025,7 @@ abstract class NXS_BaseFacebook
    *                      by a failed API call.
    */
   protected function throwAPIException($result) {
-    $e = new FacebookApiException($result);
+    $e = new NXS_FacebookApiException($result);
     switch ($e->getType()) {
       // OAuth 2.0 Draft 00 style
       case 'OAuthException':

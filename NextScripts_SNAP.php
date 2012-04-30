@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.5.9
+Version: 1.6.0
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.5.9' );
+define( 'NextScripts_SNAP_Version' , '1.6.0' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -98,7 +98,62 @@ if (!class_exists("NS_SNAutoPoster")) {
             function doShowHideBlocks(blID){ if (jQuery('#apDo'+blID).is(':checked')) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();
                     
             }
+           
+            function callAjSNAP(data, label) {
+            var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
+            jQuery('body').append("<div id='test_results' style='" + style + "'></div>");
+            jQuery('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='http://gtln.us/img/misc/ajax-loader-med.gif' /></p>");
+            jQuery('#test_results').show();            
+            jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
+                jQuery('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
+                jQuery('#results_ok_button').click(remove_results);
+            });
+            
+        }        
+        function remove_results() { jQuery("#results_ok_button").unbind("click");jQuery("#test_results").remove();
+            if (typeof document.body.style.maxHeight == "undefined") { jQuery("body","html").css({height: "auto", width: "auto"}); jQuery("html").css("overflow","");}
+            document.onkeydown = "";document.onkeyup = "";  return false;
+        }
+            function testPost(nt){
+              if (nt=='GP') { var data = { action: 'rePostToGP', id: 0, _wpnonce: jQuery('input#rePostToGP_wpnonce').val()}; callAjSNAP(data, 'Google+'); }
+              if (nt=='FB') { var data = { action: 'rePostToFB', id: 0, _wpnonce: jQuery('input#rePostToFB_wpnonce').val()}; callAjSNAP(data, 'Facebook'); }
+              if (nt=='TW') { var data = { action: 'rePostToTW', id: 0, _wpnonce: jQuery('input#rePostToTW_wpnonce').val()}; callAjSNAP(data, 'Twitter'); }
+            }
+            
             </script>
+            
+<style type="text/css">
+.NXSButton {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
+    background:-moz-linear-gradient( center top, #89c403 5%, #77a809 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#89c403', endColorstr='#77a809');
+    background-color:#89c403;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    border-radius:4px;
+    border:1px solid #74b807;
+    display:inline-block;
+    color:#ffffff;
+    font-family:Trebuchet MS;
+    font-size:12px;
+    font-weight:bold;
+    padding:2px 5px;
+    text-decoration:none;
+    text-shadow:1px 1px 0px #528009;
+}.NXSButton:hover {color:#ffffff;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77a809), color-stop(1, #89c403) );
+    background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');
+    background-color:#77a809;
+}.NXSButton:active {color:#ffffff;
+    position:relative;
+    top:1px;
+}.NXSButton:focus {color:#ffffff;
+    position:relative;
+    top:1px;
+}
+
+</style>
             <div style="float:right; padding-top: 10px; padding-right: 10px;">
               <div style="float:right;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"></a></div>
               <div style="float:right; text-align: right; padding-right: 10px;"><a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">Contact support</a>
@@ -142,18 +197,27 @@ if (!class_exists("NS_SNAutoPoster")) {
               <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the body(text) of your post.</p>
               </div><input name="apGPMsgFrmt" id="apGPMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['gpMsgFormat']), 'NS_SNAutoPoster') ?>" />
-            </div><br/>             
+            </div><br/>    
+            
+            <?php if ($options['gpPass']!='') { ?>
+            <?php wp_nonce_field( 'rePostToGP', 'rePostToGP_wpnonce' ); ?>
+            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('GP'); return false;">Submit Test Post to Google+</a>         
+            <?php } ?>
+            
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
             </div>
             <?php } ?>
             
-            <!-- FB -->   <br/><hr/>
+            <!-- FB -->   <hr/>
             <h3 style="font-size: 17px;">FaceBook Settings</h3>   
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoFB" name="apDoFB" onchange="doShowHideBlocks('FB');" type="checkbox" <?php if ((int)$options['doFB'] == 1) echo "checked"; ?> /> 
               <strong>Auto-publish your Posts to your Facebook Page or Profile</strong>                                 
             </p>
             <div id="doFBDiv" style="margin-left: 10px;<?php if ((int)$options['doFB'] != 1) echo "display:none"; ?> ">
                            
-            <div style="width:100%;"><strong>Your Facebook URL:</strong> </div><input name="apFBURL" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbURL']), 'NS_SNAutoPoster') ?>" />                
+            <div style="width:100%;"><strong>Your Facebook URL:</strong> </div>
+            <p style="font-size: 11px; margin: 0px;">Could be your Facebook Profile, Facebook Page, Facebook Group</p>
+            <input name="apFBURL" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbURL']), 'NS_SNAutoPoster') ?>" />                
             
             <div style="width:100%;"><strong>Your Facebook App ID:</strong> </div><input name="apFBAppID" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbAppID']), 'NS_SNAutoPoster') ?>" />  
             <div style="width:100%;"><strong>Your Facebook App Secret:</strong> </div><input name="apFBAppSec" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['fbAppSec']), 'NS_SNAutoPoster') ?>" />
@@ -178,7 +242,8 @@ if (!class_exists("NS_SNAutoPoster")) {
             You can Re- <?php } ?>            
             <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?=$options['fbAppID']?>&client_secret=<?=$options['fbAppSec']?>&redirect_uri=<?=site_url()?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> 
             
-            <br/><br/><i> If you get Facebook message : <b>"Error. An error occurred. Please try again later."</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i>
+            <?php if($options['fbAppAuthUser']<1) { ?>
+            <br/><br/><i> If you get Facebook message : <b>"Error. An error occurred. Please try again later."</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i> <?}?>
             <?php }
             
             if ( isset($_GET['code']) && $_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
@@ -200,6 +265,11 @@ if (!class_exists("NS_SNAutoPoster")) {
                  die();
             }
             ?>
+            <?php if($options['fbAppAuthUser']>0) { ?>
+            <?php wp_nonce_field( 'rePostToFB', 'rePostToFB_wpnonce' ); ?>
+            <br/><br/><b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('FB'); return false;">Submit Test Post to Facebook</a>         
+            <?}?>
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
             
             </div>         
              <!-- TW -->   <br/><hr/>
@@ -227,6 +297,10 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             </div><input name="apCats" style="width: 30%;" value="<?php if (isset($options['apCats'])) _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
              
+            <?php if($options['twAccTokenSec']!='') { ?>
+            <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); ?>
+            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TW'); return false;">Submit Test Post to Twitter</a>         
+            <?}?>
            
         <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
         </form>
@@ -356,7 +430,7 @@ if (!function_exists("jsPostToSNAP")) {
        function callAjSNAP(data, label) {
             var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
             $('body').append("<div id='test_results' style='" + style + "'></div>");
-            $('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='/wp-includes/js/thickbox/loadingAnimation.gif' /></p>");
+            $('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='http://gtln.us/img/misc/ajax-loader-med.gif' /></p>");
             $('#test_results').show();            
             jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
                 $('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
@@ -401,8 +475,11 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
 }
 
 if (!function_exists("nsPublishTo")) { //## Main Function to Post 
-  function nsPublishTo($postID, $type='', $aj=false) { $post = get_post($postID);  $maxLen = 1000; // prr($post); 
-    if ($post->post_type == 'post') { $options = get_option('NS_SNAutoPoster'); //prr($options);
+  function nsPublishTo($postID, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster');
+    if($postID==0) {
+        if ($type=='GP') doPublishToGP($postID, $options);  if ($type=='FB') doPublishToFB($postID, $options);  if ($type=='TW') doPublishToTW($postID, $options); 
+    } else { $post = get_post($postID);  $maxLen = 1000; 
+    if ($post->post_type == 'post') { //prr($options);
       //## Check if need to publish it
       if (!$aj && $type!='' && (int)$options['do'.$type]!=1) return; $chCats = isset($options['apCats'])?trim($options['apCats']):''; $continue = true;
       if ($chCats!=''){ $cats = split(",", $options['apCats']);  $continue = false;
@@ -423,11 +500,12 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
           if ($type=='FB' || ($type=='' && (int)$doFB==1)) doPublishToFB($postID, $options);
       }
     } //die();
+    }
   }
 }
 // Add function to pubslih to Google +
 if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
-  function doPublishToGP($postID, $options){ 
+  function doPublishToGP($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";
       $t = get_post_meta($postID, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat'];
       $t = get_post_meta($postID, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
       $msg = nsFormatMessage($gpMsgFormat, $postID);
@@ -436,37 +514,45 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";}
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if ($src!='') $lnk['img'] = $src;                                     
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
-      if ($ret!='OK') echo $ret;
+      if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
   }
 }
 // Add function to pubslih to FaceBook
 if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
-  function doPublishToFB($postID, $options){ $post = get_post($postID); 
+  function doPublishToFB($postID, $options){ require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];
+    $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
+    
+    if ($postID=='0') {echo "Testing ... <br/><br/>"; 
+    $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => site_url(),
+       'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
+    } else {$post = get_post($postID); 
       $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];
       $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];
       $msg = nsFormatMessage($fbMsgFormat, $postID);
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}   // prr($post);              
-      require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
+       $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
       $postSubtitle = site_url();
-      $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
-      $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
-       
-      $ret = $facebook->api("/$page_id/feed","post", $mssg); 
-      //die();  
+    }
+    $ret = $facebook->api("/$page_id/feed","post", $mssg);  if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
   }
 }
 // Add function to pubslih to Twitter
 if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW 
-  function doPublishToTW($postID, $options){ $post = get_post($postID); //prr($post); die();
-      $t = get_post_meta($postID, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];      
-      $msg = nsFormatMessage($twMsgFormat, $postID);
+  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;}
+      else{
+        $post = get_post($postID); //prr($post); die();
+        $t = get_post_meta($postID, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];      
+        $msg = nsFormatMessage($twMsgFormat, $postID); prr($msg);
+      }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));
-      if ($code == 200) { /* echo "Twitter - OK";NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
+      if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
   }
 }
 
