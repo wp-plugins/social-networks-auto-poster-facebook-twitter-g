@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.6.1
+Version: 1.6.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.6.1' );
+define( 'NextScripts_SNAP_Version' , '1.6.2' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -156,7 +156,9 @@ if (!class_exists("NS_SNAutoPoster")) {
 </style>
             <div style="float:right; padding-top: 10px; padding-right: 10px;">
               <div style="float:right;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"></a></div>
-              <div style="float:right; text-align: right; padding-right: 10px;"><a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">Contact support</a>
+              <div style="float:right; text-align: right; padding-right: 10px;"><a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">Contact support</a>&nbsp;|&nbsp;
+              <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://gd.is/s9xd">Donate</a>
+              
               <br/><a target="_blank" href="http://www.owssoftware.com/startcouponwebsite">Make Money with Your Own<br/> Free Deals/Coupons Website</a>
               </div>
             </div>
@@ -548,13 +550,24 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       else{
         $post = get_post($postID); //prr($post); die();
         $t = get_post_meta($postID, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];      
-        $msg = nsFormatMessage($twMsgFormat, $postID); prr($msg);
+        $msg = nsFormatMessage($twMsgFormat, $postID); // prr($msg);
       }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));
       if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
   }
+}
+
+    // add settings link to plugins list
+function wpfbogp_add_settings_link($links, $file) {
+    static $this_plugin;
+    if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
+    if ($file == $this_plugin){
+        $settings_link = '<a href="options-general.php?page=NextScripts_SNAP.php">'.__("Settings","default").'</a>';
+        array_unshift($links, $settings_link);
+    }
+    return $links;
 }
 
 //## Actions and filters    
@@ -580,5 +593,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_rePostToGP', 'rePostToGP_ajax');
     add_action('wp_ajax_rePostToFB', 'rePostToFB_ajax');
     add_action('wp_ajax_rePostToTW', 'rePostToTW_ajax');
+    
+add_filter('plugin_action_links','wpfbogp_add_settings_link', 10, 2 );
 }
 ?>

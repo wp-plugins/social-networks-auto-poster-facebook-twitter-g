@@ -1,11 +1,11 @@
-=== Next Scripts Social Networks Auto-Poster ===
+=== NextScripts: Social Networks Auto-Poster ===
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -92,6 +92,9 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. This is the second screen shot
 
 == Changelog ==
+= 1.6.2 =
+* Bug fix - Fix for "Cannot modify header information" message while posting to Twitter.
+
 = 1.6.1 =
 * Improvement - New posting format: %TEXT% - Inserts the excerpt of your post. %FULLTEXT% - Inserts the body(text) of your post.
 * Bug fix - Activation Problem "unexpected $end" for servers with no support for short php tags <? ?>.
