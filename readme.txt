@@ -1,7 +1,7 @@
 === Next Scripts Social Networks Auto-Poster ===
 
 Contributors: NextScripts
-Donate link: http://www.nextscripts.com/
+Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.1
@@ -88,14 +88,13 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
+1. Settings Page
 2. This is the second screen shot
 
 == Changelog ==
 = 1.6.1 =
 * Improvement - New posting format: %TEXT% - Inserts the excerpt of your post. %FULLTEXT% - Inserts the body(text) of your post.
-* Bug fix - Activation Problem "unexpected $end".
+* Bug fix - Activation Problem "unexpected $end" for servers with no support for short php tags <? ?>.
 
 = 1.6.0 =
 * Improvement - New improved settings page with test buttons.
