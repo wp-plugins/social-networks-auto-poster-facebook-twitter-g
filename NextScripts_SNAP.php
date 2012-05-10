@@ -560,7 +560,7 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
 }
 
     // add settings link to plugins list
-function wpfbogp_add_settings_link($links, $file) {
+function ns_add_settings_link($links, $file) {
     static $this_plugin;
     if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
     if ($file == $this_plugin){
@@ -594,6 +594,6 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_rePostToFB', 'rePostToFB_ajax');
     add_action('wp_ajax_rePostToTW', 'rePostToTW_ajax');
     
-add_filter('plugin_action_links','wpfbogp_add_settings_link', 10, 2 );
+add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
 }
 ?>
