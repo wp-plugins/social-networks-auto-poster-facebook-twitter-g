@@ -4,21 +4,18 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
-Tested up to: 3.3.2
+Tested up to: 3.3.1
 Stable tag: 1.7.0
-License: GPLv2 or later
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
 == Description ==
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, and Google+ accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, and Google+ accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. 
 
 == Installation ==
 
 You need to have accounts with Facebook, Google+ and Twitter.
-
-See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
 Social Networks Auto Poster (SNAP).
 
@@ -43,7 +40,7 @@ Facebook.
    4. Fill "App ID" and "App Secret" from step 3 above.
 3. Authorize Facebook for your Wordpress.
    1. Click "Update Settings". Notice new link "Authorize Your FaceBook Account".
-   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard. If you get any errors at this step, please make sure that domain for your Wordpress site is entered to your App as "App Domain".
+   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard. If you get any errors at this step, please make sure that domain for your Wordpress site is enetred to your App as "App Domain".
 4. Your facebook is ready to use.
 
 Twitter.
@@ -81,7 +78,7 @@ Google+ don't yet have API for automated posts. You need to get special library 
 
 == Frequently Asked Questions ==
 
-= Can I use it just for Twitter(Facebook, G+) or it requres all three networks to be set? =
+= Can I use it just for Twitter(Faceboo, G+) or it requres all three networks to be set? =
 
 Sure you can use it for just one or two networks.
 
@@ -92,19 +89,9 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 == Screenshots ==
 
 1. Settings Page
-2. Google+ Post
+2. This is the second screen shot
 
 == Changelog ==
-= 1.7.0 =
-* New - Support for Wordpress "Custom Post Types".
-* New - Ability to add open graph tags without third party plugins.
-* Improvement - Better compatibility/faster Google+ posting.
-* Improvement - If post thumbnail (featured image) is not set, script will look for images in the post.
-* Improvement - If excerpt is not set, script will auto-generate it.
-* Bug fix - Fixed "Changing format of the message for each individual post" problem.
-* Bug fix - Fixed missing "Pending-to-Publish" status change.
-* Bug fix - Twitter settings page format fixed.
-
 = 1.6.2 =
 * Bug fix - Fix for "Cannot modify header information" message while posting to Twitter.
 
