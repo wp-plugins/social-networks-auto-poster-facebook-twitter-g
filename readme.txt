@@ -6,6 +6,7 @@ Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
 Tested up to: 3.3.2
 Stable tag: 1.7.0
+License: GPLv2 or later
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
@@ -16,6 +17,7 @@ Social Networks Auto Poster can automatically publish nicely formatted announcem
 == Installation ==
 
 You need to have accounts with Facebook, Google+ and Twitter.
+
 See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
 Social Networks Auto Poster (SNAP).
