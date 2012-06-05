@@ -680,7 +680,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_rePostToGP', 'rePostToGP_ajax');
     add_action('wp_ajax_rePostToFB', 'rePostToFB_ajax');
     add_action('wp_ajax_rePostToTW', 'rePostToTW_ajax');
-    
+    //## Custom Post Types and OG tags
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
     add_action('wp_head','nsAddOGTags',50);
 }

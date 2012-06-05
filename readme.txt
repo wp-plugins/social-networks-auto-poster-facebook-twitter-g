@@ -4,7 +4,7 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
-Tested up to: 3.4
+Tested up to: 3.3.2
 Stable tag: 1.7.0
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
@@ -41,7 +41,7 @@ Facebook.
    4. Fill "App ID" and "App Secret" from step 3 above.
 3. Authorize Facebook for your Wordpress.
    1. Click "Update Settings". Notice new link "Authorize Your FaceBook Account".
-   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard. If you get any errors at this step, please make sure that domain for your Wordpress site is enetred to your App as "App Domain".
+   2. Click "Authorize Your FaceBook Account" and follow the Facebook authorization wizard. If you get any errors at this step, please make sure that domain for your Wordpress site is entered to your App as "App Domain".
 4. Your facebook is ready to use.
 
 Twitter.
@@ -90,13 +90,13 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 == Screenshots ==
 
 1. Settings Page
-2. This is the second screen shot
+2. Google+ Post
 
 == Changelog ==
 = 1.7.0 =
 * New - Support for Wordpress "Custom Post Types".
-* New - Ability to add open graph tags withiout third party plugins.
-* Improvement - Bettter compartibility/faster Google+ posting.
+* New - Ability to add open graph tags without third party plugins.
+* Improvement - Better compatibility/faster Google+ posting.
 * Improvement - If post thumbnail (featured image) is not set, script will look for images in the post.
 * Improvement - If excerpt is not set, script will auto-generate it.
 * Bug fix - Fixed "Changing format of the message for each individual post" problem.
