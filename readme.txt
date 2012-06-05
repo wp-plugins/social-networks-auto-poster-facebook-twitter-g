@@ -4,18 +4,19 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
-Tested up to: 3.3.1
-Stable tag: 1.6.2
+Tested up to: 3.4
+Stable tag: 1.7.0
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 
 == Description ==
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, and Google+ accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, and Google+ accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 == Installation ==
 
 You need to have accounts with Facebook, Google+ and Twitter.
+See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
 Social Networks Auto Poster (SNAP).
 
@@ -78,7 +79,7 @@ Google+ don't yet have API for automated posts. You need to get special library 
 
 == Frequently Asked Questions ==
 
-= Can I use it just for Twitter(Faceboo, G+) or it requres all three networks to be set? =
+= Can I use it just for Twitter(Facebook, G+) or it requres all three networks to be set? =
 
 Sure you can use it for just one or two networks.
 
@@ -92,6 +93,16 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. This is the second screen shot
 
 == Changelog ==
+= 1.7.0 =
+* New - Support for Wordpress "Custom Post Types".
+* New - Ability to add open graph tags withiout third party plugins.
+* Improvement - Bettter compartibility/faster Google+ posting.
+* Improvement - If post thumbnail (featured image) is not set, script will look for images in the post.
+* Improvement - If excerpt is not set, script will auto-generate it.
+* Bug fix - Fixed "Changing format of the message for each individual post" problem.
+* Bug fix - Fixed missing "Pending-to-Publish" status change.
+* Bug fix - Twitter settings page format fixed.
+
 = 1.6.2 =
 * Bug fix - Fix for "Cannot modify header information" message while posting to Twitter.
 

@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.6.2
+Version: 1.7.0
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.6.2' );
+define( 'NextScripts_SNAP_Version' , '1.7.0' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -28,7 +28,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         //## Options loader function
         function getAPOptions($user_login = "") {
             //## Some Default Values
-            $options = array('fbAttch'=>1,'gpAttch'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'fbMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%');
+            $options = array('fbAttch'=>1,'gpAttch'=>1, 'nsOpenGraph'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'fbMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%');
             //## User's Options?
             if (empty($user_login))  $optionsAppend = ""; else  $optionsAppend = "_" . $user_login;
             //## Get values from the WP options table in the database, re-assign if found
@@ -73,6 +73,11 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['apTWMsgFrmt']))    $options['twMsgFormat'] = $_POST['apTWMsgFrmt'];                                
                 
                 if (isset($_POST['apCats']))      $options['apCats'] = $_POST['apCats'];
+                
+                if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
+                if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph'];  else $options['nsOpenGraph'] = 0;                               
+                
+                
                 
                 if ($emptyUser) { //## then we're dealing with the main Admin options
                     $options[$this->NextScripts_GPAutoPosterAllUsers] = $_POST['NS_SNAutoPosterallusers'];
@@ -163,7 +168,9 @@ if (!class_exists("NS_SNAutoPoster")) {
               </div>
             </div>
             
-           <div class=wrap><h2>Next Scripts: Social Networks AutoPoster Options</h2>
+           <div class="wrap"><h2>Next Scripts: Social Networks AutoPoster Options</h2>Version: <?php echo NextScripts_SNAP_Version; ?> [Single Account] - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get Multiple Accounts Edition</a><br/><br/>
+           Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation instructions</a> (will open in a new tab)
+           
            
            <?php
            
@@ -291,18 +298,39 @@ if (!class_exists("NS_SNAutoPoster")) {
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</p>
               </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
               <input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
-            </div>
-            <br/><hr/>
-            
-            <p><div style="width:100%;"><strong>Categories to Include/Exclude:</strong> 
-            <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
-            
-            </div><input name="apCats" style="width: 30%;" value="<?php if (isset($options['apCats'])) _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
-             
-            <?php if($options['twAccTokenSec']!='') { ?>
+              
+              <?php if($options['twAccTokenSec']!='') { ?>
             <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); ?>
             <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TW'); return false;">Submit Test Post to Twitter</a>         
             <?php }?>
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>  
+            </div>
+            
+            <br/><hr/>
+            
+            <h3 style="font-size: 17px;">Other Settings</h3> 
+            
+            <p><div style="width:100%;"><strong style="font-size: 14px;">Categories to Include/Exclude:</strong> 
+            <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
+            
+            </div><input name="apCats" style="width: 30%;" value="<?php if (isset($options['apCats'])) _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
+            
+            
+            
+            <h3 style="font-size: 14px; margin-bottom: 2px;">"Open Graph" Tags</h3> 
+             <span style="font-size: 11px; margin-left: 1px;">"Open Graph" tags are used for generating title, description and preview image for your Facebook and Google+ posts. This is quite simple implementation of "Open Graph" Tags. This option will only add tags needed for "Auto Posting". If you need something more serious uncheck this and use other specialized plugins. </span>
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="nsOpenGraph" name="nsOpenGraph"  type="checkbox" <?php if ((int)$options['nsOpenGraph'] == 1) echo "checked"; ?> /> 
+              <strong>Add Open Graph Tags</strong>                                 
+                         
+            </p>
+            
+            <p><div style="width:100%;">            
+            
+            </div>
+            <strong style="font-size: 11px; margin: 10px;">Default Image URL for og:image tag:</strong> 
+            <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'NS_SNAutoPoster') ?>" /></p>
+             
+            
            
         <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
         </form>
@@ -311,17 +339,25 @@ if (!class_exists("NS_SNAutoPoster")) {
         }
         //## END OF showSNAutoPosterOptionsPage()
         
-        function NS_SNAP_SavePostMetaTags($id) { $awmp_edit = $_POST["SNAPEdit"]; //prr($_POST);
-            if (isset($awmp_edit) && !empty($awmp_edit)) { $format = $_POST["SNAPformat"];  $exclude = isset($_POST["SNAPexclude"])?$_POST["SNAPexclude"]:'';  $include =  isset($_POST["SNAPinclude"])?$_POST["SNAPinclude"]:''; 
-              $isAttachPost = $_POST["SNAPAttachPost"];
-                delete_post_meta($id, 'SNAPformat');  delete_post_meta($id, 'SNAPexclude');  delete_post_meta($id, 'SNAPinclude'); delete_post_meta($id, 'SNAPAttachPost');
-                if (isset($format) && !empty($format))   add_post_meta($id, 'SNAPformat', $format);                
-                if (isset($exclude) && !empty($exclude)) add_post_meta($id, 'SNAPexclude', $exclude);
-                if (isset($include) && !empty($include)) add_post_meta($id, 'SNAPinclude', $include);
-                if (isset($isAttachPost) && !empty($isAttachPost)) add_post_meta($id, 'SNAPAttachPost', $isAttachPost);
+        function NS_SNAP_SavePostMetaTags($id) { if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"]; 
+            if (isset($nspost_edit) && !empty($nspost_edit)) { 
+                
+                $SNAP_AttachGP = $_POST["SNAP_AttachGP"];  $SNAP_AttachFB = $_POST["SNAP_AttachFB"];  
+                $SNAP_FormatGP = $_POST["SNAP_FormatGP"];  $SNAP_FormatFB = $_POST["SNAP_FormatFB"];  $SNAP_FormatTW = $_POST["SNAP_FormatTW"]; // prr($_POST);
+                
+                delete_post_meta($id, 'SNAP_AttachGP');  delete_post_meta($id, 'SNAP_AttachFB');  
+                delete_post_meta($id, 'SNAP_FormatGP'); delete_post_meta($id, 'SNAP_FormatFB'); delete_post_meta($id, 'SNAP_FormatTW');
+                
+                if (isset($SNAP_AttachGP) && !empty($SNAP_AttachGP)) add_post_meta($id, 'SNAP_AttachGP', $SNAP_AttachGP);                
+                if (isset($SNAP_AttachFB) && !empty($SNAP_AttachFB)) add_post_meta($id, 'SNAP_AttachFB', $SNAP_AttachFB);
+                
+                if (isset($SNAP_FormatGP) && !empty($SNAP_FormatGP)) add_post_meta($id, 'SNAP_FormatGP', $SNAP_FormatGP);                
+                if (isset($SNAP_FormatFB) && !empty($SNAP_FormatFB)) add_post_meta($id, 'SNAP_FormatFB', $SNAP_FormatFB);
+                if (isset($SNAP_FormatTW) && !empty($SNAP_FormatTW)) add_post_meta($id, 'SNAP_FormatTW', $SNAP_FormatTW); 
+                
             }
         }
-        function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName.$optionsAppend);    
+        function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName);    
             $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doTW'];       $isAvailGP =  $options['gpUName']!='' && $options['gpPass']!='';
             $isAvailFB =  $options['fbURL']!='' && $options['fbAppID']!='' && $options['fbAppSec']!='';
             $isAvailTW =  $options['twURL']!='' && $options['twConsKey']!='' && $options['twConsSec']!='' && $options['twAccToken']!='';
@@ -337,7 +373,6 @@ if (!class_exists("NS_SNAutoPoster")) {
                     script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
               }</script>
             <script type="text/javascript">function doShowHideAltFormatX(){if (jQuery('#SNAP').is(':checked')) {jQuery('#altFormat1').hide(); jQuery('#altFormat2').hide();} else { jQuery('#altFormat1').show(); jQuery('#altFormat2').show();}}</script>
-        
             
             <input value="SNAPEdit" type="hidden" name="SNAPEdit" />
             <table style="margin-bottom:40px" border="0">
@@ -355,9 +390,9 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><b><?php _e('Publish this Post to Google+', 'NS_SPAP'); ?></b></td>
                </tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
-                <input value="1"  id="SNAPAttachPost" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAPAttachPost"  <?php if ((int)$isAttachGP == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to Google+ as Attachement</strong></td></tr>
+                <input value="1"  id="SNAP_AttachGP" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAP_AttachGP"  <?php if ((int)$isAttachGP == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to Google+ as Attachement</strong></td></tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="SNAPformat" size="60px"/></td></tr>
+                <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="SNAP_FormatGP" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
@@ -374,9 +409,9 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><b><?php _e('Publish this Post to FaceBook', 'NS_SPAP'); ?></b></td>
                 </tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
-                <input value="1"  id="SNAPAttachPost" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAPAttachPost"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to FaceBook as Attachement</strong></td>                </tr>
+                <input value="1"  id="SNAP_AttachFB" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to FaceBook as Attachement</strong></td>                </tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="SNAPformat" size="60px"/></td></tr>
+                <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="SNAP_FormatFB" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
@@ -393,7 +428,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><b><?php _e('Publish this Post to Twitter', 'NS_SPAP'); ?></b></td>
                 </tr>                
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="SNAPformat" size="60px"/></td></tr>
+                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="SNAP_FormatTW" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
@@ -464,13 +499,20 @@ if (!function_exists("rePostToTW_ajax")) {
   function rePostToTW_ajax() {    check_ajax_referer('rePostToTW');  $id = $_POST['id'];  $result = nsPublishTo($id, 'TW', true);   
     if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
   }
-}                                    
+}         
+
+function nsTrnc($string, $limit, $break=".", $pad="...") { if(strlen($string) <= $limit) return $string; 
+  if(false !== ($bp = strpos($string, $break, $limit))) { if($bp < strlen($string) - 1)  $string = substr($string, 0, $bp).$pad;} return $string;
+}                           
 
 if (!function_exists("nsFormatMessage")) { //## Format Message
-  function nsFormatMessage($msg, $postID){  $post = get_post($postID); $msg = htmlspecialchars(stripcslashes($msg));
+  function nsFormatMessage($msg, $postID){  $post = get_post($postID); $msg = htmlspecialchars(stripcslashes($msg)); 
       if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}                    
       if (preg_match('%TITLE%', $msg)) { $title = $post->post_title; $msg = str_ireplace("%TITLE%", $title, $msg); }                    
-      if (preg_match('%TEXT%', $msg)) { $postExcerpt = $post->post_excerpt; $msg = str_ireplace("%TEXT%", $postExcerpt, $msg);}                    
+      if (preg_match('%TEXT%', $msg)) {       
+        if ($post->post_excerpt!="") $excerpt = $post->post_excerpt; else $excerpt= nsTrnc(strip_tags(strip_shortcodes($post->post_content)), 300, " ", "...");     
+        $msg = str_ireplace("%TEXT%", $excerpt, $msg);
+      }     
       if (preg_match('%FULLTEXT%', $msg)) { $postContent = $post->post_content; $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
       if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
       return $msg;      
@@ -478,11 +520,15 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
 }
 
 if (!function_exists("nsPublishTo")) { //## Main Function to Post 
-  function nsPublishTo($postID, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster');
+  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster'); if(is_object($postArr)) $postID = $postArr->ID; $isPost = isset($_POST["SNAPEdit"]);
+  
     if($postID==0) {
         if ($type=='GP') doPublishToGP($postID, $options);  if ($type=='FB') doPublishToFB($postID, $options);  if ($type=='TW') doPublishToTW($postID, $options); 
     } else { $post = get_post($postID);  $maxLen = 1000; 
-    if ($post->post_type == 'post') { //prr($options);
+     
+    $args=array( 'public'   => true, '_builtin' => false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args,$output,$operator);
+     
+    if ($post->post_type == 'post' || in_array($post->post_type, $post_types) ) { //prr($options);
       //## Check if need to publish it
       if (!$aj && $type!='' && (int)$options['do'.$type]!=1) return; $chCats = isset($options['apCats'])?trim($options['apCats']):''; $continue = true;
       if ($chCats!=''){ $cats = split(",", $options['apCats']);  $continue = false;
@@ -493,9 +539,9 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
         }
       }
       if ($type==''){  
-        $t = get_post_meta($postID, 'SNAPincludeGP', true);  $doGP = $t!=''?$t:$options['doGP'];
-        $t = get_post_meta($postID, 'SNAPincludeFB', true);  $doFB = $t!=''?$t:$options['doFB'];
-        $t = get_post_meta($postID, 'SNAPincludeTW', true);  $doTW = $t!=''?$t:$options['doTW'];     
+        if ($isPost) $doGP = $_POST['SNAPincludeGP']; else { $t = get_post_meta($postID, 'SNAPincludeGP', true); $doGP = $t!=''?$t:$options['doGP']; }
+        if ($isPost) $doFB = $_POST['SNAPincludeFB']; else { $t = get_post_meta($postID, 'SNAPincludeFB', true); $doFB = $t!=''?$t:$options['doFB']; }
+        if ($isPost) $doTW = $_POST['SNAPincludeTW']; else { $t = get_post_meta($postID, 'SNAPincludeTW', true); $doTW = $t!=''?$t:$options['doTW']; }    
       } //var_dump($doTW); var_dump($doGP); var_dump($doFB);
       if (!$continue) return; else {
           if ($type=='TW' || ($type=='' && (int)$doTW==1)) doPublishToTW($postID, $options);
@@ -508,21 +554,21 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
 }
 // Add function to pubslih to Google +
 if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
-  function doPublishToGP($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";
-      $t = get_post_meta($postID, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat'];
-      $t = get_post_meta($postID, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
+  function doPublishToGP($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $isPost = isset($_POST["SNAPEdit"]);
+      if ($isPost) $gpMsgFormat = $_POST['SNAP_FormatGP']; else { $t = get_post_meta($postID, 'SNAP_FormatGP', true); $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat']; } 
+      if ($isPost) $isAttachGP = $_POST['SNAP_AttachGP'];  else { $t = get_post_meta($postID, 'SNAP_AttachGP', true); $isAttachGP = $t!=''?$t:$options['gpAttch']; }  
       $msg = nsFormatMessage($gpMsgFormat, $postID);
       if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = $options['gpPass'];                
-      $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";}
-      $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if ($src!='') $lnk['img'] = $src;                                     
+      $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+      $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
       if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
   }
 }
 // Add function to pubslih to FaceBook
 if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
-  function doPublishToFB($postID, $options){ require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];
+  function doPublishToFB($postID, $options){ require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];  $isPost = isset($_POST["SNAPEdit"]);
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
     
@@ -530,10 +576,10 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
     $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => site_url(),
        'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
     } else {$post = get_post($postID); 
-      $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];
-      $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];
+      if ($isPost) $fbMsgFormat = $_POST['SNAP_FormatFB']; else { $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];}
+      if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];}
       $msg = nsFormatMessage($fbMsgFormat, $postID);
-      if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}   // prr($post);              
+      if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];} 
        $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
       $postSubtitle = site_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
@@ -545,11 +591,11 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
 }
 // Add function to pubslih to Twitter
 if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW 
-  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
+  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();  $isPost = isset($_POST["SNAPEdit"]);
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;}
       else{
         $post = get_post($postID); //prr($post); die();
-        $t = get_post_meta($postID, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];      
+        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }     
         $msg = nsFormatMessage($twMsgFormat, $postID); // prr($msg);
       }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
@@ -570,7 +616,45 @@ function ns_add_settings_link($links, $file) {
     return $links;
 }
 
+function nsFindImgsInPost() { global $post, $posts; $postCnt = $post->post_content; $postImgs = array();
+  $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
+  foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} return $postImgs;
+}
+
+function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster"); if ((int)$options['nsOpenGraph'] != 1) return ""; $ogimgs = array();           
+  //## Add og:site_name, og:locale, og:url, og:title, og:description, og:type
+  echo '<meta property="og:site_name" content="' . get_bloginfo( 'name' ) . '">' . "\n"; echo '<meta property="og:locale" content="' . esc_attr( get_locale() ) . '">' . "\n";
+  if (is_home() || is_front_page()) {$ogurl = get_bloginfo( 'url' ); } else { $ogurl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];}
+  echo '<meta property="og:url" content="' . esc_url( apply_filters( 'ns_ogurl', $ogurl ) ) . '">' . "\n";
+  if (is_home() || is_front_page()) {$ogtitle = get_bloginfo( 'name' ); } else { $ogtitle = get_the_title();}
+  echo '<meta property="og:title" content="' . esc_attr( apply_filters( 'ns_ogtitle', $ogtitle ) ) . '">' . "\n";
+  if ( is_singular() ) {
+    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( get_the_excerpt( $post->ID ) ); } else { $ogdesc = str_replace( "\r\n", ' ' , substr( strip_tags( strip_shortcodes( $post->post_content ) ), 0, 160 ) ); }
+  } else { $ogdesc = get_bloginfo( 'description' ); }
+  echo '<meta property="og:description" content="' . esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) ) . '">' . "\n";        
+  $ogtype = is_single()?'article':'website'; echo '<meta property="og:type" content="' . esc_attr(apply_filters( 'ns_ogtype', $ogtype)).'">'."\n";                
+  //## Add og:image
+  if (!is_home()) {
+    if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
+      $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
+    } $imgsFromPost = nsFindImgsInPost();           
+    if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost); 
+  }        
+  //## Add default image to the endof the array
+  if (isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
+  //## Output og:image tags
+  if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'">'."\n";            
+}
+
 //## Actions and filters    
+function ns_custom_types_setup(){ $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator); 
+  foreach ($post_types  as $post_type ) {
+    add_action('future_to_publish_'.$post_type, 'nsPublishTo');
+    add_action('new_to_publish_'.$post_type, 'nsPublishTo');
+    add_action('draft_to_publish_'.$post_type, 'nsPublishTo');
+    add_action('pending_to_publish_'.$post_type, 'nsPublishTo');
+  }
+}    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     //## Add the admin menu
     add_action('admin_menu', 'NS_SNAutoPoster_ap');
@@ -588,12 +672,16 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('future_to_publish', 'nsPublishTo');
     add_action('new_to_publish', 'nsPublishTo');
     add_action('draft_to_publish', 'nsPublishTo');
+    add_action('pending_to_publish', 'nsPublishTo');   
+    
+    add_action( 'wp_loaded', 'ns_custom_types_setup' );        
     
     add_action('admin_head', 'jsPostToSNAP');    
     add_action('wp_ajax_rePostToGP', 'rePostToGP_ajax');
     add_action('wp_ajax_rePostToFB', 'rePostToFB_ajax');
     add_action('wp_ajax_rePostToTW', 'rePostToTW_ajax');
     
-add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
+    add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
+    add_action('wp_head','nsAddOGTags',50);
 }
 ?>
