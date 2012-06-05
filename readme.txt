@@ -95,6 +95,9 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. Google+ Post
 
 == Changelog ==
+= 1.7.1 =
+* Bug fix - Repost button fixed.
+
 = 1.7.0 =
 * New - Support for Wordpress "Custom Post Types".
 * New - Ability to add open graph tags without third party plugins.

@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.7.0
+Version: 1.7.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.7.0' );
+define( 'NextScripts_SNAP_Version' , '1.7.1' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -520,8 +520,8 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
 }
 
 if (!function_exists("nsPublishTo")) { //## Main Function to Post 
-  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster'); if(is_object($postArr)) $postID = $postArr->ID; $isPost = isset($_POST["SNAPEdit"]);
-  
+  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster'); 
+    if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["SNAPEdit"]);  
     if($postID==0) {
         if ($type=='GP') doPublishToGP($postID, $options);  if ($type=='FB') doPublishToFB($postID, $options);  if ($type=='TW') doPublishToTW($postID, $options); 
     } else { $post = get_post($postID);  $maxLen = 1000; 
@@ -557,7 +557,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
   function doPublishToGP($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $isPost = isset($_POST["SNAPEdit"]);
       if ($isPost) $gpMsgFormat = $_POST['SNAP_FormatGP']; else { $t = get_post_meta($postID, 'SNAP_FormatGP', true); $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat']; } 
       if ($isPost) $isAttachGP = $_POST['SNAP_AttachGP'];  else { $t = get_post_meta($postID, 'SNAP_AttachGP', true); $isAttachGP = $t!=''?$t:$options['gpAttch']; }  
-      $msg = nsFormatMessage($gpMsgFormat, $postID);
+      $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;
       if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = $options['gpPass'];                
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
