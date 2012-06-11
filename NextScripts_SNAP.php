@@ -4,15 +4,16 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.7.1
+Version: 1.7.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
+$gPlusRecoveryEmail = 'TTT';
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.7.1' );
+define( 'NextScripts_SNAP_Version' , '1.7.2' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -204,7 +205,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <div id="altFormat" style="<?php if ((int)$options['gpAttch'] == 1) echo "margin-left: 20px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</p>
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><input name="apGPMsgFrmt" id="apGPMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['gpMsgFormat']), 'NS_SNAutoPoster') ?>" />
             </div><br/>    
             
@@ -239,7 +240,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <div id="altFormat" style="<?php if ((int)$options['gpAttch'] == 1) echo "margin-left: 20px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</p>
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><input name="apFBMsgFrmt" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbMsgFormat']), 'NS_SNAutoPoster') ?>" />
             </div><br/>   
             <?php if ($options['fbPgID']!='') {?><div style="width:100%;"><strong>Your Facebook Page ID:</strong> <?php _e(apply_filters('format_to_edit',$options['fbPgID']), 'NS_SNAutoPoster') ?> </div><?php } ?>
@@ -295,13 +296,13 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="apTWAccTokenSec" id="apTWAccTokenSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['twAccTokenSec']), 'NS_SNAutoPoster') ?>" />
             
             <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</p>
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
               <input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
               
               <?php if($options['twAccTokenSec']!='') { ?>
             <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TW'); return false;">Submit Test Post to Twitter</a>         
+            <br/><br/><b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TW'); return false;">Submit Test Post to Twitter</a>  <br/><br/>
             <?php }?>
             <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>  
             </div>
@@ -395,7 +396,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="SNAP_FormatGP" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
+                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 <?php } ?>
                 <!-- FB -->
                 <tr><th style="text-align:left;" colspan="2">FaceBook AutoPoster Options</th><td><?php //## Only show RePost button if the post is "published"
@@ -414,7 +415,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="SNAP_FormatFB" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
+                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 <?php } ?>
                 <!-- TW -->
                 <tr><th style="text-align:left;" colspan="2">Twitter AutoPoster Options</th><td><?php //## Only show RePost button if the post is "published"
@@ -431,7 +432,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><input value="<?php echo $twMsgFormat ?>" type="text" name="SNAP_FormatTW" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post.</td></tr>
+                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 <?php } ?>
             </table>
             </div></div></div>        <?php    
@@ -509,13 +510,14 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
   function nsFormatMessage($msg, $postID){  $post = get_post($postID); $msg = htmlspecialchars(stripcslashes($msg)); 
       if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}                    
       if (preg_match('%TITLE%', $msg)) { $title = $post->post_title; $msg = str_ireplace("%TITLE%", $title, $msg); }                    
+      if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
       if (preg_match('%TEXT%', $msg)) {       
         if ($post->post_excerpt!="") $excerpt = $post->post_excerpt; else $excerpt= nsTrnc(strip_tags(strip_shortcodes($post->post_content)), 300, " ", "...");     
         $msg = str_ireplace("%TEXT%", $excerpt, $msg);
       }     
       if (preg_match('%FULLTEXT%', $msg)) { $postContent = $post->post_content; $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
       if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
-      return $msg;      
+      return nsTrnc($msg, 996, " ", "...");
   }
 }
 
@@ -580,13 +582,14 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];}
       $msg = nsFormatMessage($fbMsgFormat, $postID);
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];} 
-       $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; 
+       $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = site_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
-    }
-    $ret = $facebook->api("/$page_id/feed","post", $mssg);  if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
+    }    
+    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (Exception $e) { echo 'Error:',  $e->getMessage(), "\n";}    
+    if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
   }
 }
 // Add function to pubslih to Twitter
