@@ -4,16 +4,15 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.7.2
+Version: 1.7.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
 $php_version = (int)phpversion();
-$gPlusRecoveryEmail = 'TTT';
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.7.2' );
+define( 'NextScripts_SNAP_Version' , '1.7.3' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -267,7 +266,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                     if ($user) {
                         try { $page_id = $options['fbPgID']; $page_info = $facebook->api("/$page_id?fields=access_token");
                             if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; }
-                        } catch (FacebookApiException $e) { error_log($e); $user = null;}
+                        } catch (NXS_FacebookApiException $e) { error_log($e); $user = null;}
                     }else echo "Please login to Facebook";                
                                                 
                  if ($user>0) $options['fbAppAuthUser'] = $user; update_option($this->dbOptionsName . $optionsAppend, $options);                            
@@ -473,8 +472,7 @@ if (!function_exists("jsPostToSNAP")) {
             jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
                 $('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
                 $('#results_ok_button').click(remove_results);
-            });
-            
+            });            
         }        
         function remove_results() { jQuery("#results_ok_button").unbind("click");jQuery("#test_results").remove();
             if (typeof document.body.style.maxHeight == "undefined") { jQuery("body","html").css({height: "auto", width: "auto"}); jQuery("html").css("overflow","");}
@@ -588,7 +586,7 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
     }    
-    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (Exception $e) { echo 'Error:',  $e->getMessage(), "\n";}    
+    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
     if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
   }
 }
@@ -633,7 +631,7 @@ function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster");
   echo '<meta property="og:title" content="' . esc_attr( apply_filters( 'ns_ogtitle', $ogtitle ) ) . '">' . "\n";
   if ( is_singular() ) {
     if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( get_the_excerpt( $post->ID ) ); } else { $ogdesc = str_replace( "\r\n", ' ' , substr( strip_tags( strip_shortcodes( $post->post_content ) ), 0, 160 ) ); }
-  } else { $ogdesc = get_bloginfo( 'description' ); }
+  } else { $ogdesc = get_bloginfo( 'description' ); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
   echo '<meta property="og:description" content="' . esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) ) . '">' . "\n";        
   $ogtype = is_single()?'article':'website'; echo '<meta property="og:type" content="' . esc_attr(apply_filters( 'ns_ogtype', $ogtype)).'">'."\n";                
   //## Add og:image
