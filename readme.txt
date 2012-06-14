@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, social networks, facebook, twitter, google plus
 Requires at least: 2.8
-Tested up to: 3.3.2
-Stable tag: 1.7.3
+Tested up to: 3.4
+Stable tag: 1.7.5
 License: GPLv2 or later
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
@@ -96,6 +96,13 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 
 == Changelog ==
+= 1.7.5 =
+* New/Improvement - %SURL% replacement tag - Shortens URL
+* Improvement - Wordpress 3.4 Compatibility
+* Improvement - Better handling of Twitter's "140 characters limit" 
+* Bug fix - Facebook posts to use Home URL instead of Site URL
+* Bug fix - Better error handling
+
 = 1.7.3 =
 * Bug fix - Some Facebook Authorization/Connection issues.
 

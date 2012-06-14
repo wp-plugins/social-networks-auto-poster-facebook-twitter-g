@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.7.3
+Version: 1.7.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.7.3' );
+define( 'NextScripts_SNAP_Version' , '1.7.5' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -256,9 +256,11 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php }
             
             if ( isset($_GET['code']) && $_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
-                $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$options['fbAppID'].'&redirect_uri='.urlencode(site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php').'&client_secret='.$options['fbAppSec'].'&code='.$at); prr($response);
+                $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$options['fbAppID'].'&redirect_uri='.urlencode(site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php').'&client_secret='.$options['fbAppSec'].'&code='.$at); 
+                if ((is_object($response) && isset($response->errors))) { prr($response); die();}
                 parse_str($response['body'], $params); $at = $params['access_token'];
                 $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$options['fbAppSec'].'&client_id='.$options['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at); 
+                if ((is_object($response) && isset($response->errors))) { prr($response); die();}
                 parse_str($response['body'], $params); $at = $params['access_token']; $options['fbAppAuthToken'] = $at; 
                 require_once ('apis/facebook.php'); echo "Using API";
                 $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true)); 
@@ -295,8 +297,9 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="apTWAccTokenSec" id="apTWAccTokenSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['twAccTokenSec']), 'NS_SNAutoPoster') ?>" />
             
             <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
+              
               <input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['twMsgFormat']), 'NS_SNAutoPoster') ?>" />
               
               <?php if($options['twAccTokenSec']!='') { ?>
@@ -507,7 +510,11 @@ function nsTrnc($string, $limit, $break=".", $pad="...") { if(strlen($string) <=
 if (!function_exists("nsFormatMessage")) { //## Format Message
   function nsFormatMessage($msg, $postID){  $post = get_post($postID); $msg = htmlspecialchars(stripcslashes($msg)); 
       if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}                    
+      if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID);   $response  = wp_remote_get('http://gd.is/gtq/'.$url); 
+        if ((is_array($response) && ($response['response']['code']=='200'))) $url = $response['body'];  $msg = str_ireplace("%SURL%", $url, $msg);
+      }                    
       if (preg_match('%TITLE%', $msg)) { $title = $post->post_title; $msg = str_ireplace("%TITLE%", $title, $msg); }                    
+      if (preg_match('%STITLE%', $msg)) { $title = $post->post_title;  $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
       if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
       if (preg_match('%TEXT%', $msg)) {       
         if ($post->post_excerpt!="") $excerpt = $post->post_excerpt; else $excerpt= nsTrnc(strip_tags(strip_shortcodes($post->post_content)), 300, " ", "...");     
@@ -570,20 +577,20 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
 if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
   function doPublishToFB($postID, $options){ require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];  $isPost = isset($_POST["SNAPEdit"]);
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
-    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();
     
     if ($postID=='0') {echo "Testing ... <br/><br/>"; 
-    $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => site_url(),
-       'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
+    $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
+       'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
     } else {$post = get_post($postID); 
       if ($isPost) $fbMsgFormat = $_POST['SNAP_FormatFB']; else { $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];}
       if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];}
       $msg = nsFormatMessage($fbMsgFormat, $postID);
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];} 
        $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; $dsc = nsTrnc($dsc, 900, ' ');
-      $postSubtitle = site_url();
+      $postSubtitle = home_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
-       'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => site_url())) );  
+       'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
     }    
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
@@ -592,12 +599,12 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
 }
 // Add function to pubslih to Twitter
 if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW 
-  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = site_url();  $isPost = isset($_POST["SNAPEdit"]);
+  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  $isPost = isset($_POST["SNAPEdit"]);
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;}
       else{
         $post = get_post($postID); //prr($post); die();
         if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }     
-        $msg = nsFormatMessage($twMsgFormat, $postID); // prr($msg);
+        $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
       }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
