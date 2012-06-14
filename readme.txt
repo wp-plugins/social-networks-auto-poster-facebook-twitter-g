@@ -2,7 +2,7 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, social networks, facebook, twitter, google plus
+Tags: automation, social networks, facebook, google, twitter, google plus, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks
 Requires at least: 2.8
 Tested up to: 3.4
 Stable tag: 1.7.5
