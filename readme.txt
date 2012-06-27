@@ -15,9 +15,13 @@ This plugin automatically publishes posts from your blog to your Facebook, Twitt
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, Tumblr, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 Supported Networks:
+
 Facebook
+
 Google+
+
 Twitter
+
 [Coming Soon] Pinterest
 [Coming Soon] Tumblr
 
