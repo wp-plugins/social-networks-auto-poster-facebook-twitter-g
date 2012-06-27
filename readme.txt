@@ -2,21 +2,28 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, social networks, facebook, google, twitter, google plus, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks
+Tags: automation, social networks, facebook, google, twitter, google plus, Pinterest, Tumblr, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 1.7.5
+Stable tag: 1.7.6
 License: GPLv2 or later
 
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
 == Description ==
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, and Google+ accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, Tumblr, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+
+Supported Networks:
+Facebook
+Google+
+Twitter
+[Coming Soon] Pinterest
+[Coming Soon] Tumblr
 
 == Installation ==
 
-You need to have accounts with Facebook, Google+ and Twitter.
+You need to have account with either Facebook, Tumblr, Google+, Pinterest, Twitter or all of them.
 
 See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
@@ -96,6 +103,12 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 
 == Changelog ==
+= 1.7.6 =
+* Improvement - Better Facebook Posts Formatiing 
+* Improvement - Better Google+ Posts Formatiing 
+* Improvement - Google+ Phone Verification support
+* Bug fix - Google+ "You are not authorized for this page" Error
+
 = 1.7.5 =
 * New/Improvement - %SURL% replacement tag - Shortens URL
 * Improvement - Wordpress 3.4 Compatibility

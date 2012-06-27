@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.7.5
+Version: 1.7.6
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -12,7 +12,7 @@ $php_version = (int)phpversion();
 if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) require realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php");
   elseif (file_exists(realpath(dirname( __FILE__ )."/apis/postToGooglePlus.php"))) require realpath(dirname( __FILE__ )."apis/postToGooglePlus.php");
     
-define( 'NextScripts_SNAP_Version' , '1.7.5' );
+define( 'NextScripts_SNAP_Version' , '1.7.6' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -517,10 +517,10 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
       if (preg_match('%STITLE%', $msg)) { $title = $post->post_title;  $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
       if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
       if (preg_match('%TEXT%', $msg)) {       
-        if ($post->post_excerpt!="") $excerpt = $post->post_excerpt; else $excerpt= nsTrnc(strip_tags(strip_shortcodes($post->post_content)), 300, " ", "...");     
+        if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', $post->post_content))), 300, " ", "...");     
         $msg = str_ireplace("%TEXT%", $excerpt, $msg);
       }     
-      if (preg_match('%FULLTEXT%', $msg)) { $postContent = $post->post_content; $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
+      if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', $post->post_content); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
       if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
       return nsTrnc($msg, 996, " ", "...");
   }
@@ -587,7 +587,7 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];}
       $msg = nsFormatMessage($fbMsgFormat, $postID);
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'full'); $src = $src[0];} 
-       $dsc = trim($post->post_excerpt); if ($dsc=='') $dsc = $post->post_content; $dsc = nsTrnc($dsc, 900, ' ');
+       $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content); $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = home_url();
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
@@ -624,7 +624,7 @@ function ns_add_settings_link($links, $file) {
     return $links;
 }
 
-function nsFindImgsInPost() { global $post, $posts; $postCnt = $post->post_content; $postImgs = array();
+function nsFindImgsInPost() { global $post, $posts; $postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} return $postImgs;
 }
@@ -637,7 +637,7 @@ function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster");
   if (is_home() || is_front_page()) {$ogtitle = get_bloginfo( 'name' ); } else { $ogtitle = get_the_title();}
   echo '<meta property="og:title" content="' . esc_attr( apply_filters( 'ns_ogtitle', $ogtitle ) ) . '">' . "\n";
   if ( is_singular() ) {
-    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( get_the_excerpt( $post->ID ) ); } else { $ogdesc = str_replace( "\r\n", ' ' , substr( strip_tags( strip_shortcodes( $post->post_content ) ), 0, 160 ) ); }
+    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( get_the_excerpt( $post->ID ) ); } else { $ogdesc = str_replace( "\r\n", ' ' , substr( strip_tags( strip_shortcodes( apply_filters('the_content', $post->post_content) ) ), 0, 160 ) ); }
   } else { $ogdesc = get_bloginfo( 'description' ); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
   echo '<meta property="og:description" content="' . esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) ) . '">' . "\n";        
   $ogtype = is_single()?'article':'website'; echo '<meta property="og:type" content="' . esc_attr(apply_filters( 'ns_ogtype', $ogtype)).'">'."\n";                
