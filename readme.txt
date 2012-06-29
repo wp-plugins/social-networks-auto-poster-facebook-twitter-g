@@ -8,6 +8,8 @@ Tested up to: 3.4.1
 Stable tag: 1.8.0
 License: GPLv2 or later
 
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest and Tumblr profiles and/or pages
+
 == Description ==
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
@@ -16,15 +18,15 @@ Social Networks Auto Poster can automatically publish nicely formatted announcem
 
 Supported Networks:
 
-Facebook - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
+**Facebook** - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
 
-Twitter - Autopost to your account.
+**Twitter** - Autopost to your account.
 
-Tumblr - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
+**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
 
-Google+ (with third party library) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
+**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
 
-Pinterest (with third party library) - Pin your blogpost's featured image to your Pinterest board.
+**Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
 
 ... more networks are coming soon ...
 
