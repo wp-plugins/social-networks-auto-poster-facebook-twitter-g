@@ -123,7 +123,7 @@ class NXS_tmhOAuth {
    * @return void
    */
   private function create_timestamp() {
-    $this->config['timestamp'] = ($this->config['force_timestamp'] == false ? time() : $this->config['timestamp']);
+    $this->config['timestamp'] = ($this->config['force_timestamp'] == false ? time() : $this->config['timestamp']); //echo "#### ".$this->config['timestamp'];// prr($this->config);
   }
 
   /**

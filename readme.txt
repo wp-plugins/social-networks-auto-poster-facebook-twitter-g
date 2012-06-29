@@ -2,28 +2,31 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, social networks, facebook, google, twitter, google plus, Pinterest, Tumblr, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks
+Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image
 Requires at least: 2.8
-Tested up to: 3.4
-Stable tag: 1.7.6
+Tested up to: 3.4.1
+Stable tag: 1.8.0
 License: GPLv2 or later
 
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
-
 == Description ==
+
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, Tumblr, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 Supported Networks:
 
-Facebook
+Facebook - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
 
-Google+
+Twitter - Autopost to your account.
 
-Twitter
+Tumblr - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
 
-[Coming Soon] Pinterest
-[Coming Soon] Tumblr
+Google+ (with third party library) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
+
+Pinterest (with third party library) - Pin your blogpost's featured image to your Pinterest board.
+
+... more networks are coming soon ...
 
 == Installation ==
 
@@ -107,9 +110,19 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 
 == Changelog ==
+
+= 1.8.0 =
+* New - Pinterest Support
+* New - Tumblr Support
+* New/Improvement - %IMG% replacement tag - Inserts Featured Image URL
+* Improvement - Better Image Handling  
+* Improvement - Better Facebook Authorization
+* Improvement - Google+ Interactive Phone and Email Account Verification Support
+* Bug fix - Google+ "You are not authorized for this page" Error
+
 = 1.7.6 =
-* Improvement - Better Facebook Posts Formatiing 
-* Improvement - Better Google+ Posts Formatiing 
+* Improvement - Better Facebook Posts Formatting  
+* Improvement - Better Google+ Posts Formatting  
 * Improvement - Google+ Phone Verification support
 * Bug fix - Google+ "You are not authorized for this page" Error
 
