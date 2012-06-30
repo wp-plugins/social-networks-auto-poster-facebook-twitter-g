@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.8.0
+Version: 1.8.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,8 +14,9 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
 
+//  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.8.0' );
+define( 'NextScripts_SNAP_Version' , '1.8.2' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -434,7 +435,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trOAuthToken'], $options['trOAuthTokenSecret']);
               $options['trAccessTocken'] = $tum_oauth->getAccessToken($_REQUEST['oauth_verifier']); // prr($_GET);  prr($_REQUEST);   prr($options['trAccessTocken']);         
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); update_option($this->dbOptionsName, $options);
-              $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info');// prr($userinfo);
+              $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info');// prr($userinfo); die();
               if (is_array($userinfo->response->user->blogs)) {
                 foreach ($userinfo->response->user->blogs as $blog){
                   if (stripos($blog->url, $options['trPgID'])!==false) {  echo '<script type="text/javascript">window.location = "'.site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php"</script>'; break;  die();}
@@ -445,8 +446,8 @@ if (!class_exists("NS_SNAutoPoster")) {
             if ( isset($_GET['auth']) && $_GET['auth']=='trax'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']);
               $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info'); prr($userinfo); echo $options['trPgID'];
-              $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/okapy.tumblr.com/post", array('type'=>'text', 'body'=>'This is a test post')); prr($postinfo);
- 
+              $trURL = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1); 
+              $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'body'=>'This is a test post')); prr($postinfo); 
             }
               
               
@@ -570,7 +571,23 @@ if (!class_exists("NS_SNAutoPoster")) {
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input value="1" type="checkbox" name="SNAPincludePN" <?php if ((int)$doPN == 1) echo "checked"; ?> /></th>
                 <td><b><?php _e('Publish this Post to Pinterest', 'NS_SPAP'); ?></b></td>
-               </tr>                
+                </tr> 
+                
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Select Board</th>
+                <td><select name="apPNBoard" id="apPNBoard">
+            <?php if ($options['pnBoardsList']!=''){ $gPNBoards = $options['pnBoardsList']; if ($options['pnBoard']!='') $gPNBoards = str_replace($options['pnBoard'].'"', $options['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
+              <option value="0">None(Click above to retreive your boards)</option>
+            <?php } ?>
+            </select></td>
+                </tr> 
+                
+                
+                
+            
+            
+                
+                
+                              
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $pnMsgFormat ?>" type="text" name="SNAP_FormatPN" size="60px"/></td></tr>
                 
@@ -793,10 +810,10 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       if ($isPost) $gpMsgFormat = $_POST['SNAP_FormatGP']; else { $t = get_post_meta($postID, 'SNAP_FormatGP', true); $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat']; } 
       if ($isPost) $isAttachGP = $_POST['SNAP_AttachGP'];  else { $t = get_post_meta($postID, 'SNAP_AttachGP', true); $isAttachGP = $t!=''?$t:$options['gpAttch']; }  
       $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;
-      if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $src = $src[0];}      
-      $email = $options['gpUName'];  $pass = $options['gpPass'];                
+      if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
+      $email = $options['gpUName'];  $pass = $options['gpPass'];     
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
-      $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url); if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
+      $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
       if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
   }
@@ -851,10 +868,11 @@ if (!function_exists("doPublishToTR")) { //## Second Function to Post to TR
       $msgT = nsFormatMessage($trMsgTFormat, $postID);  
     } 
     require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
-    $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); 
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/okapy.tumblr.com/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'source'=>get_permalink($postID)));
-    $code = $postinfo->meta->status;// prr($msg); prr($postinfo); echo "VVVV"; die("|====");
-    if ($code == 201) { if ($postID=='0') { echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } } else { /* prr($postinfo); */ }      
+    $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);
+    $trURL = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1); 
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'source'=>get_permalink($postID)));
+    $code = $postinfo->meta->status; //prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
+    if ($code == 201) { if ($postID=='0') { echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } } else {  prr($postinfo);  }      
     return $code;
   }
 }
@@ -863,11 +881,13 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; }
     else{        
       if ($isPost) $pnMsgFormat = $_POST['SNAP_FormatPN']; else { $t = get_post_meta($postID, 'SNAP_FormatPN', true); $pnMsgFormat = $t!=''?$t:$options['pnMsgFormat']; } 
+      if ($isPost) $boardID = $_POST['apPNBoard']; else { $t = get_post_meta($postID, 'apPNBoard', true); $boardID = $t!=''?$t:$options['pnBoard']; } 
       $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID);
     } 
-    $email = $options['pnUName'];  $pass = $options['pnPass']; $boardID =  $options['pnBoard'];
+    $email = $options['pnUName'];  $pass = $options['pnPass'];// prr($boardID); prr($_POST); die();
     
     if ($imgURL=='') if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $imgURL = $imgURL[0];} 
+    if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
     if ($imgURL=='') $imgURL = $options['pnDefImg']; if ($imgURL=='') $imgURL = $options['ogImgDef']; // prr($msg);
     
     $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
@@ -887,7 +907,7 @@ function ns_add_settings_link($links, $file) {
     return $links;
 }
 
-function nsFindImgsInPost() { global $post, $posts; $postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
+function nsFindImgsInPost($post) {$postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} return $postImgs;
 }
@@ -908,7 +928,7 @@ function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster");
   if (!is_home()) {
     if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
       $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
-    } $imgsFromPost = nsFindImgsInPost();           
+    } $imgsFromPost = nsFindImgsInPost($post);           
     if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost); 
   }        
   //## Add default image to the endof the array
