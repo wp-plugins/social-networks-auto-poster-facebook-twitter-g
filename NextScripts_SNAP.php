@@ -896,7 +896,7 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
   }
 }
 
-    // add settings link to plugins list
+    // Add settings link to plugins list
 function ns_add_settings_link($links, $file) {
     static $this_plugin;
     if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
