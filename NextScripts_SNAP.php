@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.8.2
+Version: 1.8.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -16,7 +16,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
 
 //  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.8.2' );
+define( 'NextScripts_SNAP_Version' , '1.8.3' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -743,8 +743,8 @@ function nsTrnc($string, $limit, $break=".", $pad="...") { if(strlen($string) <=
   if(false !== ($bp = strpos($string, $break, $limit))) { if($bp < strlen($string) - 1)  $string = substr($string, 0, $bp).$pad;} return $string;
 }                           
 
-if (!function_exists("nsFormatMessage")) { //## Format Message
-  function nsFormatMessage($msg, $postID){  $post = get_post($postID); $msg = stripcslashes($msg); // $msg = htmlspecialchars(stripcslashes($msg)); 
+if (!function_exists("nsFormatMessage")) {//## Format Message
+  function nsFormatMessage($msg, $postID){   global $ShownAds; $post = get_post($postID); $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
       if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}                    
       if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID);   $response  = wp_remote_get('http://gd.is/gtq/'.$url); 
         if ((is_array($response) && ($response['response']['code']=='200'))) $url = $response['body'];  $msg = str_ireplace("%SURL%", $url, $msg);
@@ -755,12 +755,13 @@ if (!function_exists("nsFormatMessage")) { //## Format Message
       if (preg_match('%TITLE%', $msg)) { $title = $post->post_title; $msg = str_ireplace("%TITLE%", $title, $msg); }                    
       if (preg_match('%STITLE%', $msg)) { $title = $post->post_title;  $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
       if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
-      if (preg_match('%TEXT%', $msg)) {       
+      if (preg_match('%TEXT%', $msg)) {      
         if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', $post->post_content))), 300, " ", "...");     
         $msg = str_ireplace("%TEXT%", $excerpt, $msg);
       }     
       if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', $post->post_content); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
       if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
+      if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
       return nsTrnc($msg, 996, " ", "...");
   }
 }
@@ -820,7 +821,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
 }
 // Add function to pubslih to FaceBook
 if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
-  function doPublishToFB($postID, $options){ require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];  $isPost = isset($_POST["SNAPEdit"]);
+  function doPublishToFB($postID, $options){ global $ShownAds; require_once ('apis/facebook.php'); $page_id = $options['fbPgID'];  $isPost = isset($_POST["SNAPEdit"]); if (isset($ShownAds)) $ShownAdsL = $ShownAds;
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();
     
@@ -838,6 +839,7 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
     }  //  prr($mssg);
+    if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
     if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
   }
@@ -896,7 +898,7 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
   }
 }
 
-    // Add settings link to plugins list
+    // add settings link to plugins list
 function ns_add_settings_link($links, $file) {
     static $this_plugin;
     if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
@@ -907,12 +909,12 @@ function ns_add_settings_link($links, $file) {
     return $links;
 }
 
-function nsFindImgsInPost($post) {$postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
+function nsFindImgsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
-  foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} return $postImgs;
+  foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
 }
 
-function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster"); if ((int)$options['nsOpenGraph'] != 1) return ""; $ogimgs = array();           
+function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNAutoPoster"); if ((int)$options['nsOpenGraph'] != 1) return ""; $ogimgs = array();     if (isset($ShownAds)) $ShownAdsL = $ShownAds; 
   //## Add og:site_name, og:locale, og:url, og:title, og:description, og:type
   echo '<meta property="og:site_name" content="' . get_bloginfo( 'name' ) . '">' . "\n"; echo '<meta property="og:locale" content="' . esc_attr( get_locale() ) . '">' . "\n";
   if (is_home() || is_front_page()) {$ogurl = get_bloginfo( 'url' ); } else { $ogurl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];}
@@ -934,7 +936,7 @@ function nsAddOGTags() { global $post; $options = get_option("NS_SNAutoPoster");
   //## Add default image to the endof the array
   if (isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
   //## Output og:image tags
-  if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'">'."\n";            
+  if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'">'."\n";       if (isset($ShownAds)) $ShownAds = $ShownAdsL;          
 }
 
 //## Actions and filters    
