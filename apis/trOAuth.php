@@ -209,15 +209,13 @@ $headers[] = 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3';
      $options = array(
         CURLOPT_RETURNTRANSFER => true,     // return web page
         CURLOPT_HEADER         => false,    // don't return headers
-        CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+//        CURLOPT_FOLLOWLOCATION => true,     // follow redirects
         CURLOPT_ENCODING       => "",       // handle all encodings
-        CURLOPT_COOKIEJAR      => $cookiejar,
-        CURLOPT_COOKIEFILE     => $cookiejar,
         CURLOPT_USERAGENT      => "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; InfoPath.3; .NET4.0E; .NET CLR 1.1.4322)",
         CURLOPT_AUTOREFERER    => true,     // set referer on redirect
         CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
         CURLOPT_TIMEOUT        => 120,      // timeout on response
-        CURLOPT_MAXREDIRS      => $redirs,       // stop after 10 redirects
+//        CURLOPT_MAXREDIRS      => $redirs,       // stop after 10 redirects
         CURLOPT_REFERER        => $ref,       // stop after 10 redirects        
         CURLINFO_HEADER_OUT    => true
     ); 
