@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.8.5
+Version: 1.8.6
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -16,7 +16,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
 
 //  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.8.5' );
+define( 'NextScripts_SNAP_Version' , '1.8.6' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -84,6 +84,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['apFBAppID']))   $options['fbAppID'] = $_POST['apFBAppID'];                                
                 if (isset($_POST['apFBAppSec']))  $options['fbAppSec'] = $_POST['apFBAppSec'];        
                 if (isset($_POST['apFBAttch']))   $options['fbAttch'] = $_POST['apFBAttch'];    else $options['apFBAttch'] = 0;                                    
+                if (isset($_POST['apFBAttchAsVid']))   $options['fbAttchAsVid'] = $_POST['apFBAttchAsVid'];    else $options['apFBAttchAsVid'] = 0;                                    
                 if (isset($_POST['apFBMsgFrmt'])) $options['fbMsgFormat'] = $_POST['apFBMsgFrmt'];                                
                 
                 if (isset($_POST['apTWURL']))        $options['twURL'] = $_POST['apTWURL'];
@@ -322,8 +323,11 @@ if (!class_exists("NS_SNAutoPoster")) {
             <p style="margin: 0px;"><input value="1"  id="apFBAttch" onchange="doShowHideAltFormat();" type="checkbox" name="apFBAttch"  <?php if ((int)$options['fbAttch'] == 1) echo "checked"; ?> /> 
               <strong>Publish Posts to Facebook as an Attachement</strong>                                 
             </p>
+             <p style="margin: 10px; "><input value="1"  id="apFBAttchAsVid" type="checkbox" name="apFBAttchAsVid"  <?php if ((int)$options['fbAttchAsVid'] == 1) echo "checked"; ?> /> 
+              <strong>If post has video use it for attachment.</strong> If post has video (youtube only supported at this time) this video will be used for attachment instead of featured image.
+            </p>
             
-            <div id="altFormat" style="<?php if ((int)$options['fbAttch'] == 1) echo "margin-left: 20px;"; ?> ">
+            <div id="altFormat" style="<?php if ((int)$options['fbAttch'] == 1) echo "margin-left: 10px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['fbAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><input name="apFBMsgFrmt" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fbMsgFormat']), 'NS_SNAutoPoster') ?>" />
@@ -399,7 +403,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <h3 style="font-size: 17px;">Blogger Settings</h3>               
                        
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoBG" name="apDoBG" onchange="doShowHideBlocks('BG');" type="checkbox" <?php if ((int)$options['doBG'] == 1) echo "checked"; $nxsOne = "?g=1" ?> /> 
-              <strong>Auto-publish your Posts to your Pinterest Board</strong>                                 
+              <strong>Auto-publish your Posts to your Blogger/Blogspot Blog</strong>                                 
             </p>
             <div id="doBGDiv" style="margin-left: 10px;<?php if ((int)$options['doBG'] != 1) echo "display:none"; ?> ">
                   
@@ -812,7 +816,7 @@ if (!function_exists("rePostToPN_ajax")) {
 if (!function_exists("rePostToBG_ajax")) {
   function rePostToBG_ajax() { check_ajax_referer('rePostToBG'); $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster'); 
     $twpo =  get_post_meta($postID, 'snapBG', true); $twpo =  maybe_unserialize($twpo); if (is_array($twpo)) $options['bgMsgFormat'] = $twpo['SNAPformat']; 
-    $result = doPublishToBG($postID, $options);  if ($result == 200) die("Successfully sent your post to Pinterest."); else die($result);
+    $result = doPublishToBG($postID, $options);  if ($result == 200) die("Successfully sent your post to Blogger."); else die($result);
   }
 } 
 
@@ -838,16 +842,17 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     $headers[] = 'Connection: Keep-Alive'; $headers[] = 'Accept-Language: en-us'; 
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)");
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,10); curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1);
     $result = curl_exec($ch); $resultArray = curl_getinfo($ch); 
-    curl_close($ch); $arr = explode("=",$result); $token = $arr[3];  return $token;
+    curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
 if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {    
-    $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $text);    $text = preg_replace('/<!--(.*)-->/Uis', "", $text);  // prr($text); 
+    $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $text);    $text = preg_replace('/<!--(.*)-->/Uis', "", $text);  $text = str_ireplace('allowfullscreen','', $text); 
     if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML($text);  $text = $doc->saveHTML(); $text = CutFromTo($text, '<body>', '</body>');
       $text = preg_replace('/<br(.*?)\/?>/','<br$1/>',$text);   $text = preg_replace('/<img(.*?)\/?>/','<img$1/>',$text);
       require_once ('apis/htmlNumTable.php');  $text = strtr($text, $HTML401NamedToNumeric);
-    }    prr($text); 
+    }  //  prr($text); 
     $postText = '<entry xmlns="http://www.w3.org/2005/Atom"><title type="text">'.htmlentities($title).'</title><content type="xhtml">'.$text.'</content></entry>';
     $len = strlen($entry); $ch = curl_init("https://www.blogger.com/feeds/$blogID/posts/default"); 
     $headers = array("Content-type: application/atom+xml", "Content-Length: ".strlen($postText), "Authorization: GoogleLogin auth=".$auth, $postText);
@@ -947,13 +952,15 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
     } else {$post = get_post($postID); 
       if ($isPost) $fbMsgFormat = $_POST['SNAP_FormatFB']; else { $t = get_post_meta($postID, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$options['fbMsgFormat'];}
       if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];}
+      $isAttachVidFB = $t!=''?$t:$options['fbAttchAsVid'];
       $msg = nsFormatMessage($fbMsgFormat, $postID);
       if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];} 
        $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content); $dsc = nsTrnc($dsc, 900, ' ');
-      $postSubtitle = home_url(); $dsc = strip_tags($dsc);
+      $postSubtitle = home_url(); $dsc = strip_tags($dsc);  $msg = strip_tags($msg);
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
        'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
       if (trim($src)!='') $mssg['picture'] = $src;
+      if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
     }  //  prr($mssg);
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
@@ -967,10 +974,6 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       else{
         $post = get_post($postID); //prr($post); die();
         if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }    
-        
-        $md = get_post_meta_all($postID); prr($md);
-         prr($twMsgFormat); echo"####"; prr(get_post_meta($postID, 'SNAP_FormatTW', true)); echo"^^^^^";
-         
         $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
       }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); $msg = nsTrnc($msg, 140);  
@@ -1032,8 +1035,8 @@ if (!function_exists("doPublishToBG")) { //## Second Function to Post to PN
     $email = $options['bgUName'];  $pass = $options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs);}
-    if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass);   $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
-      else {$auth = nsBloggerGetAuth($email, $pass);  $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
+    if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
+      else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Blooger/Blogpost Page';
   }
 }
@@ -1052,6 +1055,10 @@ function ns_add_settings_link($links, $file) {
 function nsFindImgsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
+}
+function nsFindVidsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postVids = array();
+  $output = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $postCnt, $matches ); if ($output === false){return false;}
+  foreach ($matches[1] as $match) {  $match = trim($match); $postVids[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
 }
 
 function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNAutoPoster"); if ((int)$options['nsOpenGraph'] != 1) return ""; $ogimgs = array();     if (isset($ShownAds)) $ShownAdsL = $ShownAds; 
