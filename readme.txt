@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 1.8.4
+Stable tag: 1.8.5
 License: GPLv2 or later
 
 This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest, Blogger and Tumblr profiles and/or pages
@@ -22,7 +22,7 @@ Supported Networks:
 
 **Twitter** - Autopost to your account.
 
-**Blogger** - Autopost to your Blog.
+**Blogger/Blogspot** - Autopost to your Blog.
 
 **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
 
@@ -113,6 +113,11 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. Google+ Post
 
 == Changelog ==
+
+= 1.8.5 =
+* Bug fix - Format settings disappeared after update post
+* Bug fix - Twitter 140 characters limit when used with %TEXT% and %FULLTEXT%
+
 = 1.8.4 =
 * New - Blogger Support
 * New/Improvement - Post to Tumblr and Blogger/Blogspot could be posted with tags

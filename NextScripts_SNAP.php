@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.8.4
+Version: 1.8.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -16,7 +16,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
 
 //  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.8.4' );
+define( 'NextScripts_SNAP_Version' , '1.8.5' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 
 //## Define class
@@ -550,19 +550,19 @@ if (!class_exists("NS_SNAutoPoster")) {
                 
                 $SNAP_AttachTR = $_POST["SNAP_AttachTR"];  $SNAP_AttachPN = $_POST["SNAP_AttachPN"];  
                 $SNAP_FormatGP = $_POST["SNAP_FormatGP"];  $SNAP_FormatFB = $_POST["SNAP_FormatFB"];  $SNAP_FormatTW = $_POST["SNAP_FormatTW"]; // prr($_POST);
-                $SNAP_FormatBG = $_POST["SNAP_FormatBG"];  $SNAP_FormatTBG = $_POST["SNAP_FormatTBG"];
+                $SNAP_FormatBG = $_POST["SNAP_FormatBG"];  $SNAP_FormatTBG = $_POST["SNAP_FormatTBG"];                
+                $SNAP_FormatTR = $_POST["SNAP_FormatTR"];  $SNAP_FormatTTR = $_POST["SNAP_FormatTTR"];                
                 
-                delete_post_meta($id, 'SNAP_AttachTR');  delete_post_meta($id, 'SNAP_AttachPN');  
-                delete_post_meta($id, 'SNAP_FormatGP'); delete_post_meta($id, 'SNAP_FormatFB'); delete_post_meta($id, 'SNAP_FormatTW');
+                if (isset($SNAP_AttachTR) && !empty($SNAP_AttachTR)) update_post_meta($id, 'SNAP_AttachTR', $SNAP_AttachTR);                
+                if (isset($SNAP_AttachPN) && !empty($SNAP_AttachPN)) update_post_meta($id, 'SNAP_AttachPN', $SNAP_AttachPN);
                 
-                if (isset($SNAP_AttachTR) && !empty($SNAP_AttachTR)) add_post_meta($id, 'SNAP_AttachTR', $SNAP_AttachTR);                
-                if (isset($SNAP_AttachPN) && !empty($SNAP_AttachPN)) add_post_meta($id, 'SNAP_AttachPN', $SNAP_AttachPN);
-                
-                if (isset($SNAP_FormatGP) && !empty($SNAP_FormatGP)) add_post_meta($id, 'SNAP_FormatGP', $SNAP_FormatGP);                
-                if (isset($SNAP_FormatFB) && !empty($SNAP_FormatFB)) add_post_meta($id, 'SNAP_FormatFB', $SNAP_FormatFB);
-                if (isset($SNAP_FormatTW) && !empty($SNAP_FormatTW)) add_post_meta($id, 'SNAP_FormatTW', $SNAP_FormatTW); 
-                if (isset($SNAP_FormatBG) && !empty($SNAP_FormatBG)) add_post_meta($id, 'SNAP_FormatBG', $SNAP_FormatBG); 
-                if (isset($SNAP_FormatTBG) && !empty($SNAP_FormatTBG)) add_post_meta($id, 'SNAP_FormatTBG', $SNAP_FormatTBG); 
+                if (isset($SNAP_FormatGP) && !empty($SNAP_FormatGP)) update_post_meta($id, 'SNAP_FormatGP', $SNAP_FormatGP);                
+                if (isset($SNAP_FormatFB) && !empty($SNAP_FormatFB)) update_post_meta($id, 'SNAP_FormatFB', $SNAP_FormatFB);
+                if (isset($SNAP_FormatTW) && !empty($SNAP_FormatTW)) update_post_meta($id, 'SNAP_FormatTW', $SNAP_FormatTW); 
+                if (isset($SNAP_FormatTR) && !empty($SNAP_FormatTR)) update_post_meta($id, 'SNAP_FormatTR', $SNAP_FormatTR); 
+                if (isset($SNAP_FormatTTR) && !empty($SNAP_FormatTTR)) update_post_meta($id, 'SNAP_FormatTTR', $SNAP_FormatTTR); 
+                if (isset($SNAP_FormatBG) && !empty($SNAP_FormatBG)) update_post_meta($id, 'SNAP_FormatBG', $SNAP_FormatBG); 
+                if (isset($SNAP_FormatTBG) && !empty($SNAP_FormatTBG)) update_post_meta($id, 'SNAP_FormatTBG', $SNAP_FormatTBG); 
                 
             }
         }
@@ -824,9 +824,13 @@ if (!function_exists("nsGetBoards_ajax")) {
 }               
 
 
-function nsTrnc($string, $limit, $break=".", $pad="...") { if(strlen($string) <= $limit) return $string; 
-  if(false !== ($bp = strpos($string, $break, $limit))) { if($bp < strlen($string) - 1)  $string = substr($string, 0, $bp).$pad;} return $string;
-}                           
+function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(strlen($string) <= $limit) return $string; $string = substr($string, 0, $limit-strlen($pad)); 
+  $brLoc = strripos($string, $break);  if ($brLoc===false) return $string.$pad; else return substr($string, 0, $brLoc).$pad; 
+}                 
+
+function get_post_meta_all($post_id){ global $wpdb; $data = array(); $wpdb->query("SELECT `meta_key`, `meta_value` FROM $wpdb->postmeta WHERE `post_id` = $post_id");
+    foreach($wpdb->last_result as $k => $v){ $data[$v->meta_key] =   $v->meta_value; }; return $data;
+}          
 
 if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pass) {
     $ch = curl_init("https://www.google.com/accounts/ClientLogin?Email=$email&Passwd=$pass&service=blogger&accountType=GOOGLE");    
@@ -962,10 +966,14 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle." - ".rand(1, 155);}
       else{
         $post = get_post($postID); //prr($post); die();
-        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }     
+        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }    
+        
+        $md = get_post_meta_all($postID); prr($md);
+         prr($twMsgFormat); echo"####"; prr(get_post_meta($postID, 'SNAP_FormatTW', true)); echo"^^^^^";
+         
         $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
       }
-      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); 
+      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); $msg = nsTrnc($msg, 140);  
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));
       if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
