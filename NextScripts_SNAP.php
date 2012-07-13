@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.8.7
+Version: 1.9.0
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -16,9 +16,17 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
 
 //  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.8.7' );
+define( 'NextScripts_SNAP_Version' , '1.9.0' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
+
+function nsx_doEncode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string);$keyLen = strlen($key);
+  for ($i = 0; $i < $strLen; $i++) { $ordStr = ord(substr($string,$i,1)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= strrev(base_convert(dechex($ordStr + $ordKey),16,36));} return $hash;
+}
+function nsx_doDecode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string); $keyLen = strlen($key); 
+  for ($i = 0; $i < $strLen; $i+=2) { $ordStr = hexdec(base_convert(strrev(substr($string,$i,2)),36,16)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= chr($ordStr - $ordKey);} return $hash;
+}
+function nsx_stripSlashes(&$value){$value = stripslashes($value);}
 
 //## Define class
 if (!class_exists("NS_SNAutoPoster")) {
@@ -33,7 +41,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         //## Options loader function
         function getAPOptions($user_login = "") {
             //## Some Default Values
-            $options = array('fbAttch'=>1,'gpAttch'=>1, 'nsOpenGraph'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'fbMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%');
+            $options = array('fbAttch'=>1, 'gpAttch'=>1, 'liAttch'=>1, 'nsOpenGraph'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'fbMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%', 'liMsgFormat'=>'New post has been published on %SITENAME%');
             //## User's Options?
             if (empty($user_login))  $optionsAppend = ""; else  $optionsAppend = "_" . $user_login;
             //## Get values from the WP options table in the database, re-assign if found
@@ -49,32 +57,46 @@ if (!class_exists("NS_SNAutoPoster")) {
             //## Get the user options
             $options = $this->getAPOptions($user_login);    
             if (isset($_POST['update_NS_SNAutoPoster_settings'])) { 
+                
+                if (get_magic_quotes_gpc()) {array_walk_recursive($_POST, 'nsx_stripSlashes');}
+                
                 if (isset($_POST['apDoGP']))   $options['doGP'] = $_POST['apDoGP']; else $options['doGP'] = 0; 
                 if (isset($_POST['apDoFB']))   $options['doFB'] = $_POST['apDoFB']; else $options['doFB'] = 0;
                 if (isset($_POST['apDoTW']))   $options['doTW'] = $_POST['apDoTW']; else $options['doTW'] = 0;
                 if (isset($_POST['apDoTR']))   $options['doTR'] = $_POST['apDoTR']; else $options['doTR'] = 0;
                 if (isset($_POST['apDoPN']))   $options['doPN'] = $_POST['apDoPN']; else $options['doPN'] = 0;
                 if (isset($_POST['apDoBG']))   $options['doBG'] = $_POST['apDoBG']; else $options['doBG'] = 0;
+                if (isset($_POST['apDoLI']))   $options['doLI'] = $_POST['apDoLI']; else $options['doLI'] = 0;
                 
                 
                 if (isset($_POST['apGPUName']))   $options['gpUName'] = $_POST['apGPUName'];
-                if (isset($_POST['apGPPass']))    $options['gpPass'] = $_POST['apGPPass'];                                
+                if (isset($_POST['apGPPass']))    $options['gpPass'] = 'n5g9a'.nsx_doEncode($_POST['apGPPass']); else $options['gpPass'] = '';  
                 if (isset($_POST['apGPPage']))    $options['gpPageID'] = $_POST['apGPPage'];                
                 if (isset($_POST['apGPAttch']))   $options['gpAttch'] = $_POST['apGPAttch'];  else $options['gpAttch'] = 0;                               
                 if (isset($_POST['apGPMsgFrmt'])) $options['gpMsgFormat'] = $_POST['apGPMsgFrmt'];     
                 
                 if (isset($_POST['apPNUName']))   $options['pnUName'] = $_POST['apPNUName'];
-                if (isset($_POST['apPNPass']))    $options['pnPass'] = $_POST['apPNPass'];                                
+                if (isset($_POST['apPNPass']))    $options['pnPass'] = 'g9c1a'.nsx_doEncode($_POST['apPNPass']); else $options['pnPass'] = '';
                 if (isset($_POST['apPNBoard']))   $options['pnBoard'] = $_POST['apPNBoard'];                
                 if (isset($_POST['apPNDefImg']))  $options['pnDefImg'] = $_POST['apPNDefImg'];
                 if (isset($_POST['apPNMsgFrmt'])) $options['pnMsgFormat'] = $_POST['apPNMsgFrmt'];     
                 
                 if (isset($_POST['apBGUName']))   $options['bgUName'] = $_POST['apBGUName'];
-                if (isset($_POST['apBGPass']))    $options['bgPass'] = $_POST['apBGPass'];                                
+                if (isset($_POST['apBGPass']))    $options['bgPass'] = 'b4d7s'.nsx_doEncode($_POST['apBGPass']); else $options['bgPass'] = '';
                 if (isset($_POST['apBGBlogID']))   $options['bgBlogID'] = $_POST['apBGBlogID'];                
-                if (isset($_POST['apBGMsgFrmt'])) $options['bgMsgFormat'] = $_POST['apBGMsgFrmt'];   
+                if (isset($_POST['apBGMsgFrmt'])) $options['bgMsgFormat'] = $_POST['apBGMsgFrmt'];                   
                 if (isset($_POST['apBGMsgTFrmt']))    $options['bgMsgTFormat'] = $_POST['apBGMsgTFrmt'];         
                 if (isset($_POST['bgInclTags']))    $options['bgInclTags'] = $_POST['bgInclTags'];  else $options['bgInclTags'] = 0;        
+                
+                if (isset($_POST['apLIUName']))   $options['liUName'] = $_POST['apLIUName'];
+                if (isset($_POST['apLIPass']))    $options['liPass'] = 'c59sa'.nsx_doEncode($_POST['apLIPass']); else $options['liPass'] = '';
+                if (isset($_POST['apLICompID']))   $options['liCompID'] = $_POST['apLICompID'];    
+                
+                if (isset($_POST['apLIAttch']))   $options['liAttch'] = $_POST['apLIAttch'];    else $options['apLIAttch'] = 0;                                                
+                if (isset($_POST['apLIMsgFrmt'])) $options['liMsgFormat'] = $_POST['apLIMsgFrmt']; 
+                
+                if (isset($_POST['apLIAPIKey']))   $options['liAPIKey'] = $_POST['apLIAPIKey'];
+                if (isset($_POST['apLIAPISec']))   $options['liAPISec'] = $_POST['apLIAPISec'];
                 
                 
                 if (isset($_POST['apFBURL']))  {   $options['fbURL'] = $_POST['apFBURL'];
@@ -111,7 +133,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
                 if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph'];  else $options['nsOpenGraph'] = 0;                               
                 
-                
+                //prr($options); die();
                 
                 if ($emptyUser) { //## then we're dealing with the main Admin options
                     $options[$this->NextScripts_GPAutoPosterAllUsers] = $_POST['NS_SNAutoPosterallusers'];
@@ -168,6 +190,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               if (nt=='TR') { var data = { action: 'rePostToTR', id: 0, _wpnonce: jQuery('input#rePostToTR_wpnonce').val()}; callAjSNAP(data, 'Tumblr'); }
               if (nt=='PN') { var data = { action: 'rePostToPN', id: 0, _wpnonce: jQuery('input#rePostToPN_wpnonce').val()}; callAjSNAP(data, 'Pinterest'); }
               if (nt=='BG') { var data = { action: 'rePostToBG', id: 0, _wpnonce: jQuery('input#rePostToBG_wpnonce').val()}; callAjSNAP(data, 'Blogger'); }
+              if (nt=='LI') { var data = { action: 'rePostToLI', id: 0, _wpnonce: jQuery('input#rePostToLI_wpnonce').val()}; callAjSNAP(data, 'LinkedIn'); }
             }
             
             </script>
@@ -236,7 +259,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div id="doGPDiv" style="margin-left: 10px;<?php if ((int)$options['doGP'] != 1) echo "display:none"; ?> ">
                   
             <div style="width:100%;"><strong>Google+ Username:</strong> </div><input name="apGPUName" id="apGPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['gpUName']), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="apGPPass" id="apGPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['gpPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="apGPPass" id="apGPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             <p><div style="width:100%;"><strong>Google+ Page ID (Optional):</strong> 
             <p style="font-size: 11px; margin: 0px;">If URL for your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. Leave Empty to publish to your profile.</p>
             </div><input name="apGPPage" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['gpPageID']), 'NS_SNAutoPoster') ?>" /> 
@@ -272,7 +295,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div id="doPNDiv" style="margin-left: 10px;<?php if ((int)$options['doPN'] != 1) echo "display:none"; ?> ">
                   
             <div style="width:100%;"><strong>Pinterest Username:</strong> </div><input name="apPNUName" id="apPNUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['pnUName']), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="apPNPass" id="apPNPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['pnPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="apPNPass" id="apPNPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             <div style="width:100%;"><strong>Defailt Image to Pin:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post missing Featured Image this will be used instead.</p>
             </div><input name="apPNDefImg" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['pnDefImg']), 'NS_SNAutoPoster') ?>" /> 
@@ -340,14 +363,14 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php } else { if($options['fbAppAuthUser']>0) { ?>
             Your FaceBook Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit',$options['fbAppAuthUser']), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
-            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?php echo $options['fbAppID'];?>&client_secret=<?php echo $options['fbAppSec'];?>&redirect_uri=<? echo site_url();?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> 
+            <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<?php echo $options['fbAppID'];?>&client_secret=<?php echo $options['fbAppSec'];?>&redirect_uri=<? echo admin_url();?>options-general.php?page=NextScripts_SNAP.php&scope=publish_stream,offline_access,read_stream,manage_pages">Authorize Your FaceBook Account</a> 
             
             <?php if($options['fbAppAuthUser']<1) { ?>
             <br/><br/><i> If you get Facebook message : <b>"Error. An error occurred. Please try again later."</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i> <?php }?>
             <?php }
             
             if ( isset($_GET['code']) && $_GET['code']!='' && $_GET['action']!='gPlusAuth'){ $at = $_GET['code'];  echo "Code:".$at;
-                $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$options['fbAppID'].'&redirect_uri='.urlencode(site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php').'&client_secret='.$options['fbAppSec'].'&code='.$at); 
+                $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$options['fbAppID'].'&redirect_uri='.urlencode(admin_url().'options-general.php?page=NextScripts_SNAP.php').'&client_secret='.$options['fbAppSec'].'&code='.$at); 
                 if ((is_object($response) && isset($response->errors))) { prr($response); die();}
                 parse_str($response['body'], $params); $at = $params['access_token'];
                 $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$options['fbAppSec'].'&client_id='.$options['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at); 
@@ -364,7 +387,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                     }else echo "Please login to Facebook";                
                                                 
                  if ($user>0) $options['fbAppAuthUser'] = $user; update_option($this->dbOptionsName . $optionsAppend, $options);                            
-                 ?><script type="text/javascript">window.location = "<?php echo site_url(); ?>/wp-admin/options-general.php?page=NextScripts_SNAP.php"</script><?php            
+                 ?><script type="text/javascript">window.location = "<?php echo admin_url(); ?>options-general.php?page=NextScripts_SNAP.php"</script><?php            
                  die();
             }
             ?>
@@ -400,7 +423,67 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php }?>
             <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>  
             </div>
-            <!-- ############# BLOGGER ################ -->   
+            <!-- ##################### LinkedIn #####################-->  <br/><hr/>
+            <h3 style="font-size: 17px;">LinkedIn Settings</h3> 
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoLI" name="apDoLI" onchange="doShowHideBlocks('LI');" type="checkbox" <?php if ((int)$options['doLI'] == 1) echo "checked"; ?> /> 
+              <strong>Auto-publish your Posts to your LinkedIn</strong>                                 
+            </p>
+            <div id="doLIDiv" style="margin-left: 10px;<?php if ((int)$options['doLI'] != 1) echo "display:none"; ?> "> 
+            
+            <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="apLIAPIKey" id="apLIAPIKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['liAPIKey']), 'NS_SNAutoPoster') ?>" />  
+            <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="apLIAPISec" id="apLIAPISec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['liAPISec']), 'NS_SNAutoPoster') ?>" />
+            
+             <br/><br/>
+            <p style="margin: 0px;"><input value="1"  id="apLIAttch" onchange="doShowHideAltFormat();" type="checkbox" name="apLIAttch"  <?php if ((int)$options['liAttch'] == 1) echo "checked"; ?> /> 
+              <strong>Publish Posts to LinkedIn as an Attachement</strong>                                 
+            </p>
+            
+            <div id="altFormat" style="<?php if ((int)$options['liAttch'] == 1) echo "margin-left: 10px;"; ?> ">
+              <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['liAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
+              </div><input name="apLIMsgFrmt" id="apLIMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['liMsgFormat']), 'NS_SNAutoPoster') ?>" />
+            </div><br/>
+            
+            <br/>
+             <?php 
+            if($options['liAPIKey']=='') { ?>
+            <b>Authorize Your LinkedIn Account</b>. Please save your settings and come back here to Authorize your account.
+            <?php } else { if(isset($options['liAccessToken']) && isset($options['liAccessTokenSecret']) && $options['liAccessTokenSecret']!=='') { ?>
+            Your LinkedIn Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit',$options['liUserInfo']), 'NS_SNAutoPoster') ?>. 
+            You can Re- <?php } ?>            
+            <a target="_blank" href="<? echo admin_url();?>options-general.php?page=NextScripts_SNAP.php&auth=li">Authorize Your LinkedIn Account</a>             
+            <?php }            
+            if ( isset($_GET['auth']) && $_GET['auth']=='li'){ require_once('apis/liOAuth.php'); $api_key = $options['liAPIKey']; $api_secret = $options['liAPISec'];
+              $callback_url = admin_url()."options-general.php?page=NextScripts_SNAP.php&auth=lia";
+              $li_oauth = new nsx_LinkedIn($api_key, $api_secret, $callback_url); 
+              $request_token = $li_oauth->getRequestToken(); //echo "####"; prr($request_token); die();
+              $options['liOAuthToken'] = $request_token->key;
+              $options['liOAuthTokenSecret'] = $request_token->secret; 
+              switch ($li_oauth->http_code) { case 200: $url = $li_oauth->generateAuthorizeUrl(); update_option($this->dbOptionsName, $options);
+                echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
+                default: echo '<br/><b style="color:red">Could not connect to LinkedIn. Refresh the page or try again later.</b>'; die();
+              }die();
+            }
+            if ( isset($_GET['auth']) && $_GET['auth']=='lia'){ require_once('apis/liOAuth.php');  $api_key = $options['liAPIKey']; $api_secret = $options['liAPISec'];
+              $li_oauth = new nsx_LinkedIn($api_key, $api_secret); $li_oauth->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);              
+              $li_oauth->oauth_verifier = $_REQUEST['oauth_verifier'];  $li_oauth->getAccessToken($_REQUEST['oauth_verifier']); $options['liOAuthVerifier'] = $_REQUEST['oauth_verifier'];
+              $options['liAccessToken'] = $li_oauth->access_token->key; $options['liAccessTokenSecret'] = $li_oauth->access_token->secret;                            
+              try{$xml_response = $li_oauth->getProfile("~:(id,first-name,last-name)");} catch (Exception $o){prr($o); die("<span style='color:red;'>ERROR: Authorization Error</span>");}
+              $userinfo =  CutFromTo($xml_response, '<id>','</id>')." - ".CutFromTo($xml_response, '<first-name>','</first-name>')." ".CutFromTo($xml_response, '<last-name>','</last-name>');              
+              if ($userinfo!='') {  $options['liUserInfo'] = $userinfo; update_option($this->dbOptionsName, $options);
+                  echo '<script type="text/javascript">window.location = "'.admin_url().'options-general.php?page=NextScripts_SNAP.php"</script>'; break;  die();
+              }die("<span style='color:red;'>ERROR: Something is Wrong with your LinkedIn account</span>");
+            } 
+            ?>
+            
+            <?php if($options['liAPIKey']!='') { ?>
+            <?php wp_nonce_field( 'rePostToLI', 'rePostToLI_wpnonce' ); ?>
+            <br/><br/><b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('LI'); return false;">Submit Test Post to LinkedIn</a>  <br/><br/>
+            <?php }?>
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>  
+            </div>
+            
+            <!-- ############# BLOGGER ################ -->  <hr/> 
             <h3 style="font-size: 17px;">Blogger Settings</h3>               
                        
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoBG" name="apDoBG" onchange="doShowHideBlocks('BG');" type="checkbox" <?php if ((int)$options['doBG'] == 1) echo "checked"; $nxsOne = "?g=1" ?> /> 
@@ -409,7 +492,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div id="doBGDiv" style="margin-left: 10px;<?php if ((int)$options['doBG'] != 1) echo "display:none"; ?> ">
                   
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="apBGUName" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['bgUName']), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Blogger Password:</strong> </div><input name="apBGPass" id="apBGPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['bgPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Blogger Password:</strong> </div><input name="apBGPass" id="apBGPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             <div style="width:100%;"><strong>Blogger Blog ID:</strong> 
             <p style="font-size: 11px; margin: 0px;">Log to your Blogger management panel and look at the URL: http://www.blogger.com/blogger.g?blogID=8959085979163812093#allposts. Your Blog ID will be: 8959085979163812093</p>
             </div><input name="apBGBlogID" id="apBGBlogID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['bgBlogID']), 'NS_SNAutoPoster') ?>" /> 
@@ -439,7 +522,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
             </div>
 
-            <!-- ##################### TR #####################-->
+            <!-- ##################### Tumblr #####################-->
             <br/><hr/>
             <h3 style="font-size: 17px;">Tumblr Settings</h3> 
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoTR" name="apDoTR" onchange="doShowHideBlocks('TR');" type="checkbox" <?php if ((int)$options['doTR'] == 1) echo "checked"; ?> /> 
@@ -472,30 +555,30 @@ if (!class_exists("NS_SNAutoPoster")) {
             <?php } else { if(isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='') { ?>
             Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit',$options['trPgID']), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
-            <a target="_blank" href="<? echo site_url();?>/wp-admin/options-general.php?page=NextScripts_SNAP.php&auth=tr">Authorize Your Tumblr Account</a> 
+            <a target="_blank" href="<? echo admin_url();?>options-general.php?page=NextScripts_SNAP.php&auth=tr">Authorize Your Tumblr Account</a> 
             
             <?php }
             
             if ( isset($_GET['auth']) && $_GET['auth']=='tr'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
-              $callback_url = site_url()."/wp-admin/options-general.php?page=NextScripts_SNAP.php&auth=tra";
-              $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret);
-              $request_token = $tum_oauth->getRequestToken($callback_url); //echo "####"; prr($request_token);
+              $callback_url = admin_url()."options-general.php?page=NextScripts_SNAP.php&auth=tra";
+              $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret);prr($tum_oauth );
+              $request_token = $tum_oauth->getRequestToken($callback_url); echo "####"; prr($request_token);
               $options['trOAuthToken'] = $request_token['oauth_token'];
               $options['trOAuthTokenSecret'] = $request_token['oauth_token_secret'];
               switch ($tum_oauth->http_code) { case 200: $url = $tum_oauth->getAuthorizeURL($options['trOAuthToken']); update_option($this->dbOptionsName, $options);// prr($url);
                 echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
-                default: echo 'Could not connect to Tumblr. Refresh the page or try again later.'; die();
+                default: echo '<br/><b style="color:red">Could not connect to Tumblr. Refresh the page or try again later.</b>'; die();
               }
               die();
             }
-            if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
+            if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];  die("FF");
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trOAuthToken'], $options['trOAuthTokenSecret']);
               $options['trAccessTocken'] = $tum_oauth->getAccessToken($_REQUEST['oauth_verifier']); // prr($_GET);  prr($_REQUEST);   prr($options['trAccessTocken']);         
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); update_option($this->dbOptionsName, $options);
-              $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info');// prr($userinfo); die();
+              $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info'); prr($userinfo); prr($tum_oauth); prr($url); die();
               if (is_array($userinfo->response->user->blogs)) {
                 foreach ($userinfo->response->user->blogs as $blog){
-                  if (stripos($blog->url, $options['trPgID'])!==false) {  echo '<script type="text/javascript">window.location = "'.site_url().'/wp-admin/options-general.php?page=NextScripts_SNAP.php"</script>'; break;  die();}
+                  if (stripos($blog->url, $options['trPgID'])!==false) {  echo '<script type="text/javascript">window.location = "'.admin_url().'options-general.php?page=NextScripts_SNAP.php"</script>'; break;  die();}
                 } prr($userinfo);
                 die("<span style='color:red;'>ERROR: Authorized USER don't have access to the specified blog: <span style='color:darkred; font-weight: bold;'>".$options['trPgID']."</span></span>");
               }
@@ -553,13 +636,15 @@ if (!class_exists("NS_SNAutoPoster")) {
         function NS_SNAP_SavePostMetaTags($id) { if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"]; 
             if (isset($nspost_edit) && !empty($nspost_edit)) { 
                 
-                $SNAP_AttachTR = $_POST["SNAP_AttachTR"];  $SNAP_AttachPN = $_POST["SNAP_AttachPN"];  
+                $SNAP_AttachTR = $_POST["SNAP_AttachTR"];  $SNAP_AttachPN = $_POST["SNAP_AttachPN"];  $SNAP_AttachLI = $_POST["SNAP_AttachLI"];  
                 $SNAP_FormatGP = $_POST["SNAP_FormatGP"];  $SNAP_FormatFB = $_POST["SNAP_FormatFB"];  $SNAP_FormatTW = $_POST["SNAP_FormatTW"]; // prr($_POST);
                 $SNAP_FormatBG = $_POST["SNAP_FormatBG"];  $SNAP_FormatTBG = $_POST["SNAP_FormatTBG"];                
                 $SNAP_FormatTR = $_POST["SNAP_FormatTR"];  $SNAP_FormatTTR = $_POST["SNAP_FormatTTR"];                
+                $SNAP_FormatLI = $_POST["SNAP_FormatLI"];                
                 
                 if (isset($SNAP_AttachTR) && !empty($SNAP_AttachTR)) update_post_meta($id, 'SNAP_AttachTR', $SNAP_AttachTR);                
                 if (isset($SNAP_AttachPN) && !empty($SNAP_AttachPN)) update_post_meta($id, 'SNAP_AttachPN', $SNAP_AttachPN);
+                if (isset($SNAP_AttachLI) && !empty($SNAP_AttachLI)) update_post_meta($id, 'SNAP_AttachLI', $SNAP_AttachLI);
                 
                 if (isset($SNAP_FormatGP) && !empty($SNAP_FormatGP)) update_post_meta($id, 'SNAP_FormatGP', $SNAP_FormatGP);                
                 if (isset($SNAP_FormatFB) && !empty($SNAP_FormatFB)) update_post_meta($id, 'SNAP_FormatFB', $SNAP_FormatFB);
@@ -567,22 +652,25 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($SNAP_FormatTR) && !empty($SNAP_FormatTR)) update_post_meta($id, 'SNAP_FormatTR', $SNAP_FormatTR); 
                 if (isset($SNAP_FormatTTR) && !empty($SNAP_FormatTTR)) update_post_meta($id, 'SNAP_FormatTTR', $SNAP_FormatTTR); 
                 if (isset($SNAP_FormatBG) && !empty($SNAP_FormatBG)) update_post_meta($id, 'SNAP_FormatBG', $SNAP_FormatBG); 
+                if (isset($SNAP_FormatLI) && !empty($SNAP_FormatLI)) update_post_meta($id, 'SNAP_FormatLI', $SNAP_FormatLI);                
                 if (isset($SNAP_FormatTBG) && !empty($SNAP_FormatTBG)) update_post_meta($id, 'SNAP_FormatTBG', $SNAP_FormatTBG); 
                 
             }
         }
         function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName);    
-            $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doTW'];     $doTR = $options['doTR'];    $doPN = $options['doPN'];    $doBG = $options['doBG'];    
+            $doGP = $options['doGP'];   $doFB = $options['doFB'];   $doTW = $options['doTW'];     $doTR = $options['doTR'];    $doPN = $options['doPN'];    $doBG = $options['doBG'];   $doLI = $options['doLI'];     
             $isAvailGP =  $options['gpUName']!='' && $options['gpPass']!='';
             $isAvailPN =  $options['pnUName']!='' && $options['pnPass']!='';
             $isAvailBG =  $options['bgUName']!='' && $options['bgPass']!='';
             $isAvailFB =  $options['fbURL']!='' && $options['fbAppID']!='' && $options['fbAppSec']!='';
             $isAvailTW =  $options['twURL']!='' && $options['twConsKey']!='' && $options['twConsSec']!='' && $options['twAccToken']!='';            
             
+            $isAvailLI =  $options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='';                        
             $isAvailTR =  isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='';   
                      
             $t = get_post_meta($post_id, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$options['gpAttch'];
-            $t = get_post_meta($post_id, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];            
+            $t = get_post_meta($post_id, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fbAttch'];
+            $t = get_post_meta($post_id, 'SNAP_AttachLI', true);  $isAttachLI = $t!=''?$t:$options['liAttch'];            
             $t = get_post_meta($post_id, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$options['gpMsgFormat'];
             $t = get_post_meta($post_id, 'SNAP_FormatPN', true);  $pnMsgFormat = $t!=''?$t:$options['pnMsgFormat'];
             $t = get_post_meta($post_id, 'SNAP_FormatBG', true);  $bgMsgFormat = $t!=''?$t:$options['bgMsgFormat'];
@@ -591,11 +679,13 @@ if (!class_exists("NS_SNAutoPoster")) {
             $t = get_post_meta($post_id, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$options['twMsgFormat'];
             $t = get_post_meta($post_id, 'SNAP_FormatTR', true);  $trMsgFormat = $t!=''?$t:$options['trMsgFormat']; $trMsgFormat = stripcslashes(str_replace('"',"'",$trMsgFormat));
             $t = get_post_meta($post_id, 'SNAP_FormatTTR', true); $trMsgTFormat = $t!=''?$t:$options['trMsgTFormat'];
+            $t = get_post_meta($post_id, 'SNAP_FormatLI', true);  $liMsgFormat = $t!=''?$t:$options['liMsgFormat'];
             ?>
-              <div id="postftfp" class="postbox"><h3><?php _e('NextScripts: Social Networks Auto Poster - Post Options', 'NS_SPAP') ?></h3>
+              <div id="postftfp" class="postbox">
+          
               <div class="inside"><div id="postftfp">
               <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
-                    script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
+                    script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
               }</script>
             <script type="text/javascript">function doShowHideAltFormatX(){if (jQuery('#SNAP').is(':checked')) {jQuery('#altFormat1').hide(); jQuery('#altFormat2').hide();} else { jQuery('#altFormat1').show(); jQuery('#altFormat2').show();}}</script>
             
@@ -686,6 +776,27 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 <?php } ?>
+                <!-- **************** LI **************** -->
+                <tr><th style="text-align:left;" colspan="2">LinkedIn AutoPoster Options</th><td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailLI) { ?><input style="float: right;" type="button" class="button" name="rePostToLI_repostButton" id="rePostToLI_button" value="<?php _e('Repost to LinkedIn', 're-post') ?>" />
+                    <?php wp_nonce_field( 'rePostToLI', 'rePostToLI_wpnonce' ); } ?>
+                </td></tr>
+                <?php if (!$isAvailLI) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your LinkedIn Account to AutoPost to LinkedIn</b>
+                <?php }elseif ($post->post_status != "publish") { ?> 
+                
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input value="1" type="checkbox" name="SNAPincludeLI" <?php if ((int)$doLI == 1) echo "checked"; ?> /></th>
+                <td><b><?php _e('Publish this Post to LinkedIn', 'NS_SPAP'); ?></b></td>
+                </tr> 
+                
+                <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
+                <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAP_AttachLI"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachement</strong></td>                </tr>               
+                
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $liMsgFormat ?>" type="text" name="SNAP_FormatLI" size="60px"/></td></tr>
+                
+                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
+                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
+                <?php } ?>
                 <!-- **************** BG **************** -->
                 <tr><th style="text-align:left;" colspan="2">Blogger AutoPoster Options</th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailBG) { ?><input style="float: right;" type="button" class="button" name="rePostToBG_repostButton" id="rePostToBG_button" value="<?php _e('Repost to Blogger', 're-post') ?>" />
@@ -740,6 +851,12 @@ if (!class_exists("NS_SNAutoPoster")) {
             </table>
             </div></div></div>        <?php    
         }
+        
+        function NS_SNAP_addCustomBoxes() { add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'post' );
+    
+}
+
+
     }
 }
 
@@ -765,6 +882,7 @@ if (!function_exists("jsPostToSNAP")) {
         $('input#rePostToTR_button').click(function() { var data = { action: 'rePostToTR', id: $('input#post_ID').val(), _wpnonce: $('input#rePostToTR_wpnonce').val()}; callAjSNAP(data, 'Tumblr'); });
         $('input#rePostToPN_button').click(function() { var data = { action: 'rePostToPN', id: $('input#post_ID').val(), _wpnonce: $('input#rePostToPN_wpnonce').val()}; callAjSNAP(data, 'Pinterest'); });
         $('input#rePostToBG_button').click(function() { var data = { action: 'rePostToBG', id: $('input#post_ID').val(), _wpnonce: $('input#rePostToBG_wpnonce').val()}; callAjSNAP(data, 'Blogger'); });
+        $('input#rePostToLI_button').click(function() { var data = { action: 'rePostToLI', id: $('input#post_ID').val(), _wpnonce: $('input#rePostToLI_wpnonce').val()}; callAjSNAP(data, 'LinkedIn'); });
 
        function callAjSNAP(data, label) {
             var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
@@ -789,41 +907,48 @@ if (!function_exists("jsPostToSNAP")) {
 //## Repost to Google+
 if (!function_exists("rePostToGP_ajax")) {
   function rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $id = $_POST['id'];  $result = nsPublishTo($id, 'GP', true);   
-    if ($result == 200) die("Successfully sent your post to Google+."); else die($result);
+    if ($result == 200) die("Your post has been successfully sent to Google+"); else die($result);
   }
 }                                    
 if (!function_exists("rePostToFB_ajax")) {
   function rePostToFB_ajax() { check_ajax_referer('rePostToFB');  $id = $_POST['id'];  $result = nsPublishTo($id, 'FB', true);   
-    if ($result == 200) die("Successfully sent your post to FaceBook."); else die($result);
+    if ($result == 200) die("Your post has been successfully sent to FaceBook."); else die($result);
   }
 }                                    
 if (!function_exists("rePostToTW_ajax")) {
   function rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $id = $_POST['id'];  $result = nsPublishTo($id, 'TW', true);   
-    if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
+    if ($result == 200) die("Your post has been successfully sent to Twitter."); else die($result);
   }
 }         
 if (!function_exists("rePostToTR_ajax")) {
   function rePostToTR_ajax() { check_ajax_referer('rePostToTR'); $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster'); 
     $twpo =  get_post_meta($postID, 'snapTR', true); $twpo =  maybe_unserialize($twpo); if (is_array($twpo)) $options['trMsgFormat'] = $twpo['SNAPformat']; 
-    $result = doPublishToTR($postID, $options);  if ($result == 200) die("Successfully sent your post to Tumblr."); else die($result);
+    $result = doPublishToTR($postID, $options);  if ($result == 200) die("Your post has been successfully sent to Tumblr."); else die($result);
   }
 }                 
 if (!function_exists("rePostToPN_ajax")) {
   function rePostToPN_ajax() { check_ajax_referer('rePostToPN'); $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster'); 
     $twpo =  get_post_meta($postID, 'snapPN', true); $twpo =  maybe_unserialize($twpo); if (is_array($twpo)) $options['pnMsgFormat'] = $twpo['SNAPformat']; 
-    $result = doPublishToPN($postID, $options);  if ($result == 200) die("Successfully sent your post to Pinterest."); else die($result);
+    $result = doPublishToPN($postID, $options);  if ($result == 200) die("Your post has been successfully sent to Pinterest."); else die($result);
   }
 } 
 if (!function_exists("rePostToBG_ajax")) {
   function rePostToBG_ajax() { check_ajax_referer('rePostToBG'); $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster'); 
     $twpo =  get_post_meta($postID, 'snapBG', true); $twpo =  maybe_unserialize($twpo); if (is_array($twpo)) $options['bgMsgFormat'] = $twpo['SNAPformat']; 
-    $result = doPublishToBG($postID, $options);  if ($result == 200) die("Successfully sent your post to Blogger."); else die($result);
+    $result = doPublishToBG($postID, $options);  if ($result == 200) die("Your post has been successfully sent to Blogger."); else die($result);
+  }
+} 
+if (!function_exists("rePostToLI_ajax")) {
+  function rePostToLI_ajax() { check_ajax_referer('rePostToLI'); $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster'); 
+    $twpo =  get_post_meta($postID, 'snapLI', true); $twpo =  maybe_unserialize($twpo); if (is_array($twpo)) $options['bgMsgFormat'] = $twpo['SNAPformat']; 
+    $result = doPublishToLI($postID, $options);  if ($result == 200) die("Your post has been successfully sent to  LinkedIn."); else die($result);
   }
 } 
 
 if (!function_exists("nsGetBoards_ajax")) { 
   function nsGetBoards_ajax() { check_ajax_referer('getBoards');  $options = get_option('NS_SNAutoPoster');// prr($options); die();
-   $loginError = doConnectToPinterest($_POST['u'], $_POST['p']);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+  if (get_magic_quotes_gpc()) { $_POST['u'] = stripslashes($_POST['u']);  $_POST['p'] = stripslashes($_POST['p']);}
+   $loginError = doConnectToPinterest($_POST['u'],  substr($_POST['p'], 0, 5)=='g9c1a'?nsx_doDecode(substr($_POST['p'], 5)):$_POST['p'] );  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
    $gPNBoards = doGetBoardsFromPinterest(); $options['pnBoardsList'] = $gPNBoards;  update_option('NS_SNAutoPoster', $options); echo $gPNBoards; die();
   }
 }               
@@ -910,10 +1035,11 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
       if ($type==''){  
         if ($isPost) $doGP = $_POST['SNAPincludeGP']; else { $t = get_post_meta($postID, 'SNAPincludeGP', true); $doGP = $t!=''?$t:$options['doGP']; }
         if ($isPost) $doFB = $_POST['SNAPincludeFB']; else { $t = get_post_meta($postID, 'SNAPincludeFB', true); $doFB = $t!=''?$t:$options['doFB']; }
-        if ($isPost) $doTW = $_POST['SNAPincludeTW']; else { $t = get_post_meta($postID, 'SNAPincludeTW', true); $doTW = $t!=''?$t:$options['doTW']; }    
-        if ($isPost) $doTR = $_POST['SNAPincludeTR']; else { $t = get_post_meta($postID, 'SNAPincludeTR', true); $doTR = $t!=''?$t:$options['doTR']; }    
-        if ($isPost) $doPN = $_POST['SNAPincludePN']; else { $t = get_post_meta($postID, 'SNAPincludePN', true); $doPN = $t!=''?$t:$options['doPN']; }    
-        if ($isPost) $doBG = $_POST['SNAPincludeBG']; else { $t = get_post_meta($postID, 'SNAPincludeBG', true); $doBG = $t!=''?$t:$options['doBG']; }    
+        if ($isPost) $doTW = $_POST['SNAPincludeTW']; else { $t = get_post_meta($postID, 'SNAPincludeTW', true); $doTW = $t!=''?$t:$options['doTW']; }
+        if ($isPost) $doTR = $_POST['SNAPincludeTR']; else { $t = get_post_meta($postID, 'SNAPincludeTR', true); $doTR = $t!=''?$t:$options['doTR']; }
+        if ($isPost) $doPN = $_POST['SNAPincludePN']; else { $t = get_post_meta($postID, 'SNAPincludePN', true); $doPN = $t!=''?$t:$options['doPN']; }
+        if ($isPost) $doBG = $_POST['SNAPincludeBG']; else { $t = get_post_meta($postID, 'SNAPincludeBG', true); $doBG = $t!=''?$t:$options['doBG']; }
+        if ($isPost) $doLI = $_POST['SNAPincludeLI']; else { $t = get_post_meta($postID, 'SNAPincludeLI', true); $doLI = $t!=''?$t:$options['doLI']; }
       } //var_dump($doBG); var_dump($doGP); var_dump($doFB); var_dump($doTR); echo "===".$type; //die();
       if (!$continue) return; else {
           if ($type=='TW' || ($type=='' && (int)$doTW==1)) doPublishToTW($postID, $options);
@@ -922,6 +1048,7 @@ if (!function_exists("nsPublishTo")) { //## Main Function to Post
           if ($type=='TR' || ($type=='' && (int)$doTR==1)) doPublishToTR($postID, $options);
           if ($type=='PN' || ($type=='' && (int)$doPN==1)) doPublishToPN($postID, $options);
           if ($type=='BG' || ($type=='' && (int)$doBG==1)) doPublishToBG($postID, $options);
+          if ($type=='LI' || ($type=='' && (int)$doLI==1)) doPublishToLI($postID, $options);
       }
     } //die();
     }
@@ -934,7 +1061,7 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       if ($isPost) $isAttachGP = $_POST['SNAP_AttachGP'];  else { $t = get_post_meta($postID, 'SNAP_AttachGP', true); $isAttachGP = $t!=''?$t:$options['gpAttch']; }  
       $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;
       if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
-      $email = $options['gpUName'];  $pass = $options['gpPass'];     
+      $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
@@ -975,9 +1102,11 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       else{
         $post = get_post($postID); //prr($post); die();
         if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }    
+        $twMsgFormat = str_ireplace("%SURL%", "%URL%", $twMsgFormat);
         $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
+        $twMsgFormat = str_ireplace("%URL%", "%URLXXURLXXURLXXURL%", $twMsgFormat); $msg2 = nsFormatMessage($twMsgFormat, $postID); $uln = strlen($msg)-strlen($msg2);         
       }
-      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); $msg = nsTrnc($msg, 140);  
+      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else $msg = nsTrnc($msg, 140); 
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));// prr($tmhOAuth);
       if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
@@ -1013,7 +1142,7 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
       if ($isPost) $boardID = $_POST['apPNBoard']; else { $t = get_post_meta($postID, 'apPNBoard', true); $boardID = $t!=''?$t:$options['pnBoard']; } 
       $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID);
     } 
-    $email = $options['pnUName'];  $pass = $options['pnPass'];// prr($boardID); prr($_POST); die();
+    $email = $options['pnUName'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();
     
     if ($imgURL=='') if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $imgURL = $imgURL[0];} 
     if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
@@ -1033,12 +1162,36 @@ if (!function_exists("doPublishToBG")) { //## Second Function to Post to PN
       if ($isPost) $bgMsgTFormat = $_POST['SNAP_FormatTBG']; else { $t = get_post_meta($postID, 'SNAP_FormatTBG', true); $bgMsgTFormat = $t!=''?$t:$options['bgMsgTFormat']; } 
       $msgT = nsFormatMessage($bgMsgTFormat, $postID);              
     }
-    $email = $options['bgUName'];  $pass = $options['bgPass']; $blogID = $options['bgBlogID'];
+    $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs);}
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Blooger/Blogpost Page';
+  }
+}
+if (!function_exists("doPublishToLI")) { //## Second Function to Post to PN
+  function doPublishToLI($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $isPost = isset($_POST["SNAPEdit"]); 
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
+    else{        
+      if ($isPost) $liMsgFormat = $_POST['SNAP_FormatLI']; else { $t = get_post_meta($postID, 'SNAP_FormatLI', true); $liMsgFormat = $t!=''?$t:$options['liMsgFormat']; } 
+      $msg = nsFormatMessage($liMsgFormat, $postID); $link = get_permalink($postID);            
+      if ($isPost) $isAttachLI = $_POST['SNAP_AttachLI'];  else { $t = get_post_meta($postID, 'SNAP_AttachLI', true);  $isAttachLI = $t!=''?$t:$options['liAttch'];}
+    }
+    require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
+    $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
+    $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
+    
+    if ($isAttachLI=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];}     
+    
+    if($isAttachLI=='1') { $post = get_post($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  $dsc = nsTrnc($dsc, 250); }
+    
+    
+    try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
+      catch (Exception $o){ echo "<br />Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br />'; $ret="ERROR:"; }      
+    
+    if ($ret!='201') echo $ret; else if ($postID=='0') echo 'OK - Linkedin status updated successfully';
+    if ($ret=='201') return true; else return 'Something Wrong';
   }
 }
 
@@ -1101,6 +1254,9 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
   if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\n";       if (isset($ShownAds)) $ShownAds = $ShownAdsL;          
 }
 
+
+
+
 //## Actions and filters    
 function ns_custom_types_setup(){ $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator); 
   foreach ($post_types  as $post_type ) {
@@ -1116,8 +1272,10 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     //## Initialize options on plugin activation
     add_action("activate_NextScripts_GPAutoPoster/NextScripts_SNAP.php",  array(&$plgn_NS_SNAutoPoster, 'init'));    
     
-    add_action('edit_form_advanced', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
-    add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+    //add_action('edit_form_advanced', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+    //add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+    
+    add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));
     
     add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
     add_action('publish_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
@@ -1128,8 +1286,10 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('new_to_publish', 'nsPublishTo');
     add_action('draft_to_publish', 'nsPublishTo');
     add_action('pending_to_publish', 'nsPublishTo');   
+    add_action('private_to_publish', 'nsPublishTo');
+    add_action('auto-draft_to_publish', 'nsPublishTo');
     
-    add_action( 'wp_loaded', 'ns_custom_types_setup' );        
+    add_action('wp_loaded', 'ns_custom_types_setup' );        
     
     add_action('admin_head', 'jsPostToSNAP');    
     add_action('wp_ajax_rePostToGP', 'rePostToGP_ajax');
@@ -1138,9 +1298,10 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_rePostToTR', 'rePostToTR_ajax');
     add_action('wp_ajax_rePostToPN', 'rePostToPN_ajax');
     add_action('wp_ajax_rePostToBG', 'rePostToBG_ajax');
+    add_action('wp_ajax_rePostToLI', 'rePostToLI_ajax');
     add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax');
     //## Custom Post Types and OG tags
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
-    add_action('wp_head','nsAddOGTags',50);
+    add_action('wp_head','nsAddOGTags', 50);
 }
 ?>

@@ -2,25 +2,27 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image
+Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, linkedin, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image
 Requires at least: 2.8
 Tested up to: 3.4.1
 Stable tag: 1.8.7
 License: GPLv2 or later
 
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest, Blogger and Tumblr profiles and/or pages
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Pinterest, LinkedIn, Blogger and Tumblr profiles and/or pages
 
 == Description ==
 
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Blogger, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Blogger, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, Tumblr, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 Supported Networks:
 
 **Facebook** - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
 
 **Twitter** - Autopost to your account.
+
+**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. *Adility to post to Company page is coming soon.*
 
 **Blogger/Blogspot** - Autopost to your Blog.
 
@@ -34,7 +36,7 @@ Supported Networks:
 
 == Installation ==
 
-You need to have account with either Facebook, Tumblr, Google+, Pinterest, Blogger, Twitter or all of them.
+You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter or all of them.
 
 See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
@@ -109,10 +111,19 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 == Screenshots ==
 
-1. Settings Page
-2. Google+ Post
+1. Settings  Page
+2. Google+  Post 
 
 == Changelog ==
+
+= 1.9.0 =
+* New - LinkedIn Support
+* Improvement - Post Options are now movable
+* Improvement - Security for Google+, Pinterest, Blogger - passwords are better encoded in the DB.
+* Improvement - Tumblr - Better compatibility with other plugins.
+* Bug fix - Twitter URL length fix.
+* Bug fix - Google+, Pinterest, Blogger - Incorrect Username/Problem due to the magic quotes being "On"
+* Bug fix - More then 10 stability, compatibility, security fixes.
 
 = 1.8.7 =
 * Bug fix - Tumblr/Blogger issue with missing function.

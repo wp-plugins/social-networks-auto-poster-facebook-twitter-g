@@ -57,10 +57,10 @@ class TumblrOAuth {
    * construct TumblrOAuth object
    */
   function __construct($consumer_key, $consumer_secret, $oauth_token = NULL, $oauth_token_secret = NULL) {
-    $this->sha1_method = new OAuthSignatureMethod_HMAC_SHA1();
-    $this->consumer = new OAuthConsumer($consumer_key, $consumer_secret);
+    $this->sha1_method = new nsx_trOAuthSignatureMethod_HMAC_SHA1();
+    $this->consumer = new nsx_trOAuthConsumer($consumer_key, $consumer_secret);
     if (!empty($oauth_token) && !empty($oauth_token_secret)) {
-      $this->token = new OAuthConsumer($oauth_token, $oauth_token_secret);
+      $this->token = new nsx_trOAuthConsumer($oauth_token, $oauth_token_secret);
     } else {
       $this->token = NULL;
     }
@@ -77,9 +77,9 @@ class TumblrOAuth {
     if (!empty($oauth_callback)) {
       $parameters['oauth_callback'] = $oauth_callback;
     } 
-    $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters);
-    $token = OAuthUtil::parse_parameters($request);
-    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters); 
+    $token = nsx_trOAuthUtil::parse_parameters($request);
+    $this->token = new nsx_trOAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -114,8 +114,8 @@ class TumblrOAuth {
       $parameters['oauth_verifier'] = $oauth_verifier;
     }
     $request = $this->oAuthRequest($this->accessTokenURL(), 'GET', $parameters);
-    $token = OAuthUtil::parse_parameters($request);
-    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $token = nsx_trOAuthUtil::parse_parameters($request);
+    $this->token = new nsx_trOAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -134,8 +134,8 @@ class TumblrOAuth {
     $parameters['x_auth_password'] = $password;
     $parameters['x_auth_mode'] = 'client_auth';
     $request = $this->oAuthRequest($this->accessTokenURL(), 'POST', $parameters);
-    $token = OAuthUtil::parse_parameters($request);
-    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $token = nsx_trOAuthUtil::parse_parameters($request);
+    $this->token = new nsx_trOAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -179,8 +179,8 @@ class TumblrOAuth {
     if (strrpos($url, 'https://') !== 0 && strrpos($url, 'http://') !== 0) {
       $url = "{$this->host}{$url}";
     }
-    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
-    $request->sign_request($this->sha1_method, $this->consumer, $this->token);
+    $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
+    $request->sign_request($this->sha1_method, $this->consumer, $this->token); 
     switch ($method) {
     case 'GET':
       return $this->http($request->to_url(), 'GET');
@@ -194,7 +194,7 @@ class TumblrOAuth {
    *
    * @return API results
    */
-  function http($url, $method, $postfields = NULL) { //prr($method);
+  function http($url, $method, $postfields = NULL) { 
     $this->http_info = array();
     if ($method=='DELETE') $ci = curl_init(); else $ci = curl_init($url);
     
