@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.1
+Version: 1.9.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -13,10 +13,8 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToGooglePlus.php")) require realpath(dirname( __FILE__ ))."/apis/postToGooglePlus.php";
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
-
-//  $included_files = get_included_files(); echo "<br/><br/><br/><br/><br/>"; prr($included_files);
     
-define( 'NextScripts_SNAP_Version' , '1.9.1' );
+define( 'NextScripts_SNAP_Version' , '1.9.2' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -142,6 +140,8 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
                 if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                               
                 
+                if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);
+                
                 //prr($options); die();
                 
                 if ($emptyUser) { //## then we're dealing with the main Admin options
@@ -205,35 +205,20 @@ if (!class_exists("NS_SNAutoPoster")) {
             </script>
             
 <style type="text/css">
-.NXSButton {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
+.NXSButton { background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
     background:-moz-linear-gradient( center top, #89c403 5%, #77a809 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#89c403', endColorstr='#77a809');
-    background-color:#89c403;
-    -moz-border-radius:4px;
-    -webkit-border-radius:4px;
-    border-radius:4px;
-    border:1px solid #74b807;
-    display:inline-block;
-    color:#ffffff;
-    font-family:Trebuchet MS;
-    font-size:12px;
-    font-weight:bold;
-    padding:2px 5px;
-    text-decoration:none;
-    text-shadow:1px 1px 0px #528009;
+    background-color:#89c403;  -moz-border-radius:4px;  -webkit-border-radius:4px;  border-radius:4px;
+    border:1px solid #74b807; display:inline-block; color:#ffffff; font-family:Trebuchet MS; font-size:12px;
+    font-weight:bold; padding:2px 5px; text-decoration:none; text-shadow:1px 1px 0px #528009;
 }.NXSButton:hover {color:#ffffff;
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77a809), color-stop(1, #89c403) );
     background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');
     background-color:#77a809;
-}.NXSButton:active {color:#ffffff;
-    position:relative;
-    top:1px;
-}.NXSButton:focus {color:#ffffff;
-    position:relative;
-    top:1px;
-}
+}.NXSButton:active {color:#ffffff; position:relative; top:1px;
+}.NXSButton:focus {color:#ffffff; position:relative; top:1px;
+}.nxsMultiSelect{ width: 250px; border: 1px solid #CCCCCC; }
 
 </style>
             <div style="float:right; padding-top: 10px; padding-right: 10px;">
@@ -580,7 +565,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               }
               die();
             }
-            if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];  die("FF");
+            if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];  
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trOAuthToken'], $options['trOAuthTokenSecret']);
               $options['trAccessTocken'] = $tum_oauth->getAccessToken($_REQUEST['oauth_verifier']); // prr($_GET);  prr($_REQUEST);   prr($options['trAccessTocken']);         
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); update_option($this->dbOptionsName, $options);
@@ -611,7 +596,24 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <br/><hr/>
             <!-- ##################### OTHER #####################-->
+            
+            
+            
             <h3 style="font-size: 17px;">Other Settings</h3> 
+            
+            <h3 style="font-size: 14px; margin-bottom: 2px;">Include/Exclude Custom Post Types</h3>  
+            <p style="font-size: 11px; margin: 0px;">Select Custom Post Types that you would to be published on your social networks</p>           
+            <?php 
+              $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator); 
+              if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);
+            ?>
+            <select multiple="multiple" name="nxsCPTSeld[]" id="nxsCPTSeld" class="nxsMultiSelect" size="<?php echo count($post_types)+1; ?>">
+            <?php             
+              foreach ($post_types as $cptID=>$cptName){
+                ?><option <?php if (in_array($cptID,$nxsCPTSeld)) echo 'selected="selected"'; ?> value="<?php echo $cptID; ?>"><?php echo $cptName; ?></option><?php
+              }
+            ?>
+            </select>            
             
             <p><div style="width:100%;"><strong style="font-size: 14px;">Categories to Include/Exclude:</strong> 
             <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
@@ -861,9 +863,14 @@ if (!class_exists("NS_SNAutoPoster")) {
             </div></div></div>        <?php    
         }
         
-        function NS_SNAP_addCustomBoxes() { add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'post' );
+        function NS_SNAP_addCustomBoxes() { add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'post' );           
+          $options = get_option('NS_SNAutoPoster'); $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
+          if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
+          foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ 
+              add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), $cptID );
+          }
     
-}
+        }
 
 
     }
@@ -1020,15 +1027,16 @@ if (!function_exists("nsFormatMessage")) {//## Format Message
   }
 }
 if (!function_exists("nsPublishTo")) { //## Main Function to Post 
-  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster'); 
+  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster');  //var_dump(debug_backtrace());
     if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["SNAPEdit"]);  
     if($postID==0) {
         if ($type=='GP') doPublishToGP($postID, $options);  if ($type=='FB') doPublishToFB($postID, $options);  if ($type=='TW') doPublishToTW($postID, $options); 
     } else { $post = get_post($postID);  $maxLen = 1000; 
      
     $args=array( 'public'   => true, '_builtin' => false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args,$output,$operator);
+    if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
      
-    if ($post->post_type == 'post' || in_array($post->post_type, $post_types) ) { //prr($options);
+    if ($post->post_type == 'post' || (in_array($post->post_type, $post_types) && in_array($post->post_type, $nxsCPTSeld)) ) { //prr($options);
       //## Check if need to publish it
       if (!$aj && $type!='' && (int)$options['do'.$type]!=1) return; $chCats = isset($options['apCats'])?trim($options['apCats']):''; $continue = true;
       if ($chCats!=''){ $cats = split(",", $options['apCats']);  $continue = false;
@@ -1267,12 +1275,16 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
 
 
 //## Actions and filters    
-function ns_custom_types_setup(){ $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator); 
-  foreach ($post_types  as $post_type ) {
-    add_action('future_to_publish_'.$post_type, 'nsPublishTo');
-    add_action('new_to_publish_'.$post_type, 'nsPublishTo');
-    add_action('draft_to_publish_'.$post_type, 'nsPublishTo');
-    add_action('pending_to_publish_'.$post_type, 'nsPublishTo');
+function ns_custom_types_setup(){ $options = get_option('NS_SNAutoPoster');  
+  $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
+  if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
+  foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ // echo "|".$cptID."|";
+    add_action('future_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('new_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('draft_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('pending_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('private_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('auto-draft_to_publish_'.$cptID, 'nsPublishTo');
   }
 }    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
@@ -1282,11 +1294,9 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action("activate_NextScripts_GPAutoPoster/NextScripts_SNAP.php",  array(&$plgn_NS_SNAutoPoster, 'init'));    
     
     //add_action('edit_form_advanced', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
-    //add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+  //  add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
     
     add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));
-    
-    
     
     
     add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
