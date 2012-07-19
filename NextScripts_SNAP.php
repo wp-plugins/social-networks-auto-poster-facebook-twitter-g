@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.4
+Version: 1.9.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.4' );
+define( 'NextScripts_SNAP_Version' , '1.9.5' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -558,7 +558,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret);prr($tum_oauth );
               $request_token = $tum_oauth->getRequestToken($callback_url); echo "####"; prr($request_token);
               $options['trOAuthToken'] = $request_token['oauth_token'];
-              $options['trOAuthTokenSecret'] = $request_token['oauth_token_secret'];
+              $options['trOAuthTokenSecret'] = $request_token['oauth_token_secret'];// prr($tum_oauth ); die();
               switch ($tum_oauth->http_code) { case 200: $url = $tum_oauth->getAuthorizeURL($options['trOAuthToken']); update_option($this->dbOptionsName, $options);// prr($url);
                 echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to Tumblr. Refresh the page or try again later.</b>'; die();
@@ -1000,7 +1000,7 @@ if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blo
 
 if (!function_exists("nsFormatMessage")) {//## Format Message
   function nsFormatMessage($msg, $postID){   global $ShownAds; $post = get_post($postID); $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
-      if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}                    
+      if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}      
       if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID);   $response  = wp_remote_get('http://gd.is/gtq/'.$url); 
         if ((is_array($response) && ($response['response']['code']=='200'))) $url = $response['body'];  $msg = str_ireplace("%SURL%", $url, $msg);
       }                    
@@ -1109,18 +1109,17 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
 }
 // Add function to pubslih to Twitter
 if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW 
-  function doPublishToTW($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  $isPost = isset($_POST["SNAPEdit"]);
+  function doPublishToTW($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  $isPost = isset($_POST["SNAPEdit"]);
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle." - ".rand(1, 155);}
       else{
         $post = get_post($postID); //prr($post); die();
-        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }    
-        $twMsgFormat = str_ireplace("%SURL%", "%URL%", $twMsgFormat);
+        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['twMsgFormat']; }            
         $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
         $twMsgFormat = str_ireplace("%URL%", "%URLXXURLXXURLXXURL%", $twMsgFormat); $msg2 = nsFormatMessage($twMsgFormat, $postID); $uln = strlen($msg)-strlen($msg2);         
       }
       require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else $msg = nsTrnc($msg, 140); 
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
-      $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg));// prr($tmhOAuth);
+      $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
       if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
   }
 }
