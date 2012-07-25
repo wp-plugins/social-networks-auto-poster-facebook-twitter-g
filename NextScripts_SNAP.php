@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.5
+Version: 1.9.6
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.5' );
+define( 'NextScripts_SNAP_Version' , '1.9.6' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -238,7 +238,7 @@ if (!class_exists("NS_SNAutoPoster")) {
            
            ?>
             
-            <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">                
+            <form method="post" action="<?php echo admin_url();?>options-general.php?page=NextScripts_SNAP.php">                
             <!-- ######################## G+ ###################################-->   
             <h3 style="font-size: 17px;">Google+ Settings</h3>   
             
@@ -405,7 +405,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <div style="width:100%;"><strong>Your Access Token:</strong> </div><input name="apTWAccToken" id="apTWAccToken" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['twAccToken']), 'NS_SNAutoPoster') ?>" />
             <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="apTWAccTokenSec" id="apTWAccTokenSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['twAccTokenSec']), 'NS_SNAutoPoster') ?>" />
             
-            <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['gpAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
+            <div style="width:100%;">
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
               </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
               
@@ -983,6 +983,9 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     $result = curl_exec($ch); $resultArray = curl_getinfo($ch); 
     curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
+if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
+    $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
+}}
 if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {    
     $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $text);    $text = preg_replace('/<!--(.*)-->/Uis', "", $text);  $text = str_ireplace('allowfullscreen','', $text); 
     if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML($text);  $text = $doc->saveHTML(); $text = CutFromTo($text, '<body>', '</body>');
@@ -1011,8 +1014,8 @@ if (!function_exists("nsFormatMessage")) {//## Format Message
       if (preg_match('%STITLE%', $msg)) { $title = $post->post_title;  $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
       if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
       if (preg_match('%TEXT%', $msg)) {      
-        if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', $post->post_content))), 300, " ", "...");     
-        $msg = str_ireplace("%TEXT%", $excerpt, $msg);
+        if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= apply_filters('the_content', $post->post_content);
+        $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%TEXT%", $excerpt, $msg);
       }     
       if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', $post->post_content); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
       if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
@@ -1237,8 +1240,9 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
   
   
   if ( is_singular() ) {
-    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( get_the_excerpt( $post->ID ) ); } else { $ogdesc = str_replace( "\r\n", ' ' , substr( strip_tags( strip_shortcodes( apply_filters('the_content', $post->post_content) ) ), 0, 160 ) ); }
-  } else { $ogdesc = get_bloginfo( 'description' ); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
+    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( nxs_snapCleanHTML(get_the_excerpt( $post->ID )) ); } 
+      else { $ogdesc = str_replace( "\r\n", ' ' , nsTrnc( strip_tags( strip_shortcodes( nxs_snapCleanHTML(apply_filters('the_content', $post->post_content)) ) ), 250, ' ' ) ); }
+  } else { $ogdesc = nxs_snapCleanHTML(get_bloginfo( 'description' )); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
   echo '<meta property="og:description" content="' . trim( esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) )) . '" />' . "\n";        
   
   //## Add og:image
@@ -1271,7 +1275,7 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
 //## Actions and filters    
 function ns_custom_types_setup(){ $options = get_option('NS_SNAutoPoster');  
   $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
-  if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
+  if (isset($options['nxsCPTSeld']) && $options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
   foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ // echo "|".$cptID."|";
     add_action('future_to_publish_'.$cptID, 'nsPublishTo');
     add_action('new_to_publish_'.$cptID, 'nsPublishTo');

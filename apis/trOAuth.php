@@ -225,6 +225,7 @@ $headers[] = 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3';
     curl_setopt($ci, CURLOPT_TIMEOUT, $this->timeout);
     curl_setopt($ci, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
+    curl_setopt($ci, CURLOPT_SSL_VERIFYHOST, $this->ssl_verifypeer);
 //    curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
 
 

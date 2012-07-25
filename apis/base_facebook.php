@@ -809,6 +809,16 @@ abstract class NXS_BaseFacebook
                   dirname(__FILE__) . '/fb_ca_chain_bundle.crt');
       $result = curl_exec($ch);
     }
+    
+    if (curl_errno($ch) == 60) { // CURLE_SSL_CACERT
+      self::errorLog('Invalid or no certificate authority found, '.
+                     'using bundled information');
+      curl_setopt($ch, CURLOPT_CAINFO, 0);                     
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+      
+      $result = curl_exec($ch);
+    }
 
     if ($result === false) {
       $e = new NXS_FacebookApiException(array(

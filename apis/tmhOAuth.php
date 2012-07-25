@@ -639,6 +639,15 @@ class NXS_tmhOAuth {
 
     // do it!
     $response = curl_exec($c);
+    
+    if (curl_errno($c) == 60) { // CURLE_SSL_CACERT      
+      curl_setopt($c, CURLOPT_CAINFO, 0);                     
+      curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($c, CURLOPT_SSL_VERIFYHOST, false);
+      
+      $response = curl_exec($c);
+    }
+    
     $code = curl_getinfo($c, CURLINFO_HTTP_CODE);
     $info = curl_getinfo($c);
     $error = curl_error($c);
