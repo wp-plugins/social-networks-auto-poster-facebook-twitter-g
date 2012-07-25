@@ -377,7 +377,9 @@ if (!class_exists("NS_SNAutoPoster")) {
                     if ($user) {
                         try { $page_id = $options['fbPgID']; $page_info = $facebook->api("/$page_id?fields=access_token");
                             if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; }
-                        } catch (NXS_FacebookApiException $e) { error_log($e); $user = null;}
+                        } catch (NXS_FacebookApiException $e) { $errMsg = $e->getMessage();
+                          if ( stripos($errMsg, 'Unknown fields: access_token')!==false) $options['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; else { echo 'Error:',  $errMsg, "\n"; die(); }
+                        }
                     }else echo "Please login to Facebook";                
                                                 
                  if ($user>0) $options['fbAppAuthUser'] = $user; update_option($this->dbOptionsName . $optionsAppend, $options);                            
@@ -916,17 +918,17 @@ if (!function_exists("jsPostToSNAP")) {
 
 //## Repost to Google+
 if (!function_exists("rePostToGP_ajax")) {
-  function rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $id = $_POST['id'];  $result = nsPublishTo($id, 'GP', true);   
+  function rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $id = $_POST['id'];  $result = nxs_snapPublishTo($id, 'GP', true);   
     if ($result == 200) die("Your post has been successfully sent to Google+"); else die($result);
   }
 }                                    
 if (!function_exists("rePostToFB_ajax")) {
-  function rePostToFB_ajax() { check_ajax_referer('rePostToFB');  $id = $_POST['id'];  $result = nsPublishTo($id, 'FB', true);   
+  function rePostToFB_ajax() { check_ajax_referer('rePostToFB');  $id = $_POST['id'];  $result = nxs_snapPublishTo($id, 'FB', true);   
     if ($result == 200) die("Your post has been successfully sent to FaceBook."); else die($result);
   }
 }                                    
 if (!function_exists("rePostToTW_ajax")) {
-  function rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $id = $_POST['id'];  $result = nsPublishTo($id, 'TW', true);   
+  function rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $id = $_POST['id'];  $result = nxs_snapPublishTo($id, 'TW', true);   
     if ($result == 200) die("Your post has been successfully sent to Twitter."); else die($result);
   }
 }         
@@ -1024,8 +1026,8 @@ if (!function_exists("nsFormatMessage")) {//## Format Message
       return $msg;
   }
 }
-if (!function_exists("nsPublishTo")) { //## Main Function to Post 
-  function nsPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster');  //var_dump(debug_backtrace());
+if (!function_exists("nxs_snapPublishTo")) { //## Main Function to Post 
+  function nxs_snapPublishTo($postArr, $type='', $aj=false) {  $options = get_option('NS_SNAutoPoster');  //var_dump(debug_backtrace());
     if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["SNAPEdit"]);  
     if($postID==0) {
         if ($type=='GP') doPublishToGP($postID, $options);  if ($type=='FB') doPublishToFB($postID, $options);  if ($type=='TW') doPublishToTW($postID, $options); 
@@ -1277,12 +1279,12 @@ function ns_custom_types_setup(){ $options = get_option('NS_SNAutoPoster');
   $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
   if (isset($options['nxsCPTSeld']) && $options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
   foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ // echo "|".$cptID."|";
-    add_action('future_to_publish_'.$cptID, 'nsPublishTo');
-    add_action('new_to_publish_'.$cptID, 'nsPublishTo');
-    add_action('draft_to_publish_'.$cptID, 'nsPublishTo');
-    add_action('pending_to_publish_'.$cptID, 'nsPublishTo');
-    add_action('private_to_publish_'.$cptID, 'nsPublishTo');
-    add_action('auto-draft_to_publish_'.$cptID, 'nsPublishTo');
+    add_action('future_to_publish_'.$cptID, 'nxs_snapPublishTo');
+    add_action('new_to_publish_'.$cptID, 'nxs_snapPublishTo');
+    add_action('draft_to_publish_'.$cptID, 'nxs_snapPublishTo');
+    add_action('pending_to_publish_'.$cptID, 'nxs_snapPublishTo');
+    add_action('private_to_publish_'.$cptID, 'nxs_snapPublishTo');
+    add_action('auto-draft_to_publish_'.$cptID, 'nxs_snapPublishTo');
   }
 }    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
@@ -1302,12 +1304,12 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('save_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
     add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));    
     //## Whenever you publish a post, post to Google Plus
-    add_action('future_to_publish', 'nsPublishTo');
-    add_action('new_to_publish', 'nsPublishTo');
-    add_action('draft_to_publish', 'nsPublishTo');
-    add_action('pending_to_publish', 'nsPublishTo');   
-    add_action('private_to_publish', 'nsPublishTo');
-    add_action('auto-draft_to_publish', 'nsPublishTo');
+    add_action('future_to_publish', 'nxs_snapPublishTo');
+    add_action('new_to_publish', 'nxs_snapPublishTo');
+    add_action('draft_to_publish', 'nxs_snapPublishTo');
+    add_action('pending_to_publish', 'nxs_snapPublishTo');   
+    add_action('private_to_publish', 'nxs_snapPublishTo');
+    add_action('auto-draft_to_publish', 'nxs_snapPublishTo');
     
     add_action('wp_loaded', 'ns_custom_types_setup' );        
     

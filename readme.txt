@@ -119,6 +119,7 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 = 1.9.6 =
 * Bug fix - Twitter formatting
 * Bug fix - Google incorrect page issue.
+* Bug fix - Facebook Personal Page Authorization Issue.
 * Bug fix - SSL connectivity issued for some hosts.
 
 = 1.9.5 =
