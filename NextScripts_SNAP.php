@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.8
+Version: 1.9.9
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.8' );
+define( 'NextScripts_SNAP_Version' , '1.9.9' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -239,7 +239,7 @@ if (!class_exists("NS_SNAutoPoster")) {
           jQuery('div#popShAtt').hide();
         });
         
-        $('a#showShAtt').mousemove(function(e) {
+        jQuery('a#showShAtt').mousemove(function(e) {
           jQuery("div#popShAtt").css('top', e.pageY + moveDown).css('left', e.pageX + moveLeft);
         });
         
@@ -781,7 +781,7 @@ div#popShAtt {
               }</script>
             <script type="text/javascript">function doShowHideAltFormatX(){if (jQuery('#SNAP').is(':checked')) {jQuery('#altFormat1').hide(); jQuery('#altFormat2').hide();} else { jQuery('#altFormat1').show(); jQuery('#altFormat2').show();}}
             
-            function doSwitchShAtt(att){
+        function doSwitchShAtt(att){
 	            if (att==1) { jQuery('#apFBAttch').attr('checked', true); jQuery('#apFBAttchShare').attr('checked', false); } else {jQuery('#apFBAttch').attr('checked', false); jQuery('#apFBAttchShare').attr('checked', true);}
             } jQuery(function() {
         var moveLeft = 20;
@@ -796,7 +796,7 @@ div#popShAtt {
           jQuery('div#popShAtt').hide();
         });
         
-        $('a#showShAtt').mousemove(function(e) {
+        jQuery('a#showShAtt').mousemove(function(e) {
           jQuery("div#popShAtt").css('top', e.pageY + moveDown).css('left', e.pageX + moveLeft);
         });
         
