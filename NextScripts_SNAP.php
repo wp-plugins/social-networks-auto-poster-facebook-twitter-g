@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.7
+Version: 1.9.8
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.7' );
+define( 'NextScripts_SNAP_Version' , '1.9.8' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -189,6 +189,9 @@ if (!class_exists("NS_SNAutoPoster")) {
             function doShowHideBlocks(blID){ if (jQuery('#apDo'+blID).is(':checked')) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();
                     
             }
+            function doSwitchShAtt(att){
+	            if (att==1) { jQuery('#apFBAttch').attr('checked', true); jQuery('#apFBAttchShare').attr('checked', false); } else {jQuery('#apFBAttch').attr('checked', false); jQuery('#apFBAttchShare').attr('checked', true);}
+            }
             
             function getBoards(u,p){ jQuery("#pnLoadingImg").show();
                 
@@ -223,6 +226,25 @@ if (!class_exists("NS_SNAutoPoster")) {
               if (nt=='LI') { var data = { action: 'rePostToLI', id: 0, _wpnonce: jQuery('input#rePostToLI_wpnonce').val()}; callAjSNAP(data, 'LinkedIn'); }
             }
             
+      jQuery(function() {
+        var moveLeft = 20;
+        var moveDown = 10;
+        
+        jQuery('a#showShAtt').hover(function(e) {
+          jQuery('div#popShAtt').show()
+          .css('top', e.pageY + moveDown)
+          .css('left', e.pageX + moveLeft)
+          .appendTo('body');
+        }, function() {
+          jQuery('div#popShAtt').hide();
+        });
+        
+        $('a#showShAtt').mousemove(function(e) {
+          jQuery("div#popShAtt").css('top', e.pageY + moveDown).css('left', e.pageX + moveLeft);
+        });
+        
+      });
+            
             </script>
             
 <style type="text/css">
@@ -240,7 +262,18 @@ if (!class_exists("NS_SNAutoPoster")) {
 }.NXSButton:active {color:#ffffff; position:relative; top:1px;
 }.NXSButton:focus {color:#ffffff; position:relative; top:1px;
 }.nxsMultiSelect{ width: 250px; border: 1px solid #CCCCCC; }
-
+div#popShAtt {
+        display: none;
+        position: absolute;
+        width: 600px;
+        padding: 10px;
+        background: #eeeeee;
+        color: #000000;
+        border: 1px solid #1a1a1a;
+        font-size: 90%;
+      }
+.underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
+.underdash a:hover {border-bottom: 1px #21759B dashed}
 </style>
             <div style="float:right; padding-top: 10px; padding-right: 10px;">
               <div style="float:right;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"></a></div>
@@ -359,18 +392,32 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             
             <br/><br/>
-            <p style="margin: 0px;"><input value="1"  id="apFBAttch" onchange="doShowHideAltFormat();" type="checkbox" name="apFBAttch"  <?php if ((int)$options['fb'][0]['fbAttch'] == 1) echo "checked"; ?> /> 
-              <strong>Publish Posts to Facebook as an Attachement</strong>                                 
+            <div id="altFormat">
+              <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['fb'][0]['fbAttch'] == 1) echo "Message text:"; else echo "Message text:"; ?></strong> <br/>
+              <input name="apFBMsgFrmt" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fb'][0]['fbMsgFormat']), 'NS_SNAutoPoster') ?>" /><br/>
+              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
+              </div>
+            </div>
+            
+            <br/>
+            <p style="margin: 0px;"><input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="apFBAttch" <?php if ((int)$options['fb'][0]['fbAttch'] == 2) echo "checked"; ?> /> 
+              <strong>Share a link to your blogpost</strong>  .. or ..                                  
+               <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="apFBAttch"  <?php if ((int)$options['fb'][0]['fbAttch'] == 1) echo "checked"; ?> /> 
+              <strong>Attach your blogpost</strong> &lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>)       
+                                       
             </p>
+            <div id="popShAtt">
+        <h3>Two ways of attaching post on Facebook</h3>
+        <p>
+          &nbsp;
+        </p>  <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/>
+      </div>
+            
              <p style="margin: 10px; "><input value="1"  id="apFBAttchAsVid" type="checkbox" name="apFBAttchAsVid"  <?php if ((int)$options['fb'][0]['fbAttchAsVid'] == 1) echo "checked"; ?> /> 
               <strong>If post has video use it for attachment.</strong> If post has video (youtube only supported at this time) this video will be used for attachment instead of featured image.
             </p>
             
-            <div id="altFormat" style="<?php if ((int)$options['fb'][0]['fbAttch'] == 1) echo "margin-left: 10px;"; ?> ">
-              <div style="width:100%;"><strong id="altFormatText"><?php if ((int)$options['fb'][0]['fbAttch'] == 1) echo "Post Announce Text:"; else echo "Post Text Format:"; ?></strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
-              </div><input name="apFBMsgFrmt" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['fb'][0]['fbMsgFormat']), 'NS_SNAutoPoster') ?>" />
-            </div><br/>   
+            <br/>   
             <?php if ($options['fb'][0]['fbPgID']!='') {?><div style="width:100%;"><strong>Your Facebook Page ID:</strong> <?php _e(apply_filters('format_to_edit',$options['fb'][0]['fbPgID']), 'NS_SNAutoPoster') ?> </div><?php } ?>
             <?php 
             if($options['fb'][0]['fbAppSec']=='') { ?>
@@ -668,10 +715,10 @@ if (!class_exists("NS_SNAutoPoster")) {
                 $SNAP_FormatGP = $_POST["SNAP_FormatGP"];  $SNAP_FormatFB = $_POST["SNAP_FormatFB"];  $SNAP_FormatTW = $_POST["SNAP_FormatTW"]; // prr($_POST);
                 $SNAP_FormatBG = $_POST["SNAP_FormatBG"];  $SNAP_FormatTBG = $_POST["SNAP_FormatTBG"];                
                 $SNAP_FormatTR = $_POST["SNAP_FormatTR"];  $SNAP_FormatTTR = $_POST["SNAP_FormatTTR"];                
-                $SNAP_FormatLI = $_POST["SNAP_FormatLI"];                
+                $SNAP_FormatLI = $_POST["SNAP_FormatLI"];   $SNAP_PNBoard = $_POST["apPNBoard"];              
                 
                 if (isset($SNAP_AttachTR) && !empty($SNAP_AttachTR)) update_post_meta($id, 'SNAP_AttachTR', $SNAP_AttachTR);                
-                if (isset($SNAP_AttachPN) && !empty($SNAP_AttachPN)) update_post_meta($id, 'SNAP_AttachPN', $SNAP_AttachPN);
+                if (isset($SNAP_PNBoard) && !empty($SNAP_PNBoard)) update_post_meta($id, 'apPNBoard', $SNAP_PNBoard);
                 if (isset($SNAP_AttachLI) && !empty($SNAP_AttachLI)) update_post_meta($id, 'SNAP_AttachLI', $SNAP_AttachLI);
                 
                 if (isset($SNAP_FormatGP) && !empty($SNAP_FormatGP)) update_post_meta($id, 'SNAP_FormatGP', $SNAP_FormatGP);                
@@ -687,7 +734,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         }
         function NS_SNAP_AddPostMetaTags() { global $post; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; $options = get_option($this->dbOptionsName);    
             $doGP = $options['gp'][0]['doGP'];   $doFB = $options['fb'][0]['doFB'];   $doTW = $options['tw'][0]['doTW'];     
-            $doTR = $options['tr'][0]['doTR'];    $doPN = $options['pn'][0]['pndoPN'];    $doBG = $options['bg'][0]['doBG'];   $doLI = $options['li'][0]['doLI'];     
+            $doTR = $options['tr'][0]['doTR'];    $doPN = $options['pn'][0]['doPN'];    $doBG = $options['bg'][0]['doBG'];   $doLI = $options['li'][0]['doLI'];     
             $isAvailGP =  $options['gp'][0]['gpUName']!='' && $options['gp'][0]['gpPass']!='';
             $isAvailPN =  $options['pn'][0]['pnUName']!='' && $options['pn'][0]['pnPass']!='';
             $isAvailBG =  $options['bg'][0]['bgUName']!='' && $options['bg'][0]['bgPass']!='';
@@ -713,10 +760,50 @@ if (!class_exists("NS_SNAutoPoster")) {
               <div id="postftfp" class="postbox">
           
               <div class="inside"><div id="postftfp">
+              
+              <style type="text/css">
+div#popShAtt {
+        display: none;
+        position: absolute;
+        width: 600px;
+        padding: 10px;
+        background: #eeeeee;
+        color: #000000;
+        border: 1px solid #1a1a1a;
+        font-size: 90%;
+      }
+.underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
+.underdash a:hover {border-bottom: 1px #21759B dashed}
+</style>
+              
               <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
                     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
               }</script>
-            <script type="text/javascript">function doShowHideAltFormatX(){if (jQuery('#SNAP').is(':checked')) {jQuery('#altFormat1').hide(); jQuery('#altFormat2').hide();} else { jQuery('#altFormat1').show(); jQuery('#altFormat2').show();}}</script>
+            <script type="text/javascript">function doShowHideAltFormatX(){if (jQuery('#SNAP').is(':checked')) {jQuery('#altFormat1').hide(); jQuery('#altFormat2').hide();} else { jQuery('#altFormat1').show(); jQuery('#altFormat2').show();}}
+            
+            function doSwitchShAtt(att){
+	            if (att==1) { jQuery('#apFBAttch').attr('checked', true); jQuery('#apFBAttchShare').attr('checked', false); } else {jQuery('#apFBAttch').attr('checked', false); jQuery('#apFBAttchShare').attr('checked', true);}
+            } jQuery(function() {
+        var moveLeft = 20;
+        var moveDown = 10;
+        
+        jQuery('a#showShAtt').hover(function(e) {
+          jQuery('div#popShAtt').show()
+          .css('top', e.pageY + moveDown)
+          .css('left', e.pageX + moveLeft)
+          .appendTo('body');
+        }, function() {
+          jQuery('div#popShAtt').hide();
+        });
+        
+        $('a#showShAtt').mousemove(function(e) {
+          jQuery("div#popShAtt").css('top', e.pageY + moveDown).css('left', e.pageX + moveLeft);
+        });
+        
+      });
+            
+           
+            </script>
             
             <input value="SNAPEdit" type="hidden" name="SNAPEdit" />
             <table style="margin-bottom:40px" border="0">
@@ -781,7 +868,27 @@ if (!class_exists("NS_SNAutoPoster")) {
                 <td><b><?php _e('Publish this Post to FaceBook', 'NS_SPAP'); ?></b></td>
                 </tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
-                <input value="1"  id="SNAP_AttachFB" onchange="doShowHideAltFormatX();" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to FaceBook as Attachement</strong></td>                </tr>
+                
+                
+               
+                                       
+           
+                
+                
+                <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Attach your blogpost</strong>
+                
+                  .. or ..                                  
+             <input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="SNAP_AttachFB" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> 
+              <strong>Share a link to your blogpost</strong>  &lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
+                
+                <div id="popShAtt">
+        <h3>Two ways of attaching post on Facebook</h3>
+        <p>
+          &nbsp;
+        </p>  <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/>
+      </div>
+                
+                </td>                </tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="SNAP_FormatFB" size="60px"/></td></tr>
                 
@@ -1104,14 +1211,14 @@ if (!function_exists("doPublishToGP")) { //## Second Function to Post to G+
       $connectID = getUqID();  $loginError = doConnectToGooglePlus($connectID, $email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
       $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo($connectID, $url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gp'][0]['gpPageID'])) {  $to = $options['gp'][0]['gpPageID']; $ret = doPostToGooglePlus($connectID, $msg, $lnk, $to);} else $ret = doPostToGooglePlus($connectID, $msg, $lnk);
-      if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
+      if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page'; // echo "G";
   }
 }
 // Add function to pubslih to FaceBook
 if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
   function doPublishToFB($postID, $options){ global $ShownAds; require_once ('apis/facebook.php'); $page_id = $options['fb'][0]['fbPgID'];  $isPost = isset($_POST["SNAPEdit"]); if (isset($ShownAds)) $ShownAdsL = $ShownAds;
     $facebook = new NXS_Facebook(array( 'appId' => $options['fb'][0]['fbAppID'], 'secret' => $options['fb'][0]['fbAppSec'], 'cookie' => true ));  
-    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $imgURL = '';
     
     if ($postID=='0') {echo "Testing ... <br/><br/>"; 
     $mssg = array('access_token'  => $options['fb'][0]['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
@@ -1121,16 +1228,25 @@ if (!function_exists("doPublishToFB")) { //## Second Function to Post to FB
       if ($isPost) $isAttachFB = $_POST['SNAP_AttachFB'];  else { $t = get_post_meta($postID, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$options['fb'][0]['fbAttch'];}
       $isAttachVidFB = $t!=''?$t:$options['fb'][0]['fbAttchAsVid'];
       $msg = nsFormatMessage($fbMsgFormat, $postID);
-      if ($isAttachFB=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];} 
+      if (($isAttachFB=='1' || $isAttachFB=='2') && function_exists("get_post_thumbnail_id") ){ 
+	      if ($imgURL=='') if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $imgURL = $imgURL[0];} 
+          if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
+          if ($imgURL=='') $imgURL = $options['pn'][0]['pnDefImg']; if ($imgURL=='') $imgURL = $options['ogImgDef'];
+	           
+      } 
        $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content); $dsc = nsTrnc($dsc, 900, ' ');
-      $postSubtitle = home_url(); $dsc = strip_tags($dsc);  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $dsc = nxs_decodeEntitiesFull($dsc);
+      $postSubtitle = get_permalink($postID); $dsc = strip_tags($dsc);  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $dsc = nxs_decodeEntitiesFull($dsc);
       $mssg = array('access_token'  => $options['fb'][0]['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID),
-       'description' => $dsc, 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
-      if (trim($src)!='') $mssg['picture'] = $src;
+       'description' => $dsc);  
+      if (trim($imgURL)!='') $mssg['picture'] = $imgURL;
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
-    }  //  prr($mssg);
+    }   
+    
+    if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));
+    
+    //prr($mssg);
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
-    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
+    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}   // echo "F";
     if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
   }
 }
@@ -1175,7 +1291,7 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pn'][0]['pnDefImg']!='') $imgURL = $options['pn'][0]['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; $boardID = $options['pn'][0]['pnBoard']; 
     }
-    else{        
+    else{    //    prr($_POST); $t = get_post_meta($postID, 'apPNBoard', true); prr($t); prr($options['pn'][0]['pnBoard']);
       if ($isPost) $pnMsgFormat = $_POST['SNAP_FormatPN']; else { $t = get_post_meta($postID, 'SNAP_FormatPN', true); $pnMsgFormat = $t!=''?$t:$options['pn'][0]['pnMsgFormat']; } 
       if ($isPost) $boardID = $_POST['apPNBoard']; else { $t = get_post_meta($postID, 'apPNBoard', true); $boardID = $t!=''?$t:$options['pn'][0]['pnBoard']; } 
       $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID);
@@ -1188,7 +1304,7 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
     
     $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
     $ret = doPostToPinterest($msg, $imgURL, $link, $boardID);
-    if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Pinterest Page';
+    if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Pinterest Page'; // echo "P";
   }
 }
 if (!function_exists("doPublishToBG")) { //## Second Function to Post to PN
