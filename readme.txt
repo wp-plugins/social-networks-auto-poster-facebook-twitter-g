@@ -2,7 +2,7 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, linkedin, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image
+Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, linkedin, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost
 Requires at least: 2.8
 Tested up to: 3.4.1
 Stable tag: 1.9.9
@@ -117,10 +117,10 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 == Changelog ==
 
 = 1.9.9 =
-* Bug fix - Javascript/JQuery Error fixed.  
+* Bug fix - Javascript/JQuery Error fixed  
 
 = 1.9.8 =
-* Improvement - Now you have a choise between "attaching" your post to Facebook or "Sharing a link" to it.  
+* Improvement - Now you have a choise between "attaching" your post to Facebook or "Sharing a link" to it  
 * Improvement - Better Twitter connection for non ssl
 * Bug fix - Pinterest Default Settings
 * Bug fix - Pinterest Board Selection
