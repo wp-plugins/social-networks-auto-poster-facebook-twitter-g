@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.9
+Version: 1.9.10
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.9' );
+define( 'NextScripts_SNAP_Version' , '1.9.10' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -523,7 +523,7 @@ div#popShAtt {
               $request_token = $li_oauth->getRequestToken(); //echo "####"; prr($request_token); die();
               $options['li'][0]['liOAuthToken'] = $request_token->key;
               $options['li'][0]['liOAuthTokenSecret'] = $request_token->secret; 
-              switch ($li_oauth->http_code) { case 200: $url = $li_oauth->generateAuthorizeUrl(); update_option($this->dbOptionsName, $options);
+              switch ($li_oauth->http_code) { case 200: $url = $li_oauth->generateAuthorizeUrl(); update_option($this->dbOptionsName, $options); prr($url);
                 echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to LinkedIn. Refresh the page or try again later.</b>'; die();
               }die();
@@ -875,11 +875,11 @@ div#popShAtt {
            
                 
                 
-                <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Attach your blogpost</strong>
+                <input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="SNAP_AttachFB" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> 
+              <strong>Share a link to your blogpost</strong>
                 
                   .. or ..                                  
-             <input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="SNAP_AttachFB" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> 
-              <strong>Share a link to your blogpost</strong>  &lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
+               <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Attach your blogpost</strong>&lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
                 
                 <div id="popShAtt">
         <h3>Two ways of attaching post on Facebook</h3>

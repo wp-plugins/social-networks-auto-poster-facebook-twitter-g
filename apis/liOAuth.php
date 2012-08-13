@@ -24,7 +24,7 @@ class nsx_LinkedIn {
     
     $this->consumer = new nsx_trOAuthConsumer($consumer_key, $consumer_secret, $this->oauth_callback);
     $this->signature_method = new nsx_trOAuthSignatureMethod_HMAC_SHA1();
-    $this->request_token_path = $this->secure_base_url . "/uas/oauth/requestToken";
+    $this->request_token_path = $this->secure_base_url . "/uas/oauth/requestToken?scope=r_basicprofile+r_emailaddress+rw_nus";
     $this->access_token_path = $this->secure_base_url . "/uas/oauth/accessToken";
     $this->authorize_path = $this->secure_base_url . "/uas/oauth/authorize";
     
@@ -36,7 +36,7 @@ class nsx_LinkedIn {
     $request->set_parameter("oauth_callback", $this->oauth_callback);
     $request->sign_request($this->signature_method, $consumer, NULL); prr($request);
     $headers = Array();
-    $url = $request->to_url();
+    $url = $request->to_url();//prr($url); 
     $response = $this->httpRequest($url, $headers, "GET"); if ($response!='') $this->http_code = 200;
     parse_str($response, $response_params); //prr($response_params); echo "!!!!";
     $this->request_token = new nsx_trOAuthConsumer($response_params['oauth_token'], $response_params['oauth_token_secret'], 1); return $this->request_token;
