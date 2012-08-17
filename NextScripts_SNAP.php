@@ -1409,9 +1409,6 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
   if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\n";       if (isset($ShownAds)) $ShownAds = $ShownAdsL;          
 }
 
-
-
-
 //## Actions and filters    
 function ns_custom_types_setup(){ $options = get_option('NS_SNAutoPoster');  
   $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
@@ -1430,12 +1427,8 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('admin_menu', 'NS_SNAutoPoster_ap');
     //## Initialize options on plugin activation
     add_action("activate_NextScripts_GPAutoPoster/NextScripts_SNAP.php",  array(&$plgn_NS_SNAutoPoster, 'init'));    
-    
-    //add_action('edit_form_advanced', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
-  //  add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
-    
+   
     add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));
-    
     
     add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
     add_action('publish_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
