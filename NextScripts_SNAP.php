@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.10
+Version: 1.9.11
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.10' );
+define( 'NextScripts_SNAP_Version' , '1.9.11' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -1095,7 +1095,7 @@ if (!function_exists("nsGetBoards_ajax")) {
 }               
 
 
-function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(strlen($string) <= $limit) return $string; $string = substr($string, 0, $limit-strlen($pad)); 
+function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(strlen($string) <= $limit) return $string; if(strlen($pad) >= $limit) return ''; $string = substr($string, 0, $limit-strlen($pad)); 
   $brLoc = strripos($string, $break);  if ($brLoc===false) return $string.$pad; else return substr($string, 0, $brLoc).$pad; 
 }                 
 
@@ -1256,11 +1256,32 @@ if (!function_exists("doPublishToTW")) { //## Second Function to Post to TW
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle." - ".rand(1, 155);}
       else{
         $post = get_post($postID); //prr($post); die();
-        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['tw'][0]['twMsgFormat']; }            
-        $twMsgFormat = str_ireplace("%TITLE%", "%STITLE%", $twMsgFormat); $msg = nsFormatMessage($twMsgFormat, $postID); 
-        $twMsgFormat = str_ireplace("%URL%", "%URLXXURLXXURLXXURL%", $twMsgFormat); $msg2 = nsFormatMessage($twMsgFormat, $postID); $uln = strlen($msg)-strlen($msg2);         
-      }
-      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else $msg = nsTrnc($msg, 140); 
+        if ($isPost) $twMsgFormat = $_POST['SNAP_FormatTW']; else { $t = get_post_meta($postID, 'SNAP_FormatTW', true); $twMsgFormat = $t!=''?$t:$options['tw'][0]['twMsgFormat']; }   
+        $twLim = 140; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 20; 
+        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - strlen($aun); } 
+        $noRepl = str_ireplace("%TITLE%", "", $twMsgFormat); $noRepl = str_ireplace("%SITENAME%", "", $noRepl); $noRepl = str_ireplace("%URL%", "", $noRepl);
+        $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);
+        $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl); $twLim = $twLim - strlen($noRepl); 
+        
+        if (stripos($twMsgFormat, '%TITLE%')!==false) {
+          $title = $post->post_title; $title = nsTrnc($title, $twLim); $twMsgFormat = str_ireplace("%TITLE%", $title, $twMsgFormat); $twLim = $twLim - strlen($title);
+        } 
+        if (stripos($twMsgFormat, '%SITENAME%')!==false) {
+          $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - strlen($siteTitle);
+        }
+        if (stripos($twMsgFormat, '%TEXT%')!==false) {
+          if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= apply_filters('the_content', $post->post_content);
+          $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "...");
+          $excerpt = nsTrnc($excerpt, $twLim); $twMsgFormat = str_ireplace("%TEXT%", $excerpt, $twMsgFormat); $twLim = $twLim - strlen($excerpt);
+        }
+        if (stripos($twMsgFormat, '%FULLTEXT%')!==false) {
+          $postContent = apply_filters('the_content', $post->post_content); $postContent = nsTrnc($postContent, $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $postContent, $twMsgFormat); $twLim = $twLim - strlen($postContent);
+        }
+          
+        $msg = nsFormatMessage($twMsgFormat, $postID); 
+                
+      } //prr($twMsgFormat); 
+      require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); //if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else $msg = nsTrnc($msg, 140); prr($uln); prr($msg); echo strlen($msg);
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['tw'][0]['twConsKey'], 'consumer_secret' => $options['tw'][0]['twConsSec'], 'user_token' => $options['tw'][0]['twAccToken'], 'user_secret' => $options['tw'][0]['twAccTokenSec']));
       $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
       if ($code == 200) { if ($postID=='0') { echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response']));*/}} else { NXS_tmhUtilities::pr($tmhOAuth->response['response']);}      
@@ -1409,6 +1430,9 @@ function nsAddOGTags() { global $post, $ShownAds;; $options = get_option("NS_SNA
   if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\n";       if (isset($ShownAds)) $ShownAds = $ShownAdsL;          
 }
 
+
+
+
 //## Actions and filters    
 function ns_custom_types_setup(){ $options = get_option('NS_SNAutoPoster');  
   $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);   
@@ -1427,8 +1451,12 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('admin_menu', 'NS_SNAutoPoster_ap');
     //## Initialize options on plugin activation
     add_action("activate_NextScripts_GPAutoPoster/NextScripts_SNAP.php",  array(&$plgn_NS_SNAutoPoster, 'init'));    
-   
+    
+    //add_action('edit_form_advanced', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+  //  add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_AddPostMetaTags'));
+    
     add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));
+    
     
     add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
     add_action('publish_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
