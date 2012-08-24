@@ -83,14 +83,15 @@ class nsx_LinkedIn {
   
 
 
-  function postShare($msg, $title='', $url='', $imgURL='', $dsc='') { $status_url = $this->base_url . "/v1/people/~/shares";  $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));
+  function postShare($msg, $title='', $url='', $imgURL='', $dsc='') { $status_url = $this->base_url . "/v1/people/~/shares";  
+    $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
     $xml = '<?xml version="1.0" encoding="UTF-8"?><share><comment>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</comment>'.
-    ($url!=''?'<content><title>'.$title.'</title><submitted-url>'.$url.'</submitted-url><submitted-image-url>'.$imgURL.'</submitted-image-url><description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').
+    ($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><submitted-url>'.$url.'</submitted-url><submitted-image-url>'.$imgURL.'</submitted-image-url><description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').
     '<visibility><code>anyone</code></visibility></share>';
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) echo $auth_header . "\n";
+    if ($debug) echo $auth_header . "\n"; 
     $response = $this->httpRequest($status_url, $auth_header, "POST", $xml); 
     return $response;
   }
@@ -126,20 +127,21 @@ class nsx_LinkedIn {
     return $response;
   }
   
-  function httpRequest($url, $auth_header, $method, $body = NULL) {
+  function httpRequest($url, $auth_header, $method, $body = NULL) { //if (!is_array($auth_header)) $auth_header = array($auth_header);
+    if (!is_array($auth_header)) $auth_header = array($auth_header);
     if (!$method) $method = "GET"; $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_HEADER, 0);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array($auth_header)); // Set the headers.
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $auth_header); // Set the headers.
 
-    if ($body) {
+    if ($body) { $auth_header[] = "Content-Type: text/xml;charset=utf-8";
       curl_setopt($curl, CURLOPT_POST, 1);
       curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-      curl_setopt($curl, CURLOPT_HTTPHEADER, array($auth_header, "Content-Type: text/xml;charset=utf-8"));   
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $auth_header);   
     }
-
+ 
     $data = curl_exec($curl); $header = curl_getinfo($curl);  curl_close($curl); 
     if ($this->debug) echo $data . "\n";    
     if (trim($data)=='' && $header['http_code']=='201') $data = '201';

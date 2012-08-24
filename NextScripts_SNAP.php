@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.11
+Version: 1.9.12
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.11' );
+define( 'NextScripts_SNAP_Version' , '1.9.12' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -230,7 +230,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         var moveLeft = 20;
         var moveDown = 10;
         
-        jQuery('a#showShAtt').hover(function(e) {
+        jQuery('a#showShAtt').hover(function(e) { 
           jQuery('div#popShAtt').show()
           .css('top', e.pageY + moveDown)
           .css('left', e.pageX + moveLeft)
@@ -285,6 +285,8 @@ div#popShAtt {
             </div>
             
            <div class="wrap"><h2>Next Scripts: Social Networks AutoPoster Options</h2>Version: <?php echo NextScripts_SNAP_Version; ?> [Single Account] - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get Multiple Accounts Edition</a><br/><br/>
+           <span style="color:#008000;"><b>Do you want to see some upcoming features?</b> Completely re-done <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-beta">version 2.0 Beta</a> is available to try.</span>
+           <br/><br/>
            Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation instructions</a> (will open in a new tab)
            <?php
           
@@ -869,17 +871,11 @@ div#popShAtt {
                 </tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                 
-                
-               
-                                       
-           
-                
-                
-                <input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="SNAP_AttachFB" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> 
+                <input value="2"  id="apFBAttchShare" onchange="doSwitchShAtt(0);" type="checkbox" name="SNAP_AttachFB" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> </th><td>
               <strong>Share a link to your blogpost</strong>
                 
                   .. or ..                                  
-               <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> </th><td><strong>Attach your blogpost</strong>&lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
+               <input value="1"  id="apFBAttch" onchange="doSwitchShAtt(1);" type="checkbox" name="SNAP_AttachFB"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> <strong>Attach your blogpost</strong>&lt;-- (<a id="showShAtt" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
                 
                 <div id="popShAtt">
         <h3>Two ways of attaching post on Facebook</h3>
@@ -1301,7 +1297,7 @@ if (!function_exists("doPublishToTR")) { //## Second Function to Post to TR
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['tr'][0]['trAccessTocken']['oauth_token'], $options['tr'][0]['trAccessTocken']['oauth_token_secret']); //prr($options);
     $trURL = trim(str_ireplace('http://', '', $options['tr'][0]['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1); 
     if ($options['tr'][0]['trInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',',$tggs); }
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'tags'=>$tags, 'source'=>get_permalink($postID)));
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'tags'=>$tags, 'source'=>get_permalink($postID))); prr($tum_oauth);
     $code = $postinfo->meta->status; //prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } } else {  prr($postinfo);  }      
     return $code;
@@ -1361,8 +1357,14 @@ if (!function_exists("doPublishToLI")) { //## Second Function to Post to PN
     
     if($isAttachLI=='1') { $post = get_post($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  $dsc = nsTrnc($dsc, 250); }
     
+    $title = nsTrnc($post->post_title, 200); 
+    //$dsc = strip_tags($dsc); $msg = strip_tags($msg); $title = strip_tags($title);
+    //$dsc = htmlentities($dsc); $msg = htmlentities($msg); $title = htmlentities($title);
+    //$dsc = str_replace('<','',$dsc); $dsc = str_replace('>','',$dsc); $dsc = str_replace('&gt;','',$dsc); $dsc = str_replace('&lt;','',$dsc);
+    //$msg = str_replace('<','',$msg); $msg = str_replace('>','',$msg); $msg = str_replace('&gt;','',$msg); $msg = str_replace('&lt;','',$msg); 
     
-    try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
+    //$dsc = str_replace('&','',$dsc);
+    try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, $title, get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
       catch (Exception $o){ echo "<br />Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br />'; $ret="ERROR:"; }      
     
     if ($ret!='201') echo $ret; else if ($postID=='0') echo 'OK - Linkedin status updated successfully';
