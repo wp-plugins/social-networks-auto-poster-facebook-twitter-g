@@ -136,8 +136,8 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 * Bug fix - Javascript/JQuery Error fixed  
 
 = 1.9.8 =
-* Improvement - Now you have a choise between "attaching" your post to Facebook or "Sharing a link" to it  
-* Improvement - Better Twitter connection for non ssl
+* Improvement - Now you have a choice between "attaching" your post to Facebook or "Sharing a link" to it  
+* Improvement - Better Twitter connection for non SSL
 * Bug fix - Pinterest Default Settings
 * Bug fix - Pinterest Board Selection
 
@@ -184,7 +184,7 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 * Bug fix - Tumblr/Blogger issue with missing function.
 
 = 1.8.6 =
-* New - If blogpost has video it can be used as attachement in Facebook post. 
+* New - If blogpost has video it can be used as attachment in Facebook post. 
 * Bug fix - Facebook %TEXT% and %FULLTEXT% formatiing issues.
 * Bug fix - Some Blogger Authorization issues.
 
@@ -208,7 +208,7 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 = 1.8.1 =
 * Improvement - Pinterest will look for images in post text if featured image is missing
-* Improvement - Pinterest - adbility to change board diring the post writing.
+* Improvement - Pinterest - ability to change board during the post writing
 * Bug fix - Several small bugs and formating fixes.
 
 = 1.8.0 =
@@ -276,7 +276,7 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 = 1.5.7 =
 * Improvement - Updated Facebook posting - support for Facebook Groups, faster profile posting.
 * Improvement - Better compatibility with older WP versions (<3.1).
-* Improvement - Not requred to replace G+ library with each update if placed into /wp-content/plugins/ folder.
+* Improvement - Not required to replace G+ library with each update if placed into /wp-content/plugins/ folder.
 
 = 1.5.6 =
 * Bug fix - Wrong Options Page Placement.
