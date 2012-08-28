@@ -4,7 +4,7 @@ Plugin Name: Next Scripts Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to your Facebook, Twitter, Tumblr, Pinterest, Blogger and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 1.9.12
+Version: 1.9.13
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
@@ -14,7 +14,7 @@ if (file_exists(realpath(ABSPATH."wp-content/plugins/postToGooglePlus.php"))) re
   if (file_exists(realpath(ABSPATH."wp-content/plugins/postToPinterest.php"))) require realpath(ABSPATH."wp-content/plugins/postToPinterest.php");
   elseif (file_exists(realpath(dirname( __FILE__ ))."/apis/postToPinterest.php")) require realpath(dirname( __FILE__ ))."/apis/postToPinterest.php";
     
-define( 'NextScripts_SNAP_Version' , '1.9.12' );
+define( 'NextScripts_SNAP_Version' , '1.9.13' );
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fstart = stripos($string, $from); $tmp = substr($string,$fstart+strlen($from)); $flen = stripos($tmp, $to);  return substr($tmp,0, $flen);}}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
@@ -283,7 +283,7 @@ div#popShAtt {
               <br/><a target="_blank" href="http://www.owssoftware.com/startcouponwebsite">Make Money with Your Own<br/> Free Deals/Coupons Website</a>
               </div>
             </div>
-            
+            <?php $nxsOne = NextScripts_SNAP_Version; ?>
            <div class="wrap"><h2>Next Scripts: Social Networks AutoPoster Options</h2>Version: <?php echo NextScripts_SNAP_Version; ?> [Single Account] - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get Multiple Accounts Edition</a><br/><br/>
            <span style="color:#008000;"><b>Do you want to see some upcoming features?</b> Completely re-done <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-beta">version 2.0 Beta</a> is available to try.</span>
            <br/><br/>
@@ -303,7 +303,7 @@ div#popShAtt {
             
             <?php } else {?>
             
-            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['gp'][0]['doGP'] == 1) echo "checked"; $nxsOne = "?g=1" ?> /> 
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoGP" name="apDoGP" onchange="doShowHideBlocks('GP');" type="checkbox" <?php if ((int)$options['gp'][0]['doGP'] == 1) echo "checked"; $nxsOne .= "&g=1" ?> /> 
               <strong>Auto-publish your Posts to your Google+ Page or Profile</strong>                                 
             </p>
             <div id="doGPDiv" style="margin-left: 10px;<?php if ((int)$options['gp'][0]['doGP'] != 1) echo "display:none"; ?> ">
@@ -339,7 +339,7 @@ div#popShAtt {
             
             <?php } else {?>
             
-            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoPN" name="apDoPN" onchange="doShowHideBlocks('PN');" type="checkbox" <?php if ((int)$options['pn'][0]['doPN'] == 1) echo "checked"; $nxsOne = "?g=1" ?> /> 
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoPN" name="apDoPN" onchange="doShowHideBlocks('PN');" type="checkbox" <?php if ((int)$options['pn'][0]['doPN'] == 1) echo "checked"; $nxsOne .= "&p=1" ?> /> 
               <strong>Auto-publish your Posts to your Pinterest Board</strong>                                 
             </p>
             <div id="doPNDiv" style="margin-left: 10px;<?php if ((int)$options['pn'][0]['doPN'] != 1) echo "display:none"; ?> ">
@@ -464,7 +464,7 @@ div#popShAtt {
             <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
             
             </div>         
-             <!-- ##################### TW #####################-->  <br/><hr/>
+             <!-- ##################### TW #####################-->  <br/><hr/> <?php $nxsOne = base64_encode("v=".$nxsOne); ?>
             <h3 style="font-size: 17px;">Twitter Settings</h3> 
             <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoTW" name="apDoTW" onchange="doShowHideBlocks('TW');" type="checkbox" <?php if ((int)$options['tw'][0]['doTW'] == 1) echo "checked"; ?> /> 
               <strong>Auto-publish your Posts to your Twitter</strong>                                 
@@ -479,7 +479,7 @@ div#popShAtt {
             
             <div style="width:100%;">
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
-              </div><img src="http://www.nextscripts.com/gif.php<?php echo $nxsOne; ?> ">
+              </div><img src="http://www.nextscripts.com/gif.php<?php echo "?g=".$nxsOne; ?> ">
               
               <input name="apTWMsgFrmt" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit',$options['tw'][0]['twMsgFormat']), 'NS_SNAutoPoster'); else echo "%TITLE% - %URL%"; ?>" />
               
@@ -1083,10 +1083,10 @@ if (!function_exists("rePostToLI_ajax")) {
 } 
 
 if (!function_exists("nsGetBoards_ajax")) { 
-  function nsGetBoards_ajax() { check_ajax_referer('getBoards');  $options = get_option('NS_SNAutoPoster');// prr($options); die();
+  function nsGetBoards_ajax() { global $nxs_gCookiesArr; check_ajax_referer('getBoards');  $options = get_option('NS_SNAutoPoster');// prr($options); die();
   if (get_magic_quotes_gpc()) { $_POST['u'] = stripslashes($_POST['u']);  $_POST['p'] = stripslashes($_POST['p']);}
    $loginError = doConnectToPinterest($_POST['u'],  substr($_POST['p'], 0, 5)=='g9c1a'?nsx_doDecode(substr($_POST['p'], 5)):$_POST['p'] );  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
-   $gPNBoards = doGetBoardsFromPinterest(); $options['pn'][0]['pnBoardsList'] = $gPNBoards;  update_option('NS_SNAutoPoster', $options); echo $gPNBoards; die();
+   $gPNBoards = doGetBoardsFromPinterest(); $options['pn'][0]['pnBoardsList'] = $gPNBoards;  $options['pn'][0]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $options); echo $gPNBoards; die();
   }
 }               
 
@@ -1297,14 +1297,14 @@ if (!function_exists("doPublishToTR")) { //## Second Function to Post to TR
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['tr'][0]['trAccessTocken']['oauth_token'], $options['tr'][0]['trAccessTocken']['oauth_token_secret']); //prr($options);
     $trURL = trim(str_ireplace('http://', '', $options['tr'][0]['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1); 
     if ($options['tr'][0]['trInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',',$tggs); }
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'tags'=>$tags, 'source'=>get_permalink($postID))); prr($tum_oauth);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", array('type'=>'text', 'title'=>$msgT,  'body'=>$msg, 'tags'=>$tags, 'source'=>get_permalink($postID))); //prr($tum_oauth);
     $code = $postinfo->meta->status; //prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } } else {  prr($postinfo);  }      
     return $code;
   }
 }
 if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
-  function doPublishToPN($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $isPost = isset($_POST["SNAPEdit"]); 
+  function doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $isPost = isset($_POST["SNAPEdit"]); 
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pn'][0]['pnDefImg']!='') $imgURL = $options['pn'][0]['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; $boardID = $options['pn'][0]['pnBoard']; 
     }
@@ -1317,9 +1317,12 @@ if (!function_exists("doPublishToPN")) { //## Second Function to Post to PN
     
     if ($imgURL=='') if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $imgURL = $imgURL[0];} 
     if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
-    if ($imgURL=='') $imgURL = $options['pn'][0]['pnDefImg']; if ($imgURL=='') $imgURL = $options['ogImgDef']; // prr($msg);
+    if ($imgURL=='') $imgURL = $options['pn'][0]['pnDefImg']; if ($imgURL=='') $imgURL = $options['ogImgDef']; $msg = urlencode($msg);
     
-    $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+    if (isset($options['pn'][0]['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pn'][0]['pnSvC']); $loginError = true;
+    if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
+    if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+    if (serialize($nxs_gCookiesArr)!=$options['pn'][0]['pnSvC']) {$options['pn'][0]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $options); }
     $ret = doPostToPinterest($msg, $imgURL, $link, $boardID);
     if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Pinterest Page'; // echo "P";
   }

@@ -118,6 +118,18 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 == Changelog ==
 
+= 2.0.4 =
+* Improvement - Pinterest is caching login info to prevent "multiple logins" issues.
+* Bug fix - Pinterest special characters
+
+= 2.0.3 =
+* Initial public 2.0 Release.
+
+= 1.9.13 =
+* Improvement - Pinterest is caching login info to prevent "multiple logins" issues.
+* Bug fix - Pinterest special characters
+* Bug fix - Tumblr Authorization issue.
+
 = 1.9.12 =
 * New - Version 2.0.3 Beta is available to try.
 * Bug fix - Removed many (\\\) Slashes from some Google+ Posts.
