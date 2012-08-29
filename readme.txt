@@ -117,6 +117,9 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. Google+  Post 
 
 == Changelog ==
+= 2.0.5 =
+* New - Delicious support (test)
+* Bug fix - Pinterest "Cannot access empty property" error.
 
 = 2.0.4 =
 * Improvement - Pinterest is caching login info to prevent "multiple logins" issues.
