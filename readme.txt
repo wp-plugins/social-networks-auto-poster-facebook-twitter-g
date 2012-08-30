@@ -117,10 +117,14 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. Google+  Post 
 
 == Changelog ==
+= 2.0.7 =
+* Improvement - Better list of available accounts.
+* Bug fix - "Facebok Options Save" error fix.
+
 = 2.0.6 =
 * Improvement - Ability to check/uncheck all networks during post writing
-* Bug fix - Uncheked networks were still getting posts
-* Bug fix - Pinterest "Retreive Boards" problem
+* Bug fix - Unchecked networks were still getting posts
+* Bug fix - Pinterest "Retrieve Boards" problem
 * Bug fix - Delicious broken tags error.
 
 = 2.0.5 =
