@@ -117,6 +117,12 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.0.8 =
+* Improvement - Better list of available accounts.
+* Bug fix - Google+ Wrong options when using "Repost Button"
+* Bug fix - Google+ Fixed publishing of new lines in messages.
+
 = 2.0.7 =
 * Improvement - Better list of available accounts.
 * Bug fix - "Facebok Options Save" error fix.
