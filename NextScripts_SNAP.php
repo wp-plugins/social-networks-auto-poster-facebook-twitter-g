@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.0.8
+Version: 2.0.9
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.0.8' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.0.9' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
@@ -335,7 +335,7 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     <?php
   }
 }
-if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts; ?>
+if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl; ?>
 
  <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
               script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
@@ -406,13 +406,13 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
             }
             function seFBA(pgID,fbAppID,fbAppSec){ var data = { pgID: pgID, action: 'nsAuthFBSv', _wpnonce: jQuery('input#nsFB_wpnonce').val()}; 
               jQuery.post(ajaxurl, data, function(response) {  
-                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&redirect_uri=<? echo $nxs_snapThisPageUrl;?>&scope=publish_stream,offline_access,read_stream,manage_pages";
+                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>&scope=publish_stream,offline_access,read_stream,manage_pages";
               });                       
             }
             
             function doLic(){ var lk = jQuery('#eLic').val(); 
                 jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
-                    if (j=='OK') window.location = "<?php admin_url(); ?>options-general.php?page=NextScripts_SNAP.php"; else alert('Wrong key, please contact support');
+                    if (j=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
                 }, "html")
             }
             

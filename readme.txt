@@ -118,6 +118,9 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 == Changelog ==
 
+= 2.0.9 =
+* Bug fix - Facebook Authorization "Error 100" Fix.
+
 = 2.0.8 =
 * Improvement - Better list of available accounts.
 * Improvement/Bug fix - a lot of cosmetic interface changes and code optimizations for problem fixing and better looking.
