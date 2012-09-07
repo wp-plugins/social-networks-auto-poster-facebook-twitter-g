@@ -2,21 +2,21 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, socialnetworks, social networks, facebook, google, twitter, google plus, pinterest, tumblr, blogger, blogspot, linkedin, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost
+Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 2.0.8
+Stable tag: 2.0.10
 License: GPLv2 or later
 
-Automatically publish blogposts to your Facebook, Twitter, Google+(Google Plus), Pinterest, LinkedIn, Blogger and Tumblr profiles and/or pages.
+Automatically publish blogposts to your Facebook, Twitter, Google+(Google Plus), Pinterest, LinkedIn, Delicious, Blogger and Tumblr profiles and/or pages.
 
 == Description ==
 
 Do you want to see some upcoming features? Completely re-done <a href="http://www.nextscripts.com/social-networks-auto-poster-beta">version 2.0 Beta</a> is available to try.
 
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Blogger, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 Supported Networks:
 
@@ -34,11 +34,19 @@ Supported Networks:
 
 **Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
 
+**Delicious** - Auto-submit bookmark to your account. 
+
 ... more networks are coming soon ...
+
+Please see <a href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">complete installation instructions with screenshots</a>
+
+<a href="http://www.nextscripts.com/support/">Contact support/Open Support Ticket</a>
 
 == Installation ==
 
-You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter or all of them.
+Please see <a href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">complete installation instructions with screenshots</a>
+
+You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter, Delicious or all of them.
 
 See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
@@ -101,6 +109,8 @@ Google+ don't yet have API for automated posts. You need to get special library 
    4. Fill the ID of your page. You can get this ID from your URL (Step 2 above). If your URL is https://plus.google.com/u/0/b/117008619877691455570/ - your ID is 117008619877691455570
 3. Your Twitter is ready to use. 
 
+Please see <a href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">complete installation instructions with screenshots</a>
+
 == Frequently Asked Questions ==
 
 = Can I use it just for Twitter(Facebook, G+) or it requres all three networks to be set? =
@@ -111,12 +121,18 @@ Sure you can use it for just one or two networks.
 
 Yes, it can. Specify page IDs in the settings, and it will post to pages. 
 
+Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked questions</a>
+
 == Screenshots ==
 
 1. Settings  Page
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.0.10 =
+* Bug fix - Facebook "Share link" fix.
+* Improvement/Bug fix - some interface cosmetic changes.
 
 = 2.0.9 =
 * Bug fix - Facebook Authorization "Error 100" Fix.
