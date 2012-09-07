@@ -12,9 +12,7 @@ Automatically publish blogposts to your Facebook, Twitter, Google+(Google Plus),
 
 == Description ==
 
-Do you want to see some upcoming features? Completely re-done <a href="http://www.nextscripts.com/social-networks-auto-poster-beta">version 2.0 Beta</a> is available to try.
-
-This plugin automatically publishes posts from your blog to your Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+**This plugin automatically publishes posts from your blog to your Social Network accoutns** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
