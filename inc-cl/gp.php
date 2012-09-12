@@ -4,17 +4,18 @@ $nxs_snapAvNts[] = array('code'=>'GP', 'lcode'=>'gp', 'name'=>'Google+');
 
 if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxsOne; $code = 'GP'; $lcode = 'gp'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div style="font-size: 17px;font-weight: bold; margin-bottom: 15px;">Google+ Settings:           
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'GP'; $lcode = 'gp'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
+    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Google+ Settings:           
             <?php if(!function_exists('doPostToGooglePlus')) {?> </div>  Google+ doesn't have a built-in API for automated posts yet. The current <a href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can't be used for posting.  <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting">library module</a> to be able to publish your content to Google+.
             
             <?php } else { $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
               <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Google+ account<?php if ($cgpo!=1){ ?>s<?php } ?> <!--- <a href="#" class="NXSButton" onclick="doShowHideBlocks2('GP<?php echo $mgpo; ?>');return false;">Add new Google+ Account</a> --> </div></div> 
               <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$gpo){  ?>
+              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) { $gpo['nName'] = $gpo['gpUName'];  if($gpo['gpPageID']!='') $gpo['nName'] .= "Page: ".$gpo['gpPageID']; else $gpo['nName'] .= " Profile"; } ?>
                 <p style="margin: 0px;margin-left: 5px;">
                   <input value="1" id="apDoGP" name="gp[<?php echo $indx; ?>][apDoGP]" type="checkbox" <?php if ((int)$gpo['doGP'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your <?php if($gpo['gpUName']!='') echo "(".$gpo['gpUName'].")"; ?> Google+ <?php if($gpo['gpPageID']!='') echo "Page: ".$gpo['gpPageID']; else {?> Profile <?php } ?> </strong>                                         <a id="doGP<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('GP<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
+                  <strong>Auto-publish your Posts to your Goole+ <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i> </strong>                                         
+                  &nbsp;&nbsp;<a id="doGP<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('GP<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
                   <a href="#" onclick="doDelAcct('gp','<?php echo $indx; ?>', '<?php echo $gpo['gpUName']; ?>');return false;">[Remove Account]</a>
                 </p>            
                 <?php $this->showNTSettings($indx, $gpo);             
@@ -22,16 +23,17 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <?php }
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $gpo = array('gpUName'=>'', 'gpPageID'=>'', 'gpAttch'=>'', 'gpPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
+  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'gpAttch'=>'', 'gpPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $gpo, $isNew=false){  ?>
-            <div id="doGP<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="margin-left: 50px; display:none;">     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
+  function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
+            <div id="doGP<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/gp-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
             <?php if(!function_exists('doPostToGooglePlus')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b>Google+ API Library not found</b>
              <br/><br/> Google+ doesn't have a built-in API for automated posts yet. <br/>The current <a target="_blank" href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can't be used for posting.  <br/><br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Google+.</span></div>
             
             <?php return; }; ?>
-            <br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', $gpo['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            
             <div style="width:100%;"><strong>Google+ Username:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$gpo['gpUName']), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($gpo['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['gpPass'], 5)):$gpo['gpPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             <p><div style="width:100%;"><strong>Google+ Page ID (Optional):</strong> 
@@ -61,6 +63,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apGPUName']) && $pval['apGPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apGPUName']))   $options[$ii]['gpUName'] = $pval['apGPUName'];
+        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
         if (isset($pval['apGPPass']))    $options[$ii]['gpPass'] = 'n5g9a'.nsx_doEncode($pval['apGPPass']); else $options[$ii]['gpPass'] = '';  
         if (isset($pval['apGPPage']))    $options[$ii]['gpPageID'] = $pval['apGPPage'];                
         if (isset($pval['apGPAttch']))   $options[$ii]['gpAttch'] = $pval['apGPAttch'];  else $options[$ii]['gpAttch'] = 0;                               
@@ -70,12 +73,12 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
-  function showEdPostNTSettings($ntOpts, $post){ $post_id = $post->ID;
+  function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
      foreach($ntOpts as $ii=>$ntOpt)  { $doGP = $ntOpt['doGP'];   $isAvailGP =  $ntOpt['gpUName']!='' && $ntOpt['gpPass']!='';
         $t = get_post_meta($post_id, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$ntOpt['gpAttch'];
         $t = get_post_meta($post_id, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$ntOpt['gpMsgFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2">Google+ AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['gpUName']." - ".$ntOpt['gpPageID']; ?></i>)</th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);">Google+ AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailGP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToGP', 'rePostToGP_wpnonce' ); } ?>
                 </td></tr>                
@@ -118,7 +121,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];       
       $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
-      $url =  get_permalink($postID);  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
+      $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} else $ret = doPostToGooglePlus2($msg, $lnk);
       if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
   }

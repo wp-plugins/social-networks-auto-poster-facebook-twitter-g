@@ -4,17 +4,17 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com
 Requires at least: 2.8
-Tested up to: 3.4.1
-Stable tag: 2.0.12
+Tested up to: 3.4.2
+Stable tag: 2.1.0
 License: GPLv2 or later
 
 Automatically publish blogposts to your Facebook, Twitter, Google+, Pinterest, LinkedIn, Delicious, Blogger and Tumblr profiles and/or pages.
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accoutns** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+**This plugin automatically publishes posts from your blog to your Social Network accoutns** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
 Supported Networks:
 
@@ -22,17 +22,19 @@ Supported Networks:
 
 **Twitter** - Autopost to your account.
 
-**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. *Ability to post to Company pages is coming soon.*
-
-**Blogger/Blogspot** - Autopost to your Blog.
-
-**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
-
 **Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
 
 **Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
 
+**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. *Ability to post to Company pages is coming soon.*
+
+**Blogger/Blogspot** - Autopost to your Blog.
+
 **Delicious** - Auto-submit bookmark to your account. 
+
+**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
+
+**Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 
 ... more networks are coming soon ...
 
@@ -44,7 +46,7 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 
 You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter, Delicious or all of them.
 
-See more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
+**Please, see more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress **
 
 Social Networks Auto Poster (SNAP).
 
@@ -58,13 +60,13 @@ Facebook.
    2. Go to the Facebook Developers page: https://developers.facebook.com/apps
    3. Click "+ Create New App" button. Fill "App Name", "App Namespace", agree to policies and click "Continue", fill captcha, click "Continue".
      ***Notice App ID and App Secret on this page.
-   4. Click "Website", enter your website URL
-   5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 4.   
+   4. Click "Website with Faceook Login", enter your website URL
+   5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website  with Faceook Login" during the step 4.   
    6. [Optional - you can skip this step and use existing page] Click "Advanced" from the left side menu "Settings.". Scroll all the way down and click "Create Facebook Page" button. Facebook will create Community page for your App. Click on it and see the URL. It will be something like http://www.facebook.com/pages/Your-Site-Community/304945439569358
    
 2. Connect Facebook to your Wordpress.
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
-   2. Check "Auto-publish your Posts to your Facebook Page or Profile" checkbox.
+   2. Click green "Add new account" button, select "Facebook" from the list. 
    3. Fill URL of your Community page from step 6 above.
    4. Fill "App ID" and "App Secret" from step 3 above.
 3. Authorize Facebook for your Wordpress.
@@ -84,7 +86,7 @@ Twitter.
    
 2. Connect Twitter to your Wordpress.    
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
-   2. Check "Auto-publish your Posts to your Twitter Page or Profile" checkbox.
+   2. Click green "Add new account" button, select "Twitter" from the list. 
    3. Fill your Twitter URL.
    4. Fill "Consumer key" and "Consumer secret" from step 3 above.
    5. Fill "Access token" and "Access token secret" from step 5 above.
@@ -100,7 +102,7 @@ Google+ don't yet have API for automated posts. You need to get special library 
      ***Notice the URL of your page. 
 2. Connect Google+ to your Wordpress.
    1. Login to your Wordpress Admin Panel, Go to the Settings->Social Networks AutoPoster Options.
-   2. Check "Auto-publish your Posts to your Google+ Page or Profile" checkbox.
+   2. Click green "Add new account" button, select "Google+" from the list. 
    3. Fill Google+ Login and Password. Please note that Wordpress is not storing your Google+ password in very secure manner, so you better create a separate G+ account for your website.
    4. Fill the ID of your page. You can get this ID from your URL (Step 2 above). If your URL is https://plus.google.com/u/0/b/117008619877691455570/ - your ID is 117008619877691455570
 3. Your Twitter is ready to use. 
@@ -125,6 +127,16 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.1.0 =
+* New - New network: Wordpress based websites. This option inludes Wordpress.com, Blog.com, and and any other blogs based on WP.
+* Improvement - nicknames for your accounts. You can give each account a nickname to make it easier to identify in the list.
+* Improvement - better looking settings pages. 
+* Improvement - new option to either shedule auto-posts (recommended) or do it immideately. This could be usefull to the poeple with disabled or broken WP Cron.
+* Critical Stability fix - The next GoDaddy crush should not break your website.
+* Bug fix - dissapearing accounts.
+* Bug fix - custom post settings weren't saved in some cases.
+* Bug fix - format and settings fixes for almost all networks.
 
 = 2.0.12 =
 * Bug fix - Some Facebook connectivity isses.
@@ -362,7 +374,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Upgrade Notice ==
 
-Please note, that if you have postToGooglePlus.php installed, auto-update from wordpress will remove it. You will need to put it back manually.
+Just repllace plugin files, the rest will be updated automatically.
 
 == Other/Copyrights ==
 

@@ -4,15 +4,16 @@ $nxs_snapAvNts[] = array('code'=>'DL', 'lcode'=>'dl', 'name'=>'Delicious');
 
 if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxsOne; $code = 'DL'; $lcode = 'dl'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div style="font-size: 17px;font-weight: bold; margin-bottom: 15px;">Delicious Settings:           
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'DL'; $lcode = 'dl'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
+    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Delicious Settings:           
             <?php $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
               <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Delicious account<?php if ($cgpo!=1){ ?>s<?php } ?>  </div></div> 
               <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$gpo){  ?>
+              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) $gpo['nName'] =$gpo['dlUName']; ?>
                 <p style="margin: 0px;margin-left: 5px;">
                   <input value="1" id="apDoDL" name="dl[<?php echo $indx; ?>][apDoDL]" onchange="doShowHideBlocks('DL');" type="checkbox" <?php if ((int)$gpo['doDL'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your <?php if($gpo['dlUName']!='') echo "(".$gpo['dlUName'].")"; ?> Delicious Account </strong>                                         <a id="doDL<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('DL<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
+                  <strong>Auto-publish your Posts to your Delicious Account <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i>  </strong>                                         
+                  &nbsp;&nbsp;<a id="doDL<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('DL<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
                   <a href="#" onclick="doDelAcct('dl','<?php echo $indx; ?>', '<?php echo $gpo['dlUName']; ?>');return false;">[Remove Account]</a>
                 </p>            
                 <?php $this->showNTSettings($indx, $gpo);             
@@ -20,10 +21,11 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
             <?php 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $gpo = array('dlUName'=>'', 'dlPageID'=>'', 'dlAttch'=>'', 'dlPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
+  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doDL'=>'1', 'dlUName'=>'', 'dlPageID'=>'', 'dlAttch'=>'', 'dlPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $gpo, $isNew=false){  ?>
-            <div id="doDL<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="margin-left: 50px; display:none;">     <input type="hidden" name="apDoSDL<?php echo $ii; ?>" value="0" id="apDoSDL<?php echo $ii; ?>" />                      <br/>
+  function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
+            <div id="doDL<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/dl-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSDL<?php echo $ii; ?>" value="0" id="apDoSDL<?php echo $ii; ?>" />          <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$gpo['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            
             <div style="width:100%;"><strong>Delicious Username:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLUName]" id="apDLUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$gpo['dlUName']), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             
@@ -55,6 +57,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apDLUName']) && $pval['apDLUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDLUName']))   $options[$ii]['dlUName'] = $pval['apDLUName'];
+        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
         if (isset($pval['apDLPass']))    $options[$ii]['dlPass'] = 'n5g9a'.nsx_doEncode($pval['apDLPass']); else $options[$ii]['dlPass'] = '';  
         if (isset($pval['apDLMsgFrmt'])) $options[$ii]['dlMsgFormat'] = $pval['apDLMsgFrmt'];                                                  
         if (isset($pval['apDLMsgTFrmt'])) $options[$ii]['dlMsgTFormat'] = $pval['apDLMsgTFrmt'];                                                  
@@ -63,12 +66,12 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
-  function showEdPostNTSettings($ntOpts, $post){ $post_id = $post->ID;
+  function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
      foreach($ntOpts as $ii=>$ntOpt)  { $doDL = $ntOpt['doDL'];   $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!='';
         $t = get_post_meta($post_id, 'SNAP_FormatDL', true);  $dlMsgFormat = $t!=''?$t:$ntOpt['dlMsgFormat'];      
         $t = get_post_meta($post_id, 'SNAP_FormatTDL', true);  $dlMsgTFormat = $t!=''?$t:$ntOpt['dlMsgTFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2">Delicious AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['dlUName']; ?></i>)</th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailDL) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToDL_repostButton" id="rePostToDL_button" value="<?php _e('Repost to Delicious', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToDL', 'rePostToDL_wpnonce' ); } ?>
                 </td></tr>                
@@ -101,7 +104,7 @@ if (!function_exists("nxs_rePostToDL_ajax")) {
     foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDL', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['fbMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['fbAttch'] = $gppo[$ii]['AttachPost'] == 1?1:0; 
+        $two['dlMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['dlMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
       }
       $result = nxs_doPublishToDL($postID, $two); if ($result == 200) die("Successfully sent your post to Delicious."); else die($result);        
     }    
@@ -115,22 +118,17 @@ if (!function_exists("doPostToDelicious")) { function doPostToDelicious($postID,
 
 }}
 if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
-  function nxs_doPublishToDL($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat']; 
+  function nxs_doPublishToDL($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat'];       
+      $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); $msgFormat = $options['dlMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID);       
+      // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
+      $email = $options['dlUName'];  $pass = substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass'];
       
-      if ($isPost) $msgTFormat = $_POST['SNAPformatT']; else { $t = get_post_meta($postID, 'SNAPformatT', true); $msgTFormat = $t!=''?$t:$options['dlMsgTFormat']; } 
-      $msgT = nsFormatMessage($msgTFormat, $postID);        
-      if ($isPost) $msgFormat = $_POST['SNAPformat']; else { $t = get_post_meta($postID, 'SNAPformat', true); $msgFormat = $t!=''?$t:$options['dlMsgFormat']; } 
-      $msg = nsFormatMessage($msgFormat, $postID); 
-      
-      if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
-      $email = $options['dlUName'];  $pass = substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass'];             
-      
-      if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); $img = $src; }
+      if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
       $dusername = $options['dlUName']; $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
       $cnt = wp_remote_get( $apicall, '' ); //prr($cnt['body']);      
-      if (stripos($cnt['body'],'code="done"')!==false) $ret = 'OK'; else $ret = 'something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags";      
+      if (stripos($cnt['body'],'code="done"')!==false) $ret = 'OK'; else $ret = 'something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags";
       if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Delicious Page';
   }
 }  

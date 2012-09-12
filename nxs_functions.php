@@ -31,24 +31,206 @@ if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $p
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists('getNSXOption')){ function getNSXOption($t){ eval($t);}} 
+
+//## CSS && JS
+if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts; ?>
+    <script type="text/javascript" >
+    jQuery(document).ready(function($) {          
+    <?php       
+      foreach ($nxs_snapAvNts as $avNt) {?>
+        $('input#rePostTo<?php echo $avNt['code']; ?>_button').click(function() { var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: $('input#post_ID').val(), nid:$(this).attr('alt'), _wpnonce: $('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); });
+    <?php } ?>
+       function callAjSNAP(data, label) {
+            var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
+            $('body').append("<div id='test_results' style='" + style + "'></div>");
+            $('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='http://gtln.us/img/misc/ajax-loader-med.gif' /></p>");
+            $('#test_results').show();            
+            jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
+                $('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
+                $('#results_ok_button').click(remove_results);
+            });
+            
+        }        
+        function remove_results() { jQuery("#results_ok_button").unbind("click");jQuery("#test_results").remove();
+            if (typeof document.body.style.maxHeight == "undefined") { jQuery("body","html").css({height: "auto", width: "auto"}); jQuery("html").css("overflow","");}
+            document.onkeydown = "";document.onkeyup = "";  return false;
+        }
+    });
+    </script>    
+    <?php
+  }
+}
+if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl; ?>
+
+ <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
+              script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
+            }</script>
+            <script type="text/javascript">
+            (function(b){b.fn.bPopup=function(n,p){function t(){b.isFunction(a.onOpen)&&a.onOpen.call(c);k=(e.data("bPopup")||0)+1;d="__bPopup"+k;l="auto"!==a.position[1];m="auto"!==a.position[0];i="fixed"===a.positionStyle;j=r(c,a.amsl);f=l?a.position[1]:j[1];g=m?a.position[0]:j[0];q=s();a.modal&&b('<div class="bModal '+d+'"></div>').css({"background-color":a.modalColor,height:"100%",left:0,opacity:0,position:"fixed",top:0,width:"100%","z-index":a.zIndex+k}).each(function(){a.appending&&b(this).appendTo(a.appendTo)}).animate({opacity:a.opacity},a.fadeSpeed);c.data("bPopup",a).data("id",d).css({left:!a.follow[0]&&m||i?g:h.scrollLeft()+g,position:a.positionStyle||"absolute",top:!a.follow[1]&&l||i?f:h.scrollTop()+f,"z-index":a.zIndex+k+1}).each(function(){a.appending&&b(this).appendTo(a.appendTo);if(null!=a.loadUrl)switch(a.contentContainer=b(a.contentContainer||c),a.content){case "iframe":b('<iframe scrolling="no" frameborder="0"></iframe>').attr("src",a.loadUrl).appendTo(a.contentContainer);break;default:a.contentContainer.load(a.loadUrl)}}).fadeIn(a.fadeSpeed,function(){b.isFunction(p)&&p.call(c);u()})}function o(){a.modal&&b(".bModal."+c.data("id")).fadeOut(a.fadeSpeed,function(){b(this).remove()});c.stop().fadeOut(a.fadeSpeed,function(){null!=a.loadUrl&&a.contentContainer.empty()});e.data("bPopup",0<e.data("bPopup")-1?e.data("bPopup")-1:null);a.scrollBar||b("html").css("overflow","auto");b("."+a.closeClass).die("click."+d);b(".bModal."+d).die("click");h.unbind("keydown."+d);e.unbind("."+d);c.data("bPopup",null);b.isFunction(a.onClose)&&setTimeout(function(){a.onClose.call(c)},a.fadeSpeed);return!1}function u(){e.data("bPopup",k);b("."+a.closeClass).live("click."+d,o);a.modalClose&&b(".bModal."+d).live("click",o).css("cursor","pointer");(a.follow[0]||a.follow[1])&&e.bind("scroll."+d,function(){q&&c.stop().animate({left:a.follow[0]&&!i?h.scrollLeft()+g:g,top:a.follow[1]&&!i?h.scrollTop()+f:f},a.followSpeed)}).bind("resize."+d,function(){if(q=s())j=r(c,a.amsl),a.follow[0]&&(g=m?g:j[0]),a.follow[1]&&(f=l?f:j[1]),c.stop().each(function(){i?b(this).css({left:g,top:f},a.followSpeed):b(this).animate({left:m?g:g+h.scrollLeft(),top:l?f:f+h.scrollTop()},a.followSpeed)})});a.escClose&&h.bind("keydown."+d,function(a){27==a.which&&o()})}function r(a,b){var c=(e.width()-a.outerWidth(!0))/2,d=(e.height()-a.outerHeight(!0))/2-b;return[c,20>d?20:d]}function s(){return e.height()>c.outerHeight(!0)+20&&e.width()>c.outerWidth(!0)+20}b.isFunction(n)&&(p=n,n=null);var a=b.extend({},b.fn.bPopup.defaults,n);a.scrollBar||b("html").css("overflow","hidden");var c=this,h=b(document),e=b(window),k,d,q,l,m,i,j,f,g;this.close=function(){a=c.data("bPopup");o()};return this.each(function(){c.data("bPopup")||t()})};b.fn.bPopup.defaults={amsl:50,appending:!0,appendTo:"body",closeClass:"bClose",content:"ajax",contentContainer:null,escClose:!0,fadeSpeed:250,follow:[!0,!0],followSpeed:500,loadUrl:null,modal:!0,modalClose:!0,modalColor:"#000",onClose:null,onOpen:null,opacity:0.7,position:["auto","auto"],positionStyle:"absolute",scrollBar:!0,zIndex:9997}})(jQuery);
+            </script>
+            <script type="text/javascript">   
+            
+           // function blinks(hide) { if(hide==1) { jQuery('.blnkg').show(); hide = 0; } else {  jQuery('.blnkg').hide(); hide = 1; } setTimeout("blinks("+hide+")",400);}            
+           // jQuery(document).ready(function(){ blinks(1);});
+      
+
+      function showPopShAtt(){ jQuery('div#popShAtt').show().css('top', e.pageY).css('left', e.pageX).appendTo('body'); }
+      function hidePopShAtt(){ jQuery('div#popShAtt').hide(); }
+      function doSwitchShAtt(att, idNum){
+        if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
+      }
+
+            
+     (function($) {
+        $(function() {
+            $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, positionStyle: 'fixed'}); });
+            $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, positionStyle: 'fixed'}); });
+         });
+     })(jQuery);
+     
+     jQuery(document).ready(function() {
+
+ //When page loads...
+ jQuery(".nsx_tab_content").hide(); //Hide all content
+ jQuery("ul.nsx_tabs li:first").addClass("active").show(); //Activate first tab
+ jQuery(".nsx_tab_content:first").show(); //Show first tab content
+
+ //On Click Event
+ jQuery("ul.nsx_tabs li").click(function() {
+
+  jQuery("ul.nsx_tabs li").removeClass("active"); //Remove any "active" class
+  jQuery(this).addClass("active"); //Add "active" class to selected tab
+  jQuery(".nsx_tab_content").hide(); //Hide all tab content
+
+  var activeTab = jQuery(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
+  jQuery(activeTab).fadeIn(); //Fade in the active ID content
+  return false;
+ });
+
+});
+            
+                
+            function doShowHideAltFormat(){ if (jQuery('#NS_SNAutoPosterAttachPost').is(':checked')) { 
+                    jQuery('#altFormat').css('margin-left', '20px'); jQuery('#altFormatText').html('Post Announce Text:'); } else {jQuery('#altFormat').css('margin-left', '0px'); jQuery('#altFormatText').html('Post Text Format:');}
+            }
+            function doShowHideBlocks(blID){ if (jQuery('#apDo'+blID).is(':checked')) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();}
+            function doShowHideBlocks1(blID, shhd){ if (shhd==1) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();}            
+            function doShowHideBlocks2(blID){ if (jQuery('#apDoS'+blID).val()=='0') { jQuery('#do'+blID+'Div').show(); jQuery('#do'+blID+'A').text('[Hide Settings]'); jQuery('#apDoS'+blID).val('1'); } 
+              else { jQuery('#do'+blID+'Div').hide(); jQuery('#do'+blID+'A').text('[Show Settings]'); jQuery('#apDoS'+blID).val('0'); }
+            }
+            
+            function doShowFillBlock(blIDTo, blIDFrm){ jQuery('#'+blIDTo).html(jQuery('#do'+blIDFrm+'Div').html());}
+            function doCleanFillBlock(blIDFrm){ jQuery('#do'+blIDFrm+'Div').html('');}
+            
+            function doShowFillBlockX(blIDFrm){ jQuery('.clNewNTSets').hide(); jQuery('#do'+blIDFrm+'Div').show(); }
+            
+            function doDelAcct(nt, blID, blName){  var answer = confirm("Remove "+blName+" account?");
+              if (answer){ var data = { action: 'nsDN', id: 0, nt: nt, id: blID, _wpnonce: jQuery('input#nsDN_wpnonce').val()}; 
+                  jQuery.post(ajaxurl, data, function(response) { location.reload();  });
+              }           
+            }
+            function seFBA(pgID,fbAppID,fbAppSec){ var data = { pgID: pgID, action: 'nsAuthFBSv', _wpnonce: jQuery('input#nsFB_wpnonce').val()}; 
+              jQuery.post(ajaxurl, data, function(response) {  
+                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>&scope=publish_stream,offline_access,read_stream,manage_pages";
+              });                       
+            }
+            
+            function doLic(){ var lk = jQuery('#eLic').val(); 
+                jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
+                    if (j=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
+                }, "html")
+            }
+            
+            function getBoards(u,p,ii){ jQuery("#pnLoadingImg").show();
+                
+                jQuery.post(ajaxurl,{u:u,p:p,ii:ii, action: 'getBoards', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+                    jQuery("select#apPNBoard").html(j); jQuery("#pnLoadingImg").hide();
+                }, "html")
+
+            }            
+            
+            function callAjSNAP(data, label) { 
+            var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
+            jQuery('body').append("<div id='test_results' style='" + style + "'></div>");
+            jQuery('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='http://gtln.us/img/misc/ajax-loader-med.gif' /></p>");
+            jQuery('#test_results').show();            
+            jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
+                jQuery('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
+                jQuery('#results_ok_button').click(remove_results);
+            });
+            
+        }       
+        function remove_results() { jQuery("#results_ok_button").unbind("click");jQuery("#test_results").remove();
+            if (typeof document.body.style.maxHeight == "undefined") { jQuery("body","html").css({height: "auto", width: "auto"}); jQuery("html").css("overflow","");}
+            document.onkeydown = "";document.onkeyup = "";  return false;
+        }
+        function testPost(nt, nid){ jQuery(".blnkg").hide(); <?php foreach ($nxs_snapAvNts as $avNt) {?>
+            if (nt=='<?php echo $avNt['code']; ?>') { 
+                var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: 0, nid: nid, _wpnonce: jQuery('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); 
+            }<?php } ?>
+        }
+        
+        
+        
+        </script>
+<link href='http://fonts.googleapis.com/css?family=News+Cycle' rel='stylesheet' type='text/css'>            
+<style type="text/css">
+.NXSButton { background-color:#89c403;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
+    background:-moz-linear-gradient( center top, #89c403 5%, #77a809 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#89c403', endColorstr='#77a809');    
+    -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; border:1px solid #74b807; display:inline-block; color:#ffffff;
+    font-family:Trebuchet MS; font-size:12px; font-weight:bold; padding:4px 5px;  text-decoration:none;  text-shadow:1px 1px 0px #528009;
+}.NXSButton:hover {color:#ffffff; background-color:#77a809;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77a809), color-stop(1, #89c403) );
+    background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');    
+}.NXSButton:active {color:#ffffff; position:relative; top:1px;}.NXSButton:focus {color:#ffffff; position:relative; top:1px;} .nsBigText{font-size: 14px; color: #585858; font-weight: bold; display: inline;}
+.nxspButton:hover { background-color: #1E1E1E;}
+.nxspButton { background-color: #2B91AF; color: #FFFFFF; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; border-radius: 6px 6px 6px 6px; box-shadow: none; font: bold 131% sans-serif; padding: 0 6px 2px; position: absolute; right: -7px; top: -7px;}
+#nxs_spPopup, #showLicForm{ min-height: 250px; background-color: #FFFFFF; border-radius: 5px 5px 5px 5px;  box-shadow: 0 0 3px 2px #999999; color: #111111; display: none;  min-width: 450px; padding: 25px;}
+#nxs_ntType {width: 150px;}
+#nsx_addNT {width: 600px;}
+.nxsInfoMsg{  margin: 1px auto; padding: 3px 10px 3px 5px; border: 1px solid #ffea90;  background-color: #fdfae4; display: inline; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+.blnkg{text-decoration:blink; font-size: 17px; color: #0CB107; font-weight: bold; display: inline;}
+
+div#popShAtt { display: none; position: absolute; width: 600px; padding: 10px; background: #eeeeee; color: #000000; border: 1px solid #1a1a1a; font-size: 90%; }
+.underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
+.underdash a:hover {border-bottom: 1px #21759B dashed}
+
+ul.nsx_tabs {margin: 0;padding: 0;float: left;list-style: none;height: 32px;border-bottom: 1px solid #999;border-left: 1px solid #999;width: 100%;}
+ul.nsx_tabs li {float: left;margin: 0;padding: 0;height: 31px;line-height: 31px;border: 1px solid #999;border-left: none;margin-bottom: -1px;overflow: hidden;position: relative;background: #e0e0e0;}
+ul.nsx_tabs li a {text-decoration: none;color: #000; display: block; font-size: 1.2em; padding: 0 20px; border: 1px solid #fff; outline: none;}
+ul.nsx_tabs li a:hover { background: #ccc;}
+html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #fff; border-bottom: 1px solid #fff; }
+.nsx_tab_container {border: 1px solid #999; border-top: none; overflow: hidden; clear: both; float: left; width: 100%; background: #fff;}
+.nsx_tab_content {padding: 10px;}
+
+.nsx_iconedTitle {font-size: 17px; font-weight: bold; margin-bottom: 15px; padding-left: 20px; background-repeat: no-repeat; }
+
+</style>
+<?php }}
+
+
+if (!function_exists('getNSXOption')){ function getNSXOption($t){ @eval($t);}} 
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
 }}
 if (!function_exists("nxs_doChAPIU")) { //## Second Function to Post to TW 
-  function nxs_doChAPIU($options){ if ($options=='' || !is_array($options)) return;  $options = getRemNSXOption($options); update_option('NS_SNAutoPoster', $options); 
+  function nxs_doChAPIU($options){ if ($options=='' || !is_array($options)) return;  $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); 
   // $myFile = "/home/_shared/deSrc.testFile.txt"; $fh = fopen($myFile, 'w') or die("can't open file");$stringData = "Out 3 \n".print_r($options, true);fwrite($fh, $stringData);fclose($fh); 
   return $options;
 }}
 if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){  global $nxs_snapAvNts; 
     foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])>1) { $copt = ''; $t = '';
-      if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']])) $copt = array_values( $options[$avNt['lcode']] ); 
-        $t = (isset($copt[0]) && is_array($copt[0]) && count($copt[0]>0))?$copt[0]:''; $options[$avNt['lcode']] = array(); if ($t!='') $options[$avNt['lcode']][] = $t;
+      if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']])) $copt = array_values( $options[$avNt['lcode']] );  
+      $t = (isset($copt[0]) && is_array($copt[0]) && count($copt[0]>2))?$copt[0]:''; $options[$avNt['lcode']] = array(); if ($t!='') $options[$avNt['lcode']][] = $t;
     }}
     return $options;
 }}
 if (!function_exists('getRemNSXOption')){ function getRemNSXOption($t){ if (!isset($t['lk']) || $t['lk']=='') return $t;  if (!isset($t['ukver'])) $t['ukver'] = ''; if (!isset($t['uklch'])) $t['uklch'] = ''; 
-  $response = wp_remote_post( 'http://www.nextscripts.com/nxs.php', array('method' => 'POST', 'timeout' => 45,'blocking' => true, 'headers' => array(), 'body' => array( 'lk' => $t['lk'], 'ukver' => $t['ukver'], 'ud' => home_url())));
-  if ($response['body']!='') $t['uk'] = $response['body']; $t['uklch'] = time();// prr($response); prr($t);
+  $arr = array('method' => 'POST', 'timeout' => 45,'blocking' => true, 'headers' => array(), 'body' => array( 'lk' => $t['lk'], 'ukver' => $t['ukver'], 'ud' => home_url()));// prr($arr);
+  $response = wp_remote_post( 'http://www.nextscripts.com/nxs.php', $arr);    
+  if ($response['body']!='' && $response['response']['code']=='200') $t['uk'] = $response['body']; $t['uklch'] = time(); //prr($response); prr($t);
   return $t;
 }} 
 if (!function_exists('nxs_html_to_utf8')){ function nxs_html_to_utf8 ($data){return preg_replace("/\\&\\#([0-9]{3,10})\\;/e", 'nxs__html_to_utf8("\\1")', $data); }}

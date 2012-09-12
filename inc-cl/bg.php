@@ -4,30 +4,31 @@ $nxs_snapAvNts[] = array('code'=>'BG', 'lcode'=>'bg', 'name'=>'Blogger');
 
 if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl; $code = 'BG'; $lcode = 'bg'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'BG'; $lcode = 'bg'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
  
     ?>    
-    <hr/><div style="font-size: 17px;font-weight: bold; margin-bottom: 15px;">Blogger Settings:   <?php $cfbo = count($ntOpts); $mfbo =  1+max(array_keys($ntOpts)); ?> <?php wp_nonce_field( 'nsFB', 'nsFB_wpnonce' ); ?>
+    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Blogger Settings:   <?php $cfbo = count($ntOpts); $mfbo =  1+max(array_keys($ntOpts)); ?> <?php wp_nonce_field( 'nsFB', 'nsFB_wpnonce' ); ?>
     <div class="nsBigText">You have <?php echo $cfbo=='0'?'No':$cfbo; ?> Blogger account<?php if ($cfbo!=1){ ?>s<?php } ?> <!-- - <a href="#" class="NXSButton" onclick="doShowHideBlocks2('FB<?php echo $mfbo; ?>');return false;">Add new Facebook Account</a> --> </div></div>    
     <?php // if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mfbo); else nxs_doSMAS('Blogger', 'BG'.$mfbo); ?>
-    <?php foreach ($ntOpts as $indx=>$pbo){ ?>
+    <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo['bgBlogID']; ?>
       <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoBG" name="bg[<?php echo $indx; ?>][apDoBG]" onchange="doShowHideBlocks('BG');" type="checkbox" <?php if ((int)$pbo['doBG'] == 1) echo "checked"; ?> /> 
-      <strong>Auto-publish your Posts to your <?php if(isset($pbo['bgBlogID']) && $pbo['bgBlogID']!='') echo "(".$pbo['bgBlogID'].")"; ?> Blogger Profile</strong>
-      <a id="doBG<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('BG<?php echo $indx; ?>');return false;">[Show Settings]</a>&nbsp;&nbsp;
+      <strong>Auto-publish your Posts to your Blogger <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+      &nbsp;&nbsp;<a id="doBG<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('BG<?php echo $indx; ?>');return false;">[Show Settings]</a>&nbsp;&nbsp;
       <a href="#" onclick="doDelAcct('bg', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['bgBlogID']; ?>');return false;">[Remove Account]</a>
       </p><?php $this->showNTSettings($indx, $pbo);             
     } //## END TR Settings 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($bo){ $po = array('doBG'=>'1', 'bgUName'=>'', 'bgPass'=>'', 'bgBlogID'=>'', 'bgInclTags'=>'1', 'bgMsgFormat'=>'%FULLTEXT% <br/><a href=\'%URL%\'>%TITLE%</a>', 'bgMsgTFormat'=>'%TITLE%' ); $this->showNTSettings($bo, $po, true);}
+  function showNewNTSettings($bo){ $po = array('nName'=>'', 'doBG'=>'1', 'bgUName'=>'', 'bgPass'=>'', 'bgBlogID'=>'', 'bgInclTags'=>'1', 'bgMsgFormat'=>'%FULLTEXT% <br/><a href=\'%URL%\'>%TITLE%</a>', 'bgMsgTFormat'=>'%TITLE%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  ?>
-    <div id="doBG<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="margin-left: 10px; <?php if ((isset($options['bgOK']) && $options['bgOK']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSBG<?php echo $ii; ?>" value="0" id="apDoSBG<?php echo $ii; ?>" />                                     
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+    <div id="doBG<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/bg-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['bgOK']) && $options['bgOK']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSBG<?php echo $ii; ?>" value="0" id="apDoSBG<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="bg[<?php echo $ii; ?>][apDoBG]" value="1" id="apDoNewBG<?php echo $ii; ?>" /> <?php } ?>
     
             
             <div id="doBG<?php echo $ii; ?>Div" style="margin-left: 10px;"> 
-            <br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGUName]" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['bgUName']), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Blogger Password:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGPass]" id="apBGPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             <div style="width:100%;"><strong>Blogger Blog ID:</strong> 
@@ -70,7 +71,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
         
                 if (isset($pval['apDoBG']))   $options[$ii]['doBG'] = $pval['apDoBG']; else $options[$ii]['doBG'] = 0;
                 
-                
+                if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
                 if (isset($pval['apBGUName']))   $options[$ii]['bgUName'] = $pval['apBGUName'];
                 if (isset($pval['apBGPass']))    $options[$ii]['bgPass'] = 'b4d7s'.nsx_doEncode($pval['apBGPass']); else $options[$ii]['bgPass'] = '';
                 if (isset($pval['apBGBlogID']))   $options[$ii]['bgBlogID'] = $pval['apBGBlogID'];                
@@ -82,14 +83,14 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
     } return $options;
   } 
   //#### Show Post->Edit Meta Box Settings
-  function showEdPostNTSettings($ntOpts, $post){ $post_id = $post->ID; 
+  function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
     foreach($ntOpts as $ii=>$options)  {$doBG = $options['doBG'];     
        $isAvailBG =  $options['bgUName']!='' && $options['bgPass']!='';       
        $t = get_post_meta($post_id, 'SNAP_FormatBG', true);  $bgMsgFormat = $t!=''?$t:$options['bgMsgFormat']; $bgMsgFormat = stripcslashes(str_replace('"',"'",$bgMsgFormat));
        $t = get_post_meta($post_id, 'SNAP_FormatTBG', true); $bgMsgTFormat = $t!=''?$t:$options['bgMsgTFormat'];
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2">Blogger AutoPoster Options (<i style="color: #005800;"><?php echo $options['bgBlogID']; ?></i>)</th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);">Blogger AutoPoster Options (<i style="color: #005800;"><?php echo $options['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailBG) { ?><input style="float: right;" type="button" class="button" name="rePostToBG_repostButton" id="rePostToBG_button" value="<?php _e('Repost to Blogger', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToBG', 'rePostToBG_wpnonce' ); } ?>
                 </td></tr>
@@ -98,19 +99,19 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 <?php if (!$isAvailBG) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Blogger Account to AutoPost to Blogger</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="SNAPincludeBG" <?php if ((int)$doBG == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="bg[<?php echo $ii; ?>][SNAPincludeBG]" <?php if ((int)$doBG == 1) echo "checked"; ?> /></th>
                 <td><b><?php _e('Publish this Post to Blogger', 'NS_SPAP'); ?></b></td>
                 </tr> 
                 
                  <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="SNAP_FormatTBG" size="60px"/></td></tr>
+                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPTformat]" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Title Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $bgMsgFormat ?>" type="text" name="SNAP_FormatBG" size="60px"/></td></tr>
+                <td><input value="<?php echo $bgMsgFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
                 
                 <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
                 <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
@@ -125,10 +126,10 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
 }}
 
 if (!function_exists("nxs_rePostToBG_ajax")) { function nxs_rePostToBG_ajax() {  check_ajax_referer('rePostToBG');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
-    $options = get_option('NS_SNAutoPoster');  foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {  
+      $options = get_option('NS_SNAutoPoster');  foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {  
       $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo); 
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['bgMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['bgMsgTFormat'] = $mpo[$ii]['SNAPTformat']; $po['bgAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
-      $result = nxs_doPublishToBG($postID, $po);  if ($result == 201) {$options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
+      $result = nxs_doPublishToBG($postID, $po);  if ($result == 201) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
       
       if ($result == 200) die("Successfully sent your post to Blooger."); else die($result);
     }    
@@ -160,14 +161,9 @@ if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blo
     $result = curl_exec($ch); curl_close($ch); if (stripos($result,'tag:blogger.com')!==false) return 'OK'; else { prr($result); return false;}
 }}
 if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
-  function nxs_doPublishToBG($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $isPost = isset($_POST["SNAPEdit"]); 
+  function nxs_doPublishToBG($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
-    else{        
-      if ($isPost) $bgMsgFormat = $_POST['SNAP_FormatBG']; else { $t = get_post_meta($postID, 'SNAP_FormatBG', true); $bgMsgFormat = $t!=''?$t:$options['bgMsgFormat']; } 
-      $msg = nsFormatMessage($bgMsgFormat, $postID); $link = get_permalink($postID);      
-      if ($isPost) $bgMsgTFormat = $_POST['SNAP_FormatTBG']; else { $t = get_post_meta($postID, 'SNAP_FormatTBG', true); $bgMsgTFormat = $t!=''?$t:$options['bgMsgTFormat']; } 
-      $msgT = nsFormatMessage($bgMsgTFormat, $postID);              
-    }
+    else { $bgMsgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($bgMsgFormat, $postID); $link = get_permalink($postID); $bgMsgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($bgMsgTFormat, $postID); }
     $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs);}
