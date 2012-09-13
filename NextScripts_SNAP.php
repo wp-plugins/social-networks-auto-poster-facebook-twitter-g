@@ -4,12 +4,13 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.1.0
+Version: 2.1.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.1.0' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.1.1' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
+global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
 $nxs_plurl = plugin_dir_url(__FILE__);
@@ -208,7 +209,7 @@ if (!class_exists("NS_SNAutoPoster")) {
           if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"]; 
           if (isset($nspost_edit) && !empty($nspost_edit)) {
             foreach ($nxs_snapAvNts as $avNt) { 
-              if (count($options[$avNt['lcode']])>0) { delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], serialize($_POST[$avNt['lcode']])); }
+              if (count($options[$avNt['lcode']])>0 && count($_POST[$avNt['lcode']])>0) { delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], mysql_real_escape_string(serialize($_POST[$avNt['lcode']]))); }
             }            
           }
         }
@@ -309,7 +310,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
       if ($optMt['do'.$avNt['code']]=='1') { delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1'); 
        if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') { 
            $args = array($postID, $optMt);  wp_schedule_single_event(time()+2,'ns_doPublishTo'.$avNt['code'], $args); 
-         } else { $fname = 'ns_doPublishTo'.$avNt['code']; $fname($postID, $optMt); }        
+         } else { $fname = 'nxs_doPublishTo'.$avNt['code']; echo $fname."<br/>"; $fname($postID, $optMt); }        
       }
       //$options['log'] .= "\r\n".(time()+2)." - ".'ns_doPublishTo'.$avNt['code'].print_r($args, true); update_option('NS_SNAutoPoster', $options);
     }

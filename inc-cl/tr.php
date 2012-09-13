@@ -160,6 +160,7 @@ if (!function_exists("nxs_rePostToTR_ajax")) { function nxs_rePostToTR_ajax() { 
     $options = get_option('NS_SNAutoPoster');  foreach ($options['tr'] as $ii=>$po) if ($ii==$_POST['nid']) {  
       $mpo =  get_post_meta($postID, 'snapTR', true); $mpo =  maybe_unserialize($mpo); 
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['trMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['trMsgTFormat'] = $mpo[$ii]['SNAPTformat']; $po['trAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
+      
       $result = nxs_doPublishToTR($postID, $po); if ($result == 200) die("Successfully sent your post to Tumblr."); else die($result);
     }    
   }

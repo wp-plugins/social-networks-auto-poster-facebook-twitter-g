@@ -156,6 +156,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
             jQuery('#test_results').show();            
             jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
                 jQuery('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
+                
                 jQuery('#results_ok_button').click(remove_results);
             });
             

@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 
 Automatically publish blogposts to your Facebook, Twitter, Google+, Pinterest, LinkedIn, Delicious, Blogger and Tumblr profiles and/or pages.
@@ -128,13 +128,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.1.1 =
+* Bug fix - Unselected Networks were still published.
+* Bug fix - Broken quotes in the "Message Format".
+* Bug fix - "Post Immediately" was broken for free accounts.
+
 = 2.1.0 =
-* New - New network: Wordpress based websites. This option inludes Wordpress.com, Blog.com, and and any other blogs based on WP.
+* New - New network: Wordpress based websites. This option includes Wordpress.com, Blog.com, and and any other blogs based on WP.
 * Improvement - nicknames for your accounts. You can give each account a nickname to make it easier to identify in the list.
 * Improvement - better looking settings pages. 
-* Improvement - new option to either shedule auto-posts (recommended) or do it immideately. This could be usefull to the poeple with disabled or broken WP Cron.
+* Improvement - new option to either schedule auto-posts (recommended) or do it immediately. This could be useful to the people with disabled or broken WP Cron.
 * Critical Stability fix - The next GoDaddy crush should not break your website.
-* Bug fix - dissapearing accounts.
+* Bug fix - disappearing accounts.
 * Bug fix - custom post settings weren't saved in some cases.
 * Bug fix - format and settings fixes for almost all networks.
 
