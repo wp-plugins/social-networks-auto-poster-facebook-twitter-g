@@ -128,6 +128,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.1.2 =
+* Bug fix - 404 Errors during reactivation.
+* Bug fix - Message for Multiuser Wordpress.
+* Bug fix - Tumblr Authorization problems.
+
 = 2.1.1 =
 * Bug fix - Unselected Networks were still published.
 * Bug fix - Broken quotes in the "Message Format".
