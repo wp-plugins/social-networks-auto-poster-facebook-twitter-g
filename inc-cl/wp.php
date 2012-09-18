@@ -85,7 +85,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
                 <?php if (!$isAvailWP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your WP Blog Account to AutoPost to WP Blogs</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if ((int)$doWP == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if ((int)$doWP == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to WP Blog', 'NS_SPAP'); ?></b></td>
                </tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>

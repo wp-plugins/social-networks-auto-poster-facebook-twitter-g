@@ -70,7 +70,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if ((int)$doTW == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if ((int)$doTW == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Twitter', 'NS_SPAP'); ?></b></td>
                 </tr>                
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
@@ -102,9 +102,10 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
 if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW 
   function nxs_doPublishToTW($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle." - ".rand(1, 155); $uln = strlen($msg);}  
-    else{ $post = get_post($postID); $twMsgFormat = $options['twMsgFormat']; 
+    else{ $post = get_post($postID); $twMsgFormat = $options['twMsgFormat'];         
         $twLim = 140; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 20; 
         if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - strlen($aun); } 
+        
         $noRepl = str_ireplace("%TITLE%", "", $twMsgFormat); $noRepl = str_ireplace("%SITENAME%", "", $noRepl); $noRepl = str_ireplace("%URL%", "", $noRepl);
         $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);
         $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl); $twLim = $twLim - strlen($noRepl); 
@@ -124,8 +125,8 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
           $postContent = apply_filters('the_content', $post->post_content); $postContent = nsTrnc(strip_tags($postContent), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $postContent, $twMsgFormat); $twLim = $twLim - strlen($postContent);
         }          
         $msg = nsFormatMessage($twMsgFormat, $postID);         
-    }
-    require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else $msg = nsTrnc($msg, 140); 
+    } //prr($msg);
+    require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
     $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}}else{ NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg);}

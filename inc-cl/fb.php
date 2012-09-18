@@ -154,7 +154,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <?php if (!$isAvailFB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your Facebook Account to AutoPost to Facebook</b>
                 <?php } elseif ($post->post_status != "publish") {?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="fb[<?php echo $ii; ?>][SNAPincludeFB]" <?php if ((int)$doFB == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="fb[<?php echo $ii; ?>][SNAPincludeFB]" <?php if ((int)$doFB == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Facebook', 'NS_SPAP'); ?></b></td>
                 </tr>
                 
@@ -208,14 +208,14 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
        'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
     } else { $post = get_post($postID); $fbMsgFormat = $options['fbMsgFormat']; $isAttachFB = $options['fbAttch']; $isAttachVidFB = $options['fbAttchAsVid']; $msg = nsFormatMessage($fbMsgFormat, $postID);
-      if (($isAttachFB=='1' || $isAttachFB=='2') && function_exists("get_post_thumbnail_id") ) { $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];} 
+      if (($isAttachFB=='1' || $isAttachFB=='2') && function_exists("get_post_thumbnail_id") ) $src = nxs_getPostImage($postID);
       $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content); $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = home_url(); $dsc = strip_tags($dsc);  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $dsc = nxs_decodeEntitiesFull($dsc);
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc);         
       if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
       if (trim($src)!='') $mssg['picture'] = $src;
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
-    }  //  prr($mssg);    
+    }   // prr($mssg);    prr($facebook);
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
     if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}

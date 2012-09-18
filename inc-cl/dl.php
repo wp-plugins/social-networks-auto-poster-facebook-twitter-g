@@ -79,7 +79,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
                 <?php if (!$isAvailDL) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Delicious Account to AutoPost to Delicious</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if ((int)$doDL == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if ((int)$doDL == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Delicious', 'NS_SPAP'); ?></b> </td>
                </tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>

@@ -86,7 +86,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
                 <?php if (!$isAvailGP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Google+ Account to AutoPost to Google+</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="gp[<?php echo $ii; ?>][SNAPincludeGP]" <?php if ((int)$doGP == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="gp[<?php echo $ii; ?>][SNAPincludeGP]" <?php if ((int)$doGP == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Google+', 'NS_SPAP'); ?></b></td>
                </tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">

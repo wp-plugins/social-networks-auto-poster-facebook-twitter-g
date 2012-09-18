@@ -131,7 +131,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <?php if (!$isAvailTR) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and authorize your Tumblr Account to AutoPost to Tumblr</b>
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="tr[<?php echo $ii; ?>][SNAPincludeTR]" <?php if ((int)$doTR == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="tr[<?php echo $ii; ?>][SNAPincludeTR]" <?php if ((int)$doTR == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Tumblr', 'NS_SPAP'); ?></b></td>
                 </tr>       
                          

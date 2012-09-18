@@ -99,7 +99,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 <?php if (!$isAvailBG) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Blogger Account to AutoPost to Blogger</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="bg[<?php echo $ii; ?>][SNAPincludeBG]" <?php if ((int)$doBG == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="bg[<?php echo $ii; ?>][SNAPincludeBG]" <?php if ((int)$doBG == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Blogger', 'NS_SPAP'); ?></b></td>
                 </tr> 
                 

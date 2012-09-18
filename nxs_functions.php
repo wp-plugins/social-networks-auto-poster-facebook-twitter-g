@@ -31,7 +31,12 @@ if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $p
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-
+if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large') { $imgURL = '';
+  if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0];} 
+  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
+  if ($imgURL=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $imgURL = $options['ogImgDef']; }
+}}
+ 
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts; ?>
     <script type="text/javascript" >
@@ -60,7 +65,9 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     <?php
   }
 }
-if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl; ?>
+if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; 
+   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+?>
 
  <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
               script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
@@ -72,8 +79,18 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
             
            // function blinks(hide) { if(hide==1) { jQuery('.blnkg').show(); hide = 0; } else {  jQuery('.blnkg').hide(); hide = 1; } setTimeout("blinks("+hide+")",400);}            
            // jQuery(document).ready(function(){ blinks(1);});
-      
+<?php if( $options['exclCats']!='' && $options['exclCats']!='a:0:{}') { ?>
 
+jQuery(function(){
+  jQuery("form input:checkbox[name='post_category[]']").click ( function(){ var thVal = jQuery(this).val(); var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
+     if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
+     
+  });
+});
+
+<?php } ?>
+      
+      
       function showPopShAtt(){ jQuery('div#popShAtt').show().css('top', e.pageY).css('left', e.pageX).appendTo('body'); }
       function hidePopShAtt(){ jQuery('div#popShAtt').hide(); }
       function doSwitchShAtt(att, idNum){
@@ -208,6 +225,7 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 .nsx_tab_content {padding: 10px;}
 
 .nsx_iconedTitle {font-size: 17px; font-weight: bold; margin-bottom: 15px; padding-left: 20px; background-repeat: no-repeat; }
+.subDiv{margin-left: 15px;}
 
 </style>
 <?php }}

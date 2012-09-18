@@ -103,7 +103,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                 <?php if (!$isAvailPN) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Pinterest Account to AutoPost to Pinterest</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="pn[<?php echo $ii; ?>][SNAPincludePN]" <?php if ((int)$doPN == 1) echo "checked"; ?> /></th>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="pn[<?php echo $ii; ?>][SNAPincludePN]" <?php if ((int)$doPN == 1) echo 'checked="checked" title="def"'; ?> /></th>
                 <td><b><?php _e('Publish this Post to Pinterest', 'NS_SPAP'); ?></b></td>
                 </tr> 
                 

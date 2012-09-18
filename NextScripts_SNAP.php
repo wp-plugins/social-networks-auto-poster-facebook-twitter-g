@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.1.2
+Version: 2.1.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.1.2' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.1.3' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -41,7 +41,7 @@ if (!class_exists("NS_SNAutoPoster")) {
              // $options = getRemNSXOption($options);               
              $args = array($options); wp_schedule_single_event(time()+1,'nxs_chAPIU', $args); //echo "CHECK";
             } 
-            if ($options['ukver']=='2.1.9') $options = nxs_doChAPIU($options); 
+            if ( isset($options['ukver']) && $options['ukver']=='2.1.9') $options = nxs_doChAPIU($options); 
             if (isset($options['uk']) && $options['uk']!='') { getNSXOption(substr(nsx_doDecode($options['uk']), 5, -2));  } // nxs_doSMAS19();            
           //  echo NXSAPIVER;
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}
@@ -83,7 +83,9 @@ if (!class_exists("NS_SNAutoPoster")) {
             if (isset($_POST['nxsHTDP']))      $options['nxsHTDP'] = $_POST['nxsHTDP'];                
             if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
-            if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);          
+            if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
+            if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); } 
+            
             update_option($this->dbOptionsName, $options); // prr($options);
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php           
           }   $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;} 
@@ -119,6 +121,10 @@ if (!class_exists("NS_SNAutoPoster")) {
            if ((defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true) || (defined('MULTISITE') &&  MULTISITE==true) ) { 
                echo "<br/><br/><br/><b style=\"font-size:16px; color:red;\">Sorry, we do not support Multiuser Wordpress at this time</b>"; return; 
            }?>
+           
+<?php if (function_exists('yoast_analytics')) { ?>
+  <div class="error" id="message"><p><strong>You have Google Analytics Plugin installed and activated.</strong> This plugin hijacks the authorization workflow. Please temporary <a href="<?php echo admin_url();?>/plugins.php">deactivate</a> Google Analytics plugin, do all authorizations and then activate it back.</div>
+<?php } ?>
            
 <ul class="nsx_tabs">
     <li><a href="#nsx_tab1">Your Social Networks Accounts</a></li>
@@ -176,11 +182,29 @@ if (!class_exists("NS_SNAutoPoster")) {
             ?>
             </select>            
             
-            <p><div style="width:100%;"><strong style="font-size: 14px;">Categories to Include/Exclude:</strong> 
-            <p style="font-size: 11px; margin: 0px;">Publish posts only from specific categories. List IDs like: 3,4,5 or exclude some from specific categories from publishing. List IDs like: -3,-4,-5</p>
+           <div style="width:500px;"><strong style="font-size: 14px;"><br/>Categories to Include/Exclude:</strong> 
+              <p style="font-size: 11px; margin: 0px;"><b>Uncheck</b> categories that you would like <b>NOT</b> to auto-post by default. Assigning the uncheked category to the new post will uncheck auto-posting to all configured networks. Automatically published posts won't be auto-posted if belong to the uncheked category.</p>
             
-            </div><input name="apCats" style="width: 30%;" value="<?php if (isset($options['apCats'])) _e(apply_filters('format_to_edit',$options['apCats']), 'NS_SNAutoPoster') ?>" /></p>
+<script type="text/javascript">
+function chAllCats(ch){
+    jQuery("form input:checkbox[name='post_category[]']").attr('checked', ch==1);
+}
+</script>            
             
+<a href="#" onclick="chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="chAllCats(0); return false;">UnCheck all</a>
+
+ <div id="taxonomy-category" class="categorydiv">
+        <div id="category-all" class="tabs-panel"><input type='hidden' name='post_category[]' value='0' />
+            <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
+                <?php $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']); $selCats = array_diff($category_ids, $pk);                
+                  $args = array( 'descendants_and_self' => 0, 'selected_cats' => $selCats, 'taxonomy' => 'category', 'checked_ontop' => false);    
+                  wp_terms_checklist(0, $args ) 
+                ?>
+            </ul>
+        </div>  
+    </div>
+    
+    </div>
             
             
             <h3 style="font-size: 14px; margin-bottom: 2px;">"Open Graph" Tags</h3> 
@@ -209,8 +233,8 @@ if (!class_exists("NS_SNAutoPoster")) {
         }
         
         function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;   
-          if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"]; 
-          if (isset($nspost_edit) && !empty($nspost_edit)) {
+          if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"];  
+          if (isset($nspost_edit) && !empty($nspost_edit)) { delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );
             foreach ($nxs_snapAvNts as $avNt) { 
               if (count($options[$avNt['lcode']])>0 && count($_POST[$avNt['lcode']])>0) { delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], mysql_real_escape_string(serialize($_POST[$avNt['lcode']]))); }
             }            
@@ -302,7 +326,11 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
   if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {
   global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);
   if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["SNAPEdit"]);    
-  $post = get_post($postID);   $args=array( 'public'   => true, '_builtin' => false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);     
+  $post = get_post($postID);   $args=array( 'public'   => true, '_builtin' => false);  $output = 'names';  $operator = 'and';  $post_types=get_post_types($args, $output, $operator);       
+  $snap_isEdIT = get_post_meta($postID, 'snapEdIT', true); if ($snap_isEdIT!='1') { $doPost = true; $exclCats = $options['exclCats']; $postCats = wp_get_post_categories($postID);
+     foreach ($postCats as $pCat) { if (in_array($pCat, $exclCats)) $doPost = false; else {$doPost = true; break;}}
+     if (!$doPost) return;    
+  }  
   if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);  
   $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1') return;    
   
@@ -359,7 +387,7 @@ if (!function_exists("nsAddOGTags")) { function nsAddOGTags() { global $post, $S
     if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( nxs_snapCleanHTML(get_the_excerpt( $post->ID )) ); } 
       else { $ogdesc = str_replace( "\r\n", ' ' , nsTrnc( strip_tags( strip_shortcodes( nxs_snapCleanHTML(apply_filters('the_content', $post->post_content)) ) ), 250, ' ' ) ); }
   } else { $ogdesc = nxs_snapCleanHTML(get_bloginfo( 'description' )); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
-  echo '<meta property="og:description" content="' . trim( esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) )) . '" />' . "\n";          
+  echo '<meta property="og:description" content="' . trim( esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) )) . '" />' . "\n";    $vidsFromPost = false;      
   //## Add og:image
   if (!is_home()) { 
       $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) { /* echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
