@@ -30,18 +30,17 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
             <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="dl[<?php echo $ii; ?>][apDoDL]" value="1" id="apDoNewDL<?php echo $ii; ?>" /> <?php } ?>
-            <br/> 
-            <strong id="altFormatText">Post Title and Post Text Formats</strong>
-            <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
+            <br/>            
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong>               
-              </div><input name="dl[<?php echo $ii; ?>][apDLMsgTFrmt]" id="apDLMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit',$gpo['dlMsgTFormat']), 'NS_SNAutoPoster'); ?>" />
+  <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong> (<a href="#" id="apDLTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
+  
+              <input name="dl[<?php echo $ii; ?>][apDLMsgTFrmt]" id="apDLMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit',$gpo['dlMsgTFormat']), 'NS_SNAutoPoster'); ?>" onfocus="mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?>
             </div>   
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> </div>
-              <input name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" id="apDLMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit',$gpo['dlMsgFormat']), 'NS_SNAutoPoster'); ?>" />
+  <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apDLMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
+              <input name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" id="apDLMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit',$gpo['dlMsgFormat']), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($gpo['dlPass']!='') { ?>
@@ -56,52 +55,47 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'DL'; $lcode = 'dl'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apDLUName']) && $pval['apDLUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
-        if (isset($pval['apDLUName']))   $options[$ii]['dlUName'] = $pval['apDLUName'];
-        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
+        if (isset($pval['apDLUName']))   $options[$ii]['dlUName'] = trim($pval['apDLUName']);
+        if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apDLPass']))    $options[$ii]['dlPass'] = 'n5g9a'.nsx_doEncode($pval['apDLPass']); else $options[$ii]['dlPass'] = '';  
-        if (isset($pval['apDLMsgFrmt'])) $options[$ii]['dlMsgFormat'] = $pval['apDLMsgFrmt'];                                                  
-        if (isset($pval['apDLMsgTFrmt'])) $options[$ii]['dlMsgTFormat'] = $pval['apDLMsgTFrmt'];                                                  
+        if (isset($pval['apDLMsgFrmt'])) $options[$ii]['dlMsgFormat'] = trim($pval['apDLMsgFrmt']);                                                  
+        if (isset($pval['apDLMsgTFrmt'])) $options[$ii]['dlMsgTFormat'] = trim($pval['apDLMsgTFrmt']);                                                  
         if (isset($pval['apDoDL']))      $options[$ii]['doDL'] = $pval['apDoDL']; else $options[$ii]['doDL'] = 0; 
       }
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $doDL = $ntOpt['doDL'];   $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!='';
-        $t = get_post_meta($post_id, 'SNAP_FormatDL', true);  $dlMsgFormat = $t!=''?$t:$ntOpt['dlMsgFormat'];      
-        $t = get_post_meta($post_id, 'SNAP_FormatTDL', true);  $dlMsgTFormat = $t!=''?$t:$ntOpt['dlMsgTFormat'];      
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDL', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doDL = $ntOpt['doDL'];   
+        $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!=''; $dlMsgFormat = $ntOpt['dlMsgFormat']; $dlMsgTFormat = $ntOpt['dlMsgTFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDL == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailDL) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToDL_repostButton" id="rePostToDL_button" value="<?php _e('Repost to Delicious', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToDL', 'rePostToDL_wpnonce' ); } ?>
                 </td></tr>                
                 
                 <?php if (!$isAvailDL) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Delicious Account to AutoPost to Delicious</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
+               
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if ((int)$doDL == 1) echo 'checked="checked" title="def"'; ?> /></th>
-                <td><b><?php _e('Publish this Post to Delicious', 'NS_SPAP'); ?></b> </td>
-               </tr>
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]" size="60px"/></td></tr>
-                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
-                
-                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
-
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
   //#### Save Meta Tags to the Post
   function adjMetaOpt($optMt, $pMeta){
-     $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT'];  $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; return $optMt;
+     $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDL_ajax")) {
   function nxs_rePostToDL_ajax() { check_ajax_referer('rePostToDL');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDL', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['dlMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['dlMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -125,11 +119,16 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
       
       if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
       $dusername = $options['dlUName']; $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
+      
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
+      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
-      $cnt = wp_remote_get( $apicall, '' ); //prr($cnt['body']);      
-      if (stripos($cnt['body'],'code="done"')!==false) $ret = 'OK'; else $ret = 'something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags";
-      if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Delicious Page';
+      $cnt = wp_remote_get( $apicall, '' ); //prr($cnt);      
+      if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii']);  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
+        else { $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+      }
+      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Delicious Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
   }
 }  
 ?>

@@ -17,7 +17,7 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
   // else 
   return $destroy ? '' : $matches[0];
 }}
-if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postImgs = array();
+if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content);  $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
 }}
@@ -31,10 +31,12 @@ if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $p
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large') { $imgURL = '';
+if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';
   if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0];} 
   if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
-  if ($imgURL=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $imgURL = $options['ogImgDef']; }
+  if ($imgURL=='' && $def=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $imgURL = $options['ogImgDef']; } 
+  if ($imgURL=='' && $def!='') $imgURL = $def;
+  return $imgURL;
 }}
  
 //## CSS && JS
@@ -91,8 +93,8 @@ jQuery(function(){
 <?php } ?>
       
       
-      function showPopShAtt(){ jQuery('div#popShAtt').show().css('top', e.pageY).css('left', e.pageX).appendTo('body'); }
-      function hidePopShAtt(){ jQuery('div#popShAtt').hide(); }
+      function showPopShAtt(imid, e){ jQuery('div#popShAtt'+imid).show().css('top', e.pageY).css('left', e.pageX).appendTo('body'); }
+      function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
       function doSwitchShAtt(att, idNum){
         if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
       }
@@ -100,8 +102,8 @@ jQuery(function(){
             
      (function($) {
         $(function() {
-            $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, positionStyle: 'fixed'}); });
-            $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, positionStyle: 'fixed'}); });
+            $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });
+            $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false]}); });
          });
      })(jQuery);
      
@@ -187,6 +189,27 @@ jQuery(function(){
                 var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: 0, nid: nid, _wpnonce: jQuery('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); 
             }<?php } ?>
         }
+        function mxs_showHideFrmtInfo(hid){
+              if(!jQuery('#'+hid+'Hint').is(':visible')) mxs_showFrmtInfo(hid); else {jQuery('#'+hid+'Hint').hide(); jQuery('#'+hid+'HintInfo').html('Show format info');}
+        }
+        function mxs_showFrmtInfo(hid){
+              jQuery('#'+hid+'Hint').show(); jQuery('#'+hid+'HintInfo').html('Hide format info'); 
+        }
+        function nxs_clLog(){
+              jQuery.post(ajaxurl,{action: 'nxs_clLgo', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+                    jQuery("#nxslogDiv").html('');
+              }, "html")
+        }
+        function nxs_rfLog(){
+              jQuery.post(ajaxurl,{action: 'nxs_rfLgo', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+                    jQuery("#nxslogDiv").html(j);
+              }, "html")
+        }
+        function nxs_TRSetEnable(ptype, ii){
+              if (ptype=='I'){ jQuery('#apTRMsgTFrmt'+ii).attr('disabled', 'disabled'); jQuery('#apTRDefImg'+ii).removeAttr('disabled'); } 
+                else { jQuery('#apTRDefImg'+ii).attr('disabled', 'disabled');  jQuery('#apTRMsgTFrmt'+ii).removeAttr('disabled'); }                
+        }
+        
         
         
         
@@ -206,13 +229,13 @@ jQuery(function(){
 }.NXSButton:active {color:#ffffff; position:relative; top:1px;}.NXSButton:focus {color:#ffffff; position:relative; top:1px;} .nsBigText{font-size: 14px; color: #585858; font-weight: bold; display: inline;}
 .nxspButton:hover { background-color: #1E1E1E;}
 .nxspButton { background-color: #2B91AF; color: #FFFFFF; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; border-radius: 6px 6px 6px 6px; box-shadow: none; font: bold 131% sans-serif; padding: 0 6px 2px; position: absolute; right: -7px; top: -7px;}
-#nxs_spPopup, #showLicForm{ min-height: 250px; background-color: #FFFFFF; border-radius: 5px 5px 5px 5px;  box-shadow: 0 0 3px 2px #999999; color: #111111; display: none;  min-width: 450px; padding: 25px;}
+#nxs_spPopup, #showLicForm{ min-height: 250px; background-color: #FFFFFF; border-radius: 5px 5px 5px 5px;  box-shadow: 0 0 3px 2px #999999; color: #111111; display: none;  min-width: 850px; padding: 25px;}
 #nxs_ntType {width: 150px;}
 #nsx_addNT {width: 600px;}
 .nxsInfoMsg{  margin: 1px auto; padding: 3px 10px 3px 5px; border: 1px solid #ffea90;  background-color: #fdfae4; display: inline; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
 .blnkg{text-decoration:blink; font-size: 17px; color: #0CB107; font-weight: bold; display: inline;}
 
-div#popShAtt { display: none; position: absolute; width: 600px; padding: 10px; background: #eeeeee; color: #000000; border: 1px solid #1a1a1a; font-size: 90%; }
+div.popShAtt { display: none; position: absolute; width: 600px; padding: 10px; background: #eeeeee; color: #000000; border: 1px solid #1a1a1a; font-size: 90%; }
 .underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
 .underdash a:hover {border-bottom: 1px #21759B dashed}
 
@@ -226,11 +249,15 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 
 .nsx_iconedTitle {font-size: 17px; font-weight: bold; margin-bottom: 15px; padding-left: 20px; background-repeat: no-repeat; }
 .subDiv{margin-left: 15px;}
+.nxs_hili {color:#008000;}
+.clNewNTSets{width: 800px;}
 
 </style>
 <?php }}
 
-
+if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t){ ?>
+<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: 49%; background: #fff; display: none;"><span class="nxs_hili">%SITENAME%</span> - Inserts the Your Blog/Site Name, <span class="nxs_hili">%TITLE%</span> - Inserts the Title of your post, <span class="nxs_hili">%URL%</span> - Inserts the URL of your post, <span class="nxs_hili">%SURL%</span> - Inserts the <b>Shortened URL</b> of your post, <span class="nxs_hili">%IMG%</span> - Inserts the featured image, <span class="nxs_hili">%TEXT%</span> - Inserts the excerpt of your post, <span class="nxs_hili">%RAWTEXT%</span> - Inserts the body(text) as typed, <span class="nxs_hili">%FULLTEXT%</span> - Inserts the processed body(text) of your post, <span class="nxs_hili">%AUTHORNAME%</span> - Inserts the author's name.</div>
+<?php }}
 if (!function_exists('getNSXOption')){ function getNSXOption($t){ @eval($t);}} 
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
 }}
@@ -260,5 +287,27 @@ if (!function_exists('nxs__html_to_utf8')){ function nxs__html_to_utf8 ($data){ 
   return $ret;
 }}
 
+if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($postID, $nt, $did){ $mpo =  get_post_meta($postID, 'snap'.$nt, true); $mpo =  maybe_unserialize($mpo); 
+  if (is_array($mpo)) { $mpo[$did]['isPosted'] = '1';  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);}
+}}
+if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ $dbLog = get_option('NS_SNAutoPosterLog'); $dbLog = maybe_unserialize($dbLog); $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt);
+    $dbLog[] = $logItem; $dbLog = array_slice($dbLog, -150);  update_option('NS_SNAutoPosterLog', serialize($dbLog)); 
+}}
+
+function nxsMergeArraysOV($Arr1, $Arr2)
+{
+  foreach($Arr2 as $key => $Value)
+  {
+    if(array_key_exists($key, $Arr1) && is_array($Value))
+      $Arr1[$key] = nxsMergeArraysOV($Arr1[$key], $Arr2[$key]);
+
+    else
+      $Arr1[$key] = $Value;
+
+  }
+
+  return $Arr1;
+
+}
 
 ?>

@@ -61,53 +61,48 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'WP'; $lcode = 'wp'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apWPUName']) && $pval['apWPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
-        if (isset($pval['apWPURL']))   $options[$ii]['wpURL'] = $pval['apWPURL'];
-        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
-        if (isset($pval['apWPUName']))   $options[$ii]['wpUName'] = $pval['apWPUName'];
+        if (isset($pval['apWPURL']))   $options[$ii]['wpURL'] = trim($pval['apWPURL']);
+        if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
+        if (isset($pval['apWPUName']))   $options[$ii]['wpUName'] = trim($pval['apWPUName']);
         if (isset($pval['apWPPass']))    $options[$ii]['wpPass'] = 'n5g9a'.nsx_doEncode($pval['apWPPass']); else $options[$ii]['wpPass'] = '';  
-        if (isset($pval['apWPMsgFrmt'])) $options[$ii]['wpMsgFormat'] = $pval['apWPMsgFrmt'];                                                  
-        if (isset($pval['apWPMsgTFrmt'])) $options[$ii]['wpMsgTFormat'] = $pval['apWPMsgTFrmt'];                                                  
+        if (isset($pval['apWPMsgFrmt'])) $options[$ii]['wpMsgFormat'] = trim($pval['apWPMsgFrmt']);                                                  
+        if (isset($pval['apWPMsgTFrmt'])) $options[$ii]['wpMsgTFormat'] = trim($pval['apWPMsgTFrmt']);                                                  
         if (isset($pval['apDoWP']))      $options[$ii]['doWP'] = $pval['apDoWP']; else $options[$ii]['doWP'] = 0; 
       }
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $doWP = $ntOpt['doWP'];   $isAvailWP =  $ntOpt['wpUName']!='' && $ntOpt['wpPass']!='';
-        $t = get_post_meta($post_id, 'SNAP_FormatWP', true);  $wpMsgFormat = $t!=''?$t:$ntOpt['wpMsgFormat'];      
-        $t = get_post_meta($post_id, 'SNAP_FormatTWP', true);  $wpMsgTFormat = $t!=''?$t:$ntOpt['wpMsgTFormat'];      
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapWP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doWP = $ntOpt['doWP'];   
+        $isAvailWP =  $ntOpt['wpUName']!='' && $ntOpt['wpPass']!=''; $wpMsgFormat = $ntOpt['wpMsgFormat']; $wpMsgTFormat = $ntOpt['wpMsgTFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToWP', 'rePostToWP_wpnonce' ); } ?>
                 </td></tr>                
                 
                 <?php if (!$isAvailWP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your WP Blog Account to AutoPost to WP Blogs</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
+                                
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $wpMsgTFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformatT]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if ((int)$doWP == 1) echo 'checked="checked" title="def"'; ?> /></th>
-                <td><b><?php _e('Publish this Post to WP Blog', 'NS_SPAP'); ?></b></td>
-               </tr>
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $wpMsgTFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformatT]" size="60px"/></td></tr>
-                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $wpMsgFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
-                
-                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
-
-                <?php } 
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $wpMsgFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPMsgFrmt".$ii); ?></td></tr>
+  
+  <?php } 
      }
   }
   //#### Save Meta Tags to the Post
   function adjMetaOpt($optMt, $pMeta){ // prr($pMeta);
-     $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; return $optMt;
+     $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToWP_ajax")) {
   function nxs_rePostToWP_ajax() { check_ajax_referer('rePostToWP');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['wp'] as $ii=>$two) if ($ii==$_POST['nid']) {   //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['wp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii;  //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapWP', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['wpMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['wpMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -142,6 +137,8 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       if (!$nxsToWPclient->query('wp.getOptions', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
       $rwpOpt = $nxsToWPclient->getResponse(); $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);
       
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#1A9EE6">WP</span> - '.$options['nName'];
+      
       if ($rwpOpt==0)  $ret = 'XMLRPC is not found or not active. WP admin - Settings - Writing - Enable XML-RPC'; 
       else if ($rwpOpt<3.0)  $ret = 'XMLRPC is too OLD - '.$rwpOpt.' You need at least 3.0'; else {
        
@@ -163,7 +160,9 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
           if (!$nxsToWPclient->query('metaWeblog.newPost', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
           $pid = $nxsToWPclient->getResponse();  
         }
-      } if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your WP Blog';
+      } if ($ret!='OK') { if ($postID=='0') echo $ret; 
+        nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);
+      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else { nxs_metaMarkAsPosted($postID, 'WP', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
   }
 }  
 ?>

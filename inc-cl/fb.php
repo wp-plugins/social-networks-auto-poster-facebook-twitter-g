@@ -19,7 +19,13 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $facebook = new NXS_Facebook(array( 'appId' => $fbo['fbAppID'], 'secret' => $fbo['fbAppSec'], 'cookie' => true)); 
       $facebook -> setAccessToken($fbo['fbAppAuthToken']); $user = $facebook->getUser(); echo "USER:"; prr($user);
       if ($user) {
-        try { $page_id = $fbo['fbPgID']; echo "XE";  $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);
+        try { $page_id = $fbo['fbPgID']; echo "XE";  
+        
+          if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
+             $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
+          } 
+        
+          $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);
           if( !empty($page_info['access_token']) ) { $fbo['fbAppPageAuthToken'] = $page_info['access_token']; }
         } catch (NXS_FacebookApiException $e) { $errMsg = $e->getMessage(); prr($errMsg);
           if ( stripos($errMsg, 'Unknown fields: access_token')!==false) $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; else { echo 'Error:',  $errMsg, "\n"; die(); }
@@ -63,25 +69,22 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     
     
     <div id="altFormat">
-              <div style="width:100%;"><strong id="altFormatText">Message text Format:</strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
-              <input name="fb[<?php echo $ii; ?>][apFBMsgFrmt]" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$fbo['fbMsgFormat']), 'NS_SNAutoPoster') ?>" /><br/>
+    <div style="width:100%;"><strong id="altFormatText">Message text Format:</strong> (<a href="#" id="apFBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
+              <input name="fb[<?php echo $ii; ?>][apFBMsgFrmt]" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$fbo['fbMsgFormat']), 'NS_SNAutoPoster') ?>" onfocus="mxs_showFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBMsgFrmt".$ii); ?><br/>
               
-              </div>
+              
             </div>
             
             <br/>
   <p style="margin: 0px;"><input value="2"  id="apFBAttchShare<?php echo $ii; ?>" onchange="doSwitchShAtt(0,<?php echo $ii; ?>);" type="checkbox" name="fb[<?php echo $ii; ?>][apFBAttch]" <?php if ((int)$fbo['fbAttch'] == 2) echo "checked"; ?> /> 
               <strong>Share a link to your blogpost</strong>  .. or ..                                  
                <input value="1"  id="apFBAttch<?php echo $ii; ?>" onchange="doSwitchShAtt(1,<?php echo $ii; ?>);" type="checkbox" name="fb[<?php echo $ii; ?>][apFBAttch]"  <?php if ((int)$fbo['fbAttch'] == 1) echo "checked"; ?> /> 
-              <strong>Attach your blogpost</strong> &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt();" onmouseover="showPopShAtt();" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>)       
+              <strong>Attach your blogpost</strong> &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>)       
                                        
             </p>
-      <div id="popShAtt">
+      <div class="popShAtt" id="popShAtt<?php echo $ii; ?>">
         <h3>Two ways of attaching post on Facebook</h3>
-        <p>
-          &nbsp;
-        </p>  <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/>
+          <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/>
       </div>
       
       
@@ -124,38 +127,44 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apFBAppID']) && $pval['apFBAppID']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDoFB']))         $options[$ii]['doFB'] = $pval['apDoFB']; else $options[$ii]['doFB'] = 0;
-        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
-        if (isset($pval['apFBAppID']))      $options[$ii]['fbAppID'] = $pval['apFBAppID'];                                
-        if (isset($pval['apFBAppSec']))     $options[$ii]['fbAppSec'] = $pval['apFBAppSec'];        
+        if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
+        if (isset($pval['apFBAppID']))      $options[$ii]['fbAppID'] = trim($pval['apFBAppID']);                                
+        if (isset($pval['apFBAppSec']))     $options[$ii]['fbAppSec'] = trim($pval['apFBAppSec']);        
         if (isset($pval['apFBAttch']))      $options[$ii]['fbAttch'] = $pval['apFBAttch']; else $options[$ii]['apFBAttch'] = 0;        
         if (isset($pval['apFBAttchAsVid'])) $options[$ii]['fbAttchAsVid'] = $pval['apFBAttchAsVid']; else $options[$ii]['fbAttchAsVid'] = 0;
-        if (isset($pval['apFBMsgFrmt']))    $options[$ii]['fbMsgFormat'] = $pval['apFBMsgFrmt']; 
+        if (isset($pval['apFBMsgFrmt']))    $options[$ii]['fbMsgFormat'] = trim($pval['apFBMsgFrmt']); 
                 
-        if (isset($pval['apFBURL']))  {  $options[$ii]['fbURL'] = $pval['apFBURL'];   
+        if (isset($pval['apFBURL']))  {  $options[$ii]['fbURL'] = trim($pval['apFBURL']);   
           $fbPgID = $options[$ii]['fbURL']; if (substr($fbPgID, -1)=='/') $fbPgID = substr($fbPgID, 0, -1);  $fbPgID = substr(strrchr($fbPgID, "/"), 1); 
           if (strpos($fbPgID, '?')!==false) $fbPgID = substr($fbPgID, 0, strpos($fbPgID, '?')); 
           $options[$ii]['fbPgID'] = $fbPgID; //echo $fbPgID;
-           if (strpos($options[$ii]['fbURL'], '?')!==false) $options[$ii]['fbURL'] = substr($options[$ii]['fbURL'], 0, strpos($options[$ii]['fbURL'], '?')); //prr($options[$ii]); die();
+          if (strpos($options[$ii]['fbURL'], '?')!==false) $options[$ii]['fbURL'] = substr($options[$ii]['fbURL'], 0, strpos($options[$ii]['fbURL'], '?')); //prr($options[$ii]); die();
         }                  
       }
     } return $options;
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
-    foreach($ntOpts as $ii=>$ntOpt)  {$doFB = $ntOpt['doFB'];$isAvailFB =  $ntOpt['fbURL']!='' && $ntOpt['fbAppID']!='' && $ntOpt['fbAppSec']!='';  
-        $t = get_post_meta($post_id, 'SNAP_AttachFB', true);  $isAttachFB = $t!=''?$t:$ntOpt['fbAttch'];
-        $t = get_post_meta($post_id, 'SNAP_FormatFB', true);  $fbMsgFormat = $t!=''?$t:$ntOpt['fbMsgFormat'];    
+    foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapFB', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doFB = $ntOpt['doFB'];
+        $isAvailFB =  $ntOpt['fbURL']!='' && $ntOpt['fbAppID']!='' && $ntOpt['fbAppSec']!=''; $isAttachFB = $ntOpt['fbAttch']; $fbMsgFormat = $ntOpt['fbMsgFormat'];    
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);">Facebook auto-poster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailFB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToFB_repostButton" id="rePostToFB_button" value="<?php _e('Repost to Facebook', 're-post') ?>" />
+      <tr><th style="text-align:left;" colspan="2">
+      
+      <?php if ($isAvailFB) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="fb[<?php echo $ii; ?>][SNAPincludeFB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doFB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);">Facebook - <?php _e('publish to ', 'NS_SPAP'); ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
+    if ($post->post_status == "publish" && $isAvailFB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToFB_repostButton" id="rePostToFB_button" value="<?php _e('Repost to Facebook', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToFB', 'rePostToFB_wpnonce' ); } ?>
                 </td></tr>
                 <?php if (!$isAvailFB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your Facebook Account to AutoPost to Facebook</b>
                 <?php } elseif ($post->post_status != "publish") {?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="fb[<?php echo $ii; ?>][SNAPincludeFB]" <?php if ((int)$doFB == 1) echo 'checked="checked" title="def"'; ?> /></th>
-                <td><b><?php _e('Publish this Post to Facebook', 'NS_SPAP'); ?></b></td>
+                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">
+                  
+                  <b></b>
+                </th>
+                <td></td>
                 </tr>
                 
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
@@ -164,34 +173,30 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
               <strong>Share a link to your blogpost</strong>
                 
                   .. or ..                                  
-               <input value="1"  id="apFBAttch<?php echo $ii; ?>" onchange="doSwitchShAtt(1,<?php echo $ii; ?>);" type="checkbox" name="fb[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> <strong>Attach your blogpost</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt();" onmouseover="showPopShAtt();" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
+               <input value="1"  id="apFBAttch<?php echo $ii; ?>" onchange="doSwitchShAtt(1,<?php echo $ii; ?>);" type="checkbox" name="fb[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> <strong>Attach your blogpost</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="#">What's the difference?</a>) 
                 
-                <div id="popShAtt">
+                <div class="popShAtt" id="popShAtt<?php echo $ii; ?>">
         <h3>Two ways of attaching post on Facebook</h3>
         <p>
           &nbsp;
         </p>  <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/>
       </div>
+      </td></tr>
                 
-                </td>                </tr>
-                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="fb[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
-                
-                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $fbMsgFormat ?>" type="text" name="fb[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apFBTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBTMsgFrmt".$ii); ?></td></tr>
                 <?php } 
     }
       
   }
   
-  function adjMetaOpt($optMt, $pMeta){
-     $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['fbAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ 
+     $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['fbAttch'] = $pMeta['AttachPost'] != ''?$pMeta['AttachPost']:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() {  check_ajax_referer('rePostToFB');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
-    $options = get_option('NS_SNAutoPoster');  foreach ($options['fb'] as $ii=>$fbo) if ($ii==$_POST['nid']) {  
+    $options = get_option('NS_SNAutoPoster');  foreach ($options['fb'] as $ii=>$fbo) if ($ii==$_POST['nid']) {  $fbo['ii'] = $ii; 
       $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); 
       if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $fbo['fbMsgFormat'] = $fbpo[$ii]['SNAPformat']; $fbo['fbAttch'] = $fbpo[$ii]['AttachPost'] == 1?1:0; } 
       $result = nxs_doPublishToFB($postID, $fbo); if ($result == 200) die("Successfully sent your post to FaceBook."); else die($result);
@@ -208,17 +213,24 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
        'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
     } else { $post = get_post($postID); $fbMsgFormat = $options['fbMsgFormat']; $isAttachFB = $options['fbAttch']; $isAttachVidFB = $options['fbAttchAsVid']; $msg = nsFormatMessage($fbMsgFormat, $postID);
-      if (($isAttachFB=='1' || $isAttachFB=='2') && function_exists("get_post_thumbnail_id") ) $src = nxs_getPostImage($postID);
+      if (($isAttachFB=='1' || $isAttachFB=='2')) $src = nxs_getPostImage($postID); // prr($options); echo "PP - ".$postID; prr($src);
       $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content); $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = home_url(); $dsc = strip_tags($dsc);  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $dsc = nxs_decodeEntitiesFull($dsc);
-      $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg, 'name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc);         
+      $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg);
+      if (($isAttachFB=='1' || $isAttachFB=='2')) {$attArr = array ('name' => $post->post_title, 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc); $mssg = array_merge($mssg, $attArr); }      
       if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
       if (trim($src)!='') $mssg['picture'] = $src;
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
-    }   // prr($mssg);    prr($facebook);
+    }  // prr($options);  prr($mssg);    prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
-    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { echo 'Error:',  $e->getMessage(), "\n";}    
-    if ($postID=='0') { prr($ret); echo 'OK - Message Posted, please see your Facebook Page ';}
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
+    try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n"; 
+      nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo); return "ERROR";
+    }    
+    if ($postID=='0') { prr($ret); if (isset($ret['id']) && $ret['id']!='') { echo 'OK - Message Posted, please see your Facebook Page '; nxs_addToLog($logNT, 'M', 'Test Message Posted, please see your Facebook Page'); }}
+      else { if (isset($ret['id']) && $ret['id']!='') { nxs_metaMarkAsPosted($postID, 'FB', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted'.print_r($ret, true), $extInfo); }
+        else nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); 
+      }
   }
 }
 

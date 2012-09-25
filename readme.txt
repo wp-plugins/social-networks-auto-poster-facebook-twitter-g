@@ -16,6 +16,8 @@ Automatically publish blogposts to your Facebook, Twitter, Google+, Pinterest, L
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
 
+Latest version 2.2 - Support for LinkedIn Company pages (*with third party library*), History/Log Tab, improved interface and numerous bug fixes.
+
 Supported Networks:
 
 **Facebook** - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
@@ -26,7 +28,7 @@ Supported Networks:
 
 **Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
 
-**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. *Ability to post to Company pages is coming soon.*
+**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages (*with third party library*)
 
 **Blogger/Blogspot** - Autopost to your Blog.
 
@@ -128,10 +130,16 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 2.2 Beta =
+= 2.2.0 =
 
-* New - NextScript LinkeIn API support for company pages auto-posting.
+* New - NextScript LinkeIn API support for company pages auto-posting (Beta).
 * New - Actions Log - see the log of the auto-postings.
+* Improvement - Better interface.
+* Bug fix - "headers already sent by line 344" Error.
+* Bug fix - Workaround fix for non-numeric "Facebook Group" pages. We hope that Facebook will fix it soon.
+* Bug fix - Saving problems for the "Settings" page.
+* Bug fix - LinkedIn post Formatting problems. 
+* Bug fix - Facebook was still attaching a post if not selected.
 
 = 2.1.3 =
 

@@ -48,36 +48,33 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apTWURL']) && $pval['apTWURL']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDoTW']))         $options[$ii]['doTW'] = $pval['apDoTW']; else $options[$ii]['doTW'] = 0;
-        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
-        if (isset($pval['apTWURL']))        $options[$ii]['twURL'] = $pval['apTWURL'];
-        if (isset($pval['apTWConsKey']))    $options[$ii]['twConsKey'] = $pval['apTWConsKey'];
-        if (isset($pval['apTWConsSec']))    $options[$ii]['twConsSec'] = $pval['apTWConsSec'];                                
-        if (isset($pval['apTWAccToken']))   $options[$ii]['twAccToken'] = $pval['apTWAccToken'];                
-        if (isset($pval['apTWAccTokenSec']))$options[$ii]['twAccTokenSec'] = $pval['apTWAccTokenSec'];                                
-        if (isset($pval['apTWMsgFrmt']))    $options[$ii]['twMsgFormat'] = $pval['apTWMsgFrmt'];
+        if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
+        if (isset($pval['apTWURL']))        $options[$ii]['twURL'] = trim($pval['apTWURL']);
+        if (isset($pval['apTWConsKey']))    $options[$ii]['twConsKey'] = trim($pval['apTWConsKey']);
+        if (isset($pval['apTWConsSec']))    $options[$ii]['twConsSec'] = trim($pval['apTWConsSec']);                                
+        if (isset($pval['apTWAccToken']))   $options[$ii]['twAccToken'] = trim($pval['apTWAccToken']);                
+        if (isset($pval['apTWAccTokenSec']))$options[$ii]['twAccTokenSec'] = trim($pval['apTWAccTokenSec']);                                
+        if (isset($pval['apTWMsgFrmt']))    $options[$ii]['twMsgFormat'] = trim($pval['apTWMsgFrmt']);
       }
     } return $options;
   }    
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-    foreach($ntOpts as $ii=>$ntOpt)  {  $doTW = $ntOpt['doTW'];  $isAvailTW =  $ntOpt['twURL']!='' && $ntOpt['twConsKey']!='' && $ntOpt['twConsSec']!='' && $ntOpt['twAccToken']!='';       
-         $t = get_post_meta($post_id, 'SNAP_FormatTW', true);  $twMsgFormat = $t!=''?$t:$ntOpt['twMsgFormat'];      
+    foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTW', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doTW = $ntOpt['doTW'];  
+         $isAvailTW =  $ntOpt['twURL']!='' && $ntOpt['twConsKey']!='' && $ntOpt['twConsSec']!='' && $ntOpt['twAccToken']!=''; $twMsgFormat = $ntOpt['twMsgFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTW == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailTW) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); } ?>
                 </td></tr>
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if ((int)$doTW == 1) echo 'checked="checked" title="def"'; ?> /></th>
-                <td><b><?php _e('Publish this Post to Twitter', 'NS_SPAP'); ?></b></td>
-                </tr>                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
                 <?php } 
     }
                 
@@ -85,13 +82,13 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   }
   //#### 
   function adjMetaOpt($optMt, $pMeta){
-     $optMt['twMsgFormat'] = $pMeta['SNAPformat']; $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; return $optMt;
+     $optMt['twMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToTW_ajax")) {
   function nxs_rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['tw'] as $ii=>$two) if ($ii==$_POST['nid']) {  
+    foreach ($options['tw'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; 
       $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo);
       if (is_array($twpo)) $two['twMsgFormat'] = $twpo[$ii]['SNAPformat']; 
       $result = nxs_doPublishToTW($postID, $two); if ($result == 201) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
@@ -126,10 +123,13 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }          
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } //prr($msg);
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName'];
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
     $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
-    if ($code == 200){if ($postID=='0'){echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}}else{ NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg);}
+    if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
+      else { nxs_metaMarkAsPosted($postID, 'TW', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} 
+    } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); }
     return $code;
   }
 }

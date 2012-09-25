@@ -62,52 +62,50 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'GP'; $lcode = 'gp'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apGPUName']) && $pval['apGPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
-        if (isset($pval['apGPUName']))   $options[$ii]['gpUName'] = $pval['apGPUName'];
-        if (isset($pval['nName']))          $options[$ii]['nName'] = $pval['nName'];
+        if (isset($pval['apGPUName']))   $options[$ii]['gpUName'] = trim($pval['apGPUName']);
+        if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apGPPass']))    $options[$ii]['gpPass'] = 'n5g9a'.nsx_doEncode($pval['apGPPass']); else $options[$ii]['gpPass'] = '';  
-        if (isset($pval['apGPPage']))    $options[$ii]['gpPageID'] = $pval['apGPPage'];                
+        if (isset($pval['apGPPage']))    $options[$ii]['gpPageID'] = trim($pval['apGPPage']);                
         if (isset($pval['apGPAttch']))   $options[$ii]['gpAttch'] = $pval['apGPAttch'];  else $options[$ii]['gpAttch'] = 0;                               
-        if (isset($pval['apGPMsgFrmt'])) $options[$ii]['gpMsgFormat'] = $pval['apGPMsgFrmt'];                                                  
+        if (isset($pval['apGPMsgFrmt'])) $options[$ii]['gpMsgFormat'] = trim($pval['apGPMsgFrmt']);                                                  
         if (isset($pval['apDoGP']))      $options[$ii]['doGP'] = $pval['apDoGP']; else $options[$ii]['doGP'] = 0; 
       }
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $doGP = $ntOpt['doGP'];   $isAvailGP =  $ntOpt['gpUName']!='' && $ntOpt['gpPass']!='';
-        $t = get_post_meta($post_id, 'SNAP_AttachGP', true);  $isAttachGP = $t!=''?$t:$ntOpt['gpAttch'];
-        $t = get_post_meta($post_id, 'SNAP_FormatGP', true);  $gpMsgFormat = $t!=''?$t:$ntOpt['gpMsgFormat'];      
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapGP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doGP = $ntOpt['doGP'];   
+        $isAvailGP =  $ntOpt['gpUName']!='' && $ntOpt['gpPass']!='';  $isAttachGP = $ntOpt['gpAttch']; $gpMsgFormat = $ntOpt['gpMsgFormat'];      
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><div class="nsx_iconedTitle" style="font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);">Google+ AutoPoster (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($isAvailGP) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="gp[<?php echo $ii; ?>][SNAPincludeGP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doGP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);">Google+ - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailGP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToGP', 'rePostToGP_wpnonce' ); } ?>
                 </td></tr>                
                 
                 <?php if (!$isAvailGP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Google+ Account to AutoPost to Google+</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
-                
-                <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"><input class="nxsGrpDoChb" value="1" type="checkbox" name="gp[<?php echo $ii; ?>][SNAPincludeGP]" <?php if ((int)$doGP == 1) echo 'checked="checked" title="def"'; ?> /></th>
-                <td><b><?php _e('Publish this Post to Google+', 'NS_SPAP'); ?></b></td>
-               </tr>
+                                
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                 <input value="1"  id="SNAP_AttachGP" onchange="doShowHideAltFormatX();" type="checkbox" name="gp[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachGP == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to Google+ as Attachement</strong></td></tr>
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="gp[<?php echo $ii; ?>][SNAPformat]" size="60px"/></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
+                <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="gp[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apGPMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat2" style=""><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">Format Options:</th>
-                <td style="vertical-align:top; font-size: 9px;" colspan="2">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. <br/> %URL% - Inserts the URL of your post. &nbsp; %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</td></tr>
+                
 
                 <?php } 
      }
   }
   //#### Save Meta Tags to the Post
   function adjMetaOpt($optMt, $pMeta){
-     $optMt['gpMsgFormat'] = $pMeta['SNAPformat']; $optMt['gpAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['doGP'] = $pMeta['SNAPincludeGP'] == 1?1:0; return $optMt;
+     $optMt['gpMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['gpAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['doGP'] = $pMeta['SNAPincludeGP'] == 1?1:0; return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToGP_ajax")) {
-  function nxs_rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['gp'] as $ii=>$two) if ($ii==$_POST['nid']) {   //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+  function nxs_rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $postID = $_POST['id']; global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+    foreach ($options['gp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapGP', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['gpMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['gpAttch'] = $gppo[$ii]['AttachPost'] == 1?1:0; 
@@ -120,10 +118,14 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;
       if ($isAttachGP=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
       $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];       
-      $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+      
+      $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#800000">Google+</span> - '.$options['nName'];
+      
+      $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return "BAD USER/PASS";} 
       $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  if ($isAttachGP=='1') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $src!='') $lnk['img'] = $src;                                    
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} else $ret = doPostToGooglePlus2($msg, $lnk);
-      if ($ret!='OK') echo $ret; else if ($postID=='0') echo 'OK - Message Posted, please see your Google+ Page';
+      if ($ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
+        else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Google+ Page'; } else { nxs_metaMarkAsPosted($postID, 'GP', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
   }
 }  
 ?>
