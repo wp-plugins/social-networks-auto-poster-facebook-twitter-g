@@ -290,8 +290,9 @@ if (!function_exists('nxs__html_to_utf8')){ function nxs__html_to_utf8 ($data){ 
 if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($postID, $nt, $did){ $mpo =  get_post_meta($postID, 'snap'.$nt, true); $mpo =  maybe_unserialize($mpo); 
   if (is_array($mpo)) { $mpo[$did]['isPosted'] = '1';  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);}
 }}
-if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ $dbLog = get_option('NS_SNAutoPosterLog'); $dbLog = maybe_unserialize($dbLog); $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt);
-    $dbLog[] = $logItem; $dbLog = array_slice($dbLog, -150);  update_option('NS_SNAutoPosterLog', serialize($dbLog)); 
+if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
+  $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt); if(!is_array($nxsDBLog)) $nxsDBLog = array();
+  $nxsDBLog[] = $logItem; $nxsDBLog = array_slice($nxsDBLog, -150);  update_option('NS_SNAutoPosterLog', serialize($nxsDBLog)); 
 }}
 
 function nxsMergeArraysOV($Arr1, $Arr2)

@@ -89,7 +89,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; return $optMt;
   }  
 }}

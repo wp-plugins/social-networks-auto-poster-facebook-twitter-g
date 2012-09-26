@@ -104,7 +104,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
     }      
   }
   
-  function adjMetaOpt($optMt, $pMeta){
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['bgMsgFormat'] = $pMeta['SNAPformat']; $optMt['bgMsgTFormat'] = $pMeta['SNAPTformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doBG'] = $pMeta['SNAPincludeBG'] == 1?1:0; return $optMt;
   }
 }}

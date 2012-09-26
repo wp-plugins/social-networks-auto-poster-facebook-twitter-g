@@ -96,7 +96,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ // prr($pMeta);
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; return $optMt;
   }  
 }}

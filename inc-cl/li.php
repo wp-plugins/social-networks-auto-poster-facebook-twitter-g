@@ -1,6 +1,6 @@
 <?php    
 
-if ($_GET['ca']!='') { $ch = curl_init();  curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/image?c='.$_GET['ca']); 
+if (isset($_GET['ca']) && $_GET['ca']!='') { $ch = curl_init();  curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/image?c='.$_GET['ca']); 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); curl_setopt($ch, CURLOPT_REFERER, 'https://www.google.com/'); $imageData = curl_exec($ch);
   header("Pragma: public"); header("Expires: 0"); header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
   header("Cache-Control: private",false); header("Content-Type: image/jpg"); header("Content-Transfer-Encoding: binary"); echo $imageData; die();
@@ -128,7 +128,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
               
             
             <p style="margin: 0px;"><input value="1"  id="apLIAttch" onchange="doShowHideAltFormat();" type="checkbox" name="li[<?php echo $ii; ?>][apLIAttch]"  <?php if ((int)$options['liAttch'] == 1) echo "checked"; ?> /> 
-              <strong>Publish Posts to LinkedIn as an Attachement</strong>                                 
+              <strong>Publish Posts to LinkedIn as an Attachment</strong>                                 
             </p>
             <div id="altFormat" style="<?php if ((int)$options['liAttch'] == 1) echo "margin-left: 10px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText">Message Text Format:</strong> 
@@ -168,7 +168,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; //prr($ntOpts);
     foreach($ntOpts as $ii=>$options)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapLI', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doLI = $options['doLI']; 
-        $isAvailLI =  ($options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='') || ($options['ulName']!=='' && $options['uPass']!=='');
+        $isAvailLI =  (isset($options['liOAuthVerifier']) && $options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='') || ($options['ulName']!=='' && $options['uPass']!=='');
         $isAttachLI = $options['liAttch']; $liMsgFormat = $options['liMsgFormat']; 
       ?>  
       
@@ -182,7 +182,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
-                <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachement</strong></td> </tr>               
+                <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachment</strong></td> </tr>               
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $liMsgFormat ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
@@ -191,7 +191,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
     }      
   }
   
-  function adjMetaOpt($optMt, $pMeta){
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['liMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['liAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['doLI'] = $pMeta['SNAPincludeLI'] == 1?1:0; return $optMt;
   }
 }}

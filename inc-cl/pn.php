@@ -122,7 +122,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['pnMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doPN'] = $pMeta['SNAPincludePN'] == 1?1:0; $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
   }  
 }}

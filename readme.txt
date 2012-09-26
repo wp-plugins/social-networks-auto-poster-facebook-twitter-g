@@ -130,6 +130,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.2.1 =
+
+* New - Admin can decide what user level can see the SNAP Meta Box on the "New Post" page.
+* Bug fix - Better Facebook authorization errors handling
+* Bug fix - LinkedIn was still attaching a post if not selected.
+* Bug fix - Problem with Log/History saving.
+
 = 2.2.0 =
 
 * New - NextScript LinkeIn API support for company pages auto-posting (Beta).

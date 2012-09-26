@@ -81,7 +81,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       
   }
   //#### 
-  function adjMetaOpt($optMt, $pMeta){
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['twMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; return $optMt;
   }
 }}
@@ -97,7 +97,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
 } 
 
 if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW 
-  function nxs_doPublishToTW($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  
+  function nxs_doPublishToTW($postID, $options){  $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $uln = 0;
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle." - ".rand(1, 155); $uln = strlen($msg);}  
     else{ $post = get_post($postID); $twMsgFormat = $options['twMsgFormat'];         
         $twLim = 140; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 20; 

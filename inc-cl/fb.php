@@ -10,7 +10,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
      if (isset($fbo['fbPgID'])){ echo "-="; prr($fbo);// die();
       $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapThisPageUrl).'&client_secret='.$fbo['fbAppSec'].'&code='.$at); 
       //prr('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapThisPageUrl).'&client_secret='.$fbo['fbAppSec'].'&code='.$at);
-      if ((is_object($response) && isset($response->errors))) { prr($response); die(); }
+      if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
       parse_str($response['body'], $params);  $at = $params['access_token']; // prr($response); prr($params);
       $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$fbo['fbAppSec'].'&client_id='.$fbo['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at); 
       if ((is_object($response) && isset($response->errors))) { prr($response); die();}
@@ -190,7 +190,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       
   }
   
-  function adjMetaOpt($optMt, $pMeta){ 
+  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
      $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['fbAttch'] = $pMeta['AttachPost'] != ''?$pMeta['AttachPost']:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
   }
 }}
@@ -206,7 +206,7 @@ if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() { 
 
 if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
   function nxs_doPublishToFB($postID, $options){ global $ShownAds; require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; if (isset($ShownAds)) $ShownAdsL = $ShownAds;
-    $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  
+    $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true )); if(!isset($options['fbAppPageAuthToken'])) $options['fbAppPageAuthToken'] = '';
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
     
     if ($postID=='0') {echo "Testing ... <br/><br/>"; 
