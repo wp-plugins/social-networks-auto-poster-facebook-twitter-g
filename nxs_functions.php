@@ -93,7 +93,7 @@ jQuery(function(){
 <?php } ?>
       
       
-      function showPopShAtt(imid, e){ jQuery('div#popShAtt'+imid).show().css('top', e.pageY).css('left', e.pageX).appendTo('body'); }
+      function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
       function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
       function doSwitchShAtt(att, idNum){
         if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
@@ -262,7 +262,10 @@ if (!function_exists('getNSXOption')){ function getNSXOption($t){ @eval($t);}}
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
 }}
 if (!function_exists("nxs_doChAPIU")) { //## Second Function to Post to TW 
-  function nxs_doChAPIU($options){ if ($options=='' || !is_array($options)) return;  $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); 
+  function nxs_doChAPIU($optionsX){
+    global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; if ($options=='' || !is_array($options)) return;  
+    $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); 
+    nxs_addToLog('API', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### CHECK FOR API UPDATE - '.$options['ukver'].' ####=========------</span>'); // echo "UUU";
   // $myFile = "/home/_shared/deSrc.testFile.txt"; $fh = fopen($myFile, 'w') or die("can't open file");$stringData = "Out 3 \n".print_r($options, true);fwrite($fh, $stringData);fclose($fh); 
   return $options;
 }}

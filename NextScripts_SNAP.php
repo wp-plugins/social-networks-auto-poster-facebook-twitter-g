@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.2.1
+Version: 2.2.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.2.1' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.2.2' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -34,8 +34,8 @@ if (!class_exists("NS_SNAutoPoster")) {
             $dbOptions = get_option($this->dbOptionsName); 
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  //  prr($options); die();
             //if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
-           // if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
-            if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+15 seconds", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
+            if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
+           // if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+15 seconds", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
            // if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+5 minutes", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
              // $options = nxs_doChAPIU($options); 
              // $options = getRemNSXOption($options);               
@@ -168,7 +168,17 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <h3 style="font-size: 17px;">Other Settings</h3> 
             
-            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts?</h3>  
+            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span onmouseover="showPopShAtt('IS', event);" style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>   
+            
+            <div class="popShAtt" id="popShAttIS">
+        <h3>The difference between "Immediately" and "Scheduled"</h3>
+<b>"Immediately"</b> - Once you click "Publish" button plugin starts pushing your update to configured social networks. At this time you need to wait and look at the turning circle. Some APIs are pretty slow, so you have to wait and wait and wait until all updates are posted and page released back to you.<br/><br/>
+
+<b>"Scheduled"</b> - Releases the page immediately back to you, so you can proceed with something else and it schedules all auto-posting jobs to your WP-Cron. This is much faster and much more efficient, but it could not work if your WP-Cron is disabled or broken.
+      </div>
+            
+            
+            
             <input type="radio" name="nxsHTDP" value="S" <?php if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') echo 'checked="checked"'; ?> /> Schedule (Recomennded) - <i>Faster Perfomance</i><br/>
             <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> Publish Immediately  - <i>Use if WP Cron is disabled or broken on your website</i><br/>
             

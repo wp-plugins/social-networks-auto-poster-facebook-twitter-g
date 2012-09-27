@@ -201,7 +201,7 @@ if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() { 
       foreach ($options['li'] as $ii=>$po) if ($ii==$_POST['nid']) {  $po['ii'] = $ii;
       $mpo =  get_post_meta($postID, 'snapLI', true); $mpo =  maybe_unserialize($mpo); 
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['liMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['liAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
-      $result = nxs_doPublishToLI($postID, $po);  if ($result == 200) { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
+      $result = nxs_doPublishToLI($postID, $po);  if ($result == 200 && ($postID=='0') && $options['li'][$ii]['liOK']!='1') { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
       if ($result == 200) die("Successfully sent your post to LinkedIn."); else die($result);
     }    
   }
