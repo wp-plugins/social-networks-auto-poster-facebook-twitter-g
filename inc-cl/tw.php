@@ -129,7 +129,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
       else { nxs_metaMarkAsPosted($postID, 'TW', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} 
-    } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); }
+    } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 
+      $code .= " | ".$tmhOAuth->response['response']." | ".print_r($msg, true);
+    }
     return $code;
   }
 }

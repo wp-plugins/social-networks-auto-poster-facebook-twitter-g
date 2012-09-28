@@ -123,6 +123,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} else $ret = doPostToGooglePlus2($msg, $lnk);
       if ($ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
         else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Google+ Page'; } else { nxs_metaMarkAsPosted($postID, 'GP', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
-  }
+      if ($ret == 'OK') return 200; else return $ret;
+  } 
 }  
 ?>

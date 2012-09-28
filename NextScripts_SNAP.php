@@ -4,16 +4,17 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.2.2
+Version: 2.2.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.2.2' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.2.3' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
-global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl;
+global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
 $nxs_plurl = plugin_dir_url(__FILE__);
+$nxs_isWPMU = (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true && defined('MULTISITE') && MULTISITE==true); 
 
 //## Define SNAutoPoster class
 if (!class_exists("NS_SNAutoPoster")) {
@@ -33,10 +34,11 @@ if (!class_exists("NS_SNAutoPoster")) {
             $options = array('nsOpenGraph'=>1);            
             $dbOptions = get_option($this->dbOptionsName); 
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  //  prr($options); die();
-            //if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
-            if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
-           // if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+15 seconds", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
-           // if ( (isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+5 minutes", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') ) {
+            
+            //if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+15 seconds", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
+            //if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+5 minutes", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
+            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
+            //if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {                    
              // $options = nxs_doChAPIU($options); 
              // $options = getRemNSXOption($options);               
              $args = array($options); wp_schedule_single_event(time()+1,'nxs_chAPIU', $args); //echo "CHECK";
@@ -74,7 +76,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             if(!$options['isMA']) $options = nxs_snapCleanup($options);
             return $options;
         }
-        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne; $nxsOne = ''; $options = $this->nxs_options; 
+        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl; $nxsOne = ''; $options = $this->nxs_options; 
           if (isset($_POST['update_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc()) {array_walk_recursive($_POST, 'nsx_stripSlashes');} 
             foreach ($nxs_snapAvNts as $avNt) if (isset($_POST[$avNt['lcode']])) { $clName = 'nxs_snapClass'.$avNt['code']; if (!isset($options[$avNt['lcode']])) $options[$avNt['lcode']] = array(); 
               $ntClInst = new $clName(); $ntOpt = $ntClInst->setNTSettings($_POST[$avNt['lcode']], $options[$avNt['lcode']]); $options[$avNt['lcode']] = $ntOpt;
@@ -135,6 +137,7 @@ if (!class_exists("NS_SNAutoPoster")) {
     <li><a href="#nsx_tab1">Your Social Networks Accounts</a></li>
     <li><a href="#nsx_tab2">Other Settings</a></li>
     <li><a href="#nsx_tab3">Log/History</a></li>
+    <li><a href="#nsx_tab4">Help/Support</a></li>
 </ul>
 <form method="post" id="nsStForm" action="<?php echo $nxs_snapThisPageUrl?>">
 <div class="nsx_tab_container">
@@ -166,7 +169,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             
             
-            <h3 style="font-size: 17px;">Other Settings</h3> 
+            <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>
             
             <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span onmouseover="showPopShAtt('IS', event);" style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>   
             
@@ -268,11 +271,119 @@ function chAllCats(ch){
       </div>
         
     </div>
+    
+    <div id="nsx_tab4" class="nsx_tab_content"> 
+     
+     <div style="max-width:1000px;"> 
+     
+<h3> Setup/Installation/Configuration Instructions   </h3>
+     <table style="max-width:1000px"><tr><td valign="top" width="250">
+     
+     
+     
+   <div style="margin:0 25px 0 0; line-height: 24px;">   
+
+<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/application_form.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">Plugin Setup/Installation</a>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/facebook.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">  Facebook </a>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/twitter.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">  Twitter </a>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/googleplus.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"> Google+ </a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/pinterest.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">  Pinterest</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/tumblr.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">  Tumblr </a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/linkedin.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">  LinkedIn </a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/blogger.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">  Blogger </a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/delicious.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/"> Delicious </a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/blogcom.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"> Wordpress.com/Blog.com</a>
+<br/><br/>
+<a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/faq">FAQ</a><br/>
+<a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a>
+
+</div>
+
+</td>
+<td  valign="top" style="font-size: 14px;">
+<h3 style="margin-top: 0px;">Have questions/suggestions?</h3>
+<a style="font-weight: normal; font-size: 18px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/contact-us">===&gt; Contact us &lt;===</a> <br/>
+<h3 style="margin-top: 20px;">Have troubles/problems/found a bug?</h3>
+<a style="font-weight: normal; font-size: 18px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">===&gt; Open support ticket &lt;===</a>
+
+
+<h3 style="margin-top: 30px;">Like the Plugin? Would you like to support developers?</h3>
+<div style="line-height: 24px;">
+<b>Here is what you can do:</b><br/>
+<?php if(function_exists('doPostToGooglePlus')) { ?><s><? } ?><img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> Get the <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts/#getit">"Pro" Edition</a>. You will be able to add several accounts for each network as well as post to Google+, Pinterest and LinkedIn company pages.<?php if(function_exists('doPostToGooglePlus')) { ?></s> <i>Done! Thank you!</i><? } ?><br/>
+<img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> Rate the plugin 5 stars at <a href="http://wordpress.org/extend/plugins/social-networks-auto-poster-facebook-twitter-g/">wordpress.org page</a>.<br/>
+<img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> <a href="<?php echo admin_url(); ?>post-new.php">Write a blogpost</a> about the plugin and don't forget to auto-post this blogpost to all your social networks ;-).<br/>
+</div>
+</td></tr></table>
+   
+   <br/><br/>
+   <h3>Solutions for some common problems </h3>
+   
+   <b>Problem:</b> <i>I can't create an app on developers.facebook.com/apps</i>. When I am trying to enter that page it redirects me back to my account?<br/>
+<b>Solution:</b> Facebook "Business" or "Advertising" accounts can't manage apps. This is an unavoidable Facebook limitation. Only real user accounts are able to create and manage apps. Please login to Facebook as a personal account to be able to create app. You will need to add your personal Facebook account as "Administrator" to your page..
+   <br/><br/>
+   <b>Problem:</b> When I follow the instructions to allow plugin authorize/access to my Facebook/Twitter/Tumblr/LinkedIn account, it redirects me to my <i>"Google Analytics for WordPress Configuration"</i> page.<br/>
+<b>Solution:</b> It's a known issue. Google Analytics plugin hijacks the authorization workflow. Please temporary deactivate Google Analytics plugin, do all authorizations and then activate it back. There are some other plugins ("Blog Promoter", "Tweet Old Post", etc.. ) that could also hijack the authorization. Solution is the same: Deactivate the other plugin, do authorization, reactivate it.   
+<br/><br/>
+
+ <b>Problem:</b> Plugin breaks <i>NextGen galleries</i>. I got error <i>"Fatal error: Class 'nggMeta' not found"</i>.<br/>
+<b>Solution:</b>There is a known bug in NextGen galleries that was reported back to them over a year ago, but still hasn't been fixed. Any plugin calling standard wordpress function apply_filters('the_content' will break NextGen galleries.
+We have posted the solution here: <a target="_blank" href="http://wordpress.org/support/topic/plugin-nextgen-gallery-fatal-error-insert-picture-in-event?replies=4">http://wordpress.org/support/topic/plugin-nextgen-gallery-fatal-error-insert-picture-in-event?replies=4</a>
+<br/><br/>
+
+<b>Problem:</b> When I publish a new post to <i>Facebook</i> I am getting this weird Twitter Error:<i> Error:(#100) The status you are trying to publish is a duplicate of, or too similar to, one that we recently posted to Twitter</i>.<br/>
+<b>Solution:</b> Your Facebook is already auto-posting to Twitter. When it sees the same tweet made by our plugin it fails with this error. You need to either unlink your Facebook from Twitter or disable Twitter auto-posting from our plugin.
+If you decide to unlink your Facebook from Twitter:<br/>
+Go to http://www.facebook.com/twitter and remove the link to twitter from the affected wall (Click on "Unlink from Twitter").
+<br/><br/>
+
+<b>Problem:</b> Facebook Error: <i>"The user hasn't authorized the application to perform this action"</i><br/>
+<b>Solution:</b>
+The most popular cause for "The user hasn't authorized the application to perform this action" is that your domain is not configured for your app.<br/>
+Please read and carefully follow the installation instructions:<br/>
+You missed/messed steps 1.4 and 1.5 from Facebook section:<br/>
+4. Click "Website", enter your website URL<br/>
+5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 4.
+<br/><br/>
+
+
+<b>Problem:</b> Facebook Error:  <i>SSL certificate problem, verify that the CA cert is OK. Details:error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</i><br/>
+<b>Solution:</b>
+This error means that cURL is misconfigured on your server. Most probably curl ssl(open SSL) is broken or it simply can't find the certificates at the pointed location. Please contact your hosting provider and ask them to fix this.<br/>
+http://curl.haxx.se/docs/sslcerts.html<br/>
+Unlike Twitter or Google+ that could be automatically switched to non-SSL connections in such cases, Facebook requires to be accessed by SSL at all times.
+
+<br/><br/>
+
+<b>Problem:</b> Twitter Error:  <i>{"error":"Read-only application cannot POST","request":"/1/statuses/update.json"}</i><br/>
+<b>Solution:</b>You just need to follow the instructions step by step. Please don't skip anything.<br/>
+<br/>
+Please see #4 and #5 for Twitter:<br/>
+<br/>
+4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to <b>"Read and Write"</b>. Click "Update this Twitter application settings".<br/>
+5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have <b>"Read and Write"</b> access level.<br/>
+
+    </div> 
+        
+    </div>
 </div>
            
            </form>
            
            <?php
+        }
+        
+        function showSNAP_WPMU_OptionsPage(){ 
+           
         }
         
         function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
@@ -353,11 +464,11 @@ if (!function_exists("nxsDoLic_ajax")) { //## Notice to hackers:
     if (strlen($options['uk'])>100) echo "OK"; else echo "NO"; die();
 }} 
 
-if (!function_exists("nxs_clLgo_ajax")) { function nxs_clLgo_ajax() { check_ajax_referer('getBoards'); 
+if (!function_exists("nxs_clLgo_ajax")) { function nxs_clLgo_ajax() { check_ajax_referer('nxsSsPageWPN'); 
   update_option('NS_SNAutoPosterLog', ''); echo "OK";
 }} 
 
-if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax_referer('getBoards'); 
+if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax_referer('nxsSsPageWPN'); 
   $log = get_option('NS_SNAutoPosterLog'); 
   $logInfo = maybe_unserialize(get_option('NS_SNAutoPosterLog')); if (is_array($logInfo)) 
           foreach (array_reverse($logInfo) as $logline) echo '<snap style="color:#008000">['.$logline['date'].']</snap> - ['.$logline['nt'].'] -  <snap style="color:#'.($logline['type']=='E'?'FF0000':'585858').'">'.$logline['msg'].'</snap> '.$logline['extInfo'].'<br/>';
@@ -537,14 +648,6 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
     
     add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1); 
-    add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax'); 
-    
-    /*
-    add_action('ns_doPublishToTW','doPublishToTW', 1, 2);    
-    add_action('ns_doPublishToFB','doPublishToFB', 1, 2);    
-    add_action('ns_doPublishToGP','doPublishToGP', 1, 2);    
-    */
-    //## Add Settings link to Plugins list
-    add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
+    add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');     
 }
 ?>

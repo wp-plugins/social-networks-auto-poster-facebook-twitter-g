@@ -155,7 +155,7 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">Blogger</span> - '.$options['nName']; 
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
-    if ($ret!='OK') {if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);  }
+    if ($ret!='OK') {if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); return  $ret; }
       else { if ($postID=='0') { echo 'OK - Message Posted, please see your Blooger/Blogpost Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted ');  return 201;} else { nxs_metaMarkAsPosted($postID, 'BG', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
   }
 }

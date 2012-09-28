@@ -196,12 +196,12 @@ jQuery(function(){
               jQuery('#'+hid+'Hint').show(); jQuery('#'+hid+'HintInfo').html('Hide format info'); 
         }
         function nxs_clLog(){
-              jQuery.post(ajaxurl,{action: 'nxs_clLgo', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+              jQuery.post(ajaxurl,{action: 'nxs_clLgo', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
                     jQuery("#nxslogDiv").html('');
               }, "html")
         }
         function nxs_rfLog(){
-              jQuery.post(ajaxurl,{action: 'nxs_rfLgo', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+              jQuery.post(ajaxurl,{action: 'nxs_rfLgo', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
                     jQuery("#nxslogDiv").html(j);
               }, "html")
         }
@@ -252,6 +252,13 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 .nxs_hili {color:#008000;}
 .clNewNTSets{width: 800px;}
 
+.nxs_icon16 { font-size: 14px; line-height: 18px;
+    background-position: 3px 50% !important;
+    background-repeat: no-repeat !important;
+    display: inline-block;
+    padding: 1px 0 1px 23px !important;
+}
+
 </style>
 <?php }}
 
@@ -265,7 +272,7 @@ if (!function_exists("nxs_doChAPIU")) { //## Second Function to Post to TW
   function nxs_doChAPIU($optionsX){
     global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; if ($options=='' || !is_array($options)) return;  
     $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); 
-    nxs_addToLog('API', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### CHECK FOR API UPDATE - '.$options['ukver'].' ####=========------</span>'); // echo "UUU";
+    //nxs_addToLog('API', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### CHECK FOR API UPDATE - '.$options['ukver'].' ####=========------</span>'); // echo "UUU";
   // $myFile = "/home/_shared/deSrc.testFile.txt"; $fh = fopen($myFile, 'w') or die("can't open file");$stringData = "Out 3 \n".print_r($options, true);fwrite($fh, $stringData);fclose($fh); 
   return $options;
 }}

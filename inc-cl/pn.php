@@ -169,6 +169,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;
     $ret = doPostToPinterest($msg, $imgURL, $link, $boardID);
     if ($ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+    if ($ret == 'OK') return 200; else return $ret;
   }
 }  
 ?>

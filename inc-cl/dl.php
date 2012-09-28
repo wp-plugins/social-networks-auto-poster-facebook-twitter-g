@@ -129,6 +129,7 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
         else { $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       }
       if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Delicious Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
+      if ($ret == 'OK') return 200; else return $ret;
   }
 }  
 ?>

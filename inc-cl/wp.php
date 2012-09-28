@@ -163,6 +163,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       } if ($ret!='OK') { if ($postID=='0') echo $ret; 
         nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);
       } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else { nxs_metaMarkAsPosted($postID, 'WP', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+      if ($ret == 'OK') return 200; else return $ret;
   }
 }  
 ?>
