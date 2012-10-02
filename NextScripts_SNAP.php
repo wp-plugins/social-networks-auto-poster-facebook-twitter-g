@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.2.3
+Version: 2.2.4
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.2.3' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.2.4' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -171,7 +171,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             
             <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>
             
-            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span onmouseover="showPopShAtt('IS', event);" style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>   
+            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span  style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseout="hidePopShAtt('IS');" onmouseover="showPopShAtt('IS', event);"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>   
             
             <div class="popShAtt" id="popShAttIS">
         <h3>The difference between "Immediately" and "Scheduled"</h3>
@@ -319,7 +319,7 @@ function chAllCats(ch){
 <h3 style="margin-top: 30px;">Like the Plugin? Would you like to support developers?</h3>
 <div style="line-height: 24px;">
 <b>Here is what you can do:</b><br/>
-<?php if(function_exists('doPostToGooglePlus')) { ?><s><? } ?><img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> Get the <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts/#getit">"Pro" Edition</a>. You will be able to add several accounts for each network as well as post to Google+, Pinterest and LinkedIn company pages.<?php if(function_exists('doPostToGooglePlus')) { ?></s> <i>Done! Thank you!</i><? } ?><br/>
+<?php if(function_exists('doPostToGooglePlus')) { ?><s><?php } ?><img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> Get the <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts/#getit">"Pro" Edition</a>. You will be able to add several accounts for each network as well as post to Google+, Pinterest and LinkedIn company pages.<?php if(function_exists('doPostToGooglePlus')) { ?></s> <i>Done! Thank you!</i><?php } ?><br/>
 <img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> Rate the plugin 5 stars at <a href="http://wordpress.org/extend/plugins/social-networks-auto-poster-facebook-twitter-g/">wordpress.org page</a>.<br/>
 <img src="<?php echo $nxs_plurl; ?>img/snap-icon12.png"/> <a href="<?php echo admin_url(); ?>post-new.php">Write a blogpost</a> about the plugin and don't forget to auto-post this blogpost to all your social networks ;-).<br/>
 </div>
@@ -398,7 +398,6 @@ Please see #4 and #5 for Twitter:<br/>
             }            
           } // prr($_POST);
         }
-        
         
         function NS_SNAP_AddPostMetaTags() { global $post, $nxs_snapAvNts, $plgn_NS_SNAutoPoster; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; if (!is_object($post)) $post = get_post($post_id);
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 

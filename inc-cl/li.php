@@ -69,9 +69,12 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'ulName'=>'', 'uPass'=>'', 'uPage'=>'', 'doLI'=>'1', 'liAPIKey'=>'', 'liAPISec'=>'', 'liUserInfo'=>'', 'liAttch'=>'1', 'liOAuthToken'=>'', 'liMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-    <div id="doLI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/li-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['liAccessToken']) && $options['liAccessTokenSecret']!='') || $options['liOK']=='1' || $isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSLI<?php echo $ii; ?>" value="0" id="apDoSLI<?php echo $ii; ?>" />                                     
+    <div id="doLI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/li-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['liAccessToken']) && $options['liAccessTokenSecret']!='') || $options['liOK']=='1' || $isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSLI<?php echo $ii; ?>" value="0" id="apDoSLI<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="li[<?php echo $ii; ?>][apDoLI]" value="1" id="apDoNewLI<?php echo $ii; ?>" /> <?php } ?>
-            <div id="doLI<?php echo $ii; ?>Div" style="margin-left: 10px;"> <br/>
+            <div id="doLI<?php echo $ii; ?>Div" style="margin-left: 10px;"> 
+            
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">Detailed LinkedIn Installation/Configuration Instructions</a></div>
+            
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
             <table width="800" border="0" cellpadding="10">

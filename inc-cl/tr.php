@@ -52,8 +52,10 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'doTR'=>'1', 'trURL'=>'', 'trPgID'=>'', 'trConsKey'=>'', 'trInclTags'=>'1', 'trConsSec'=>'', 'trPostType'=>'T', 'trDefImg'=>'', 'trOAuthTokenSecret'=>'', 'trAccessTocken'=>'', 'trMsgFormat'=>'<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\'%IMG%\'/></p><p>%FULLTEXT%</p></blockquote>', 'trMsgTFormat'=>'New Post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-    <div id="doTR<?php echo $ii; ?>Div"<?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['trOAuthTokenSecret']) && $options['trOAuthTokenSecret']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
+    <div id="doTR<?php echo $ii; ?>Div"<?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['trOAuthTokenSecret']) && $options['trOAuthTokenSecret']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="tr[<?php echo $ii; ?>][apDoTR]" value="1" id="apDoNewTR<?php echo $ii; ?>" /> <?php } ?>
+    
+    <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">Detailed Tumblr Installation/Configuration Instructions</a></div>
     
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
@@ -186,13 +188,13 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);
     $trURL = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1);     
     if ($options['trInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',',$tggs); }    
-    $post = get_post($postID);  $postDate = $post->post_date_gmt." GMT"; //## Adds date to Tumblr post. Thanks to Kenneth Lecky
+    $post = get_post($postID);  $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#014A76">Tumblr</span> - '.$options['nName'];
     $postArr = array('tags'=>$tags, 'date'=>$postDate);
     if ($options['trPostType']=='I') { $postArr['type'] = 'photo'; $postArr['caption'] = $msg;  $postArr['source'] = nxs_getPostImage($postID, 'large', $options['trDefImg']); } 
       else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = get_permalink($postID); $postArr['body'] = $msg; } 
     
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); // prr($postArr);
     
     $code = $postinfo->meta->status; // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } 

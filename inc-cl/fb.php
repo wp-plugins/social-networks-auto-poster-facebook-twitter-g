@@ -55,8 +55,10 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'fbAppSec'=>'', 'fbAttch'=>'1', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($mfbo, $fbo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl; ?>
-    <div id="doFB<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/fb-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>1)||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />     <br/>                                
-    <?php if ($isNew) { ?> <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
+    <div id="doFB<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/fb-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>1)||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
+    <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
+    
+     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">Detailed Facebook Installation/Configuration Instructions</a></div>
     
     <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="fb[<?php echo $ii; ?>][nName]" id="fbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$fbo['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
     
@@ -191,14 +193,14 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   }
   
   function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['fbAttch'] = $pMeta['AttachPost'] != ''?$pMeta['AttachPost']:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
+     $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['fbAttch'] = ($pMeta['AttachPost'] != '')?$pMeta['AttachPost']:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() {  check_ajax_referer('rePostToFB');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
     $options = get_option('NS_SNAutoPoster');  foreach ($options['fb'] as $ii=>$fbo) if ($ii==$_POST['nid']) {  $fbo['ii'] = $ii; 
-      $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); 
-      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $fbo['fbMsgFormat'] = $fbpo[$ii]['SNAPformat']; $fbo['fbAttch'] = $fbpo[$ii]['AttachPost'] == 1?1:0; } 
+      $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); // prr($fbpo);
+      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $fbo['fbMsgFormat'] = $fbpo[$ii]['SNAPformat']; $fbo['fbAttch'] = ($fbpo[$ii]['AttachPost'] != '')?$fbpo[$ii]['AttachPost']:0; } 
       $result = nxs_doPublishToFB($postID, $fbo); if ($result == 200) die("Successfully sent your post to FaceBook."); else die($result);
     }    
   }
@@ -221,7 +223,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
       if (trim($src)!='') $mssg['picture'] = $src;
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
-    }  // prr($options);  prr($mssg);    prr($facebook); echo "/$page_id/feed";
+    } //  prr($mssg); prr($options);  //   prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n"; 

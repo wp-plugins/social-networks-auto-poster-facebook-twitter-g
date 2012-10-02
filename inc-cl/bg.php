@@ -22,11 +22,12 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'doBG'=>'1', 'bgUName'=>'', 'bgPass'=>'', 'bgBlogID'=>'', 'bgInclTags'=>'1', 'bgMsgFormat'=>'%FULLTEXT% <br/><a href=\'%URL%\'>%TITLE%</a>', 'bgMsgTFormat'=>'%TITLE%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-    <div id="doBG<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/bg-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['bgOK']) && $options['bgOK']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSBG<?php echo $ii; ?>" value="0" id="apDoSBG<?php echo $ii; ?>" />                                     
+    <div id="doBG<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/bg-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['bgOK']) && $options['bgOK']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSBG<?php echo $ii; ?>" value="0" id="apDoSBG<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="bg[<?php echo $ii; ?>][apDoBG]" value="1" id="apDoNewBG<?php echo $ii; ?>" /> <?php } ?>
     
             
-            <div id="doBG<?php echo $ii; ?>Div" style="margin-left: 10px;"> 
+            <div id="doBG<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">Detailed Blogger Installation/Configuration Instructions</a></div>
+            
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGUName]" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['bgUName']), 'NS_SNAutoPoster') ?>" />                
