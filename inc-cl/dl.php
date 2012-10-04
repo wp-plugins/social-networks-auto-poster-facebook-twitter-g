@@ -119,7 +119,7 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
   function nxs_doPublishToDL($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat'];       
       $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); $msgFormat = $options['dlMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID);       
       // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
-      $email = $options['dlUName'];  $pass = substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass'];
+      $email = $options['dlUName'];  $pass = urlencode(substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
       
       if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
       $dusername = $options['dlUName']; $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
@@ -128,9 +128,9 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
       
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
-      $cnt = wp_remote_get( $apicall, '' ); //prr($cnt);      
+      $cnt = wp_remote_get( $apicall, '' );// prr($cnt);      
       if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii']);  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
-        else { $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+        else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       }
       if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Delicious Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
       if ($ret == 'OK') return 200; else return $ret;

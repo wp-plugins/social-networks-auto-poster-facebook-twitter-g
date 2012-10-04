@@ -98,7 +98,8 @@ jQuery(function(){
       function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
       function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
       function doSwitchShAtt(att, idNum){
-        if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
+        //if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
+        if (att==1) { if (jQuery('#apFBAttch'+idNum).is(":checked")) jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else { if( jQuery('#apFBAttchShare'+idNum).is(":checked")) jQuery('#apFBAttch'+idNum).attr('checked', false);}
       }
 
             
@@ -152,7 +153,7 @@ jQuery(function(){
             }
             function seFBA(pgID,fbAppID,fbAppSec){ var data = { pgID: pgID, action: 'nsAuthFBSv', _wpnonce: jQuery('input#nsFB_wpnonce').val()}; 
               jQuery.post(ajaxurl, data, function(response) {  
-                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>&scope=publish_stream,offline_access,read_stream,manage_pages";
+                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&scope=publish_stream,offline_access,read_stream,manage_pages&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>";
               });                       
             }
             

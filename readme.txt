@@ -130,6 +130,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.2.5 =
+
+* Improvement - Better Facebook Authorization handling
+* Bug fix - Facebook Formatting problems.
+* Bug fix - Blogger Connections.
+* Bug fix - Errors in WP 2.8
+
 = 2.2.4 =
 
 * New - Installation/Configuration links.
