@@ -12,15 +12,15 @@ Automatically publish blogposts to your Facebook, Twitter, Google+, Pinterest, L
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accoutns** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, LinkedIn, Pinterest, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom wordpress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, Delicious, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
 Latest version 2.2 - Support for LinkedIn Company pages (*with third party library*), History/Log Tab, improved interface and numerous bug fixes.
 
 Supported Networks:
 
-**Facebook** - Autopost to your profile, business page, community page, or facebook group page. Ability to attach your blogpost to Facebook post. 
+**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. 
 
 **Twitter** - Autopost to your account.
 
@@ -135,6 +135,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - Better Facebook Authorization handling
 * Bug fix - Facebook Formatting problems.
 * Bug fix - Blogger Connections.
+* Bug fix - Blogger Connections.
 * Bug fix - Errors in WP 2.8
 
 = 2.2.4 =
@@ -150,7 +151,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.2.3 =
 
-* New - New Tab - Help/Suppoer with some usefull info.
+* New - New Tab - Help/Support with some useful info.
 * Bug fix - Important performance fix.
 * Bug fix - Log/History Refresh and Clear Buttons.
 
@@ -207,7 +208,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - format and settings fixes for almost all networks.
 
 = 2.0.12 =
-* Bug fix - Some Facebook connectivity isses.
+* Bug fix - Some Facebook connectivity issues.
 * Bug fix - Unselected Custom post types were still published in some cases.
 
 = 2.0.11 =
