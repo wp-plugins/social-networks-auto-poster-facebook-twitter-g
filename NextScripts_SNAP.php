@@ -8,7 +8,7 @@ Version: 2.2.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.2.5' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.2.5' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -35,12 +35,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             $dbOptions = get_option($this->dbOptionsName); 
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  //  prr($options); die();
             
-          //  if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+15 seconds", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
-            //if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+5 minutes", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
             if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
-            //if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {                    
-             // $options = nxs_doChAPIU($options); 
-             // $options = getRemNSXOption($options);               
              $args = array($options); wp_schedule_single_event(time()+1,'nxs_chAPIU', $args); //echo "CHECK";
             } 
             
