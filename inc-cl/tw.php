@@ -51,7 +51,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       if (isset($pval['apTWURL']) && $pval['apTWURL']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDoTW']))         $options[$ii]['doTW'] = $pval['apDoTW']; else $options[$ii]['doTW'] = 0;
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
-        if (isset($pval['apTWURL']))        $options[$ii]['twURL'] = trim($pval['apTWURL']);
+        if (isset($pval['apTWURL']))        $options[$ii]['twURL'] = trim($pval['apTWURL']);  if ( substr($options[$ii]['twURL'], 0, 4)!='http' )  $options[$ii]['twURL'] = 'http://'.$options[$ii]['twURL'];
         if (isset($pval['apTWConsKey']))    $options[$ii]['twConsKey'] = trim($pval['apTWConsKey']);
         if (isset($pval['apTWConsSec']))    $options[$ii]['twConsSec'] = trim($pval['apTWConsSec']);                                
         if (isset($pval['apTWAccToken']))   $options[$ii]['twAccToken'] = trim($pval['apTWAccToken']);                
@@ -92,7 +92,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
   function nxs_rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['tw'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; 
       $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo);
-      if (is_array($twpo)) $two['twMsgFormat'] = $twpo[$ii]['SNAPformat']; 
+      if (is_array($twpo) && isset($twpo[$ii]) && is_array($twpo[$ii]) && isset($twpo[$ii]['SNAPformat']) ) $two['twMsgFormat'] = $twpo[$ii]['SNAPformat']; 
       $result = nxs_doPublishToTW($postID, $two); if ($result == 201) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
     }
   }

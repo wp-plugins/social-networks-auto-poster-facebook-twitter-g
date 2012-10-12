@@ -63,7 +63,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'WP'; $lcode = 'wp'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apWPUName']) && $pval['apWPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
-        if (isset($pval['apWPURL']))   $options[$ii]['wpURL'] = trim($pval['apWPURL']);
+        if (isset($pval['apWPURL']))   $options[$ii]['wpURL'] = trim($pval['apWPURL']);   if ( substr($options[$ii]['wpURL'], 0, 4)!='http' )  $options[$ii]['wpURL'] = 'http://'.$options[$ii]['wpURL'];
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apWPUName']))   $options[$ii]['wpUName'] = trim($pval['apWPUName']);
         if (isset($pval['apWPPass']))    $options[$ii]['wpPass'] = 'n5g9a'.nsx_doEncode($pval['apWPPass']); else $options[$ii]['wpPass'] = '';  

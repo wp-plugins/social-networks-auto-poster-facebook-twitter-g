@@ -5,10 +5,11 @@ $nxs_snapAvNts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Common Settings  
   function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'FB'; $lcode = 'fb'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
-    if ( isset($_GET['code']) && $_GET['code']!='' && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "Code:".$at; $fbo = array('wfa'=> 1339160000);  
-     foreach ($ntOpts as $two) { if (isset($two['wfa']) && $two['wfa']>$fbo['wfa']) $fbo =  $two; }
+    if ( isset($_GET['code']) && $_GET['code']!='' && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info =- <br/><br/><br/>-= Code:".$at;
+     //$fbo = array('wfa'=> 1339160000); //foreach ($ntOpts as $two) { if (isset($two['wfa']) && $two['wfa']>$fbo['wfa']) $fbo =  $two; }
+     $fbo = $ntOpts[$_GET['acc']];
      if (isset($fbo['fbPgID'])){ echo "-="; prr($fbo);// die();
-      $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapThisPageUrl).'&client_secret='.$fbo['fbAppSec'].'&code='.$at); 
+      $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapThisPageUrl.'&acc='.$_GET['acc']).'&client_secret='.$fbo['fbAppSec'].'&code='.$at); 
       //prr('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapThisPageUrl).'&client_secret='.$fbo['fbAppSec'].'&code='.$at);
       if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
       parse_str($response['body'], $params);  $at = $params['access_token']; // prr($response); prr($params);
@@ -19,13 +20,10 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $facebook = new NXS_Facebook(array( 'appId' => $fbo['fbAppID'], 'secret' => $fbo['fbAppSec'], 'cookie' => true)); 
       $facebook -> setAccessToken($fbo['fbAppAuthToken']); $user = $facebook->getUser(); echo "USER:"; prr($user);
       if ($user) {
-        try { $page_id = $fbo['fbPgID']; echo "XE";  
-        
+        try { $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-";          
           if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
              $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
-          } 
-        
-          $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);
+          } $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);
           if( !empty($page_info['access_token']) ) { $fbo['fbAppPageAuthToken'] = $page_info['access_token']; }
         } catch (NXS_FacebookApiException $e) { $errMsg = $e->getMessage(); prr($errMsg);
           if ( stripos($errMsg, 'Unknown fields: access_token')!==false) $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; else { echo 'Error:',  $errMsg, "\n"; die(); }
@@ -35,7 +33,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       if ($user>0) { $fbo['fbAppAuthUser'] = $user;  $options = get_option('NS_SNAutoPoster');      
         foreach ($options['fb'] as $two) { if ($two['fbPgID']==$fbo['fbPgID']) $fbs[] = $fbo; else $fbs[] = $two; } $options['fb'] = $fbs; // prr($options); die();
          update_option('NS_SNAutoPoster', $options);
-        ?><script type="text/javascript">window.location = "<?php echo site_url(); ?>/wp-admin/options-general.php?page=NextScripts_SNAP.php"</script>      
+        ?><script type="text/javascript">window.location = "<?php echo $nxs_snapThisPageUrl; ?>"</script>      
       <?php } die(); }
     } ?>
     <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Facebook Settings:   <?php $cfbo = count($ntOpts); $mfbo =  1+max(array_keys($ntOpts)); ?> <?php wp_nonce_field( 'nsFB', 'nsFB_wpnonce' ); ?>
@@ -43,7 +41,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     
     <?php // if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mfbo); else nxs_doSMAS('Facebook', 'FB'.$mfbo); ?>
     
-    <?php foreach ($ntOpts as $indx=>$fbo){  if (trim($fbo['nName']=='')) $fbo['nName'] = str_ireplace('https://www.facebook.com','', str_ireplace('http://www.facebook.com','', $fbo['fbURL'])); ?>
+    <?php foreach ($ntOpts as $indx=>$fbo){ $fbo['ii'] = $indx; if (trim($fbo['nName']=='')) $fbo['nName'] = str_ireplace('https://www.facebook.com','', str_ireplace('http://www.facebook.com','', $fbo['fbURL'])); ?>
       <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoFB" name="fb[<?php echo $indx; ?>][apDoFB]" type="checkbox" <?php if ((int)$fbo['doFB'] == 1) echo "checked"; ?> /> 
       <strong>Auto-publish your Posts to your Facebook Page or Profile <i style="color: #005800;"><?php if($fbo['nName']!='') echo "(".$fbo['nName'].")"; ?></i> </strong>
       &nbsp;&nbsp;<a id="doFB<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('FB<?php echo $indx; ?>');return false;">[Show Settings]</a>&nbsp;&nbsp;
@@ -54,7 +52,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show NEW Settings Page
   function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'fbAppSec'=>'', 'fbAttch'=>'1', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($mfbo, $fbo, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl; ?>
     <div id="doFB<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/fb-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>1)||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
     
@@ -105,11 +103,11 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>0) { ?>
             Your Facebook Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit',$fbo['fbAppAuthUser']), 'NS_SNAutoPoster') ?>.
             You can Re- <?php } ?>            
-            <a onclick="seFBA('<?php echo $fbo['fbPgID'];?>', '<?php echo $fbo['fbAppID'];?>', '<?php echo $fbo['fbAppSec'];?>'); return false;" href="#">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo $fbo['fbAppID'];?>&client_secret='<?php echo $fbo['fbAppSec'];?>&scope=publish_stream,offline_access,read_stream,manage_pages&redirect_uri=<?php echo urlencode($nxs_snapThisPageUrl.'&acc='.$fbo['ii']);?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($fbo['fbAppAuthUser']) || $fbo['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>
             
             <?php if (!isset($fbo['fbAppAuthUser']) || $fbo['fbAppAuthUser']<1) { ?>
-            <br/><br/><i> If you get Facebook message : <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that for example <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i> <?php }?>
+            <br/><br/><i> If you get Facebook message: <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b> please make sure that domain name in your Facebook App matches your website domain exactly. Please note that for example <b>nextscripts.com</b> and <b style="color:#800000;">www.</b><b>nextscripts.com</b> are different domains.</i> <?php }?>
             <?php } ?>
             
             <?php  if(isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>0) { ?>
@@ -136,7 +134,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         if (isset($pval['apFBAttchAsVid'])) $options[$ii]['fbAttchAsVid'] = $pval['apFBAttchAsVid']; else $options[$ii]['fbAttchAsVid'] = 0;
         if (isset($pval['apFBMsgFrmt']))    $options[$ii]['fbMsgFormat'] = trim($pval['apFBMsgFrmt']); 
                 
-        if (isset($pval['apFBURL']))  {  $options[$ii]['fbURL'] = trim($pval['apFBURL']);   
+        if (isset($pval['apFBURL']))  {  $options[$ii]['fbURL'] = trim($pval['apFBURL']);   if ( substr($options[$ii]['fbURL'], 0, 4)!='http' )  $options[$ii]['fbURL'] = 'http://'.$options[$ii]['fbURL'];
           $fbPgID = $options[$ii]['fbURL']; if (substr($fbPgID, -1)=='/') $fbPgID = substr($fbPgID, 0, -1);  $fbPgID = substr(strrchr($fbPgID, "/"), 1); 
           if (strpos($fbPgID, '?')!==false) $fbPgID = substr($fbPgID, 0, strpos($fbPgID, '?')); 
           $options[$ii]['fbPgID'] = $fbPgID; //echo $fbPgID;
@@ -199,8 +197,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 
 if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() {  check_ajax_referer('rePostToFB');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
     $options = get_option('NS_SNAutoPoster');  foreach ($options['fb'] as $ii=>$fbo) if ($ii==$_POST['nid']) {  $fbo['ii'] = $ii; 
-      $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); // prr($fbpo);
-      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); } 
+      $fbpo =  get_post_meta($postID, 'snapFB', true); /* echo $postID."|"; echo $fbpo; */ $fbpo =  maybe_unserialize($fbpo); // prr($fbpo); 
+      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); } //prr($fbo);
       $result = nxs_doPublishToFB($postID, $fbo); if ($result == 200) die("Successfully sent your post to FaceBook."); else die($result);
     }    
   }
@@ -209,9 +207,8 @@ if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() { 
 if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
   function nxs_doPublishToFB($postID, $options){ global $ShownAds; require_once ('apis/facebook.php'); $page_id = $options['fbPgID']; if (isset($ShownAds)) $ShownAdsL = $ShownAds;
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true )); if(!isset($options['fbAppPageAuthToken'])) $options['fbAppPageAuthToken'] = '';
-    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
-    
-    if ($postID=='0') {echo "Testing ... <br/><br/>"; 
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();      
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; 
     $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
        'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) );  
     } else { $post = get_post($postID); $fbMsgFormat = $options['fbMsgFormat']; $isAttachFB = $options['fbAttch']; $isAttachVidFB = $options['fbAttchAsVid']; $msg = nsFormatMessage($fbMsgFormat, $postID);
@@ -223,7 +220,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
       if (trim($src)!='') $mssg['picture'] = $src;
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
-    } //  prr($mssg); prr($options);  //   prr($facebook); echo "/$page_id/feed";
+    } //  prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);

@@ -4,23 +4,35 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.2.5
+Version: 2.3.0
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.2.5' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.3.0' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
-global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU;
+global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
 $nxs_plurl = plugin_dir_url(__FILE__);
 $nxs_isWPMU = (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true && defined('MULTISITE') && MULTISITE==true); 
 
+if (!function_exists('nxssnapmu_columns_content')){ function nxssnapmu_columns_content($column_name, $blogID) {
+  if ($column_name == 'snap_sasn') { switch_to_blog( $blogID ); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); $options = $plgn_NS_SNAutoPoster->nxs_options;  
+    $ntOptions = $plgn_NS_SNAutoPoster->nxs_ntoptions; $def = $ntOptions['nxsSUType']; 
+  ?>       
+        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="O" <?php if (isset($options['suaMode']) && $options['suaMode']=='O' || (!isset($options['suaMode']) && $def =='O')) echo 'checked="checked"'; ?> />Can use own SN Accounts <a href="<?php echo esc_url(get_admin_url($blogID)); ?>options-general.php?page=NextScripts_SNAP.php">[Manage]</a><br/>        
+        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="S" <?php if (isset($options['suaMode']) && $options['suaMode']=='S' || (!isset($options['suaMode']) && $def =='S')) echo 'checked="checked"'; ?> />Auto-post to Super Admin's SN<br/>        
+        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="D" <?php if (isset($options['suaMode']) && $options['suaMode']=='D' || (!isset($options['suaMode']) && $def =='D')) echo 'checked="checked"'; ?> />Disable SNAP<br/>       
+       <?php restore_current_blog();
+    }   
+}}
+
 //## Define SNAutoPoster class
 if (!class_exists("NS_SNAutoPoster")) {
     class NS_SNAutoPoster {//## General Functions         
         var $dbOptionsName = "NS_SNAutoPoster";       
-        var $nxs_options = "";
+        var $nxs_options = ""; var $nxs_ntoptions = "";
+        
         function __construct() { $this->nxs_options = $this->getAPOptions();} 
         //## Constructor
         function NS_SNAutoPoster() { }
@@ -28,26 +40,31 @@ if (!class_exists("NS_SNAutoPoster")) {
         function init() { $this->getAPOptions(); }
         //## Administrative Functions
         //## Options loader function
-        function getAPOptions() {
+        function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();
             //## Some Default Values
             //$options = array( 'fb''fbAttch'=>1, 'nsOpenGraph'=>1, 'fbMsgFormat'=>'New post has been published on %SITENAME%',  'gpAttch'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%');
-            $options = array('nsOpenGraph'=>1);            
-            $dbOptions = get_option($this->dbOptionsName); 
-            if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  //  prr($options); die();
-            
-            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+2 hours", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {
+            //$options = array('nsOpenGraph'=>1);            
+            $dbOptions = get_option($this->dbOptionsName); //echo $blog_id;// prr($dbOptions);             
+            $this->nxs_ntoptions = get_site_option($this->dbOptionsName); //echo $blog_id;// prr($dbOptions);             
+            if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  restore_current_blog(); //prr($dbMUOptions);
+              $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
+            }              
+            if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  $updTime = "+2 hours"; // $updTime = "+15 seconds"; // $updTime = "+5 minutes"; $updTime = "+1 day"";                       
+            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime($updTime, $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {            
+             // $options = nxs_doChAPIU($options); 
+             // $options = getRemNSXOption($options);               
              $args = array($options); wp_schedule_single_event(time()+1,'nxs_chAPIU', $args); //echo "CHECK";
-            } 
-            
+            }
             //## In case WP Cron is not running.
-            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) { $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); }
-            
+            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) { $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); }              
             if ( isset($options['ukver']) && $options['ukver']=='2.1.9') $options = nxs_doChAPIU($options); 
             if (isset($options['uk']) && $options['uk']!='') { getNSXOption(substr(nsx_doDecode($options['uk']), 5, -2));  } // nxs_doSMAS19();            
           //  echo NXSAPIVER;
-            if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}
-                        
+            if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
+            $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
+            $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
+            
             if (!isset($options['isPro']) || $options['isPro']!='1'){ //## Upgrade from non-pro version            
               $optPro = array();foreach ($options as $indx => $opt){                 
                  if (substr($indx, 0, 2)=='fb') $optPro['fb'][0][$indx] = $opt;
@@ -75,7 +92,30 @@ if (!class_exists("NS_SNAutoPoster")) {
             if(!$options['isMA']) $options = nxs_snapCleanup($options);
             return $options;
         }
-        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl; $nxsOne = ''; $options = $this->nxs_options; 
+  
+        function showSNAP_WPMU_OptionsPage(){ global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $wpdb, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
+          $this->NS_SNAP_ShowPageTop();  
+          if ($nxs_isWPMU && function_exists('showSNAP_WPMU_OptionsPageExt')) { showSNAP_WPMU_OptionsPageExt($this); } elseif ($nxs_isWPMU && function_exists('showSNAP_WPMU_OptionsPageExtX')) { ?>          
+              <br/><br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> </b>               
+              This version does not fully support Wordpress Miltisite (ex Wordpress MU) Advanced Features. SNAP is available for all sites/blogs in your networks and each individual blog admin can setup and manage it.
+              <br/>Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP For Wordpress Multisite</a> if you need advanced Super Admin management of SNAP for sites/blogs in your networks. Please see <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank">here</a> for more info              
+              <br/><br/>Please <a href="http://www.nextscripts.com/contact-us/" target="_blank"> contact us</a> if you got the SNAP PRO before Oct 1st, 2012. You may be eligible for upgrade discount.              
+               <br/><br/>               
+               <?php return;
+          } else { 
+               ?> <br/><br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> This version does not support Wordpress Miltisite (ex Wordpress MU). <br/>Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP For Wordpress Multisite</a></b> 
+               <br/><br/><hr/>
+               <h3>FAQ:</h3> <b>Question:</b> I am not running Wordpress Miltisite! Why I am seeing this?<br/><b>Answer:</b>               
+               Your Wordpress is configured to run as a Wordpress Miltisite. Please open your wp-config.php and change: <br/><br/>
+define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', false);<br/><br/>and<br/><br/>define('MULTISITE', true);<br/>to<br/>define('MULTISITE', false);<br/><br/>
+<b>Question:</b> I am running Wordpress Miltisite, but I need SNAP on one blog only? Can I use it?<br/><b>Answer:</b> We are sorry, but it is not possible to run SNAP Free or Pro on Wordpress Miltisite. You need to either upgrade plugin or disable Wordpress Miltisite.          
+<br/><br/><hr/>     
+               <?php return; 
+          }          
+        }
+        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $nxsOne = ''; $options = $this->nxs_options;
+          //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
+          
           if (isset($_POST['update_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc()) {array_walk_recursive($_POST, 'nsx_stripSlashes');} 
             foreach ($nxs_snapAvNts as $avNt) if (isset($_POST[$avNt['lcode']])) { $clName = 'nxs_snapClass'.$avNt['code']; if (!isset($options[$avNt['lcode']])) $options[$avNt['lcode']] = array(); 
               $ntClInst = new $clName(); $ntOpt = $ntClInst->setNTSettings($_POST[$avNt['lcode']], $options[$avNt['lcode']]); $options[$avNt['lcode']] = $ntOpt;
@@ -88,49 +128,21 @@ if (!class_exists("NS_SNAutoPoster")) {
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); }             
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
             if (isset($_POST['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = $_POST['whoCanSeeSNAPBox'];
-            
+            if ($nxs_isWPMU && (!isset($options['suaMode'])||$options['suaMode'] = '')) $options['suaMode'] = $nxs_tpWMPU; 
             $editable_roles = get_editable_roles(); foreach ( $editable_roles as $roleX => $details ) {$role = get_role($roleX); $role->remove_cap('see_snap_box');  }
             foreach ($options['whoCanSeeSNAPBox'] as $uRole) { $role = get_role($uRole); $role->add_cap('see_snap_box'); }            
             
             update_option($this->dbOptionsName, $options); // prr($options);
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php           
-          }   $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;} 
-       //   prr($options);    
-          //add_action('admin_head', 'nxs_jsPostToSNAP2');    
-          ?>          
-           <?php $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (API Version: ".NXSAPIVER.")"; ?>
-           
-           <?php if ((!defined('WP_ALLOW_MULTISITE') || WP_ALLOW_MULTISITE!=true) && (!defined('MULTISITE') ||  MULTISITE!=true) ) { ?>
-           <div style="float:right; padding-top: 10px; padding-right: 10px;">
-              <div style="float:right; text-align: center;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://www.nextscripts.net/wp-content/uploads/2012/07/Next_Scripts_Logo2.1-HOR-100px.png"></a><br/>
-              <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">[Contact support]</a> 
-              <?php if(!$options['isMA']) { ?><br/> <span style="color:#800000;">Ready to to Upgrade to Multiple Accounts Edition<br/> and get Google+ and Pinterest Auto-Posting?</span>
-              <br/><a style="font-weight: normal; font-size: 12px; line-height: 24px;" target="_blank" id="showLic" href="#">[Enter your Activation Key]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts#getit">[Get Key]</a>  <?php } ?>
-              </div>
-              <div id="showLicForm"><span class="nxspButton bClose"><span>X</span></span><div style="position: absolute; right: 10px; top:10px; font-family: 'News Cycle'; font-size: 34px; font-weight: lighter;">Activation</div>
-              <br/><br/>
-              <h3>Multiple Accounts Edition and Google+ and Pinterest Auto-Posting</h3><br/>You can find your key on this page: <a href="http://www.nextscripts.com/mypage">http://www.nextscripts.com/mypage</a>
-                <br/><br/> Enter your Key:  <input name="eLic" id="eLic"  style="width: 50%;"/>
-                <input type="button" class="button-primary" name="eLicDo" onclick="doLic();" value="Enter" />
-                <br/><br/>Your plugin will be automatically upgraded. <?php wp_nonce_field( 'doLic', 'doLic_wpnonce' ); ?>
-              </div>              
-           </div> 
-           <?php } ?>  
-                    
-           <div class=wrap><h2>Next Scripts: Social Networks Auto Poster Options</h2> Plugin Version: <span style="color:#008000;font-weight: bold;"><?php echo $nxsOne; ?></span> <?php if($options['isMA']) { ?> [Pro - Multiple Accounts Edition]&nbsp;&nbsp;<?php } else {?>
-           <span style="color:#800000; font-weight: bold;">[Single Accounts Edition]</span> - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get Multiple Accounts Edition</a><br/><br/>
-           Here you can setup "Social Networks Auto Poster".<br/> You can start by clicking "Add new account" button and choosing the Social Network you would like to add.<?php } ?><br/> Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation instructions</a> (will open in a new tab)
-           <?php
-           if (!function_exists('curl_init')) {  
-               echo ('<br/><b style=\'font-size:16px; color:red;\'>Error: No CURL Found</b> <br/><i>Social Networks AutoPoster needs the CURL PHP extension. Please install it or contact your hosting company to install it.</i><br/>'); 
-           }
-           if ((defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true) || (defined('MULTISITE') &&  MULTISITE==true) ) { 
-               echo "<br/><br/><br/><b style=\"font-size:16px; color:red;\">Sorry, we do not support Multiuser Wordpress at this time</b>"; return; 
-           }?>
-           
-<?php if (function_exists('yoast_analytics')) { ?>
-  <div class="error" id="message"><p><strong>You have Google Analytics Plugin installed and activated.</strong> This plugin hijacks the authorization workflow. Please temporary <a href="<?php echo admin_url();?>/plugins.php">deactivate</a> Google Analytics plugin, do all authorizations and then activate it back.</div>
-<?php } ?>
+          }   $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
+          
+          if(!$nxs_isWPMU) $this->NS_SNAP_ShowPageTop();  ?>
+            Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation/configuration instructions</a> (will open in a new tab)<br/><br/>
+          
+          
+          
+          
+                       
            
 <ul class="nsx_tabs">
     <li><a href="#nsx_tab1">Your Social Networks Accounts</a></li>
@@ -145,8 +157,7 @@ if (!class_exists("NS_SNAutoPoster")) {
            <?php foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) $mt=0; else $mt = 1+max(array_keys($options[$avNt['lcode']]));
               echo '<option value ="'.$avNt['code'].$mt.'">'.$avNt['name'].'</option>'; 
            } ?>
-           </select>
-           
+           </select>           
            <div id="nsx_addNT">
              <?php foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName(); 
              if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) { $ntClInst->showNewNTSettings(0); } else { 
@@ -166,26 +177,17 @@ if (!class_exists("NS_SNAutoPoster")) {
     <div id="nsx_tab2" class="nsx_tab_content">
        <!-- ##################### OTHER #####################-->
             
-            
-            
-            <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>
-            
-            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span  style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseout="hidePopShAtt('IS');" onmouseover="showPopShAtt('IS', event);"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>   
-            
+            <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>            
+            <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseover="showPopShAtt('IS', event);" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>               
             <div class="popShAtt" id="popShAttIS">
         <h3>The difference between "Immediately" and "Scheduled"</h3>
 <b>"Immediately"</b> - Once you click "Publish" button plugin starts pushing your update to configured social networks. At this time you need to wait and look at the turning circle. Some APIs are pretty slow, so you have to wait and wait and wait until all updates are posted and page released back to you.<br/><br/>
-
 <b>"Scheduled"</b> - Releases the page immediately back to you, so you can proceed with something else and it schedules all auto-posting jobs to your WP-Cron. This is much faster and much more efficient, but it could not work if your WP-Cron is disabled or broken.
       </div>
-            
-            
-            
             <input type="radio" name="nxsHTDP" value="S" <?php if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') echo 'checked="checked"'; ?> /> Schedule (Recomennded) - <i>Faster Perfomance</i><br/>
             <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> Publish Immediately  - <i>Use if WP Cron is disabled or broken on your website</i><br/>
             
-            <h3 style="font-size: 14px; margin-bottom: 2px;">Who can see auto-posting options on the "New Post" pages?</h3>  
-              
+            <h3 style="font-size: 14px; margin-bottom: 2px;">Who can see auto-posting options on the "New Post" pages?</h3>                
             <?php $editable_roles = get_editable_roles(); if (!is_array($options['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = array(); 
 
     foreach ( $editable_roles as $role => $details ) { $name = translate_user_role($details['name'] ); echo '<input type="checkbox" '; 
@@ -202,7 +204,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             <h3 style="font-size: 14px; margin-bottom: 2px;">Include/Exclude Custom Post Types</h3>  <?php $nxsOne = base64_encode("v=".$nxsOne); ?>
             <p style="font-size: 11px; margin: 0px;">Select Custom Post Types that you would to be published on your social networks</p>           
             <?php 
-              $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and'; $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
+              $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
               if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);
             ?>
             <select multiple="multiple" name="nxsCPTSeld[]" id="nxsCPTSeld" class="nxsMultiSelect" size="<?php echo count($post_types)+2; ?>">
@@ -377,12 +379,49 @@ Please see #4 and #5 for Twitter:<br/>
 </div>
            
            </form>
-           
-           <?php
+           <br/>&nbsp;<br/>           <?php
         }
         
-        function showSNAP_WPMU_OptionsPage(){ 
+        function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
+            $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (API Version: ".NXSAPIVER.")"; ?>
            
+           
+           <div style="float:right; padding-top: 10px; padding-right: 10px;">
+              <div style="float:right; text-align: center;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://www.nextscripts.net/wp-content/uploads/2012/07/Next_Scripts_Logo2.1-HOR-100px.png"></a><br/>
+              <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">[Contact support]</a> 
+              <?php if(!$options['isMA']) { ?><br/> <span style="color:#800000;">Ready to to Upgrade to Multiple Accounts Edition<br/> and get Google+ and Pinterest Auto-Posting?</span>
+              <br/><a style="font-weight: normal; font-size: 12px; line-height: 24px;" target="_blank" id="showLic" href="#">[Enter your Activation Key]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts#getit">[Get Key]</a>  <?php } ?>
+              </div>
+              <div id="showLicForm"><span class="nxspButton bClose"><span>X</span></span><div style="position: absolute; right: 10px; top:10px; font-family: 'News Cycle'; font-size: 34px; font-weight: lighter;">Activation</div>
+              <br/><br/>
+              <h3>Multiple Accounts Edition and Google+ and Pinterest Auto-Posting</h3><br/>You can find your key on this page: <a href="http://www.nextscripts.com/mypage">http://www.nextscripts.com/mypage</a>
+                <br/><br/> Enter your Key:  <input name="eLic" id="eLic"  style="width: 50%;"/>
+                <input type="button" class="button-primary" name="eLicDo" onclick="doLic();" value="Enter" />
+                <br/><br/>Your plugin will be automatically upgraded. <?php wp_nonce_field( 'doLic', 'doLic_wpnonce' ); ?>
+              </div>              
+           </div> 
+
+                    
+           <div class=wrap><h2>Next Scripts: Social Networks Auto Poster Options</h2> Plugin Version: <span style="color:#008000;font-weight: bold;"><?php echo $nxsOne; ?></span> <?php if($options['isMA']) { ?> [Pro - Multiple Accounts Edition]&nbsp;&nbsp;<?php } else {?>
+           <span style="color:#800000; font-weight: bold;">[Single Accounts Edition]</span>
+           <? if(!$nxs_isWPMU) { ?>
+            - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get PRO - Multiple Accounts Edition</a><br/><br/>
+            
+           Here you can setup "Social Networks Auto Poster".<br/> You can start by clicking "Add new account" button and choosing the Social Network you would like to add.<?php }} ?><br/> 
+           <?php 
+           if (!function_exists('curl_init')) {  
+               echo ('<br/><b style=\'font-size:16px; color:red;\'>Error: No CURL Found</b> <br/><i>Social Networks AutoPoster needs the CURL PHP extension. Please install it or contact your hosting company to install it.</i><br/>'); 
+           }
+           /*
+           if ((defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true) || (defined('MULTISITE') &&  MULTISITE==true) ) { 
+               echo "<br/><br/><br/><b style=\"font-size:16px; color:red;\">Sorry, we do not support Multiuser Wordpress at this time</b>"; return; 
+           }
+           */
+           ?>
+           
+<?php if (function_exists('yoast_analytics')) { ?>
+  <div class="error" id="message"><p><strong>You have Google Analytics Plugin installed and activated.</strong> This plugin hijacks the authorization workflow. Please temporary <a href="<?php echo admin_url();?>/plugins.php">deactivate</a> Google Analytics plugin, do all authorizations and then activate it back.</div>
+<?php } 
         }
         
         function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
@@ -397,6 +436,7 @@ Please see #4 and #5 for Twitter:<br/>
             }            
           } // prr($_POST);
         }
+        
         
         function NS_SNAP_AddPostMetaTags() { global $post, $nxs_snapAvNts, $plgn_NS_SNAutoPoster; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; if (!is_object($post)) $post = get_post($post_id);
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
@@ -457,7 +497,7 @@ if (!function_exists("nsGetBoards_ajax")) {
 }     
 if (!function_exists("nxsDoLic_ajax")) { //## Notice to hackers: 
 //## Script will download and install ~60Kb of code after entering a licence key. You can make it saying "I am a Multisite Edition", but it won't work without this downloaded code"
-  function nxsDoLic_ajax() { check_ajax_referer('doLic');  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+  function nxsDoLic_ajax() { check_ajax_referer('doLic'); global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
     $options['lk'] = mysql_real_escape_string($_POST['lk']);  $options = getRemNSXOption($options); if (is_array($options)) update_option('NS_SNAutoPoster', $options); //prr($options);
     if (strlen($options['uk'])>100) echo "OK"; else echo "NO"; die();
 }} 
@@ -466,7 +506,7 @@ if (!function_exists("nxs_clLgo_ajax")) { function nxs_clLgo_ajax() { check_ajax
   update_option('NS_SNAutoPosterLog', ''); echo "OK";
 }} 
 
-if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax_referer('nxsSsPageWPN'); 
+if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { echo "W"; check_ajax_referer('nxsSsPageWPN'); echo "Y";
   $log = get_option('NS_SNAutoPosterLog'); 
   $logInfo = maybe_unserialize(get_option('NS_SNAutoPosterLog')); if (is_array($logInfo)) 
           foreach (array_reverse($logInfo) as $logline) echo '<snap style="color:#008000">['.$logline['date'].']</snap> - ['.$logline['nt'].'] -  <snap style="color:#'.($logline['type']=='E'?'FF0000':'585858').'">'.$logline['msg'].'</snap> '.$logline['extInfo'].'<br/>';
@@ -474,24 +514,25 @@ if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax
   
 }} 
 
-
 //## Initialize the admin panel if the plugin has been activated
-if (!function_exists("NS_SNAutoPoster_ap")) {
-  function NS_SNAutoPoster_ap() { global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;       
-    if (function_exists('add_options_page')) {
-      add_options_page('Social Networks Auto Poster', '<img src="'.$nxs_plurl.'img/snap-icon12.png"/>{SNAP} Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));     
-    }            
-  }    
-}
+if (!function_exists("nxs_AddSUASettings")) { function nxs_AddSUASettings() {  global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;       
+  add_menu_page('Social Networks Auto Poster', 'Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAP_WPMU_OptionsPage'), $nxs_plurl.'img/snap-icon12.png');  }}
+//## Initialize the admin panel if the plugin has been activated
+if (!function_exists("NS_SNAutoPoster_ap")) { function NS_SNAutoPoster_ap() { global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;       
+ if (function_exists('add_options_page')) {
+   add_options_page('Social Networks Auto Poster', '<img src="'.$nxs_plurl.'img/snap-icon12.png"/><span style="color:#287A0A">{SNAP}</span> Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));     
+ }
+}}
+
 //## Main Function to Post 
-if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster; 
- if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {
-  
-  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);  
+if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) { global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;   
+ if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {  
+  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);    
+  $ntOptions = $plgn_NS_SNAutoPoster->nxs_ntoptions; if (!isset($options['suaMode'])) $options['suaMode'] = '';
+  if ($nxs_tpWMPU=='S') { switch_to_blog(1); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); $options = $plgn_NS_SNAutoPoster->nxs_options; restore_current_blog(); }   
   if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') {$publtype='S'; $delay = rand(2,10);} else $publtype = 'I';
-  nxs_addToLog('Start =- ', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### NEW AUTO-POST REQUEST '.($publtype=='S'?'Scheduled +'.$delay:'Immediate').' ####=========------</span>'); // echo "UUU";
-  
   if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["SNAPEdit"]);    
+  nxs_addToLog('Start =- ', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### NEW AUTO-POST REQUEST PostID:('.$postID.') '.($publtype=='S'?'Scheduled +'.$delay:'Immediate').' ####=========------</span>'); // echo "UUU";
   $post = get_post($postID);   $args=array( 'public'   => true, '_builtin' => false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
   $snap_isEdIT = get_post_meta($postID, 'snapEdIT', true); if ($snap_isEdIT!='1') { $doPost = true; $exclCats = $options['exclCats']; $postCats = wp_get_post_categories($postID);     
     if (is_array($exclCats) && is_array($postCats)) {     
@@ -508,12 +549,12 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
       $isCustBoxMeta = get_post_meta($postID, 'nxs_snapPostTo_'.$avNt['code'], true);
       if ($optMt['do'.$avNt['code']]=='1' || $isCustBoxMeta=='1') { delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1'); 
         if ($publtype=='S') { // nxs_addToLog($logNT, 'M', $avNt['code'].' autopost scheduled');
-           $args = array($postID, $optMt);  wp_schedule_single_event(time()+$delay,'ns_doPublishTo'.$avNt['code'], $args); 
+           $args = array($postID, $optMt);  wp_schedule_single_event(time()+$delay, 'ns_doPublishTo'.$avNt['code'], $args); 
         } else { $fname = 'nxs_doPublishTo'.$avNt['code']; $fname($postID, $optMt); }        
       }
       //$options['log'] .= "\r\n".(time()+2)." - ".'ns_doPublishTo'.$avNt['code'].print_r($args, true); update_option('NS_SNAutoPoster', $options);
     }
-  }}
+  }} if ($isS) restore_current_blog();
 }}
 
 //## AJAX to Post to Google+
@@ -602,29 +643,43 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   return $msg;
 }}
 
-if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ global $plgn_NS_SNAutoPoster, $pagenow;    
-  //## Add MEtaBox to Post Edit Page
-  if (current_user_can("see_snap_box") || current_user_can("manage_options")) add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));      
+if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow, $nxs_isWPMU; 
+  $nxs_snapThisPageUrl = admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php'; 
   //## Javascript to Admin Panel        
-  if (($pagenow=='options-general.php' && $_GET['page']=='NextScripts_SNAP.php') || $pagenow=='post.php' || $pagenow=='post-new.php') { add_action('admin_head', 'jsPostToSNAP'); add_action('admin_head', 'nxs_jsPostToSNAP2'); }     
+  if (( ($pagenow=='options-general.php'||$pagenow=='admin.php')&& $_GET['page']=='NextScripts_SNAP.php') ||$pagenow=='post.php'||$pagenow=='post-new.php'){add_action('admin_head', 'jsPostToSNAP'); add_action('admin_head', 'nxs_jsPostToSNAP2');}
 }}
+if (!function_exists("nxs_adminInitFunc2")) { function nxs_adminInitFunc2(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow;   $nxs_snapThisPageUrl = admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php';  //## Add MEtaBox to Post Edit Page
+  if (current_user_can("see_snap_box") || current_user_can("manage_options")) add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));        
+}}
+
+function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap'); 
+   if ($_POST['sid']=='A'){  global $wpdb; $allBlogs = $wpdb->get_results("SELECT blog_id FROM wp_blogs where blog_id > 1");
+     foreach( $allBlogs as $aBlog ) { switch_to_blog($aBlog->blog_id); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); 
+       $options = $plgn_NS_SNAutoPoster->nxs_options; $options['suaMode'] = $_POST['sset']; update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options);
+     }       
+   } else { switch_to_blog($_POST['sid']); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); 
+     $options = $plgn_NS_SNAutoPoster->nxs_options; $options['suaMode'] = $_POST['sset']; update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); //    prr($plgn_NS_SNAutoPoster->dbOptionsName);  prr($options);
+   }
+ }
 
 //## Actions and filters    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
-    //## Add the admin menu
-    add_action('admin_menu', 'NS_SNAutoPoster_ap');
-    //## Initialize options on plugin activation
-    $myrelpath = preg_replace( '/.*wp-content.plugins./', '', __FILE__ ); 
-    add_action("activate_".$myrelpath,  array(&$plgn_NS_SNAutoPoster, 'init'));    
-    
-    add_action('admin_init', 'nxs_adminInitFunc');
-    
-    //## Add/Change meta on Save
-    add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
-    add_action('publish_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
-    add_action('save_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
-    add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));    
-    //## Whenever you publish a post, post to Social Networks
+  //## Add the admin menu    
+  if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); $suOptions = array();
+  $suOptions = $plgn_NS_SNAutoPoster->nxs_options; if ($nxs_isWPMU) { $ntOptions = $plgn_NS_SNAutoPoster->nxs_ntoptions; if (!isset($suOptions['suaMode'])) $suOptions['suaMode'] = ''; }  
+  
+  $isO = !$nxs_isWPMU || ($nxs_isWPMU && ($suOptions['isMU']||$suOptions['isMUx']) && ($suOptions['suaMode']=='O' || ($suOptions['suaMode']=='' && $ntOptions['nxsSUType']=='O')));
+  $isS = !$nxs_isWPMU || ($nxs_isWPMU && ($suOptions['isMU']||$suOptions['isMUx']) && ($suOptions['suaMode']=='S' || ($suOptions['suaMode']=='' && $ntOptions['nxsSUType']=='S')));
+  if ($nxs_isWPMU) { if ($isO) $nxs_tpWMPU = 'O'; elseif ($isS) $nxs_tpWMPU = 'S';} // prr($nxs_tpWMPU); prr($suOptions);
+
+  add_action('admin_init', 'nxs_adminInitFunc');  
+  add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');     
+  
+  add_action('wp_ajax_nxs_clLgo', 'nxs_clLgo_ajax');
+  add_action('wp_ajax_nxs_rfLgo', 'nxs_rfLgo_ajax');
+  
+  if ($isO || $isS) {    
+  //## Whenever you publish a post, post to Social Networks
     add_action('future_to_publish', 'nxs_snapPublishTo');
     add_action('new_to_publish', 'nxs_snapPublishTo');
     add_action('draft_to_publish', 'nxs_snapPublishTo');
@@ -632,23 +687,43 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('private_to_publish', 'nxs_snapPublishTo');
     add_action('auto-draft_to_publish', 'nxs_snapPublishTo');
     //## Add nxs_snapPublishTo to custom post types
-    add_action('wp_loaded', 'ns_custom_types_setup' );        
+    add_action('wp_loaded', 'ns_custom_types_setup' );       
+    foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
+    
+  }  
+  if ($isO) {    
+    add_action('admin_menu', 'NS_SNAutoPoster_ap');    
+    add_action('admin_init', 'nxs_adminInitFunc2');    
+    //## Initialize options on plugin activation
+    $myrelpath = preg_replace( '/.*wp-content.plugins./', '', __FILE__ ); 
+    add_action("activate_".$myrelpath,  array(&$plgn_NS_SNAutoPoster, 'init'));    
+    
+    //## Add/Change meta on Save
+    add_action('edit_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
+    add_action('publish_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
+    add_action('save_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
+    add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));         
     
     //## Add AJAX Calls for Test and Repost
     foreach ($nxs_snapAvNts as $avNt) { add_action('wp_ajax_rePostTo'.$avNt['code'], 'nxs_rePostTo'.$avNt['code'].'_ajax'); }
-    add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax'); // ????
+    add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax');
     add_action('wp_ajax_nsDN', 'ns_delNT_ajax');
-    add_action('wp_ajax_nxs_clLgo', 'nxs_clLgo_ajax');
-    add_action('wp_ajax_nxs_rfLgo', 'nxs_rfLgo_ajax');
     
     add_action('wp_ajax_nsAuthFBSv', 'nsAuthFBSv_ajax');
     //## Custom Post Types and OG tags
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
     add_action('wp_head','nsAddOGTags',50);  
     //## Scedulled Publish Calls
-    foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
     
-    add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1); 
-    add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');     
+    add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);     
+  }
+    
+  if ($nxs_isWPMU){      
+      add_filter('wpmu_blogs_columns', 'nxssnapmu_columns_head');
+      add_action('manage_blogs_custom_column', 'nxssnapmu_columns_content', 10, 2);
+      add_action('manage_sites_custom_column', 'nxssnapmu_columns_content', 10, 2);    
+      add_action( 'admin_footer', 'nxs_add_style' );  
+      add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
+  }
 }
 ?>

@@ -163,7 +163,8 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}  
     
     if (serialize($nxs_gCookiesArr)!=$options['pnSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
-        foreach ($gOptions['pn'] as $ii=>$gpn) { $result = array_diff($options, $gpn);
+        if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['pn'][$options['ii']]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions);  }        
+        else foreach ($gOptions['pn'] as $ii=>$gpn) { $result = array_diff($options, $gpn);
           if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;

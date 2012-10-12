@@ -32,7 +32,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
     if ( isset($_GET['auth']) && $_GET['auth']=='li'){ require_once('apis/liOAuth.php'); $options = $ntOpts[$_GET['acc']];
     
               $api_key = $options['liAPIKey']; $api_secret = $options['liAPISec'];
-              $callback_url = admin_url()."options-general.php?page=NextScripts_SNAP.php&auth=lia&acc=".$_GET['acc'];
+              $callback_url = $nxs_snapThisPageUrl."&auth=lia&acc=".$_GET['acc'];
               $li_oauth = new nsx_LinkedIn($api_key, $api_secret, $callback_url); 
               $request_token = $li_oauth->getRequestToken(); //echo "####"; prr($request_token); die();
               $options['liOAuthToken'] = $request_token->key;
@@ -49,7 +49,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
               try{$xml_response = $li_oauth->getProfile("~:(id,first-name,last-name)");} catch (Exception $o){prr($o); die("<span style='color:red;'>ERROR: Authorization Error</span>");}
               if (stripos($xml_response,'<first-name>')!==false) $userinfo =  CutFromTo($xml_response, '<id>','</id>')." - ".CutFromTo($xml_response, '<first-name>','</first-name>')." ".CutFromTo($xml_response, '<last-name>','</last-name>'); else $userinfo='';              
               if ($userinfo!='') {  $options['liUserInfo'] = $userinfo; $optionsG = get_option('NS_SNAutoPoster'); $optionsG['li'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG); 
-                  echo '<script type="text/javascript">window.location = "'.admin_url().'options-general.php?page=NextScripts_SNAP.php"</script>'; die();
+                  echo '<script type="text/javascript">window.location = "'.$nxs_snapThisPageUrl.'"</script>'; die();
               } prr($xml_response); die("<span style='color:red;'>ERROR: Something is Wrong with your LinkedIn account</span>");
             }     
     
@@ -68,7 +68,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   //#### Show NEW Settings Page
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'ulName'=>'', 'uPass'=>'', 'uPage'=>'', 'doLI'=>'1', 'liAPIKey'=>'', 'liAPISec'=>'', 'liUserInfo'=>'', 'liAttch'=>'1', 'liOAuthToken'=>'', 'liMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; ?>
     <div id="doLI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/li-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['liAccessToken']) && $options['liAccessTokenSecret']!='') || $options['liOK']=='1' || $isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSLI<?php echo $ii; ?>" value="0" id="apDoSLI<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="li[<?php echo $ii; ?>][apDoLI]" value="1" id="apDoNewLI<?php echo $ii; ?>" /> <?php } ?>
             <div id="doLI<?php echo $ii; ?>Div" style="margin-left: 10px;"> 
@@ -96,7 +96,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             <?php } else { if(isset($options['liAccessToken']) && isset($options['liAccessTokenSecret']) && $options['liAccessTokenSecret']!=='') { ?>
             Your LinkedIn Account has been authorized. <br/>User ID: <?php _e(apply_filters('format_to_edit',$options['liUserInfo']), 'NS_SNAutoPoster') ?>. 
             <br/>You can Re- <?php } ?>            
-            <a  href="<?php echo admin_url();?>options-general.php?page=NextScripts_SNAP.php&auth=li&acc=<?php echo $ii; ?>">Authorize Your LinkedIn Account</a>  
+            <a  href="<?php echo $nxs_snapThisPageUrl; ?>&auth=li&acc=<?php echo $ii; ?>">Authorize Your LinkedIn Account</a>  
             
             <?php if (!isset($options['liAccessTokenSecret']) || $options['liAccessTokenSecret']=='') { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>
             
@@ -228,7 +228,7 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!==false) die($auth);
       $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array();
        if ($postID=='0') { $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = home_url();  
-         } else {  $lnk['title'] = nsTrnc($post->post_title, 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src;}
+         } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc($post->post_title, 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }}
       
       $ret = doPostToLinkedIn($msg, $lnk, $to); 
       

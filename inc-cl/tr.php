@@ -8,7 +8,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
     
    if ( isset($_GET['auth']) && $_GET['auth']=='tr'){ require_once('apis/trOAuth.php'); $options = $ntOpts[$_GET['acc']];
      $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
-              $callback_url = admin_url()."options-general.php?page=NextScripts_SNAP.php&auth=tra&acc=".$_GET['acc'];
+              $callback_url = $nxs_snapThisPageUrl."&auth=tra&acc=".$_GET['acc'];
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret);prr($tum_oauth );
               $request_token = $tum_oauth->getRequestToken($callback_url); echo "####"; prr($request_token);
               $options['trOAuthToken'] = $request_token['oauth_token'];
@@ -28,7 +28,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
               $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info'); prr($userinfo); prr($tum_oauth);// prr($url); die();
               if (is_array($userinfo->response->user->blogs)) {
                 foreach ($userinfo->response->user->blogs as $blog){
-                  if (stripos($blog->url, $options['trPgID'])!==false) {  echo '<script type="text/javascript">window.location = "'.admin_url().'options-general.php?page=NextScripts_SNAP.php"</script>'; break;  die();}
+                  if (stripos($blog->url, $options['trPgID'])!==false) {  echo '<script type="text/javascript">window.location = "'.$nxs_snapThisPageUrl.'"</script>'; break;  die();}
                 } prr($userinfo);
                 die("<span style='color:red;'>ERROR: Authorized USER don't have access to the specified blog: <span style='color:darkred; font-weight: bold;'>".$options['trPgID']."</span></span>");
               }
@@ -51,7 +51,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   //#### Show NEW Settings Page
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'doTR'=>'1', 'trURL'=>'', 'trPgID'=>'', 'trConsKey'=>'', 'trInclTags'=>'1', 'trConsSec'=>'', 'trPostType'=>'T', 'trDefImg'=>'', 'trOAuthTokenSecret'=>'', 'trAccessTocken'=>'', 'trMsgFormat'=>'<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\'%IMG%\'/></p><p>%FULLTEXT%</p></blockquote>', 'trMsgTFormat'=>'New Post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; ?>
     <div id="doTR<?php echo $ii; ?>Div"<?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['trOAuthTokenSecret']) && $options['trOAuthTokenSecret']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="tr[<?php echo $ii; ?>][apDoTR]" value="1" id="apDoNewTR<?php echo $ii; ?>" /> <?php } ?>
     
@@ -59,7 +59,8 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
     
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
-            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trURL']), 'NS_SNAutoPoster') ?>" />                <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trConsKey']), 'NS_SNAutoPoster') ?>" />             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trConsSec']), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trURL']), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
+            <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trConsKey']), 'NS_SNAutoPoster') ?>" />             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['trConsSec']), 'NS_SNAutoPoster') ?>" />
             <br/><br/>
     
     <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?> onchange="nxs_TRSetEnable('T','<?php echo $ii; ?>');" /> Text Post<br/>            
@@ -91,7 +92,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             <?php } else { if(isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='') { ?>
             Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit',$options['trPgID']), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
-            <a href="<?php echo admin_url();?>options-general.php?page=NextScripts_SNAP.php&auth=tr&acc=<?php echo $ii; ?>">Authorize Your Tumblr Account</a> 
+            <a href="<?php echo $nxs_snapThisPageUrl;?>&auth=tr&acc=<?php echo $ii; ?>">Authorize Your Tumblr Account</a> 
               <?php if (!isset($options['trOAuthTokenSecret']) || $options['trOAuthTokenSecret']=='') { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>            
             <?php }  ?>            
             
@@ -112,7 +113,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
     foreach ($post as $ii => $pval){ // prr($pval);
       if (isset($pval['apTRConsKey']) && $pval['apTRConsSec']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         
-                if (isset($pval['apTRURL']))  {   $options[$ii]['trURL'] = trim($pval['apTRURL']);
+                if (isset($pval['apTRURL']))  {   $options[$ii]['trURL'] = trim($pval['apTRURL']);  if ( substr($options[$ii]['trURL'], 0, 4)!='http' )  $options[$ii]['trURL'] = 'http://'.$options[$ii]['trURL'];
                   $trPgID = $options[$ii]['trURL']; if (substr($trPgID, -1)=='/') $trPgID = substr($trPgID, 0, -1);  $trPgID = substr(strrchr($trPgID, "/"), 1);
                   $options[$ii]['trPgID'] = $trPgID; //echo $fbPgID;
                 }

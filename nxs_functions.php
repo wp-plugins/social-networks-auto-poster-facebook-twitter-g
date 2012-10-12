@@ -212,6 +212,11 @@ jQuery(function(){
               if (ptype=='I'){ jQuery('#apTRMsgTFrmt'+ii).attr('disabled', 'disabled'); jQuery('#apTRDefImg'+ii).removeAttr('disabled'); } 
                 else { jQuery('#apTRDefImg'+ii).attr('disabled', 'disabled');  jQuery('#apTRMsgTFrmt'+ii).removeAttr('disabled'); }                
         }
+        function nxsTRURLVal(ii){ var val = jQuery('#apTRURL'+ii).val(); var srch = val.toLowerCase().indexOf('http://www.tumblr.com/blog/');
+        if (srch>-1) { jQuery('#apTRURL'+ii).css({"background-color":"#FFC0C0"}); jQuery('#apTRURLerr'+ii).html('<br/>Incorrect URL: Please note that URL of your Tumblr Blog should be your public URL. (i.e. like http://nextscripts.tumblr.com/, not http://www.tumblr.com/blog/nextscripts'); } else { jQuery('#apTRURL'+ii).css({"background-color":"#ffffff"}); jQuery('#apTRURLerr'+ii).text(''); }
+
+            
+        }
         
         
         
@@ -303,9 +308,9 @@ if (!function_exists('nxs__html_to_utf8')){ function nxs__html_to_utf8 ($data){ 
 if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($postID, $nt, $did){ $mpo =  get_post_meta($postID, 'snap'.$nt, true); $mpo =  maybe_unserialize($mpo); 
   if (is_array($mpo)) { $mpo[$did]['isPosted'] = '1';  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);}
 }}
-if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
+if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ global $nxs_tpWMPU; if($nxs_tpWMPU=='S') switch_to_blog(1);  $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
   $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt); if(!is_array($nxsDBLog)) $nxsDBLog = array();
-  $nxsDBLog[] = $logItem; $nxsDBLog = array_slice($nxsDBLog, -150);  update_option('NS_SNAutoPosterLog', serialize($nxsDBLog)); 
+  $nxsDBLog[] = $logItem; $nxsDBLog = array_slice($nxsDBLog, -150);  update_option('NS_SNAutoPosterLog', serialize($nxsDBLog)); if($nxs_tpWMPU=='S') restore_current_blog();
 }}
 
 function nxsMergeArraysOV($Arr1, $Arr2)
