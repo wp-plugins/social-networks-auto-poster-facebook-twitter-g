@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, Stumbleupon, Stumble upon
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GPLv2 or later
 
 Automatically publish blogposts to your Facebook, Twitter, Google+, Pinterest, LinkedIn, Delicious, Stumbleupon, Blogger and Tumblr profiles and/or pages.
@@ -131,6 +131,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.3.1 =
+
+* Bug fix - Facebook stability.
+* Bug fix - WP Multisite Management problems.
 
 = 2.3.0 =
 
@@ -477,4 +482,4 @@ PHP Twitter API: Copyright 2012 -  themattharris - tmhOAuth
 
 PHP Facebook API: Copyright 2011 Facebook, Inc.
 
-NextScripts, Inc
+NextScripts.com, Inc

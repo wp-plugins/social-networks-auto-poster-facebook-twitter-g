@@ -4,28 +4,17 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.0
+Version: 2.3.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.0' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.1' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
 $nxs_plurl = plugin_dir_url(__FILE__);
 $nxs_isWPMU = (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true && defined('MULTISITE') && MULTISITE==true); 
-
-if (!function_exists('nxssnapmu_columns_content')){ function nxssnapmu_columns_content($column_name, $blogID) {
-  if ($column_name == 'snap_sasn') { switch_to_blog( $blogID ); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); $options = $plgn_NS_SNAutoPoster->nxs_options;  
-    $ntOptions = $plgn_NS_SNAutoPoster->nxs_ntoptions; $def = $ntOptions['nxsSUType']; 
-  ?>       
-        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="O" <?php if (isset($options['suaMode']) && $options['suaMode']=='O' || (!isset($options['suaMode']) && $def =='O')) echo 'checked="checked"'; ?> />Can use own SN Accounts <a href="<?php echo esc_url(get_admin_url($blogID)); ?>options-general.php?page=NextScripts_SNAP.php">[Manage]</a><br/>        
-        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="S" <?php if (isset($options['suaMode']) && $options['suaMode']=='S' || (!isset($options['suaMode']) && $def =='S')) echo 'checked="checked"'; ?> />Auto-post to Super Admin's SN<br/>        
-        <input type="radio" onchange="nxs_saveSiteSets('<?php echo $blogID; ?>', this.value);" name="nxs_snapSID<?php echo $blogID; ?>" value="D" <?php if (isset($options['suaMode']) && $options['suaMode']=='D' || (!isset($options['suaMode']) && $def =='D')) echo 'checked="checked"'; ?> />Disable SNAP<br/>       
-       <?php restore_current_blog();
-    }   
-}}
 
 //## Define SNAutoPoster class
 if (!class_exists("NS_SNAutoPoster")) {
