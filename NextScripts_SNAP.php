@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.1
+Version: 2.3.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.1' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.2' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -86,21 +86,35 @@ if (!class_exists("NS_SNAutoPoster")) {
           $this->NS_SNAP_ShowPageTop();  
           if ($nxs_isWPMU && function_exists('showSNAP_WPMU_OptionsPageExt')) { showSNAP_WPMU_OptionsPageExt($this); } elseif ($nxs_isWPMU && function_exists('showSNAP_WPMU_OptionsPageExtX')) { ?>          
               <br/><br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> </b>               
-              This version does not fully support Wordpress Miltisite (ex Wordpress MU) Advanced Features. SNAP is available for all sites/blogs in your networks and each individual blog admin can setup and manage it.
+              This version does not fully support Wordpress Multisite (ex Wordpress MU) Advanced Features. SNAP is available for all sites/blogs in your networks and each individual blog admin can setup and manage it.
               <br/>Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP For Wordpress Multisite</a> if you need advanced Super Admin management of SNAP for sites/blogs in your networks. Please see <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank">here</a> for more info              
               <br/><br/>Please <a href="http://www.nextscripts.com/contact-us/" target="_blank"> contact us</a> if you got the SNAP PRO before Oct 1st, 2012. You may be eligible for upgrade discount.              
                <br/><br/>               
                <?php return;
-          } else { 
-               ?> <br/><br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> This version does not support Wordpress Miltisite (ex Wordpress MU). <br/>Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP For Wordpress Multisite</a></b> 
+          } elseif ( !$options['isMA']) { 
+               ?> <br/><br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> This version does not support Wordpress Multisite (ex Wordpress MU). <br/>Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP Pro for Wordpress Multisite</a></b> 
                <br/><br/><hr/>
-               <h3>FAQ:</h3> <b>Question:</b> I am not running Wordpress Miltisite! Why I am seeing this?<br/><b>Answer:</b>               
-               Your Wordpress is configured to run as a Wordpress Miltisite. Please open your wp-config.php and change: <br/><br/>
+               <h3>FAQ:</h3> <b>Question:</b> I am not running Wordpress Multisite! Why I am seeing this?<br/><b>Answer:</b>               
+               Your Wordpress is configured to run as a Wordpress Multisite. Please open your wp-config.php and change: <br/><br/>
 define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', false);<br/><br/>and<br/><br/>define('MULTISITE', true);<br/>to<br/>define('MULTISITE', false);<br/><br/>
-<b>Question:</b> I am running Wordpress Miltisite, but I need SNAP on one blog only? Can I use it?<br/><b>Answer:</b> We are sorry, but it is not possible to run SNAP Free or Pro on Wordpress Miltisite. You need to either upgrade plugin or disable Wordpress Miltisite.          
+<b>Question:</b> I am running Wordpress Multisite, but I need SNAP on one blog only? Can I use it?<br/><b>Answer:</b>We are sorry, but it is not possible to run "SNAP Free" on Wordpress Multisite. You need to either upgrade plugin to "SNAP Pro" to run it on one blog or to "SNAP Pro for WPNU" to run it on all blogs or disable Wordpress Multisite.          
 <br/><br/><hr/>     
                <?php return; 
-          }          
+          } else {
+               ?> <br/><b style="font-size:16px; line-height:24px; color:red;">You are running SNAP <?php echo $options['isMA']?'Single Site Pro':'Free'; ?> <br/> This version does not fully support Wordpress Multisite (ex Wordpress MU).</b> <br/>
+               
+               <br/><span style="font-size: 16px;"> You can use SNAP for your main blog only. <a href="<?php echo admin_url(); ?>options-general.php?page=NextScripts_SNAP.php">Click here to setup it.</a></span><br/><br/>
+               
+               <span style="font-size: 12px; font-weight: bold;">Please upgrade to <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wpmu/" target="_blank"> SNAP Pro for Wordpress Multisite</a> to get all features:  </span>              
+               <br/>
+- All Blogs/Sites autopost to networks configured by Super Admin    <br/>
+- Each Blog/Site Admin can configure and auto-post to it's own networks  <br/>  
+- Super Admin can enable/disable auto-posting for each site and the whole network<br/>
+- Super Admin can also manage/setup/disable/override SNAP settings for each Blog/Site.<br/>
+               
+               <br/>
+               <?php return; 
+          }
         }
         function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $nxsOne = ''; $options = $this->nxs_options;
           //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
@@ -393,7 +407,7 @@ Please see #4 and #5 for Twitter:<br/>
                     
            <div class=wrap><h2>Next Scripts: Social Networks Auto Poster Options</h2> Plugin Version: <span style="color:#008000;font-weight: bold;"><?php echo $nxsOne; ?></span> <?php if($options['isMA']) { ?> [Pro - Multiple Accounts Edition]&nbsp;&nbsp;<?php } else {?>
            <span style="color:#800000; font-weight: bold;">[Single Accounts Edition]</span>
-           <? if(!$nxs_isWPMU) { ?>
+           <?php if(!$nxs_isWPMU) { ?>
             - <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Get PRO - Multiple Accounts Edition</a><br/><br/>
             
            Here you can setup "Social Networks Auto Poster".<br/> You can start by clicking "Add new account" button and choosing the Social Network you would like to add.<?php }} ?><br/> 
@@ -651,6 +665,7 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
    }
  }
 
+ 
 //## Actions and filters    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   //## Add the admin menu    
@@ -660,6 +675,8 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   $isO = !$nxs_isWPMU || ($nxs_isWPMU && ($suOptions['isMU']||$suOptions['isMUx']) && ($suOptions['suaMode']=='O' || ($suOptions['suaMode']=='' && $ntOptions['nxsSUType']=='O')));
   $isS = !$nxs_isWPMU || ($nxs_isWPMU && ($suOptions['isMU']||$suOptions['isMUx']) && ($suOptions['suaMode']=='S' || ($suOptions['suaMode']=='' && $ntOptions['nxsSUType']=='S')));
   if ($nxs_isWPMU) { if ($isO) $nxs_tpWMPU = 'O'; elseif ($isS) $nxs_tpWMPU = 'S';} // prr($nxs_tpWMPU); prr($suOptions);
+  
+  if (function_exists('nxs_doSMAS3')) nxs_doSMAS3($isS, $isO);
 
   add_action('admin_init', 'nxs_adminInitFunc');  
   add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');     
@@ -708,11 +725,11 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   }
     
   if ($nxs_isWPMU){      
-      add_filter('wpmu_blogs_columns', 'nxssnapmu_columns_head');
-      add_action('manage_blogs_custom_column', 'nxssnapmu_columns_content', 10, 2);
-      add_action('manage_sites_custom_column', 'nxssnapmu_columns_content', 10, 2);    
-      add_action( 'admin_footer', 'nxs_add_style' );  
-      add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
+      if (function_exists('nxssnapmu_columns_head')) add_filter('wpmu_blogs_columns', 'nxssnapmu_columns_head');
+      if (function_exists('nxssnapmu_columns_content')) add_action('manage_blogs_custom_column', 'nxssnapmu_columns_content', 10, 2);
+      if (function_exists('nxssnapmu_columns_content')) add_action('manage_sites_custom_column', 'nxssnapmu_columns_content', 10, 2);    
+      if (function_exists('nxs_add_style')) add_action( 'admin_footer', 'nxs_add_style' );  
+      if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
 }
 ?>

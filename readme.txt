@@ -132,6 +132,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.3.2 =
+
+* New - New network: vBulletin. Share your new blogpost on your StumbleUpon account.
+* Functionality Change - due to massive amount of requests - WP Pro (not WP Pro for MU) allows to post only to one main Super Admin account, not to all accounts across in the network.
+* Bug fix - StumbleUpon Repost wrong category fix.
+* Bug fix - "expecting T_FUNCTION" error.
+* Bug fix - Blogger - "Invalid JSON" Error
+
 = 2.3.1 =
 
 * Bug fix - Facebook stability.

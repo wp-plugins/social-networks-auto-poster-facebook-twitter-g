@@ -123,7 +123,7 @@ if (!function_exists("nxs_rePostToSU_ajax")) {
     foreach ($options['su'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapSU', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['suMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['suMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
+        $two['suMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['suCat'] = $gppo[$ii]['apSUCat']; 
       }
       $result = nxs_doPublishToSU($postID, $two); if ($result == 200) die("Successfully sent your post to StumbleUpon."); else die($result);        
     }    
