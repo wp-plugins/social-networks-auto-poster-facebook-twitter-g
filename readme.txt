@@ -8,7 +8,7 @@ Tested up to: 3.4.2
 Stable tag: 2.3.3
 License: GPLv2 or later
 
-Automatically publishes your blogposts to your Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
+Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
 
 == Description ==
 
