@@ -75,7 +75,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">Detailed LinkedIn Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
             <table width="800" border="0" cellpadding="10">
             <tr><td colspan="2">
@@ -86,15 +86,15 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div class="subDiv" id="sub<?php echo $ii; ?>DivL" style="display: block;">
             
-            <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPIKey]" id="apLIAPIKey" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit',$options['liAPIKey']), 'NS_SNAutoPoster') ?>" />             
-            <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPISec]" id="apLIAPISec" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit',$options['liAPISec']), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPIKey]" id="apLIAPIKey" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPIKey'])), 'NS_SNAutoPoster') ?>" />             
+            <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPISec]" id="apLIAPISec" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPISec'])), 'NS_SNAutoPoster') ?>" />
             
              <br/><br/>
              <?php 
             if($options['liAPIKey']=='') { ?>
             <b>Authorize Your LinkedIn Account</b>. Please save your settings and come back here to Authorize your account.
             <?php } else { if(isset($options['liAccessToken']) && isset($options['liAccessTokenSecret']) && $options['liAccessTokenSecret']!=='') { ?>
-            Your LinkedIn Account has been authorized. <br/>User ID: <?php _e(apply_filters('format_to_edit',$options['liUserInfo']), 'NS_SNAutoPoster') ?>. 
+            Your LinkedIn Account has been authorized. <br/>User ID: <?php _e(apply_filters('format_to_edit', $options['liUserInfo']), 'NS_SNAutoPoster') ?>. 
             <br/>You can Re- <?php } ?>            
             <a  href="<?php echo $nxs_snapThisPageUrl; ?>&auth=li&acc=<?php echo $ii; ?>">Authorize Your LinkedIn Account</a>  
             
@@ -111,10 +111,10 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
  <?php if (function_exists("doConnectToLinkedIn")) { ?>
                  
         <div class="subDiv" id="sub<?php echo $ii; ?>DivN" style="display: block;">  <span style="color:#800000; font-size: 14px;"> <b>Beta</b>, please <a target="_blank" href="http://www.nextscripts.com/support/">report</a> any problems.</span><br/><br/>              
-          <div style="width:100%;"><strong>Your LinkedIn Page:</strong> Could be your company page or group page. Leave empty to post to your own profile.</div><input name="li[<?php echo $ii; ?>][uPage]" id="liuPage" style="width: 90%;" value="<?php _e(apply_filters('format_to_edit',$options['uPage']), 'NS_SNAutoPoster') ?>" />
+          <div style="width:100%;"><strong>Your LinkedIn Page:</strong> Could be your company page or group page. Leave empty to post to your own profile.</div><input name="li[<?php echo $ii; ?>][uPage]" id="liuPage" style="width: 90%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPage'])), 'NS_SNAutoPoster') ?>" />
           <br/>
-          <div style="width:100%;"><strong>Your LinkedIn Username/Email:</strong> </div><input name="li[<?php echo $ii; ?>][ulName]" id="liulName" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit',$options['ulName']), 'NS_SNAutoPoster') ?>" /> 
-          <div style="width:100%;"><strong>Your LinkedIn Password:</strong> </div><input type="password" name="li[<?php echo $ii; ?>][uPass]" id="liuPass" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit',$options['uPass']), 'NS_SNAutoPoster') ?>" />
+          <div style="width:100%;"><strong>Your LinkedIn Username/Email:</strong> </div><input name="li[<?php echo $ii; ?>][ulName]" id="liulName" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ulName'])), 'NS_SNAutoPoster') ?>" /> 
+          <div style="width:100%;"><strong>Your LinkedIn Password:</strong> </div><input type="password" name="li[<?php echo $ii; ?>][uPass]" id="liuPass" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPass'])), 'NS_SNAutoPoster') ?>" />
           
           </div>
           
@@ -136,7 +136,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             <div id="altFormat" style="<?php if ((int)$options['liAttch'] == 1) echo "margin-left: 10px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText">Message Text Format:</strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
-              </div><input name="li[<?php echo $ii; ?>][apLIMsgFrmt]" id="apLIMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',$options['liMsgFormat']), 'NS_SNAutoPoster') ?>" />
+              </div><input name="li[<?php echo $ii; ?>][apLIMsgFrmt]" id="apLIMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['liMsgFormat'])), 'NS_SNAutoPoster') ?>" />
             </div><br/>
              
                      
@@ -188,7 +188,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachment</strong></td> </tr>               
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $liMsgFormat ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo ($liMsgFormat); ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
 
    <?php } 
     }      

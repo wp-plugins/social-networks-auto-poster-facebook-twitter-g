@@ -111,6 +111,8 @@ jQuery(function(){
      })(jQuery);
      
      jQuery(document).ready(function() {
+         
+          jQuery('#nxsAPIUpd').dblclick(function() { doLic();  });
 
  //When page loads...
  jQuery(".nsx_tab_content").hide(); //Hide all content
@@ -162,6 +164,8 @@ jQuery(function(){
                     if (j=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
                 }, "html")
             }
+            
+           
             
             function getBoards(u,p,ii){ jQuery("#pnLoadingImg").show();
                 

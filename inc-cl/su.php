@@ -30,10 +30,10 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/su16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-stumbleupon-social-networks-auto-poster-wordpress/">Detailed StumbleUpon Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',$options['nName']), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
             
-            <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',$options['suUName']), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass']), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['suUName'])), 'NS_SNAutoPoster') ?>" />                
+            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="su[<?php echo $ii; ?>][apDoSU]" value="1" id="apDoNewSU<?php echo $ii; ?>" /> <?php } ?>
             <br/>            
@@ -56,7 +56,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apSUMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="su[<?php echo $ii; ?>][apSUMsgFrmt]" id="apSUMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE% - %TEXT%"; else _e(apply_filters('format_to_edit',$options['suMsgFormat']), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
+              <input name="su[<?php echo $ii; ?>][apSUMsgFrmt]" id="apSUMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE% - %TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['suMsgFormat'])), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['suPass']!='') { ?>

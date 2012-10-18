@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.2
+Version: 2.3.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.2' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.3' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -128,7 +128,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
             if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
-            if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); }             
+            if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); } // prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
             if (isset($_POST['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = $_POST['whoCanSeeSNAPBox'];
             if ($nxs_isWPMU && (!isset($options['suaMode'])||$options['suaMode'] = '')) $options['suaMode'] = $nxs_tpWMPU; 
@@ -139,12 +139,13 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php           
           }   $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           
+          $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']);
+if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($pk)) { ?>
+  <div class="error" id="message"><p><strong>All your categories are excluded from auto-posting.</strong> Nothing will be auto-posted. Please Click "Other Settings" and select some categories.</div>
+<?php }
+          
           if(!$nxs_isWPMU) $this->NS_SNAP_ShowPageTop();  ?>
             Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation/configuration instructions</a> (will open in a new tab)<br/><br/>
-          
-          
-          
-          
                        
            
 <ul class="nsx_tabs">
@@ -220,20 +221,21 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             </select>            
             
            <div style="width:500px;"><strong style="font-size: 14px;"><br/>Categories to Include/Exclude:</strong> 
-              <p style="font-size: 11px; margin: 0px;"><b>Uncheck</b> categories that you would like <b>NOT</b> to auto-post by default. Assigning the uncheked category to the new post will uncheck auto-posting to all configured networks. Automatically published posts won't be auto-posted if belong to the uncheked category.</p>
+              <p style="font-size: 11px; margin: 0px;">Each blogpost will be autoposted to all categories selected below. All categories are selected by default. 
+              <b>Uncheck</b> categories that you would like <b>NOT</b> to auto-post by default. Assigning the uncheked category to the new blogpost will turn off auto-posting to all configured networks.</p>
             
 <script type="text/javascript">
-function chAllCats(ch){
+function nxs_chAllCats(ch){
     jQuery("form input:checkbox[name='post_category[]']").attr('checked', ch==1);
 }
 </script>            
             
-<a href="#" onclick="chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="chAllCats(0); return false;">UnCheck all</a>
+<a href="#" onclick="nxs_chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCats(0); return false;">UnCheck all</a>
 
  <div id="taxonomy-category" class="categorydiv">
         <div id="category-all" class="tabs-panel"><input type='hidden' name='post_category[]' value='0' />
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-                <?php $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']); if (is_array($pk)) $selCats = array_diff($category_ids, $pk);                
+                <?php $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']); if (is_array($pk) && count($pk)>0 ) $selCats = array_diff($category_ids, $pk); else $selCats = $category_ids;            
                   $args = array( 'descendants_and_self' => 0, 'selected_cats' => $selCats, 'taxonomy' => 'category', 'checked_ontop' => false);    
                   if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); 
                 ?>
@@ -386,7 +388,7 @@ Please see #4 and #5 for Twitter:<br/>
         }
         
         function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
-            $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (API Version: ".NXSAPIVER.")"; ?>
+            $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (<span id='nxsAPIUpd'>API</span> Version: ".NXSAPIVER.")"; ?>
            
            
            <div style="float:right; padding-top: 10px; padding-right: 10px;">
@@ -424,7 +426,7 @@ Please see #4 and #5 for Twitter:<br/>
            
 <?php if (function_exists('yoast_analytics')) { ?>
   <div class="error" id="message"><p><strong>You have Google Analytics Plugin installed and activated.</strong> This plugin hijacks the authorization workflow. Please temporary <a href="<?php echo admin_url();?>/plugins.php">deactivate</a> Google Analytics plugin, do all authorizations and then activate it back.</div>
-<?php } 
+<?php }  
         }
         
         function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
@@ -501,7 +503,8 @@ if (!function_exists("nsGetBoards_ajax")) {
 if (!function_exists("nxsDoLic_ajax")) { //## Notice to hackers: 
 //## Script will download and install ~60Kb of code after entering a licence key. You can make it saying "I am a Multisite Edition", but it won't work without this downloaded code"
   function nxsDoLic_ajax() { check_ajax_referer('doLic'); global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-    $options['lk'] = mysql_real_escape_string($_POST['lk']);  $options = getRemNSXOption($options); if (is_array($options)) update_option('NS_SNAutoPoster', $options); //prr($options);
+    if(isset($_POST['lk']) && trim($_POST['lk'])!='') $options['lk'] = mysql_real_escape_string($_POST['lk']);  
+    if (isset($options['lk']) && trim($options['lk'])!='' ) { $options = getRemNSXOption($options); if (is_array($options)) update_option('NS_SNAutoPoster', $options); }
     if (strlen($options['uk'])>100) echo "OK"; else echo "NO"; die();
 }} 
 
