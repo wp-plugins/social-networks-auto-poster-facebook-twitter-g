@@ -2,7 +2,7 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo
+Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums
 Requires at least: 2.8
 Tested up to: 3.4.2
 Stable tag: 2.3.3
@@ -14,32 +14,33 @@ Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest,
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-Latest minor version 2.3.3 - Support for new network - Diigo.
-Latest version 2.3 - Support for Wordpress Miltisite (ex Wordpress MU) (Pro Only) and new network - Stumbleupon.
+Latest version 2.3.3 - Support for Wordpress Miltisite (ex Wordpress MU) (Pro Only) and new networks - Stumbleupon, vBulletin, Diigo.
 
 Supported Networks:
-
-**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. 
-
-**Twitter** - Autopost to your account.
-
-**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
-
-**Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
-
-**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages (*with third party library*)
 
 **Blogger/Blogspot** - Autopost to your Blog.
 
 **Delicious** - Auto-submit bookmark to your account. 
 
-**Stumbleupon** - Auto-submit bookmark to your account. 
-
 **Diigo** - Auto-submit bookmark to your account. 
 
+**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. 
+
+**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
+
+**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages (*with third party library*)
+
+**Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
+
+**Stumbleupon** - Auto-submit bookmark to your account. 
+
 **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
+
+**Twitter** - Autopost to your account.
+
+**vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
 
 **Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 
