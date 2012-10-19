@@ -75,7 +75,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">Detailed LinkedIn Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <table width="800" border="0" cellpadding="10">
             <tr><td colspan="2">
@@ -165,6 +165,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['uPass']))     $options[$ii]['uPass'] = trim($pval['uPass']);        
         if (isset($pval['uPage']))     $options[$ii]['uPage'] = trim($pval['uPage']);                
         if (isset($pval['apLIMsgFrmt'])) $options[$ii]['liMsgFormat'] = trim($pval['apLIMsgFrmt']); 
+        if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
       } //prr($options);
     } return $options;
   } 
@@ -172,7 +173,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; //prr($ntOpts);
     foreach($ntOpts as $ii=>$options)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapLI', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doLI = $options['doLI']; 
         $isAvailLI =  (isset($options['liOAuthVerifier']) && $options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='') || ($options['ulName']!=='' && $options['uPass']!=='');
-        $isAttachLI = $options['liAttch']; $liMsgFormat = $options['liMsgFormat']; 
+        $isAttachLI = $options['liAttch']; $liMsgFormat = htmlentities($options['liMsgFormat']); 
       ?>  
       
       <tr><th style="text-align:left;" colspan="2">
@@ -214,8 +215,6 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
   function nxs_doPublishToLI($postID, $options){ global $nxs_gCookiesArr; $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); // prr($options);
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; $isAttachLI = ''; $title = $blogTitle; }
       else { $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID); $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); }
-    
-    
     
     if ($isAttachLI=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];}         
     if ($isAttachLI=='1') { $post = get_post($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  

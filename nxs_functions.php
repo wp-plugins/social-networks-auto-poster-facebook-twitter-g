@@ -317,20 +317,12 @@ if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, 
   $nxsDBLog[] = $logItem; $nxsDBLog = array_slice($nxsDBLog, -150);  update_option('NS_SNAutoPosterLog', serialize($nxsDBLog)); if($nxs_tpWMPU=='S') restore_current_blog();
 }}
 
-function nxsMergeArraysOV($Arr1, $Arr2)
-{
-  foreach($Arr2 as $key => $Value)
-  {
-    if(array_key_exists($key, $Arr1) && is_array($Value))
-      $Arr1[$key] = nxsMergeArraysOV($Arr1[$key], $Arr2[$key]);
+if (!function_exists('nxsMergeArraysOV')){function nxsMergeArraysOV($Arr1, $Arr2){
+  foreach($Arr2 as $key => $Value) { if(array_key_exists($key, $Arr1) && is_array($Value)) $Arr1[$key] = nxsMergeArraysOV($Arr1[$key], $Arr2[$key]); else $Arr1[$key] = $Value;} return $Arr1;
+}}
 
-    else
-      $Arr1[$key] = $Value;
-
-  }
-
-  return $Arr1;
-
-}
+if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel($nt, $ii, $hrs=0, $min=0){  
+  if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs=0, $min); else return '<br/>';
+}}
 
 ?>

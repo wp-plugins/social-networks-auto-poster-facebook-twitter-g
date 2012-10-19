@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.3
+Version: 2.3.5
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.3' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.5' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -554,7 +554,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
       $optMt = $options[$avNt['lcode']][0]; if (isset($po) && is_array($po)) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }   
       $isCustBoxMeta = get_post_meta($postID, 'nxs_snapPostTo_'.$avNt['code'], true);
       if ($optMt['do'.$avNt['code']]=='1' || $isCustBoxMeta=='1') { delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1'); 
-        if ($publtype=='S') { // nxs_addToLog($logNT, 'M', $avNt['code'].' autopost scheduled');
+        if ($publtype=='S') { // nxs_addToLog($logNT, 'M', $avNt['code'].' autopost scheduled');           
            $args = array($postID, $optMt);  wp_schedule_single_event(time()+$delay, 'ns_doPublishTo'.$avNt['code'], $args); 
         } else { $fname = 'nxs_doPublishTo'.$avNt['code']; $fname($postID, $optMt); }        
       }
@@ -589,42 +589,6 @@ if (!function_exists("ns_custom_types_setup")) { function ns_custom_types_setup(
     add_action('auto-draft_to_publish_'.$cptID, 'nxs_snapPublishTo');
   }
 }} 
-//## Add OG:TAGS
-if (!function_exists("nsAddOGTags")) { function nsAddOGTags() { global $post, $ShownAds; global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-  if ((int)$options['nsOpenGraph'] != 1) return ""; $ogimgs = array();     if (isset($ShownAds)) $ShownAdsL = $ShownAds; 
-  //## Add og:site_name, og:locale, og:url, og:title, og:description, og:type
-  echo '<meta property="og:site_name" content="' . get_bloginfo( 'name' ) . '" />' . "\n"; echo '<meta property="og:locale" content="' . esc_attr( get_locale() ) . '" />' . "\n";
-  if (is_home() || is_front_page()) {$ogurl = get_bloginfo( 'url' ); } else { $ogurl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];}
-  echo '<meta property="og:url" content="' . esc_url( apply_filters( 'ns_ogurl', $ogurl ) ) . '" />' . "\n";
-  if (is_home() || is_front_page()) {$ogtitle = get_bloginfo( 'name' ); } else { $ogtitle = get_the_title();}
-  echo '<meta property="og:title" content="' . esc_attr( apply_filters( 'ns_ogtitle', $ogtitle ) ) . '" />' . "\n";
-  if ( is_singular() ) {
-    if ( has_excerpt( $post->ID )) {$ogdesc = strip_tags( nxs_snapCleanHTML(get_the_excerpt( $post->ID )) ); } 
-      else { $ogdesc = str_replace( "\r\n", ' ' , nsTrnc( strip_tags( strip_shortcodes( nxs_snapCleanHTML(apply_filters('the_content', $post->post_content)) ) ), 250, ' ' ) ); }
-  } else { $ogdesc = nxs_snapCleanHTML(get_bloginfo( 'description' )); } $ogdesc = nsTrnc($ogdesc, 900, ' ');
-  echo '<meta property="og:description" content="' . trim( esc_attr( apply_filters( 'ns_ogdesc', $ogdesc ) )) . '" />' . "\n";    $vidsFromPost = false;      
-  //## Add og:image
-  if (!is_home()) { 
-      $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) { /* echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
-      echo '<meta property="og:video:type" content="application/x-shockwave-flash" />'."\n";
-      echo '<meta property="og:video:width" content="480" />'."\n";
-      echo '<meta property="og:video:height" content="360" />'."\n";
-      echo '<meta property="og:image" content="http://i2.ytimg.com/vi/'.$vidsFromPost[0].'/mqdefault.jpg" />'."\n";
-      echo '<meta property="og:type" content="video" />'."\n"; */
-    }
-    {      
-      if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
-        $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
-      } $imgsFromPost = nsFindImgsInPost($post);           
-      if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost); 
-    }
-  }        
-  $ogtype = is_single()?'article':'website'; if($vidsFromPost === false)  echo '<meta property="og:type" content="' . esc_attr(apply_filters( 'ns_ogtype', $ogtype)).'" />'."\n";                
-  //## Add default image to the endof the array
-  if ( count($ogimgs)<1 && isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
-  //## Output og:image tags
-  if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  echo '<meta property="og:image" content="' . esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\n";       if (isset($ShownAds)) $ShownAds = $ShownAdsL;          
-}}
 //## Format Message
 if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID){ global $ShownAds; $post = get_post($postID); 
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
@@ -666,8 +630,61 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
    } else { switch_to_blog($_POST['sid']); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); 
      $options = $plgn_NS_SNAutoPoster->nxs_options; $options['suaMode'] = $_POST['sset']; update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); //    prr($plgn_NS_SNAutoPoster->dbOptionsName);  prr($options);
    }
- }
+}
 
+function nxs_start_ob(){ob_start( 'nxs_ogtgCallback' );}
+function nxs_end_flush_ob(){ob_end_flush();}
+
+function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    
+  if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {
+    
+    $title = preg_match( '/<title>(.*)<\/title>/', $content, $title_matches );  
+    if ($title !== false && count( $title_matches) == 2 ) $ogT ='<meta property="og:title" content="' . $title_matches[1] . '" />'."\r\n"; else {
+      if (is_home() || is_front_page() )  $ogT = get_bloginfo( 'name' ); else $ogT = get_the_title();
+      $ogT =  '<meta property="og:title" content="' . esc_attr( apply_filters( 'nxsog_title', $ogT ) ) . '" />'."\r\n";          
+    }
+    
+    $decsription = preg_match( '/<meta name="description" content="(.*)"/', $content, $description_matches );    
+    if ( $description !== false && count( $description_matches ) == 2 ) $ogD = '<meta property="og:description" content="' . $description_matches[1] . '" />'."\r\n"; {
+      if (is_singular()) {
+        if(has_excerpt($post->ID))$ogD=strip_tags(nxs_snapCleanHTML(get_the_excerpt($post->ID)));else $ogD= str_replace("  ", ' ', str_replace("\r\n", ' ', trim(substr(strip_tags(nxs_snapCleanHTML(strip_shortcodes($post->post_content))), 0, 200))));
+      } else $ogD = get_bloginfo('description');
+      $ogD = '<meta property="og:description" content="'.esc_attr( apply_filters( 'nxsog_desc', $ogD ) ).'" />'."\r\n";          
+    }
+    
+    $ogSN = '<meta property="og:site_name" content="'.get_bloginfo('name').'" />'."\r\n";
+    $ogLoc = '<meta property="og:locale" content="'.strtolower(esc_attr(get_locale())).'" />'."\r\n"; $iss = is_home();  
+    $ogType = is_singular()?'article':'website'; if($vidsFromPost == false) $ogType = '<meta property="og:type" content="'.esc_attr(apply_filters('nxsog_type', $ogType)).'" />'."\r\n";                  
+        
+    if (is_home() || is_front_page()) $ogUrl = get_bloginfo( 'url' ); else $ogUrl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $ogUrl = '<meta property="og:url" content="'.esc_url( apply_filters( 'nxsog_url', $ogUrl ) ) . '" />' . "\r\n";
+    
+    if (!is_home()) { 
+      $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) { /* echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
+      echo '<meta property="og:video:type" content="application/x-shockwave-flash" />'."\n";
+      echo '<meta property="og:video:width" content="480" />'."\n";
+      echo '<meta property="og:video:height" content="360" />'."\n";
+      echo '<meta property="og:image" content="http://i2.ytimg.com/vi/'.$vidsFromPost[0].'/mqdefault.jpg" />'."\n";
+      echo '<meta property="og:type" content="video" />'."\n"; */
+    }
+      {      
+      if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
+        $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
+      } $imgsFromPost = nsFindImgsInPost($post);           
+      if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost); 
+      }
+    }
+    //## Add default image to the endof the array
+    if ( count($ogimgs)<1 && isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
+    //## Output og:image tags
+    if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  $ogImgsOut = '<meta property="og:image" content="'.esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\r\n"; 
+    
+    $ogOut  = "\r\n".$ogSN.$ogT.$ogD.$ogType.$ogUrl.$ogLoc.$ogImgsOut;
+  
+  } $content = str_ireplace('<!-- ## NXSOGTAGS ## -->', $ogOut, $content); return $content;
+}
+
+function nxs_addOGTagsPreHolder() { echo "<!-- ## NXS/OG ## --><!-- ## NXSOGTAGS ## --><!-- ## NXS/OG ## -->\n\r";}
  
 //## Actions and filters    
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
@@ -721,10 +738,15 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_nsAuthFBSv', 'nsAuthFBSv_ajax');
     //## Custom Post Types and OG tags
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
-    add_action('wp_head','nsAddOGTags',50);  
-    //## Scedulled Publish Calls
-    
+
+    //## Scedulled Publish Calls    
     add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);     
+    
+    if ((int)$suOptions['nsOpenGraph'] == 1) {    
+      add_action( 'init', 'nxs_start_ob', 0 );
+      add_action( 'wp_footer', 'nxs_end_flush_ob', 10000 ); 
+      add_action('wp_head', 'nxs_addOGTagsPreHolder', 150);
+    }    
   }
     
   if ($nxs_isWPMU){      

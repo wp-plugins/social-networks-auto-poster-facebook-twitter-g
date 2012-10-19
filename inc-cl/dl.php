@@ -28,7 +28,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/">Detailed Delicious Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'])), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('dl', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
             
             <div style="width:100%;"><strong>Delicious Username:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLUName]" id="apDLUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['dlUName'])), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -65,6 +65,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
         if (isset($pval['apDLMsgFrmt'])) $options[$ii]['dlMsgFormat'] = trim($pval['apDLMsgFrmt']);                                                  
         if (isset($pval['apDLMsgTFrmt'])) $options[$ii]['dlMsgTFormat'] = trim($pval['apDLMsgTFrmt']);                                                  
         if (isset($pval['apDoDL']))      $options[$ii]['doDL'] = $pval['apDoDL']; else $options[$ii]['doDL'] = 0; 
+        if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
       }
     } return $options;
   }  

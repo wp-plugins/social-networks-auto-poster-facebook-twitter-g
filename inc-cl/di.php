@@ -30,9 +30,9 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Detailed Diigo Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
-            
-            <div id="altFormat" style="">
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addPostingDelaySel('di', $ii, $options['nHrs'], $options['nMin']); ?>
+                        <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Diigo API Key:</strong> <span style="font-size: 11px; margin: 0px;">Get it from <a target="_blank" href="http://www.diigo.com/api_keys/">http://www.diigo.com/api_keys</a>.</span></div>
                 <input name="di[<?php echo $ii; ?>][apDIAPIKey]" id="apDIAPIKey" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diAPIKey'])), 'NS_SNAutoPoster') ?>" />  <br/> 
             </div>   
@@ -77,6 +77,7 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
         if (isset($pval['apDIMsgTFrmt'])) $options[$ii]['diMsgTFormat'] = trim($pval['apDIMsgTFrmt']);
         if (isset($pval['apDIMsgFrmt'])) $options[$ii]['diMsgFormat'] = trim($pval['apDIMsgFrmt']);
         if (isset($pval['apDoDI']))      $options[$ii]['doDI'] = $pval['apDoDI']; else $options[$ii]['doDI'] = 0; 
+        if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
       }
     } return $options;
   }  

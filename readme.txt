@@ -2,10 +2,10 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums
+Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums, forum, open graph, og, tags
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.3.3
+Stable tag: 2.3.5
 License: GPLv2 or later
 
 Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
@@ -16,7 +16,7 @@ Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest,
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-Latest version 2.3.3 - Support for Wordpress Miltisite (ex Wordpress MU) (Pro Only) and new networks - Stumbleupon, vBulletin, Diigo.
+Latest version 2.3.5 - Google+ Image post, delayed postings (Pro Only), compatibility fixes and new networks - Stumbleupon, vBulletin, Diigo, support for Wordpress Miltisite (ex Wordpress MU) (Pro Only), 
 
 Supported Networks:
 
@@ -135,6 +135,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.3.5 =
+
+* New - Google+ new post option - image post.
+* New - Delayed postings (Pro only).
+* Improvement - Google+ API is able to post images.
+* Improvement/Bug fix - if your site has og:tags from another plugin, ours are automatically disabled. This will prevent double titles in Google+.
+* Improvement/Bug fix - compatibility with several other popular plugins like Jetpack, bbPress, etc.
+* Bug fix - Blogger - tags length fix.
+
+= 2.3.4 =
+
+* Improvement - Completely redone og:tags. Now compartible with SEO Optimizations from Plugins and Themes.
 
 = 2.3.3 =
 

@@ -29,7 +29,8 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
             
             <div id="doBG<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">Detailed Blogger Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addPostingDelaySel('bg', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGUName]" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['bgUName'])), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Blogger Password:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGPass]" id="apBGPass" autocomplete="off" type="password" style="width: 30%;" value="<?php if (trim($options['bgPass'])!='') _e(apply_filters('format_to_edit', htmlentities(substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -81,13 +82,15 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 if (isset($pval['apBGMsgTFrmt']))    $options[$ii]['bgMsgTFormat'] = trim($pval['apBGMsgTFrmt']);         
                 if (isset($pval['bgInclTags']))    $options[$ii]['bgInclTags'] = $pval['bgInclTags'];  else $options[$ii]['bgInclTags'] = 0;        
                 
+                if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+                
       } //prr($options);
     } return $options;
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
     foreach($ntOpts as $ii=>$options){ $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapBG', true)); if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doBG = $options['doBG']; 
-       $isAvailBG =  $options['bgUName']!='' && $options['bgPass']!='';  $bgMsgFormat = $options['bgMsgFormat']; $bgMsgFormat = stripcslashes(str_replace('"',"'",$bgMsgFormat));  $bgMsgTFormat = $options['bgMsgTFormat'];
+       $isAvailBG =  $options['bgUName']!='' && $options['bgPass']!='';  $bgMsgFormat = htmlentities($options['bgMsgFormat']);  $bgMsgTFormat = htmlentities($options['bgMsgTFormat']);
       ?>  
       
       <tr><th style="text-align:left;" colspan="2">
@@ -153,7 +156,7 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     else { $bgMsgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($bgMsgFormat, $postID); $link = get_permalink($postID); $bgMsgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($bgMsgTFormat, $postID); }
     $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
-    if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs);}
+    if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs); $tags = nsTrnc($tags, 195, ',', ''); }
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">Blogger</span> - '.$options['nName']; 
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}

@@ -59,23 +59,18 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     
      <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">Detailed Facebook Installation/Configuration Instructions</a></div>
     
-    <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="fb[<?php echo $ii; ?>][nName]" id="fbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
-    
+    <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="fb[<?php echo $ii; ?>][nName]" id="fbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['nName'])), 'NS_SNAutoPoster') ?>" /><br/>
+    <?php echo nxs_addPostingDelaySel('fb', $ii, $fbo['nHrs'], $fbo['nMin']); ?>
     
     <div style="width:100%;"><strong>Your Facebook URL:</strong> </div>
     <p style="font-size: 11px; margin: 0px;">Could be your Facebook Profile, Facebook Page, Facebook Group</p>
     <input name="fb[<?php echo $ii; ?>][apFBURL]" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbURL'])), 'NS_SNAutoPoster') ?>" />                
     <div style="width:100%;"><strong>Your Facebook App ID:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppID]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbAppID'])), 'NS_SNAutoPoster') ?>" />  
     <div style="width:100%;"><strong>Your Facebook App Secret:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppSec]" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbAppSec'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
-    
-    
     <div id="altFormat">
     <div style="width:100%;"><strong id="altFormatText">Message text Format:</strong> (<a href="#" id="apFBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
               <input name="fb[<?php echo $ii; ?>][apFBMsgFrmt]" id="apFBMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbMsgFormat'])), 'NS_SNAutoPoster') ?>" onfocus="mxs_showFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBMsgFrmt".$ii); ?><br/>
-              
-              
             </div>
-            
             <br/>
   <p style="margin: 0px;"><input value="2"  id="apFBAttchShare<?php echo $ii; ?>" onchange="doSwitchShAtt(0,<?php echo $ii; ?>);" type="checkbox" name="fb[<?php echo $ii; ?>][apFBAttch]" <?php if ((int)$fbo['fbAttch'] == 2) echo "checked"; ?> /> 
               <strong>Share a link to your blogpost</strong>  .. or ..                                  
@@ -134,6 +129,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         if (isset($pval['apFBAttch']))      $options[$ii]['fbAttch'] = $pval['apFBAttch']; else $options[$ii]['fbAttch'] = 0;        
         if (isset($pval['apFBAttchAsVid'])) $options[$ii]['fbAttchAsVid'] = $pval['apFBAttchAsVid']; else $options[$ii]['fbAttchAsVid'] = 0;
         if (isset($pval['apFBMsgFrmt']))    $options[$ii]['fbMsgFormat'] = trim($pval['apFBMsgFrmt']); 
+        
+        if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
                 
         if (isset($pval['apFBURL']))  {  $options[$ii]['fbURL'] = trim($pval['apFBURL']);   if ( substr($options[$ii]['fbURL'], 0, 4)!='http' )  $options[$ii]['fbURL'] = 'http://'.$options[$ii]['fbURL'];
           $fbPgID = $options[$ii]['fbURL']; if (substr($fbPgID, -1)=='/') $fbPgID = substr($fbPgID, 0, -1);  $fbPgID = substr(strrchr($fbPgID, "/"), 1); 

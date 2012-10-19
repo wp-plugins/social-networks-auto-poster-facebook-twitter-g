@@ -30,7 +30,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/su16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-stumbleupon-social-networks-auto-poster-wordpress/">Detailed StumbleUpon Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('su', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['suUName'])), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -78,6 +78,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
         if (isset($pval['suInclTags']))     $options[$ii]['suInclTags'] = $pval['suInclTags']; else $options[$ii]['suInclTags'] = 0;
         if (isset($pval['apSUMsgFrmt'])) $options[$ii]['suMsgFormat'] = trim($pval['apSUMsgFrmt']);                                                  
         if (isset($pval['apDoSU']))      $options[$ii]['doSU'] = $pval['apDoSU']; else $options[$ii]['doSU'] = 0; 
+        if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
       }
     } return $options;
   }  
