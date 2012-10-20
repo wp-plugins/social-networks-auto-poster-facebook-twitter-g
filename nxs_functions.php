@@ -17,11 +17,13 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
   // else 
   return $destroy ? '' : $matches[0];
 }}
-if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content);  $postImgs = array();
+if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $useUnProcessed=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; 
+  if ($useUnProcessed) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content);  $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
 }}
-if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postVids = array();
+if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+  global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postVids = array();
   $output = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) {  $match = trim($match); $postVids[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
 }}

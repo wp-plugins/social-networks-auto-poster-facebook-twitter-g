@@ -136,6 +136,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.3.6 =
+
+* Improvement/Bug fix - Compatibility mode. Activate it in Plugin Settings->Other Settings if your site is having problems dispaying content or giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors. 
+
 = 2.3.5 =
 
 * New - Google+ new post option - image post.

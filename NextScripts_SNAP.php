@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.5
+Version: 2.3.6
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.5' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.6' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -127,6 +127,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['nxsHTDP']))      $options['nxsHTDP'] = $_POST['nxsHTDP'];                
             if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
+            if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;                            
+            
             if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); } // prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
@@ -181,7 +183,14 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     <div id="nsx_tab2" class="nsx_tab_content">
        <!-- ##################### OTHER #####################-->
             
-            <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>            
+            <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>  
+            
+            
+            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="useUnProc" name="useUnProc"  type="checkbox" <?php if ((int)$options['useUnProc'] == 1) echo "checked"; ?> /> 
+              <strong>Use compatibility mode</strong> Some plugins using post processing functions incorrectly. Check this if your site is having problems dispaying content or giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.
+                         
+            </p>
+                      
             <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseover="showPopShAtt('IS', event);" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>               
             <div class="popShAtt" id="popShAttIS">
         <h3>The difference between "Immediately" and "Scheduled"</h3>
@@ -636,6 +645,7 @@ function nxs_start_ob(){ob_start( 'nxs_ogtgCallback' );}
 function nxs_end_flush_ob(){ob_end_flush();}
 
 function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    
+  
   if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {
     
     $title = preg_match( '/<title>(.*)<\/title>/', $content, $title_matches );  
@@ -659,29 +669,36 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!
     if (is_home() || is_front_page()) $ogUrl = get_bloginfo( 'url' ); else $ogUrl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $ogUrl = '<meta property="og:url" content="'.esc_url( apply_filters( 'nxsog_url', $ogUrl ) ) . '" />' . "\r\n";
     
-    if (!is_home()) { 
-      $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) { /* echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
+    
+  
+    if (!is_home()) { /*
+      $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) {  echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
       echo '<meta property="og:video:type" content="application/x-shockwave-flash" />'."\n";
       echo '<meta property="og:video:width" content="480" />'."\n";
       echo '<meta property="og:video:height" content="360" />'."\n";
       echo '<meta property="og:image" content="http://i2.ytimg.com/vi/'.$vidsFromPost[0].'/mqdefault.jpg" />'."\n";
-      echo '<meta property="og:type" content="video" />'."\n"; */
-    }
-      {      
+      echo '<meta property="og:type" content="video" />'."\n"; 
+    } */
+      
       if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
         $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
-      } $imgsFromPost = nsFindImgsInPost($post);           
-      if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost); 
-      }
-    }
+      } $imgsFromPost = nsFindImgsInPost($post, (int)$options['useUnProc']==1);           
+      if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
+    }   
+    
+    
     //## Add default image to the endof the array
     if ( count($ogimgs)<1 && isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
     //## Output og:image tags
     if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  $ogImgsOut = '<meta property="og:image" content="'.esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\r\n"; 
     
     $ogOut  = "\r\n".$ogSN.$ogT.$ogD.$ogType.$ogUrl.$ogLoc.$ogImgsOut;
+    
   
-  } $content = str_ireplace('<!-- ## NXSOGTAGS ## -->', $ogOut, $content); return $content;
+  } $content = str_ireplace('<!-- ## NXSOGTAGS ## -->', $ogOut, $content); 
+  
+  
+  return $content;
 }
 
 function nxs_addOGTagsPreHolder() { echo "<!-- ## NXS/OG ## --><!-- ## NXSOGTAGS ## --><!-- ## NXS/OG ## -->\n\r";}
