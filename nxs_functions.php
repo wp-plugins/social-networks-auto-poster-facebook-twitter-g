@@ -17,8 +17,8 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
   // else 
   return $destroy ? '' : $matches[0];
 }}
-if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $useUnProcessed=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; 
-  if ($useUnProcessed) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content);  $postImgs = array();
+if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  
+  if ($advImgFnd) $postCnt = apply_filters('the_content', $post->post_content); else $postCnt = $post->post_content;   $postImgs = array();
   $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
 }}

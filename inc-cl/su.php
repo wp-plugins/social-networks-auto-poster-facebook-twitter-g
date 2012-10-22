@@ -30,10 +30,10 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/su16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-stumbleupon-social-networks-auto-poster-wordpress/">Detailed StumbleUpon Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('su', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="su[<?php echo $ii; ?>][nName]" id="sunName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('su', $ii, $options['nHrs'], $options['nMin']); ?>
             
-            <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['suUName'])), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['suUName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
+            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="su[<?php echo $ii; ?>][apDoSU]" value="1" id="apDoNewSU<?php echo $ii; ?>" /> <?php } ?>
             <br/>            
@@ -43,7 +43,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
   
               <select name="su[<?php echo $ii; ?>][apSUCat]" id="apSUCat<?php echo $ii; ?>"><option value="error" selected="selected" disabled="">Select default StumbleUpon Category</option>
             <?php  $suCats = $this->suCats(); 
-              if ($options['suCat']!='') $suCats = str_replace($options['suCat'].'"', $options['suCat'].'" selected="selected"', $suCats);  echo $suCats; 
+              if (isset($options['suCat']) && $options['suCat']!='') $suCats = str_replace($options['suCat'].'"', $options['suCat'].'" selected="selected"', $suCats);  echo $suCats; 
             
              ?>
             </select>
@@ -56,7 +56,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apSUMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="su[<?php echo $ii; ?>][apSUMsgFrmt]" id="apSUMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE% - %TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['suMsgFormat'])), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
+              <input name="su[<?php echo $ii; ?>][apSUMsgFrmt]" id="apSUMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE% - %TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['suMsgFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['suPass']!='') { ?>
@@ -141,7 +141,7 @@ if (!function_exists("nxs_getSUHeaders")) {  function nxs_getSUHeaders($ref, $po
 }}
 if (!function_exists("nxs_doCheckSU")) {function nxs_doCheckSU(){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/submit'); $ckArr = $nxs_suCkArray;   
   $response = wp_remote_get('http://www.stumbleupon.com/submit', array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));   
-  $response['body'] = htmlentities($response['body']); // $response['body'] = htmlentities($response['body']);  prr($response);  die();
+  $response['body'] = htmlentities($response['body'], ENT_QUOTES, "UTF-8"); // $response['body'] = htmlentities($response['body']);  prr($response);  die();
   if (isset($response['headers']['location']) && $response['headers']['location']=='/submit/visitor') return 'Bad Saved Login';  
   if ( $response['response']['code']=='200' && stripos($response['body'], 'Add a New Page')!==false){ /*echo "You are IN"; */ return false; 
   } else return 'No Saved Login';
@@ -182,7 +182,7 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
       if ($postID=='0') { $link = home_url(); $msg = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
       $dusername = $options['suUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">StumbleUpon</span> - '.$options['nName'];      
-      $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags);             
+      if ($options['suInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
       if (isset($options['suSvC'])) $nxs_suCkArray = maybe_unserialize( $options['suSvC']); $loginError = true;
       if (is_array($nxs_suCkArray)) $loginError = nxs_doCheckSU(); if ($loginError!==false) $loginError = nxs_doConnectToSU($email, $pass); 
       if (serialize($nxs_suCkArray)!=$options['suSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options;

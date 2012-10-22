@@ -30,14 +30,14 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Detailed Diigo Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addPostingDelaySel('di', $ii, $options['nHrs'], $options['nMin']); ?>
                         <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Diigo API Key:</strong> <span style="font-size: 11px; margin: 0px;">Get it from <a target="_blank" href="http://www.diigo.com/api_keys/">http://www.diigo.com/api_keys</a>.</span></div>
-                <input name="di[<?php echo $ii; ?>][apDIAPIKey]" id="apDIAPIKey" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diAPIKey'])), 'NS_SNAutoPoster') ?>" />  <br/> 
+                <input name="di[<?php echo $ii; ?>][apDIAPIKey]" id="apDIAPIKey" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diAPIKey'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/> 
             </div>   
-           <div style="width:100%;"><strong>Diigo Username:</strong> </div><input name="di[<?php echo $ii; ?>][apDIUName]" id="apDIUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diUName'])), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Diigo Password:</strong> </div><input name="di[<?php echo $ii; ?>][apDIPass]" id="apDIPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass'])), 'NS_SNAutoPoster') ?>" />  <br/>                
+           <div style="width:100%;"><strong>Diigo Username:</strong> </div><input name="di[<?php echo $ii; ?>][apDIUName]" id="apDIUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diUName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
+            <div style="width:100%;"><strong>Diigo Password:</strong> </div><input name="di[<?php echo $ii; ?>][apDIPass]" id="apDIPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="di[<?php echo $ii; ?>][apDoDI]" value="1" id="apDoNewDI<?php echo $ii; ?>" /> <?php } ?>
             <br/>            
@@ -48,12 +48,12 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong> (<a href="#" id="apDIMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="di[<?php echo $ii; ?>][apDIMsgTFrmt]" id="apDIMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgTFormat'])), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?>
+              <input name="di[<?php echo $ii; ?>][apDIMsgTFrmt]" id="apDIMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgTFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?>
             </div><br/> 
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apDIMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="di[<?php echo $ii; ?>][apDIMsgFrmt]" id="apDIMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'])), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
+              <input name="di[<?php echo $ii; ?>][apDIMsgFrmt]" id="apDIMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['diPass']!='') { ?>

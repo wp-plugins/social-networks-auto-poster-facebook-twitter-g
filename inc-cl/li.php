@@ -68,14 +68,14 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   //#### Show NEW Settings Page
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'ulName'=>'', 'uPass'=>'', 'uPage'=>'', 'doLI'=>'1', 'liAPIKey'=>'', 'liAPISec'=>'', 'liUserInfo'=>'', 'liAttch'=>'1', 'liOAuthToken'=>'', 'liMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; if (!isset($options['liOK'])) $options['liOK'] = ''; ?>
     <div id="doLI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/li-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['liAccessToken']) && $options['liAccessTokenSecret']!='') || $options['liOK']=='1' || $isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSLI<?php echo $ii; ?>" value="0" id="apDoSLI<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="li[<?php echo $ii; ?>][apDoLI]" value="1" id="apDoNewLI<?php echo $ii; ?>" /> <?php } ?>
             <div id="doLI<?php echo $ii; ?>Div" style="margin-left: 10px;"> 
             
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">Detailed LinkedIn Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'])), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <table width="800" border="0" cellpadding="10">
             <tr><td colspan="2">
@@ -86,8 +86,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div class="subDiv" id="sub<?php echo $ii; ?>DivL" style="display: block;">
             
-            <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPIKey]" id="apLIAPIKey" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPIKey'])), 'NS_SNAutoPoster') ?>" />             
-            <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPISec]" id="apLIAPISec" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPISec'])), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPIKey]" id="apLIAPIKey" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPIKey'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
+            <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPISec]" id="apLIAPISec" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPISec'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             
              <br/><br/>
              <?php 
@@ -111,10 +111,10 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
  <?php if (function_exists("doConnectToLinkedIn")) { ?>
                  
         <div class="subDiv" id="sub<?php echo $ii; ?>DivN" style="display: block;">  <span style="color:#800000; font-size: 14px;"> <b>Beta</b>, please <a target="_blank" href="http://www.nextscripts.com/support/">report</a> any problems.</span><br/><br/>              
-          <div style="width:100%;"><strong>Your LinkedIn Page:</strong> Could be your company page or group page. Leave empty to post to your own profile.</div><input name="li[<?php echo $ii; ?>][uPage]" id="liuPage" style="width: 90%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPage'])), 'NS_SNAutoPoster') ?>" />
+          <div style="width:100%;"><strong>Your LinkedIn Page:</strong> Could be your company page or group page. Leave empty to post to your own profile.</div><input name="li[<?php echo $ii; ?>][uPage]" id="liuPage" style="width: 90%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPage'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />
           <br/>
-          <div style="width:100%;"><strong>Your LinkedIn Username/Email:</strong> </div><input name="li[<?php echo $ii; ?>][ulName]" id="liulName" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ulName'])), 'NS_SNAutoPoster') ?>" /> 
-          <div style="width:100%;"><strong>Your LinkedIn Password:</strong> </div><input type="password" name="li[<?php echo $ii; ?>][uPass]" id="liuPass" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPass'])), 'NS_SNAutoPoster') ?>" />
+          <div style="width:100%;"><strong>Your LinkedIn Username/Email:</strong> </div><input name="li[<?php echo $ii; ?>][ulName]" id="liulName" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ulName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+          <div style="width:100%;"><strong>Your LinkedIn Password:</strong> </div><input type="password" name="li[<?php echo $ii; ?>][uPass]" id="liuPass" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uPass'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />
           
           </div>
           
@@ -136,7 +136,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             <div id="altFormat" style="<?php if ((int)$options['liAttch'] == 1) echo "margin-left: 10px;"; ?> ">
               <div style="width:100%;"><strong id="altFormatText">Message Text Format:</strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %IMG% - Inserts the featured image. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>
-              </div><input name="li[<?php echo $ii; ?>][apLIMsgFrmt]" id="apLIMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['liMsgFormat'])), 'NS_SNAutoPoster') ?>" />
+              </div><input name="li[<?php echo $ii; ?>][apLIMsgFrmt]" id="apLIMsgFrmt" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['liMsgFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             </div><br/>
              
                      
@@ -173,7 +173,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; //prr($ntOpts);
     foreach($ntOpts as $ii=>$options)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapLI', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doLI = $options['doLI']; 
         $isAvailLI =  (isset($options['liOAuthVerifier']) && $options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='') || ($options['ulName']!=='' && $options['uPass']!=='');
-        $isAttachLI = $options['liAttch']; $liMsgFormat = htmlentities($options['liMsgFormat']); 
+        $isAttachLI = $options['liAttch']; $liMsgFormat = htmlentities($options['liMsgFormat'], ENT_QUOTES, "UTF-8"); 
       ?>  
       
       <tr><th style="text-align:left;" colspan="2">

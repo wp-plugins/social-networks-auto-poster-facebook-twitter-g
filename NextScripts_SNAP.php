@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.6
+Version: 2.3.7
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.6' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.7' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){ include $filename; }
@@ -184,12 +184,6 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
        <!-- ##################### OTHER #####################-->
             
             <h3 style="font-size: 17px;">Other Settings</h3> <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>  
-            
-            
-            <p style="margin: 0px;margin-left: 5px;"><input value="1" id="useUnProc" name="useUnProc"  type="checkbox" <?php if ((int)$options['useUnProc'] == 1) echo "checked"; ?> /> 
-              <strong>Use compatibility mode</strong> Some plugins using post processing functions incorrectly. Check this if your site is having problems dispaying content or giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.
-                         
-            </p>
                       
             <h3 style="font-size: 14px; margin-bottom: 2px;">How to make auto-posts? <span style="font-size: 12px;" > &lt;-- (<a id="showShAttIS" onmouseover="showPopShAtt('IS', event);" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#">What's the difference?</a>)</span></h3>               
             <div class="popShAtt" id="popShAttIS">
@@ -262,11 +256,17 @@ function nxs_chAllCats(ch){
                          
             </p>
             
-            <p><div style="width:100%;">            
+            <div style="width:100%; margin-left: 15px;">            
+             
+            <div style="margin: 7px; margin-left: 10px;"><input value="1" id="useUnProc" name="useUnProc"  type="checkbox" <?php if ((int)$options['useUnProc'] == 1) echo "checked"; ?> /> 
+             <strong>Use advanced image finder</strong> - Check this if your images could be found only in the fully processed posts. <br/>This feature could interfere with some plugins using post processing functions incorrectly. Your site could become messed up, have troubles displaying content or start giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.                        
+            </div>
+            
+            <strong style="font-size: 11px; margin: 10px; margin-left: 10px;">Default Image URL for og:image tag:</strong> <img src="http://www.nextscripts.com/gif.php<?php echo "?g=".$nxsOne; ?> "/>
+            <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'NS_SNAutoPoster') ?>" />
             
             </div>
-            <strong style="font-size: 11px; margin: 10px;">Default Image URL for og:image tag:</strong> <img src="http://www.nextscripts.com/gif.php<?php echo "?g=".$nxsOne; ?> "/>
-            <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'NS_SNAutoPoster') ?>" /></p>
+            
              
             
            
@@ -682,7 +682,7 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!
       
       if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
         $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
-      } $imgsFromPost = nsFindImgsInPost($post, (int)$options['useUnProc']==1);           
+      } $imgsFromPost = nsFindImgsInPost($post, (int)$options['advFindOGImg']==1);           
       if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
     }   
     
