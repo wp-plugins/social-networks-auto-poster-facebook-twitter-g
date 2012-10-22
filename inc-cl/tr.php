@@ -57,16 +57,16 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
     
     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">Detailed Tumblr Installation/Configuration Instructions</a></div>
     
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('tr', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('tr', $ii, $options['nHrs'], $options['nMin']); ?>
             
-            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
-            <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
+            <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             <br/><br/>
     
     <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?> onchange="nxs_TRSetEnable('T','<?php echo $ii; ?>');" /> Text Post<br/>            
 
     <div style="width:100%; margin-left: 15px;"><strong id="altFormatText">Text Post Title Format:</strong> (<a href="#" id="apTRTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)  </div><div onblur="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').hide();">
-              <input name="tr[<?php echo $ii; ?>][apTRMsgTFrmt]" id="apTRMsgTFrmt<?php echo $ii; ?>" style="margin-left: 15px; width: 50%;" value="<?php if ($options['trMsgTFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgTFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster'); else echo "New Post has been published on %SITENAME%"; ?>"  onfocus="jQuery('#apTRTMsgFrmt<?php echo $ii; ?>Hint').show();"  <?php if ($options['trPostType'] == 'I') echo 'disabled="disabled"'; ?>  /><br/>
+              <input name="tr[<?php echo $ii; ?>][apTRMsgTFrmt]" id="apTRMsgTFrmt<?php echo $ii; ?>" style="margin-left: 15px; width: 50%;" value="<?php if ($options['trMsgTFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo "New Post has been published on %SITENAME%"; ?>"  onfocus="jQuery('#apTRTMsgFrmt<?php echo $ii; ?>Hint').show();"  <?php if ($options['trPostType'] == 'I') echo 'disabled="disabled"'; ?>  /><br/>
               <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?>
             </div>
             
@@ -74,11 +74,11 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
 
 <div style="width:100%; margin-left: 15px;"><strong>Defailt Image to Post:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post is missing "Featured Image" and doesn't have any images in the text body this will be used instead.</p>
-            </div><input name="tr[<?php echo $ii; ?>][apTRDefImg]" id="apTRDefImg<?php echo $ii; ?>" style=" margin-left: 15px; width: 30%;" <?php if ($options['trPostType'] != 'I') echo 'disabled="disabled"'; ?> value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trDefImg'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+            </div><input name="tr[<?php echo $ii; ?>][apTRDefImg]" id="apTRDefImg<?php echo $ii; ?>" style=" margin-left: 15px; width: 30%;" <?php if ($options['trPostType'] != 'I') echo 'disabled="disabled"'; ?> value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trDefImg'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
             <br/><br/>
   <div style="width:100%;"><strong id="altFormatText">Post Text Format:</strong> (<a href="#" id="apTRMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>) </div>
               
-              <input name="tr[<?php echo $ii; ?>][apTRMsgFrmt]" id="apTRMsgFrmt" style="width: 50%;" value="<?php if ($options['trMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgFormat'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster'); else echo htmlentities("<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\"%IMG%\"/></p><p>%FULLTEXT%</p></blockquote>"); ?>" onfocus="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').show();" /><br/>
+              <input name="tr[<?php echo $ii; ?>][apTRMsgFrmt]" id="apTRMsgFrmt" style="width: 50%;" value="<?php if ($options['trMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo htmlentities("<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\"%IMG%\"/></p><p>%FULLTEXT%</p></blockquote>"); ?>" onfocus="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').show();" /><br/>
                <?php nxs_doShowHint("apTRMsgFrmt".$ii); ?>
                
               
@@ -90,7 +90,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             if($options['trConsSec']=='') { ?>
             <b>Authorize Your Tumblr Account</b>. Please save your settings and come back here to Authorize your account.
             <?php } else { if(isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='') { ?>
-            Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['trPgID'], ENT_QUOTES, "UTF-8")), 'NS_SNAutoPoster') ?>. 
+            Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['trPgID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>. 
             You can Re- <?php } ?>            
             <a href="<?php echo $nxs_snapThisPageUrl;?>&auth=tr&acc=<?php echo $ii; ?>">Authorize Your Tumblr Account</a> 
               <?php if (!isset($options['trOAuthTokenSecret']) || $options['trOAuthTokenSecret']=='') { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>            
@@ -134,7 +134,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
     foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTR', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doTR = $options['doTR']; 
        $isAvailTR =  isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='';          
-       $trMsgFormat = htmlentities($options['trMsgFormat'], ENT_QUOTES, "UTF-8");  $trMsgTFormat = $options['trMsgTFormat'];
+       $trMsgFormat = htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8");  $trMsgTFormat = $options['trMsgTFormat'];
       ?>  
       
       <tr><th style="text-align:left;" colspan="2">
