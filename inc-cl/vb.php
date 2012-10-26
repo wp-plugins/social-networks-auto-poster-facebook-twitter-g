@@ -30,7 +30,8 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-vbulletin-social-networks-auto-poster-wordpress/">Detailed vBulletin Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="vb[<?php echo $ii; ?>][nName]" id="vbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('vb', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="vb[<?php echo $ii; ?>][nName]" id="vbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('vb', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('vb', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">vBulletin URL:</strong> <span style="font-size: 11px; margin: 0px;">Could be Forum URL or Thread URL. Either new thread of new post will be created.</span></div>
@@ -82,6 +83,7 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
         if (isset($pval['apVBMsgFrmt'])) $options[$ii]['vbMsgFormat'] = trim($pval['apVBMsgFrmt']);
         if (isset($pval['apDoVB']))      $options[$ii]['doVB'] = $pval['apDoVB']; else $options[$ii]['doVB'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
     } return $options;
   }  
@@ -116,7 +118,7 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
 }}
 if (!function_exists("nxs_rePostToVB_ajax")) {
   function nxs_rePostToVB_ajax() { check_ajax_referer('rePostToVB');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['vb'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['vb'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapVB', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['vbMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['vbMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -202,11 +204,18 @@ if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, 
 }}
 
 if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
-  function nxs_doPublishToVB($postID, $options){ global $nxs_vbCkArray; if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['vbMsgFormat']; $vbCat = $options['vbCat']; $msg = nsFormatMessage($msgFormat, $postID);       
-      $msgFormatT = $options['vbMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
-      // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
-      $email = $options['vbUName'];  $pass = (substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass']);      
-      if ($postID=='0') { $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
+  function nxs_doPublishToVB($postID, $options){ global $nxs_vbCkArray; $ntCd = 'VB'; $ntCdL = 'vb'; $ntNm = 'vBulletin';
+  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    } 
+  
+      $vbCat = $options['vbCat']; $email = $options['vbUName']; $pass = (substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass']);      
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } 
+        else { $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+          $msgFormat = $options['vbMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['vbMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
+      }
       $dusername = $options['vbUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">vBulletin</span> - '.$options['nName'];      
       if ($options['vbInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';

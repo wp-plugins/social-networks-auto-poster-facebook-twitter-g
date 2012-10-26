@@ -30,6 +30,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
             <div id="doBG<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">Detailed Blogger Installation/Configuration Instructions</a></div>
             
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('bg', $ii, $options['qTLng']); ?>
             <?php echo nxs_addPostingDelaySel('bg', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGUName]" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['bgUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
@@ -83,6 +84,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 if (isset($pval['bgInclTags']))    $options[$ii]['bgInclTags'] = $pval['bgInclTags'];  else $options[$ii]['bgInclTags'] = 0;        
                 
                 if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+                if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
                 
       } //prr($options);
     } return $options;
@@ -116,7 +118,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
 
 if (!function_exists("nxs_rePostToBG_ajax")) { function nxs_rePostToBG_ajax() {  check_ajax_referer('rePostToBG');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
       global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-      foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii;
+      foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo); 
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['bgMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['bgMsgTFormat'] = $mpo[$ii]['SNAPTformat']; $po['bgAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
       $result = nxs_doPublishToBG($postID, $po);  if ($result == 201) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
@@ -151,17 +153,31 @@ if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blo
     $result = curl_exec($ch); curl_close($ch); if (stripos($result,'tag:blogger.com')!==false) return 'OK'; else { prr($result); return false;}
 }}
 if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
-  function nxs_doPublishToBG($postID, $options){ $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
-    else { $bgMsgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($bgMsgFormat, $postID); $link = get_permalink($postID); $bgMsgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($bgMsgTFormat, $postID); }
+  function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';
+      
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
+    
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    }     
+    
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.htmlentities($blogTitle);  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
+      else { $msgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); $msgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); 
+        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    }
+    //## Actual POST Code
     $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs); $tags = nsTrnc($tags, 195, ',', ''); }
-    $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">Blogger</span> - '.$options['nName']; 
-    if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
+    $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">'.$ntNm.'</span> - '.$options['nName']; 
+    if (!function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
-    if ($ret!='OK') {if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); return  $ret; }
-      else { if ($postID=='0') { echo 'OK - Message Posted, please see your Blooger/Blogpost Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted ');  return 201;} else { nxs_metaMarkAsPosted($postID, 'BG', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
+    //## /Actual POST Code
+    
+    if ($ret!='OK') { if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); return  $ret; }
+      else { if ($postID=='0') { echo 'OK - Message Posted, please see your '.$ntNm.' Page '; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); return 201;} 
+        else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
   }
 }
 

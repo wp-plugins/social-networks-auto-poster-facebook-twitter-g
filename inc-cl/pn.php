@@ -39,7 +39,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
              
            
             <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">Detailed Pinterest Installation/Configuration Instructions</a></div>
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('pn', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('pn', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('pn', $ii, $options['nHrs'], $options['nMin']); ?>
                   
             <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -90,6 +91,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
         if (isset($pval['apPNDefImg']))  $options[$ii]['pnDefImg'] = trim($pval['apPNDefImg']);
         if (isset($pval['apPNMsgFrmt'])) $options[$ii]['pnMsgFormat'] = trim($pval['apPNMsgFrmt']);     
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
     } return $options;
   }  
@@ -129,7 +131,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
 }}
 if (!function_exists("nxs_rePostToPN_ajax")) {
   function nxs_rePostToPN_ajax() { check_ajax_referer('rePostToPN');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['pn'] as $ii=>$two) if ($ii==$_POST['nid']) {    $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['pn'] as $ii=>$two) if ($ii==$_POST['nid']) {    $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $po =  get_post_meta($postID, 'snapPN', true); $po =  maybe_unserialize($po);// prr($gppo);
       if (is_array($po) && isset($po[$ii]) && is_array($po[$ii])){ 
         $two['pnMsgFormat'] = $po[$ii]['SNAPformat']; $two['pnBoard'] = $po[$ii]['apPNBoard']; 
@@ -140,27 +142,26 @@ if (!function_exists("nxs_rePostToPN_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
-  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; if ($postID=='0') echo "Testing ... <br/><br/>";  
+  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest'; 
   
-    $pnMsgFormat = $options['pnMsgFormat']; $boardID = $options['pnBoard']; 
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    }     
   
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
-    else { $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); } 
+    else { $pnMsgFormat = $options['pnMsgFormat']; $boardID = $options['pnBoard'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    } 
     
     $email = $options['pnUName'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();
-    
-    if ($imgURL=='') if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $imgURL = $imgURL[0];} 
-    if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
-    if ($imgURL=='') $imgURL = $options['pnDefImg']; if ($imgURL=='') $imgURL = $options['ogImgDef']; $msg = urlencode($msg);  // prr($msg);
-    
+    $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); 
     if (isset($options['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pnSvC']); $loginError = true;
     if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
-    
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
-    
     if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}  
     
     if (serialize($nxs_gCookiesArr)!=$options['pnSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);

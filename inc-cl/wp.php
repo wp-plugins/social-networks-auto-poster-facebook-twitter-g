@@ -30,7 +30,8 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
             
             <?php if ($isNew){ ?> <br/>You can setup any Wordpress based blog with activated XML-RPC support (WP Admin->Settimgs->Writing->Remote Publishing->Check XML-RPC). Wordpress.com and Blog.com supported as well.<br/><br/> <?php } ?> 
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('wp', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
             
             <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             <p style="font-size: 11px; margin: 0px;">Usually its a URL of your Wordpress installation with /xmlrpc.php at the end.<br/> Please use <b style="color: #005800;">http://YourUserName.wordpress.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.wordpress.com/xmlrpc.php</i>) for Wordpress.com blogs. <br/> Please  use <b style="color: #005800;">http://YourUserName.blog.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.blog.com/xmlrpc.php</i> for Blog.com blogs</p>
@@ -71,6 +72,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
         if (isset($pval['apWPMsgTFrmt'])) $options[$ii]['wpMsgTFormat'] = trim($pval['apWPMsgTFrmt']);                                                  
         if (isset($pval['apDoWP']))      $options[$ii]['doWP'] = $pval['apDoWP']; else $options[$ii]['doWP'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
     } return $options;
   }  
@@ -105,7 +107,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
 }}
 if (!function_exists("nxs_rePostToWP_ajax")) {
   function nxs_rePostToWP_ajax() { check_ajax_referer('rePostToWP');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['wp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii;  //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['wp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii;  $two['pType'] = 'aj';//if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapWP', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['wpMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['wpMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -116,14 +118,18 @@ if (!function_exists("nxs_rePostToWP_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
-  function nxs_doPublishToWP($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  
-      //## Format
-      $msgFormat = $options['wpMsgFormat'];    $msg = nsFormatMessage($msgFormat, $postID); 
-      $msgTFormat = $options['wpMsgTFormat'];  $msgT = nsFormatMessage($msgTFormat, $postID);      
+  function nxs_doPublishToWP($postID, $options){ $ntCd = 'WP'; $ntCdL = 'wp'; $ntNm = 'WP Based Blog';
       
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    } 
       if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
       $email = $options['wpUName'];  $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
-      if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); $img = $src; }      
+      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); $img = $src; 
+        $msgFormat = $options['wpMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['wpMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
+        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+      }
       $dusername = $options['wpUName'];  $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',',$tggs);      
       $postCats = wp_get_post_categories($postID); $cats = array();  foreach($postCats as $c){ $cat = get_category($c); $cats[] = str_ireplace('&','&amp;',$cat->name); } // $cats = implode(',',$catsA);

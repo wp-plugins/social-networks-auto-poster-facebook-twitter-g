@@ -36,9 +36,6 @@ class TumblrOAuth {
   /* Immediately retry the API call if the response was not successful. */
   //public $retry = TRUE;
 
-
-
-
   /**
    * Set API URLS
    */
@@ -65,7 +62,6 @@ class TumblrOAuth {
       $this->token = NULL;
     }
   }
-
 
   /**
    * Get a request_token from Tumblr
@@ -154,7 +150,7 @@ class TumblrOAuth {
    * POST wrapper for oAuthRequest.
    */
   function post($url, $parameters = array()) {
-    $response = $this->oAuthRequest($url, 'POST', $parameters);
+    $response = $this->oAuthRequest($url, 'POST', $parameters); //prr($response);
     if ($this->format === 'json' && $this->decode_json) {
       return json_decode($response);
     }
@@ -242,17 +238,20 @@ $headers[] = 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3';
         }
     }
 //prr($url);
-    if ($method=='DELETE')  curl_setopt($ci, CURLOPT_URL, $url);
-    $response = curl_exec($ci);
+    if ($method=='DELETE')  curl_setopt($ci, CURLOPT_URL, $url);  $response = curl_exec($ci);  $out = array();
+  
+    /*  
+    $err = curl_errno($ci); if ($err==28){ sleep(10); $tm = true; $response = curl_exec($ci); } //   echo "##".$err; $errmsg = curl_error($ci); $out['errno'] = $err; $out['errmsg'] = $errmsg; prr($out);
+    $err = curl_errno($ci); if ($err>0){ $errmsg = curl_error($ci); $out['errno'] = $err; $out['errmsg'] = $errmsg; curl_close($ci); return $out; }
+    */
+    //$err = curl_errno($ci); $errmsg = curl_error($ci); $header = curl_getinfo($ci);  $header['errno']   = $err;  $header['errmsg']  = $errmsg;  $header['content'] = $response;  prr($header); //die();
     
-    
-    // $err = curl_errno($ci); $errmsg = curl_error($ci); $header = curl_getinfo($ci);  $header['errno']   = $err;  $header['errmsg']  = $errmsg;  $header['content'] = $response;  prr($header); die();
-    
+    $err = curl_errno($ci); if ($err>0){ $errmsg = curl_error($ci); $out['errno'] = $err; $out['errmsg'] = $errmsg.". Tumblr API is down. Please try later.";  $this->http_code = '404'; curl_close($ci); return json_encode($out); }
     
     $this->http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE); 
     $this->http_info = array_merge($this->http_info, curl_getinfo($ci));
     $this->url = $url; //prr($this);
-    curl_close ($ci);
+    curl_close ($ci); // prr($response);
     return $response;
   }
 

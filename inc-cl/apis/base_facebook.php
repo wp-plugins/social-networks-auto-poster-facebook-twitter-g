@@ -914,7 +914,7 @@ abstract class NXS_BaseFacebook
     if (!$ch) {
       $ch = curl_init();
     }
-
+    // echo $url;
     $opts = self::$CURL_OPTS;
     if ($this->getFileUploadSupport()) {
       $opts[CURLOPT_POSTFIELDS] = $params;
@@ -1234,7 +1234,7 @@ abstract class NXS_BaseFacebook
    * @param $result array A record storing the error message returned
    *                      by a failed API call.
    */
-  protected function throwAPIException($result) {
+  protected function throwAPIException($result) { //prr($result);
     $e = new NXS_FacebookApiException($result);
     switch ($e->getType()) {
       // OAuth 2.0 Draft 00 style

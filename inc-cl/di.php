@@ -31,6 +31,7 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Detailed Diigo Installation/Configuration Instructions</a></div>
             
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('di', $ii, $options['qTLng']); ?>
             <?php echo nxs_addPostingDelaySel('di', $ii, $options['nHrs'], $options['nMin']); ?>
                         <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Diigo API Key:</strong> <span style="font-size: 11px; margin: 0px;">Get it from <a target="_blank" href="http://www.diigo.com/api_keys/">http://www.diigo.com/api_keys</a>.</span></div>
@@ -78,6 +79,7 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
         if (isset($pval['apDIMsgFrmt'])) $options[$ii]['diMsgFormat'] = trim($pval['apDIMsgFrmt']);
         if (isset($pval['apDoDI']))      $options[$ii]['doDI'] = $pval['apDoDI']; else $options[$ii]['doDI'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
     } return $options;
   }  
@@ -112,7 +114,7 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
 }}
 if (!function_exists("nxs_rePostToDI_ajax")) {
   function nxs_rePostToDI_ajax() { check_ajax_referer('rePostToDI');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['di'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['di'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDI', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['diMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['diMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -200,11 +202,20 @@ if (!function_exists("nxs_doPostToDI")) {  function nxs_doPostToDI($url, $subj, 
 }}
 
 if (!function_exists("nxs_doPublishToDI")) { //## Second Function to Post to DI
-  function nxs_doPublishToDI($postID, $options){ global $nxs_diCkArray; if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['diMsgFormat']; $diCat = $options['diCat']; $msg = nsFormatMessage($msgFormat, $postID);       
-      $msgFormatT = $options['diMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
-      // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
+  function nxs_doPublishToDI($postID, $options){ global $nxs_diCkArray; $ntCd = 'DI'; $ntCdL = 'di'; $ntNm = 'Diigo';
+  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+      nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    }
+    
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else {  $link = get_permalink($postID);
+      $msgFormat = $options['diMsgFormat']; $diCat = $options['diCat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['diMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    }  
+    
+    //## Actual POST Code        
       $email = $options['diUName'];  $pass = (substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass']);      
-      if ($postID=='0') { $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
       $dusername = $options['diUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Diigo</span> - '.$options['nName'];      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = (implode(',',$tggs)); $tags = str_replace(' ','+',$tags);             

@@ -28,7 +28,8 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/">Detailed Delicious Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('dl', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('dl', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('dl', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
             
             <div style="width:100%;"><strong>Delicious Username:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLUName]" id="apDLUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['dlUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -66,6 +67,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
         if (isset($pval['apDLMsgTFrmt'])) $options[$ii]['dlMsgTFormat'] = trim($pval['apDLMsgTFrmt']);                                                  
         if (isset($pval['apDoDL']))      $options[$ii]['doDL'] = $pval['apDoDL']; else $options[$ii]['doDL'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
     } return $options;
   }  
@@ -100,7 +102,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
 }}
 if (!function_exists("nxs_rePostToDL_ajax")) {
   function nxs_rePostToDL_ajax() { check_ajax_referer('rePostToDL');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
-    foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
+    foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDL', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
       if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
         $two['dlMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['dlMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
@@ -117,20 +119,29 @@ if (!function_exists("doPostToDelicious")) { function doPostToDelicious($postID,
 
 }}
 if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
-  function nxs_doPublishToDL($postID, $options){ if ($postID=='0') echo "Testing ... <br/><br/>";  $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat'];       
-      $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); $msgFormat = $options['dlMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID);       
-      // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
-      $email = $options['dlUName'];  $pass = urlencode(substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
+  function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious';
       
-      if ($postID=='0') { $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); /* $img = $src; */ }
-      $dusername = $options['dlUName']; $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
+      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+      if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+      }           
+      
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID);  
+        $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);  $msg = nsFormatMessage($msgFormat, $postID); 
+        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+      }
+      
+      $dusername = $options['dlUName']; $pass = urlencode(substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
+      $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
       
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
       
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
       $cnt = wp_remote_get( $apicall, '' );// prr($cnt);      
-      if( is_wp_error( $cnt ) ) {
+      
+      if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); $cnt = wp_remote_get( $apicall, '' );}}      
+      if(is_wp_error($cnt)) {
         $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii']);  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 

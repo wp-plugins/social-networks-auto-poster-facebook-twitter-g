@@ -36,8 +36,8 @@ class nsx_LinkedIn {
     $request->set_parameter("oauth_callback", $this->oauth_callback);
     $request->sign_request($this->signature_method, $consumer, NULL); prr($request);
     $headers = Array();
-    $url = $request->to_url();//prr($url); 
-    $response = $this->httpRequest($url, $headers, "GET"); if ($response!='') $this->http_code = 200;
+    $url = $request->to_url(); echo "^^^^^";  prr($url); 
+    $response = $this->httpRequest($url, $headers, "GET"); prr($response); if ($response!='') $this->http_code = 200;
     parse_str($response, $response_params); //prr($response_params); echo "!!!!";
     $this->request_token = new nsx_trOAuthConsumer($response_params['oauth_token'], $response_params['oauth_token_secret'], 1); return $this->request_token;
   }
@@ -154,7 +154,14 @@ class nsx_LinkedIn {
       curl_setopt($curl, CURLOPT_HTTPHEADER, $auth_header);   
     }
  
-    $data = curl_exec($curl); $header = curl_getinfo($curl);  curl_close($curl); //prr($header);
+    $data = curl_exec($curl); $errmsg = curl_error($curl);
+    
+    //## NextScripts Fix
+    if (curl_errno($curl) == 60 || stripos($errmsg, 'SSL')!==false) {  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); $data = curl_exec($curl);}
+    if (curl_errno($curl) > 0) { $err = curl_errno($curl); $errmsg = curl_error($curl); prr($errmsg); prr($err);}    
+    //## /NextScripts Fix    
+    $header = curl_getinfo($curl); curl_close($curl); 
+
     if ($this->debug) echo $data . "\n";    
     if (trim($data)=='' && $header['http_code']=='201') $data = '201';
     return $data; 

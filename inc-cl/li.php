@@ -75,7 +75,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">Detailed LinkedIn Installation/Configuration Instructions</a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
+            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('li', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <table width="800" border="0" cellpadding="10">
             <tr><td colspan="2">
@@ -166,6 +167,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['uPage']))     $options[$ii]['uPage'] = trim($pval['uPage']);                
         if (isset($pval['apLIMsgFrmt'])) $options[$ii]['liMsgFormat'] = trim($pval['apLIMsgFrmt']); 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
+        if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       } //prr($options);
     } return $options;
   } 
@@ -202,7 +204,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
 
 if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() {  check_ajax_referer('rePostToLI');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
       global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-      foreach ($options['li'] as $ii=>$po) if ($ii==$_POST['nid']) {  $po['ii'] = $ii;
+      foreach ($options['li'] as $ii=>$po) if ($ii==$_POST['nid']) {  $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapLI', true); $mpo =  maybe_unserialize($mpo); 
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['liMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['liAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
       $result = nxs_doPublishToLI($postID, $po);  if ($result == 200 && ($postID=='0') && $options['li'][$ii]['liOK']!='1') { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
@@ -212,53 +214,37 @@ if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() { 
 }
 
 if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
-  function nxs_doPublishToLI($postID, $options){ global $nxs_gCookiesArr; $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); // prr($options);
+  function nxs_doPublishToLI($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'LI'; $ntCdL = 'li'; $ntNm = 'LinkedIn';
+  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+    }
+  
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); // prr($options);
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; $isAttachLI = ''; $title = $blogTitle; }
-      else { $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID); $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); }
+      else { $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID); $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); 
+        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    }
     
-    if ($isAttachLI=='1' && function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'medium'); $src = $src[0];}         
+    if ($isAttachLI=='1' && function_exists("get_post_thumbnail_id") ){ $src = nxs_getPostImage($postID); }         
     if ($isAttachLI=='1') { $post = get_post($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  
      $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);
     }  
-    
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000058">LinkedIn</span> - '.$options['nName'];
-    
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000058">LinkedIn</span> - '.$options['nName'];
     if (function_exists("doConnectToLinkedIn") && $options['ulName']!='' && $options['uPass']!='') {      
       $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!==false) die($auth);
       $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array();
        if ($postID=='0') { $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = home_url();  
          } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc($post->post_title, 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }}
-      
       $ret = doPostToLinkedIn($msg, $lnk, $to); 
-      
     } else { require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
       $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
-      // echo "GRP";
-      $ret = $linkedin->postToGroup($msg, $title, '4607467'); //prr($ret); die();
-      
+      $ret = $linkedin->postToGroup($msg, $title, '4607467');
       try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
         catch (Exception $o){ echo "<br />Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br />'; $ret="ERROR:"; }     
-    }
-    
-    
-  
-  /*  
-    //doConnectToLinkedIn('support@nextscripts.com','rage666!x'); die();
-    
-    
-    
-    $msg = 'Message it is'; $lnk = array(); $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = 'http://nikolaitsch.livejournal.com/'; //home_url();  
-    $lnk['img'] = 'http://www.nextscripts.com/wp-content/themes/NXS/timthumb.php?src=http://www.nextscripts.com/wp-content/uploads/2012/09/snap-2.png';
-    $to = 'http://www.linkedin.com/home';
-    //$to = 'http://www.linkedin.com/company/nextscripts-com';
-    $ret = doPostToLinkedIn($msg, $lnk, $to);
-   // die();
-    */
-    //   
-    
-    //echo "LI SET: ".$msg." | ".nsTrnc($post->post_title, 200)." | ". get_permalink($postID)." | ". $src." | ".$dsc;    
-         
+    }    
     if ($ret!='201') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } 
       else if ($postID=='0') { echo 'OK - Linkedin status updated successfully';  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else {nxs_metaMarkAsPosted($postID, 'LI', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
     if ($ret=='201') return true; else return 'Something Wrong';

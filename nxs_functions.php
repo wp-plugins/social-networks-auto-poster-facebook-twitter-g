@@ -22,7 +22,8 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
 }}
 if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  
   if ($advImgFnd) $postCnt = apply_filters('the_content', $post->post_content); else $postCnt = $post->post_content;   $postImgs = array();
-  $output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;}
+  //$output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;} prr($matches);
+  $postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/src="([^"]*)"/', $postCnt, $matches ); if ($output === false){return false;}// prr($matches);
   foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
 }}
 if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
@@ -40,9 +41,9 @@ if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) {
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';
   if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0];} 
-  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; }
+  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
   if ($imgURL=='' && $def=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $imgURL = $options['ogImgDef']; } 
-  if ($imgURL=='' && $def!='') $imgURL = $def;
+  if ($imgURL=='' && $def!='') $imgURL = $def; 
   return $imgURL;
 }}
  
@@ -313,9 +314,14 @@ if (!function_exists('nxs__html_to_utf8')){ function nxs__html_to_utf8 ($data){ 
   }} else $ret = "&#$data;";
   return $ret;
 }}
-
-if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($postID, $nt, $did){ $mpo =  get_post_meta($postID, 'snap'.$nt, true); $mpo =  maybe_unserialize($mpo); 
-  if (is_array($mpo)) { $mpo[$did]['isPosted'] = '1';  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);}
+if (!function_exists("nxs_chArrVar")) { function nxs_chArrVar($arr, $varN, $varV){ return (isset($arr) && is_array($arr) && isset($arr[$varN]) && $arr[$varN]==$varV); }}
+    
+    
+if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($postID, $nt, $did, $args=''){ $mpo =  get_post_meta($postID, 'snap'.$nt, true); $mpo =  maybe_unserialize($mpo); 
+  if (!is_array($mpo)) $mpo = array(); if (!is_array($mpo[$did])) $mpo[$did] = array();
+  if ($args=='' || $args['isPosted']==1) $mpo[$did]['isPosted'] = '1';  
+  if (is_array($args) && isset($args['isPrePosted']) && $args['isPrePosted']==1) $mpo[$did]['isPrePosted'] = '1';  
+  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);
 }}
 if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ global $nxs_tpWMPU; if($nxs_tpWMPU=='S') switch_to_blog(1);  $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
   $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt); if(!is_array($nxsDBLog)) $nxsDBLog = array();
@@ -328,6 +334,16 @@ if (!function_exists('nxsMergeArraysOV')){function nxsMergeArraysOV($Arr1, $Arr2
 
 if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel($nt, $ii, $hrs=0, $min=0){  
   if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs=0, $min); else return '<br/>';
+}}
+
+if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){
+    if (!function_exists(qtrans_split) || strpos($txt, '<!--:')===false ) return $txt; else {
+        $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta);
+    }
+}}
+
+if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, $selLng){  
+  if (function_exists('nxs_doSMAS5')) return nxs_doSMAS5($nt, $ii, $selLng); else return '<br/>';  
 }}
 
 ?>

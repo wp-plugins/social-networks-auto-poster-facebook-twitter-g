@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums, forum, open graph, og, tags
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.3.8
+Stable tag: 2.3.9
 License: GPLv2 or later
 
 Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
@@ -16,7 +16,7 @@ Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest,
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-Latest version 2.3.8 - Google+ Image post, delayed postings (Pro Only), compatibility fixes and new networks - Stumbleupon, vBulletin, Diigo, support for Wordpress Miltisite (ex Wordpress MU) (Pro Only), 
+Latest version 2.3.9 - Google+ Image post, delayed postings (Pro Only), compatibility fixes and new networks - Stumbleupon, vBulletin, Diigo, support for Wordpress Miltisite (ex Wordpress MU) (Pro Only), 
 
 Supported Networks:
 
@@ -135,6 +135,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.3.9 =
+
+* Improvement/Bug fix - qTranslate users - only default language will be auto-posted, not all of them at once.
+* Improvement/Bug fix - Better image finder.
+* Improvement/Bug fix - Better duplicate posts prevention.
+* Bug fix - Google+ - quotes in title might break the posting.
+* Bug fix - Google+ - broken switch between post types in "new post" page.
+* Bug fix - Missing argument 1 for nxs_snapClassSU::suCats() error
+* Bug fix - First argument is expected to be a valid callback, 'nsAddOGTags' was given error
+* Bug fix - Better Tumblr Error handling.
+* Bug fix - Better Delicious Error handling.
+* Bug fix - Google+ - quotes in title might break the posting.
 
 = 2.3.8 =
 
