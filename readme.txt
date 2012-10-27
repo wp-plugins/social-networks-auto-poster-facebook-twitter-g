@@ -136,6 +136,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.3.10 =
+
+* Bug fix - Critical Blogger "Function not found" fix.
+
 = 2.3.9 =
 
 * Improvement/Bug fix - qTranslate users - only default language will be auto-posted, not all of them at once.
