@@ -163,8 +163,8 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     }     
     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.htmlentities($blogTitle);  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
-      else { $msgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); $msgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); 
-        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+      else { $post = get_post($postID); if(!$post) return; $msgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); 
+        $link = get_permalink($postID); $msgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }
     //## Actual POST Code
     $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];

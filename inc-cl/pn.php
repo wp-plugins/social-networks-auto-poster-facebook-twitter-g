@@ -153,7 +153,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
-    else { $pnMsgFormat = $options['pnMsgFormat']; $boardID = $options['pnBoard'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
+    else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat']; $boardID = $options['pnBoard'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     } 
     

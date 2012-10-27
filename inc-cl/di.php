@@ -209,7 +209,8 @@ if (!function_exists("nxs_doPublishToDI")) { //## Second Function to Post to DI
       nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
     }
     
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else {  $link = get_permalink($postID);
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else {  
+      $post = get_post($postID); if(!$post) return; $link = get_permalink($postID);
       $msgFormat = $options['diMsgFormat']; $diCat = $options['diCat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['diMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }  

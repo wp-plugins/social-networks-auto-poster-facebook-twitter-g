@@ -188,7 +188,7 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
       $suCat = $options['suCat'];      
       // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
       $email = $options['suUName'];  $pass = (substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass']);      
-      if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Link from '.$link; } else { 
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return;
         $msgFormat = $options['suMsgFormat'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       }
       $dusername = $options['suUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      

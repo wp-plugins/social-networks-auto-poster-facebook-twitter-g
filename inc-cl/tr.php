@@ -188,15 +188,15 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     }  
     //## Format
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;  $msgT = 'Test Post from '.$blogTitle;}
-      else{ $trMsgFormat = $options['trMsgFormat'];  $msg = nsFormatMessage($trMsgFormat, $postID); $trMsgTFormat = $options['trMsgTFormat']; $msgT = nsFormatMessage($trMsgTFormat, $postID);
-        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));   
+      else{ $post = get_post($postID); if(!$post) return; $trMsgFormat = $options['trMsgFormat'];  $msg = nsFormatMessage($trMsgFormat, $postID); 
+        $trMsgTFormat = $options['trMsgTFormat']; $msgT = nsFormatMessage($trMsgTFormat, $postID);  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));   
     } 
     //## Post    
     require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);
     $trURL = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1);     
     if ($options['trInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',',$tggs); }    
-    $post = get_post($postID);  $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
+    $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#014A76">Tumblr</span> - '.$options['nName'];
     $postArr = array('tags'=>$tags, 'date'=>$postDate);
     if ($options['trPostType']=='I') { $postArr['type'] = 'photo'; $postArr['caption'] = $msg;  $postArr['source'] = nxs_getPostImage($postID, 'large', $options['trDefImg']); } 
@@ -204,7 +204,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     
     $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); // prr($postArr);
     
-    $code = $postinfo->meta->status; //echo "XX".print_r($code); // prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
+    $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } 
       else { nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  nxs_metaMarkAsPosted($postID, 'TR', $options['ii']);  } } 
     else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($postinfo, true), $extInfo); if ($postID=='0') prr($postinfo); $code .= " - ".$postinfo->meta->msg.$postinfo->errmsg; }

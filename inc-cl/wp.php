@@ -126,7 +126,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
     } 
       if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
       $email = $options['wpUName'];  $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
-      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; } else { $link = get_permalink($postID); $img = $src; 
+      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); $img = $src; 
         $msgFormat = $options['wpMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['wpMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }

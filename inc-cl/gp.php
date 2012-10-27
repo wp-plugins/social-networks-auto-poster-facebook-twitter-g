@@ -133,7 +133,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
         nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
       }  
       
-      if ($postID=='0') echo "Testing ... <br/><br/>";  else nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+      if ($postID=='0') echo "Testing ... <br/><br/>";  else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return;}
       $gpMsgFormat = $options['gpMsgFormat']; $isAttachGP = $options['gpAttch']; $isImgPost = $options['imgPost']; 
       
       $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;

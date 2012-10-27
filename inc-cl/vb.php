@@ -213,7 +213,7 @@ if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
   
       $vbCat = $options['vbCat']; $email = $options['vbUName']; $pass = (substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass']);      
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } 
-        else { $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+        else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
           $msgFormat = $options['vbMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['vbMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
       }
       $dusername = $options['vbUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
