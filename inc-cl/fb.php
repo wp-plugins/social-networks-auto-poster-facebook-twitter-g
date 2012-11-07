@@ -234,6 +234,12 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     } //  prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng); $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName']; //prr($mssg);
+    /*
+    echo "/$page_id?fields=access_token"; $facebook -> setAccessToken($options['fbAppAuthToken']);
+    $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);     
+    $fbu = $options['fbAppAuthUser']; $page_info = $facebook->api("/$fbu/accounts"); prr($page_info); 
+    die();
+    */    
     try { $ret = $facebook->api("/$page_id/feed","post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);
       if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
         if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
@@ -241,9 +247,9 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
         } $page_info = $facebook->api("/$page_id?fields=access_token"); 
         if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; 
           nxs_addToLog($logNT, 'M', 'Personal Auth used instead of Page. Please re-authorize Facebook.');  $ret = $facebook->api("/$page_id/feed","post", $mssg); 
-        } else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo); return "ERROR";}
+        } else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo); return "ERROR:".$e->getMessage();}
       }        
-      if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "ERROR";      
+      if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "ERROR:".$e->getMessage();      
     }   
     if ($postID=='0') { prr($ret); if (isset($ret['id']) && $ret['id']!='') { echo 'OK - Message Posted, please see your Facebook Page '; nxs_addToLog($logNT, 'M', 'Test Message Posted, please see your Facebook Page'); }}
       else { if (isset($ret['id']) && $ret['id']!='') { nxs_metaMarkAsPosted($postID, 'FB', $options['ii'],  array('isPosted'=>'1', 'pgID'=>$ret['id']) ); nxs_addToLog($logNT, 'M', 'OK - Message Posted'.print_r($ret, true), $extInfo); }

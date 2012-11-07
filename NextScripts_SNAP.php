@@ -4,13 +4,13 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.10
+Version: 2.3.11
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.10' ); require_once "nxs_functions.php";    // require_once "nxs_f2.php";  
+define( 'NextScripts_SNAP_Version' , '2.3.11' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
-global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;// echo plugin_dir_path( __FILE__ ); die();
+global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
 
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
@@ -31,12 +31,11 @@ if (!class_exists("NS_SNAutoPoster")) {
         //## Administrative Functions
         //## Options loader function
         function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();
-            //## Some Default Values
-            //$options = array( 'fb''fbAttch'=>1, 'nsOpenGraph'=>1, 'fbMsgFormat'=>'New post has been published on %SITENAME%',  'gpAttch'=>1, 'gpMsgFormat'=>'New post has been published on %SITENAME%', 'twMsgFormat'=>'%TITLE% - %URL%');
+            //## Some Default Values            
             //$options = array('nsOpenGraph'=>1);            
-            $dbOptions = get_option($this->dbOptionsName); //echo $blog_id;// prr($dbOptions);             
-            $this->nxs_ntoptions = get_site_option($this->dbOptionsName); //echo $blog_id;// prr($dbOptions);             
-            if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  restore_current_blog(); //prr($dbMUOptions);
+            $dbOptions = get_option($this->dbOptionsName);
+            $this->nxs_ntoptions = get_site_option($this->dbOptionsName); 
+            if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  restore_current_blog(); 
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
             }              
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  $updTime = "+2 hours"; // $updTime = "+15 seconds"; // $updTime = "+5 minutes"; $updTime = "+1 day"";                       

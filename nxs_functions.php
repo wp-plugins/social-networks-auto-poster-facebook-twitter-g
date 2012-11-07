@@ -321,6 +321,7 @@ if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($p
   if (!is_array($mpo)) $mpo = array(); if (!is_array($mpo[$did])) $mpo[$did] = array();
   if ($args=='' || $args['isPosted']==1) $mpo[$did]['isPosted'] = '1';  
   if (is_array($args) && isset($args['isPrePosted']) && $args['isPrePosted']==1) $mpo[$did]['isPrePosted'] = '1';  
+  if (is_array($args) && isset($args['pgID'])) $mpo[$did]['pgID'] = $args['pgID'];  
   $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);
 }}
 if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ global $nxs_tpWMPU; if($nxs_tpWMPU=='S') switch_to_blog(1);  $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
@@ -333,7 +334,7 @@ if (!function_exists('nxsMergeArraysOV')){function nxsMergeArraysOV($Arr1, $Arr2
 }}
 
 if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel($nt, $ii, $hrs=0, $min=0){  
-  if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs=0, $min); else return '<br/>';
+  if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs, $min); else return '<br/>';
 }}
 
 if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){

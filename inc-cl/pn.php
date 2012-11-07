@@ -153,12 +153,12 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
-    else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat']; $boardID = $options['pnBoard'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
-      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); 
     } 
     
-    $email = $options['pnUName'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();
-    $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); 
+    $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();
+    
     if (isset($options['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pnSvC']); $loginError = true;
     if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
