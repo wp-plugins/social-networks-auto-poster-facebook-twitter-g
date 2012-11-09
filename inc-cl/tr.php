@@ -162,17 +162,20 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
       
   }
   
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['trMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['trMsgTFormat'] = $pMeta['SNAPTformat']; $optMt['trPostType'] = $pMeta['apTRPostType']; $optMt['doTR'] = $pMeta['SNAPincludeTR'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['trMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPTformat'])) $optMt['trMsgTFormat'] = $pMeta['SNAPTformat']; 
+     if (isset($pMeta['apTRPostType'])) $optMt['trPostType'] = $pMeta['apTRPostType']; 
+     if (isset($pMeta['AttachPost'])) $optMt['trAttch'] = $pMeta['AttachPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['trAttch'] = 0; }
+     if (isset($pMeta['SNAPincludeTR'])) $optMt['doTR'] = $pMeta['SNAPincludeTR'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTR'] = 0; }return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToTR_ajax")) { function nxs_rePostToTR_ajax() {  check_ajax_referer('rePostToTR');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
     $options = get_option('NS_SNAutoPoster');  foreach ($options['tr'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapTR', true); $mpo =  maybe_unserialize($mpo); 
-      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['trMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['trMsgTFormat'] = $mpo[$ii]['SNAPTformat']; $po['trAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
-      
-      $result = nxs_doPublishToTR($postID, $po); if ($result == 200) die("Successfully sent your post to Tumblr."); else { echo $result; die(); }
+      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassPN(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); }
+      $result = nxs_doPublishToTR($postID, $po); if ($result == 200 || $result == 201) die("Your post has been successfully sent to Tumblr."); else { echo $result; die(); }
     }    
   }
 }

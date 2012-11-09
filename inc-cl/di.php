@@ -108,17 +108,17 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['diMsgFormat'] = $pMeta['SNAPformat']; $optMt['diMsgTFormat'] = $pMeta['SNAPformatT']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doDI'] = $pMeta['SNAPincludeDI'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['diMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPformatT'])) $optMt['diMsgTFormat'] = $pMeta['SNAPformatT']; 
+     if (isset($pMeta['SNAPincludeDI'])) $optMt['doDI'] = $pMeta['SNAPincludeDI'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDI'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDI_ajax")) {
   function nxs_rePostToDI_ajax() { check_ajax_referer('rePostToDI');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['di'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDI', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['diMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['diMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
-      }
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){   $ntClInst = new nxs_snapClassDI(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); }
       $result = nxs_doPublishToDI($postID, $two); if ($result == 200) die("Successfully sent your post to Diigo."); else die($result);        
     }    
   }

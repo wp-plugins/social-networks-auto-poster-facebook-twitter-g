@@ -111,16 +111,19 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
     }      
   }
   
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['bgMsgFormat'] = $pMeta['SNAPformat']; $optMt['bgMsgTFormat'] = $pMeta['SNAPTformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doBG'] = $pMeta['SNAPincludeBG'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['bgMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPTformat'])) $optMt['bgMsgTFormat'] = $pMeta['SNAPTformat'];      
+     if (isset($pMeta['SNAPincludeBG'])) $optMt['doBG'] = $pMeta['SNAPincludeBG'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doBG'] = 0; } 
+     return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToBG_ajax")) { function nxs_rePostToBG_ajax() {  check_ajax_referer('rePostToBG');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
       global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
       foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
-      $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo); 
-      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['bgMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['bgMsgTFormat'] = $mpo[$ii]['SNAPTformat']; $po['bgAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
+      $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo);       
+      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassBG(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); } 
       $result = nxs_doPublishToBG($postID, $po);  if ($result == 201) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
       
       if ($result == 200) die("Successfully sent your post to Blooger."); else die($result);
@@ -138,8 +141,7 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     $result = curl_exec($ch); $resultArray = curl_getinfo($ch); 
     curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
-if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {     
-    $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $text);    $text = preg_replace('/<!--(.*)-->/Uis', "", $text);  $text = str_ireplace('allowfullscreen','', $text); 
+if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); 
     if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$text); $doc->encoding = 'UTF-8'; $text = $doc->saveHTML(); $text = CutFromTo($text, '<body>', '</body>'); 
       $text = preg_replace('/<br(.*?)\/?>/','<br$1/>',$text);   $text = preg_replace('/<img(.*?)\/?>/','<img$1/>',$text);
       require_once ('apis/htmlNumTable.php');  $text = strtr($text, $HTML401NamedToNumeric);  $title = strtr($title, $HTML401NamedToNumeric);
@@ -171,6 +173,9 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs); $tags = nsTrnc($tags, 195, ',', ''); }
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">'.$ntNm.'</span> - '.$options['nName']; 
+    
+    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg); $nxshf = new NXS_HtmlFixer(); $msg = $nxshf->getFixedHtml($msg);
+    
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     //## /Actual POST Code

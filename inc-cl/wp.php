@@ -101,17 +101,17 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
+    if (isset($pMeta['SNAPformat'])) $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; 
+    if (isset($pMeta['SNAPformatT'])) $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  
+    if (isset($pMeta['SNAPincludeWP'])) $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doWP'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToWP_ajax")) {
   function nxs_rePostToWP_ajax() { check_ajax_referer('rePostToWP');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['wp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii;  $two['pType'] = 'aj';//if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapWP', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['wpMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['wpMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
-      }
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassWP(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); }
       $result = nxs_doPublishToWP($postID, $two); if ($result == 200) die("Successfully sent your post to WP Blog."); else die($result);        
     }    
   }

@@ -112,17 +112,17 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['vbMsgFormat'] = $pMeta['SNAPformat']; $optMt['vbMsgTFormat'] = $pMeta['SNAPformatT']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doVB'] = $pMeta['SNAPincludeVB'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['vbMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPformatT'])) $optMt['vbMsgTFormat'] = $pMeta['SNAPformatT'];
+     if (isset($pMeta['SNAPincludeVB'])) $optMt['doVB'] = $pMeta['SNAPincludeVB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVB'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToVB_ajax")) {
   function nxs_rePostToVB_ajax() { check_ajax_referer('rePostToVB');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['vb'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapVB', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['vbMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['vbMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
-      }
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassTW(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); }
       $result = nxs_doPublishToVB($postID, $two); if ($result == 200) die("Successfully sent your post to vBulletin."); else die($result);        
     }    
   }

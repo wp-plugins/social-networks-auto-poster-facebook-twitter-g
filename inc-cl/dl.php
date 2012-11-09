@@ -96,17 +96,17 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPformatT'])) $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT'];      
+     if (isset($pMeta['SNAPincludeDL'])) $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDL'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDL_ajax")) {
   function nxs_rePostToDL_ajax() { check_ajax_referer('rePostToDL');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['dl'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapDL', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['dlMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['dlMsgTFormat'] = $gppo[$ii]['SNAPformatT']; 
-      }
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassDL(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]);}
       $result = nxs_doPublishToDL($postID, $two); if ($result == 200) die("Successfully sent your post to Delicious."); else die($result);        
     }    
   }
@@ -145,6 +145,7 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
         $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii']);  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
+        elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
           else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }
       }

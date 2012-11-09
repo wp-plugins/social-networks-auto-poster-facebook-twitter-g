@@ -44,18 +44,18 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                   
             <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
-            <div style="width:100%;"><strong>Defailt Image to Pin:</strong> 
+            <div style="width:100%;"><strong>Default Image to Pin:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post missing Featured Image this will be used instead.</p>
             </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
             <br/><br/>            
             
             <div style="width:100%;"><strong>Board:</strong> 
-            Please <a href="#" onclick="getBoards(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>'); return false;">click here to retreive your boards</a>
+            Please <a href="#" onclick="getBoards(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>'); return false;">click here to retrieve your boards</a>
             </div>
             <?php wp_nonce_field( 'getBoards', 'getBoards_wpnonce' ); ?><img id="pnLoadingImg" style="display: none;" src='http://gtln.us/img/misc/ajax-loader-sm.gif' />
             <select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard">
             <?php if ($options['pnBoardsList']!=''){ $gPNBoards = $options['pnBoardsList']; if ($options['pnBoard']!='') $gPNBoards = str_replace($options['pnBoard'].'"', $options['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
-              <option value="0">None(Click above to retreive your boards)</option>
+              <option value="0">None(Click above to retrieve your boards)</option>
             <?php } ?>
             </select>
             
@@ -113,7 +113,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Select Board</th>
                 <td><select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard">
             <?php if ($ntOpt['pnBoardsList']!=''){ $gPNBoards = $ntOpt['pnBoardsList']; if ($ntOpt['pnBoard']!='') $gPNBoards = str_replace($ntOpt['pnBoard'].'"', $ntOpt['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
-              <option value="0">None(Click above to retreive your boards)</option>
+              <option value="0">None(Click above to retrieve your boards)</option>
             <?php } ?>
             </select></td>
                 </tr> 
@@ -125,17 +125,17 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['pnMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doPN'] = $pMeta['SNAPincludePN'] == 1?1:0; $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['pnMsgFormat'] = $pMeta['SNAPformat'];      
+     if (isset($pMeta['SNAPincludePN'])) $optMt['doPN'] = $pMeta['SNAPincludePN'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPN'] = 0; }
+     if (isset($pMeta['apPNBoard'])) $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToPN_ajax")) {
   function nxs_rePostToPN_ajax() { check_ajax_referer('rePostToPN');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['pn'] as $ii=>$two) if ($ii==$_POST['nid']) {    $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $po =  get_post_meta($postID, 'snapPN', true); $po =  maybe_unserialize($po);// prr($gppo);
-      if (is_array($po) && isset($po[$ii]) && is_array($po[$ii])){ 
-        $two['pnMsgFormat'] = $po[$ii]['SNAPformat']; $two['pnBoard'] = $po[$ii]['apPNBoard']; 
-      }
+      if (is_array($po) && isset($po[$ii]) && is_array($po[$ii])){ $ntClInst = new nxs_snapClassPN(); $two = $ntClInst->adjMetaOpt($two, $po[$ii]); }
       $result = nxs_doPublishToPN($postID, $two); if ($result == 200) die("Successfully sent your post to Pinterest."); else die($result);        
     }    
   }

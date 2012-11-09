@@ -188,8 +188,11 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       
   }
   
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['fbMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['fbAttch'] = ($pMeta['AttachPost'] != '')?$pMeta['AttachPost']:0; $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['fbMsgFormat'] = $pMeta['SNAPformat'];    
+     if (isset($pMeta['AttachPost'])) $optMt['fbAttch'] = ($pMeta['AttachPost'] != '')?$pMeta['AttachPost']:0; else { if (isset($pMeta['SNAPformat'])) $optMt['fbAttch'] = 0; } 
+     if (isset($pMeta['SNAPincludeFB'])) $optMt['doFB'] = $pMeta['SNAPincludeFB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doFB'] = 0; } 
+     return $optMt;
   }
 }}
 
@@ -222,9 +225,9 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
       if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
       if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
-      if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng))); if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng))); 
-      if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  if ($dsc=='') $dsc = get_bloginfo('description');        
-      $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
+      if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
+      if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
+      if ($dsc=='') $dsc = get_bloginfo('description'); $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = home_url();  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg);
       if (($isAttachFB=='1' || $isAttachFB=='2')) {$attArr = array ('name' => nxs_doQTrans($post->post_title, $lng), 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc); $mssg = array_merge($mssg, $attArr); }      

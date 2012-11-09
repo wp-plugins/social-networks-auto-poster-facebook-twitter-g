@@ -86,8 +86,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       
   }
   //#### 
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['twMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['twMsgFormat'] = $pMeta['SNAPformat']; 
+     if (isset($pMeta['SNAPincludeTW'])) $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTW'] = 0; } return $optMt;
   }
 }}
 
@@ -95,7 +96,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
   function nxs_rePostToTW_ajax() { check_ajax_referer('rePostToTW');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['tw'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii;  $two['pType'] = 'aj';
       $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo);
-      if (is_array($twpo) && isset($twpo[$ii]) && is_array($twpo[$ii]) && isset($twpo[$ii]['SNAPformat']) ) $two['twMsgFormat'] = $twpo[$ii]['SNAPformat']; 
+      if (is_array($twpo) && isset($twpo[$ii]) && is_array($twpo[$ii]) && isset($twpo[$ii]['SNAPformat']) ) { $ntClInst = new nxs_snapClassTW(); $two = $ntClInst->adjMetaOpt($two, $twpo[$ii]);} 
       $result = nxs_doPublishToTW($postID, $two); if ($result == 201) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
     }
   }

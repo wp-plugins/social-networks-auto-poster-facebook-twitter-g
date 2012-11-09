@@ -66,7 +66,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
     } //## END LI Settings 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($bo){ $po = array('nName'=>'', 'ulName'=>'', 'uPass'=>'', 'uPage'=>'', 'doLI'=>'1', 'liAPIKey'=>'', 'liAPISec'=>'', 'liUserInfo'=>'', 'liAttch'=>'1', 'liOAuthToken'=>'', 'liMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
+  function showNewNTSettings($bo){ $po = array('nName'=>'', 'ulName'=>'', 'uPass'=>'', 'grpID'=>'', 'uPage'=>'', 'doLI'=>'1', 'liAPIKey'=>'', 'liAPISec'=>'', 'liUserInfo'=>'', 'liAttch'=>'1', 'liOAuthToken'=>'', 'liMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; if (!isset($options['liOK'])) $options['liOK'] = ''; ?>
     <div id="doLI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/li-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['liAccessToken']) && $options['liAccessTokenSecret']!='') || $options['liOK']=='1' || $isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSLI<?php echo $ii; ?>" value="0" id="apDoSLI<?php echo $ii; ?>" />                                     
@@ -89,6 +89,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             
             <div style="width:100%;"><strong>Your LinkedIn API Key:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPIKey]" id="apLIAPIKey" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPIKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
             <div style="width:100%;"><strong>Your LinkedIn API Secret:</strong> </div><input name="li[<?php echo $ii; ?>][apLIAPISec]" id="apLIAPISec" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liAPISec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
+            
+            <br/><br/><div style="width:100%;"><strong>Your LinkedIn Group ID:</strong><br/> Fill only if you are posting to LinkedIn Group. Leave empty to post to your profile. </div><input name="li[<?php echo $ii; ?>][grpID]" id="" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['grpID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             
              <br/><br/>
              <?php 
@@ -164,6 +166,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['apLIAttch'])) $options[$ii]['liAttch'] = $pval['apLIAttch']; else $options[$ii]['liAttch'] = 0;        
         if (isset($pval['ulName']))     $options[$ii]['ulName'] = trim($pval['ulName']);        
         if (isset($pval['uPass']))     $options[$ii]['uPass'] = trim($pval['uPass']);        
+        if (isset($pval['grpID']))     $options[$ii]['grpID'] = trim($pval['grpID']);                
         if (isset($pval['uPage']))     $options[$ii]['uPage'] = trim($pval['uPage']);                
         if (isset($pval['apLIMsgFrmt'])) $options[$ii]['liMsgFormat'] = trim($pval['apLIMsgFrmt']); 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
@@ -197,16 +200,18 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
     }      
   }
   
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = '';
-     $optMt['liMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; $optMt['liAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['doLI'] = $pMeta['SNAPincludeLI'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+     if (isset($pMeta['SNAPformat'])) $optMt['liMsgFormat'] = $pMeta['SNAPformat']; if (trim($optMt['liMsgFormat'])=='') $optMt['liMsgFormat'] = '&nbsp;';
+     if (isset($pMeta['AttachPost'])) $optMt['liAttch'] = $pMeta['AttachPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['liAttch'] = 0; }
+     if (isset($pMeta['SNAPincludeLI'])) $optMt['doLI'] = $pMeta['SNAPincludeLI'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doLI'] = 0; } return $optMt;
   }
 }}
 
 if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() {  check_ajax_referer('rePostToLI');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
       global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
       foreach ($options['li'] as $ii=>$po) if ($ii==$_POST['nid']) {  $po['ii'] = $ii; $po['pType'] = 'aj';
-      $mpo =  get_post_meta($postID, 'snapLI', true); $mpo =  maybe_unserialize($mpo); 
-      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $po['liMsgFormat'] = $mpo[$ii]['SNAPformat']; $po['liAttch'] = $mpo[$ii]['AttachPost'] == 1?1:0; } 
+      $mpo =  get_post_meta($postID, 'snapLI', true); $mpo =  maybe_unserialize($mpo);
+      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassLI(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); } 
       $result = nxs_doPublishToLI($postID, $po);  if ($result == 200 && ($postID=='0') && $options['li'][$ii]['liOK']!='1') { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
       if ($result == 200) die("Successfully sent your post to LinkedIn."); else die($result);
     }    
@@ -241,10 +246,13 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
     } else { require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
       $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
-      $ret = $linkedin->postToGroup($msg, $title, '4607467');
-      try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
-        catch (Exception $o){ echo "<br />Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br />'; $ret="ERROR:"; }     
-    }    
+      if ($options['grpID']!=''){
+        try{ $ret = $linkedin->postToGroup($msg, $title, $options['grpID']); } catch (Exception $o){ echo "<br />Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br />'; $ret="ERROR:".print_r($o, true); }        
+      } else {
+        try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
+        catch (Exception $o){ echo "<br/>Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br/>'; $ret="ERROR:".print_r($o, true); }     
+      }    
+    }
     if ($ret!='201') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } 
       else if ($postID=='0') { echo 'OK - Linkedin status updated successfully';  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else {nxs_metaMarkAsPosted($postID, 'LI', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
     if ($ret=='201') return true; else return 'Something Wrong';

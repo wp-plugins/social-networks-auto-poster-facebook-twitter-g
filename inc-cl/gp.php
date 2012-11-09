@@ -14,7 +14,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
               <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) { $gpo['nName'] = $gpo['gpUName'];  if($gpo['gpPageID']!='') $gpo['nName'] .= "Page: ".$gpo['gpPageID']; else $gpo['nName'] .= " Profile"; } ?>
                 <p style="margin: 0px;margin-left: 5px;">
                   <input value="1" id="apDoGP" name="gp[<?php echo $indx; ?>][apDoGP]" type="checkbox" <?php if ((int)$gpo['doGP'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your Goole+ <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i> </strong>                                         
+                  <strong>Auto-publish your Posts to your Google+ <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i> </strong>                                         
                   &nbsp;&nbsp;<a id="doGP<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('GP<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
                   <a href="#" onclick="doDelAcct('gp','<?php echo $indx; ?>', '<?php echo $gpo['gpUName']; ?>');return false;">[Remove Account]</a>
                 </p>            
@@ -112,17 +112,19 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (!isset($pMeta['isPosted'])) $pMeta['isPosted'] = ''; $optMt['gpMsgFormat'] = $pMeta['SNAPformat']; $optMt['isPosted'] = $pMeta['isPosted']; 
-     $optMt['gpAttch'] = $pMeta['AttachPost'] == 1?1:0; $optMt['imgPost'] = $pMeta['imgPost'] == 1?1:0; $optMt['doGP'] = $pMeta['SNAPincludeGP'] == 1?1:0; return $optMt;
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = ''; 
+    if (isset($pMeta['SNAPformat'])) $optMt['gpMsgFormat'] = $pMeta['SNAPformat'];   
+    if (isset($pMeta['AttachPost'])) $optMt['gpAttch'] = $pMeta['AttachPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['gpAttch'] = 0; } 
+    if (isset($pMeta['imgPost'])) $optMt['imgPost'] = $pMeta['imgPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['imgPost'] = 0; } 
+    if (isset($pMeta['SNAPincludeGP'])) $optMt['doGP'] = $pMeta['SNAPincludeGP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doGP'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToGP_ajax")) {
   function nxs_rePostToGP_ajax() { check_ajax_referer('rePostToGP');  $postID = $_POST['id']; global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
     foreach ($options['gp'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapGP', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ 
-        $two['gpMsgFormat'] = $gppo[$ii]['SNAPformat']; $two['gpAttch'] = $gppo[$ii]['AttachPost'] == 1?1:0; 
-      } $result = nxs_doPublishToGP($postID, $two); if ($result == 200) die("Successfully sent your post to Google+."); else die($result);        
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassGP(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); } 
+      $result = nxs_doPublishToGP($postID, $two); if ($result == 200) die("Successfully sent your post to Google+."); else die($result);        
     }    
   }
 }  
