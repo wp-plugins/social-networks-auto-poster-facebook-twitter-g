@@ -113,7 +113,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             </div> </td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $suMsgFormat ?>" type="text" name="su[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $suMsgFormat ?>" type="text" name="su[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }

@@ -39,16 +39,7 @@ if (!class_exists("NS_SNAutoPoster")) {
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
             }              
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  $updTime = "+2 hours"; // $updTime = "+15 seconds"; // $updTime = "+5 minutes"; $updTime = "+1 day"";                       
-            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime($updTime, $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) {            
-             // $options = nxs_doChAPIU($options); 
-             // $options = getRemNSXOption($options);               
-             $args = array($options); wp_schedule_single_event(time()+1,'nxs_chAPIU', $args); //echo "CHECK";
-            }
-            //## In case WP Cron is not running.
-            if ( isset($options['lk']) && $options['lk']!='' && ((isset($options['ukver']) && $options['ukver']!='' && isset($options['uklch']) && $options['uklch']!='' && strtotime("+1 day", $options['uklch'])<time()) || (!isset($options['ukver']) || $options['ukver']=='') )) { $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); }              
-            if ( isset($options['ukver']) && $options['ukver']=='2.1.9') $options = nxs_doChAPIU($options); 
-            if (isset($options['uk']) && $options['uk']!='') { getNSXOption(substr(nsx_doDecode($options['uk']), 5, -2));  } // nxs_doSMAS19();            
-          //  echo NXSAPIVER;
+                        
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
@@ -627,9 +618,7 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
     if ($rurl!='') $url = $rurl; $msg = str_ireplace("%SURL%", $url, $msg);
   } //die();
-  if (preg_match('%IMG%', $msg)) { if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $src = $src[0];} 
-    if ($src=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $src = $options['ogImgDef'];  }  $msg = str_ireplace("%IMG%", $src, $msg); 
-  } 
+  if (preg_match('%IMG%', $msg)) { $imgURL = nxs_getPostImage($postID); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
   if (preg_match('%TITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);  $msg = str_ireplace("%TITLE%", $title, $msg); }                    
   if (preg_match('%STITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
   if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
@@ -765,7 +754,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
 
     //## Scedulled Publish Calls    
-    add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);     
+    
     
     if ((int)$suOptions['nsOpenGraph'] == 1) {    
       add_action( 'init', 'nxs_start_ob', 0 );

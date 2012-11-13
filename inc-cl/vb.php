@@ -104,10 +104,10 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
                 <?php } elseif ($post->post_status != "publish") { ?> 
                
        <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-        <td><input value="<?php echo $vbMsgTFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformatT]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?></td></tr>
+        <td><input value="<?php echo $vbMsgTFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformatT]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?></td></tr>
                 
       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-        <td><input value="<?php echo $vbMsgFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?></td></tr>
+        <td><input value="<?php echo $vbMsgFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }

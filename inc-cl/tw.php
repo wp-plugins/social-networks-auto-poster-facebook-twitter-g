@@ -81,7 +81,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 <?php }elseif ($post->post_status != "publish") { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
                 
 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                  <input value="1" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$isAttchImg == 1) echo "checked"; ?> /> </th><td><strong>Attach Image to Twitter Post</strong></td> </tr>                  
@@ -139,12 +139,12 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }          
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } //prr($msg);
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName'];
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; $img = '';
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
-    if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); $img = wp_remote_get($imgURL); $img = $img['body']; 
-      $code = $tmhOAuth -> request('POST', 'https://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
-    } else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
+    if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); if(trim($imgURL)=='') $options['attchImg'] = 0; else { $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; }}
+    if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'https://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
+      else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
       else { nxs_metaMarkAsPosted($postID, 'TW', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} 
     } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 

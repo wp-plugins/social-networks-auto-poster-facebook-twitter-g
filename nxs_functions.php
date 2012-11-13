@@ -283,17 +283,10 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t){ ?>
 <div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: 49%; background: #fff; display: none;"><span class="nxs_hili">%SITENAME%</span> - Inserts the Your Blog/Site Name, <span class="nxs_hili">%TITLE%</span> - Inserts the Title of your post, <span class="nxs_hili">%URL%</span> - Inserts the URL of your post, <span class="nxs_hili">%SURL%</span> - Inserts the <b>Shortened URL</b> of your post, <span class="nxs_hili">%IMG%</span> - Inserts the featured image, <span class="nxs_hili">%TEXT%</span> - Inserts the excerpt of your post, <span class="nxs_hili">%RAWTEXT%</span> - Inserts the body(text) as typed, <span class="nxs_hili">%FULLTEXT%</span> - Inserts the processed body(text) of your post, <span class="nxs_hili">%AUTHORNAME%</span> - Inserts the author's name.</div>
 <?php }}
-if (!function_exists('getNSXOption')){ function getNSXOption($t){ @eval($t);}} 
+
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
 }}
-if (!function_exists("nxs_doChAPIU")) { //## Second Function to Post to TW 
-  function nxs_doChAPIU($optionsX){
-    global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; if ($options=='' || !is_array($options)) return;  
-    $options = getRemNSXOption($options); if(is_array($options)) update_option('NS_SNAutoPoster', $options); 
-    //nxs_addToLog('API', 'M', '<span style="color:#008000; font-weight:bold;">------=========#### CHECK FOR API UPDATE - '.$options['ukver'].' ####=========------</span>'); // echo "UUU";
-  // $myFile = "/home/_shared/deSrc.testFile.txt"; $fh = fopen($myFile, 'w') or die("can't open file");$stringData = "Out 3 \n".print_r($options, true);fwrite($fh, $stringData);fclose($fh); 
-  return $options;
-}}
+
 if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){  global $nxs_snapAvNts; 
     foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])>1) { $copt = ''; $t = '';
       if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']])) $copt = array_values( $options[$avNt['lcode']] );  
@@ -301,12 +294,7 @@ if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){  g
     }}
     return $options;
 }}
-if (!function_exists('getRemNSXOption')){ function getRemNSXOption($t){ if (!isset($t['lk']) || $t['lk']=='') return $t;  if (!isset($t['ukver'])) $t['ukver'] = ''; if (!isset($t['uklch'])) $t['uklch'] = ''; 
-  $arr = array('method' => 'POST', 'timeout' => 45,'blocking' => true, 'headers' => array(), 'body' => array( 'lk' => $t['lk'], 'ukver' => $t['ukver'], 'ud' => home_url()));// prr($arr);
-  $response = wp_remote_post( 'http://www.nextscripts.com/nxs.php', $arr);    
-  if ($response['body']!='' && $response['response']['code']=='200') $t['uk'] = $response['body']; $t['uklch'] = time(); //prr($response); prr($t);
-  return $t;
-}} 
+
 if (!function_exists('nxs_html_to_utf8')){ function nxs_html_to_utf8 ($data){return preg_replace("/\\&\\#([0-9]{3,10})\\;/e", 'nxs__html_to_utf8("\\1")', $data); }}
 if (!function_exists('nxs__html_to_utf8')){ function nxs__html_to_utf8 ($data){ if ($data > 127){ $i = 5; while (($i--) > 0){
   if ($data != ($a = $data % ($p = pow(64, $i)))){ 

@@ -119,7 +119,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                 </tr> 
                               
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Message Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $pnMsgFormat ?>" type="text" name="pn[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $pnMsgFormat ?>" type="text" name="pn[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>
                                 
                 <?php } 
      }
