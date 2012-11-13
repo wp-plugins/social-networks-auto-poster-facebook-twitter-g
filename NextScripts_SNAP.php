@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.3.12
+Version: 2.4.0
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.3.12' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.4.0' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -124,11 +124,15 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
               $ntClInst = new $clName(); $ntOpt = $ntClInst->setNTSettings($_POST[$avNt['lcode']], $options[$avNt['lcode']]); $options[$avNt['lcode']] = $ntOpt;
             }           
             if (isset($_POST['apCats']))      $options['apCats'] = $_POST['apCats'];                
-            if (isset($_POST['nxsHTDP']))      $options['nxsHTDP'] = $_POST['nxsHTDP'];                
-            if (isset($_POST['ogImgDef']))      $options['ogImgDef'] = $_POST['ogImgDef'];
+            if (isset($_POST['nxsHTDP']))     $options['nxsHTDP'] = $_POST['nxsHTDP'];                
+            if (isset($_POST['ogImgDef']))    $options['ogImgDef'] = $_POST['ogImgDef'];
+            if (isset($_POST['nxsURLShrtnr']))$options['nxsURLShrtnr'] = $_POST['nxsURLShrtnr']; 
+            if (isset($_POST['bitlyUname']))  $options['bitlyUname'] = $_POST['bitlyUname']; 
+            if (isset($_POST['bitlyAPIKey'])) $options['bitlyAPIKey'] = $_POST['bitlyAPIKey']; 
+            if (trim($_POST['bitlyAPIKey'])=='' || trim($_POST['bitlyAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';
+            
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
             if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;                            
-            
             if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); } // prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
@@ -247,7 +251,17 @@ function nxs_chAllCats(ch){
     </div>
     
     </div>
+    
+     <!-- ##################### URL Shorthener #####################-->
+            <br/>
+             <h3 style="font-size: 14px; margin-bottom: 2px;">URL Shorthener</h3>                      
+            &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="nxsURLShrtnr" value="G" <?php if (!isset($options['nxsURLShrtnr']) || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') echo 'checked="checked"'; ?> /> gd.is (Default) - fast, simple, free, no configuration nessesary.<br/>
+            <?php if (function_exists('wpme_get_shortlink')) { ?> &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="nxsURLShrtnr" value="W" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='W')  echo 'checked="checked"'; ?> /> wp.me - WP.com Jetpack Shortener<br/> <?php } ?>
+            &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="nxsURLShrtnr" value="B" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='B') echo 'checked="checked"'; ?> /> bit.ly  - <i>Enter bit.ly username and <a target="_blank" href="http://bitly.com/a/your_api_key">API Key</a> below</i><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly Username: <input name="bitlyUname" style="width: 20%;" value="<?php if (isset($options['bitlyUname'])) _e(apply_filters('format_to_edit',$options['bitlyUname']), 'NS_SNAutoPoster') ?>" /><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="bitlyAPIKey" style="width: 20%;" value="<?php if (isset($options['bitlyAPIKey'])) _e(apply_filters('format_to_edit',$options['bitlyAPIKey']), 'NS_SNAutoPoster') ?>" /><br/>
             
+             <!-- ##################### Open Graph #####################-->
             
             <h3 style="font-size: 14px; margin-bottom: 2px;">"Open Graph" Tags</h3> 
              <span style="font-size: 11px; margin-left: 1px;">"Open Graph" tags are used for generating title, description and preview image for your Facebook and Google+ posts. This is quite simple implementation of "Open Graph" Tags. This option will only add tags needed for "Auto Posting". If you need something more serious uncheck this and use other specialized plugins. </span>
@@ -512,7 +526,7 @@ if (!function_exists("nsGetBoards_ajax")) {
 if (!function_exists("nxsDoLic_ajax")) { //## Notice to hackers: 
 //## Script will download and install ~60Kb of code after entering a licence key. You can make it saying "I am a Multisite Edition", but it won't work without this downloaded code"
   function nxsDoLic_ajax() { check_ajax_referer('doLic'); global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-    if(isset($_POST['lk']) && trim($_POST['lk'])!='') $options['lk'] = mysql_real_escape_string($_POST['lk']);  
+    if(isset($_POST['lk']) && trim($_POST['lk'])!='') $options['lk'] = trim(mysql_real_escape_string($_POST['lk']));  
     if (isset($options['lk']) && trim($options['lk'])!='' ) { $options = getRemNSXOption($options); if (is_array($options)) update_option('NS_SNAutoPoster', $options); }
     if (strlen($options['uk'])>100) echo "OK"; else echo "NO"; die();
 }} 
@@ -604,9 +618,15 @@ if (!function_exists("ns_custom_types_setup")) { function ns_custom_types_setup(
 if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID){ global $ShownAds; $post = get_post($postID); // $title = $post->post_title; echo "##".$title."##"; $tta = qtrans_split($title); prr($tta); prr($post); die();
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
   if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}
-  if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID);   $response  = wp_remote_get('http://gd.is/gtq/'.$url); 
-    if ((is_array($response) && ($response['response']['code']=='200'))) $url = $response['body'];  $msg = str_ireplace("%SURL%", $url, $msg);
-  }
+  if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID); $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
+    if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
+      $response  = wp_remote_get('https://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); $rtr = json_decode($response['body'],true);
+      if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
+    } //echo "###".$rurl;
+    if ($options['nxsURLShrtnr']=='W' && function_exists('wpme_get_shortlink')) { $rurl = wp_get_shortlink($post->ID, 'post'); }
+    if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
+    if ($rurl!='') $url = $rurl; $msg = str_ireplace("%SURL%", $url, $msg);
+  } //die();
   if (preg_match('%IMG%', $msg)) { if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'large'); $src = $src[0];} 
     if ($src=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $src = $options['ogImgDef'];  }  $msg = str_ireplace("%IMG%", $src, $msg); 
   } 
@@ -646,32 +666,26 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
 function nxs_start_ob(){ob_start( 'nxs_ogtgCallback' );}
 function nxs_end_flush_ob(){ob_end_flush();}
 
-function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    
-  
-  if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {
-    
+function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    $ogimgs = array();  
+  if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {    
     $title = preg_match( '/<title>(.*)<\/title>/', $content, $title_matches );  
     if ($title !== false && count( $title_matches) == 2 ) $ogT ='<meta property="og:title" content="' . $title_matches[1] . '" />'."\r\n"; else {
       if (is_home() || is_front_page() )  $ogT = get_bloginfo( 'name' ); else $ogT = get_the_title();
       $ogT =  '<meta property="og:title" content="' . esc_attr( apply_filters( 'nxsog_title', $ogT ) ) . '" />'."\r\n";          
-    }
-    
+    }    
     $decsription = preg_match( '/<meta name="description" content="(.*)"/', $content, $description_matches );    
     if ( $description !== false && count( $description_matches ) == 2 ) $ogD = '<meta property="og:description" content="' . $description_matches[1] . '" />'."\r\n"; {
       if (is_singular()) {
         if(has_excerpt($post->ID))$ogD=strip_tags(nxs_snapCleanHTML(get_the_excerpt($post->ID)));else $ogD= str_replace("  ", ' ', str_replace("\r\n", ' ', trim(substr(strip_tags(nxs_snapCleanHTML(strip_shortcodes($post->post_content))), 0, 200))));
-      } else $ogD = get_bloginfo('description');
+      } else $ogD = get_bloginfo('description');  $ogD = preg_replace('/\r\n|\r|\n/m','',$ogD); 
       $ogD = '<meta property="og:description" content="'.esc_attr( apply_filters( 'nxsog_desc', $ogD ) ).'" />'."\r\n";          
-    }
-    
+    }    
     $ogSN = '<meta property="og:site_name" content="'.get_bloginfo('name').'" />'."\r\n";
     $ogLoc = '<meta property="og:locale" content="'.strtolower(esc_attr(get_locale())).'" />'."\r\n"; $iss = is_home();  
     $ogType = is_singular()?'article':'website'; if($vidsFromPost == false) $ogType = '<meta property="og:type" content="'.esc_attr(apply_filters('nxsog_type', $ogType)).'" />'."\r\n";                  
         
     if (is_home() || is_front_page()) $ogUrl = get_bloginfo( 'url' ); else $ogUrl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $ogUrl = '<meta property="og:url" content="'.esc_url( apply_filters( 'nxsog_url', $ogUrl ) ) . '" />' . "\r\n";
-    
-    
   
     if (!is_home()) { /*
       $vidsFromPost = nsFindVidsInPost($post); if ($vidsFromPost !== false && is_singular()) {  echo '<meta property="og:video" content="http://www.youtube.com/v/'.$vidsFromPost[0].'" />'."\n";  
@@ -681,25 +695,17 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!
       echo '<meta property="og:image" content="http://i2.ytimg.com/vi/'.$vidsFromPost[0].'/mqdefault.jpg" />'."\n";
       echo '<meta property="og:type" content="video" />'."\n"; 
     } */
-      
       if (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
         $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' ); $ogimgs[] = $thumbnail_src[0];
       } $imgsFromPost = nsFindImgsInPost($post, (int)$options['advFindOGImg']==1);           
-      if ($imgsFromPost !== false && is_singular())  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
-    }   
-    
-    
+      if ($imgsFromPost !== false && is_singular() && is_array($ogimgs) && is_array($imgsFromPost))  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
+    }       
     //## Add default image to the endof the array
     if ( count($ogimgs)<1 && isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
     //## Output og:image tags
     if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  $ogImgsOut = '<meta property="og:image" content="'.esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\r\n"; 
-    
     $ogOut  = "\r\n".$ogSN.$ogT.$ogD.$ogType.$ogUrl.$ogLoc.$ogImgsOut;
-    
-  
   } $content = str_ireplace('<!-- ## NXSOGTAGS ## -->', $ogOut, $content); 
-  
-  
   return $content;
 }
 

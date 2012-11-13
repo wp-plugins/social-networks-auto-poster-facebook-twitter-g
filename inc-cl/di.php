@@ -99,10 +99,10 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
                 <?php if (!$isAvailDI) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Diigo Account to AutoPost to Diigo</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                
-       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
         <td><input value="<?php echo $diMsgTFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformatT]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?></td></tr>
                 
-      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
         <td><input value="<?php echo $diMsgFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }

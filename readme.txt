@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums, forum, open graph, og, tags
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.3.12
+Stable tag: 2.4.0
 License: GPLv2 or later
 
 Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
@@ -16,7 +16,7 @@ Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest,
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-Latest version 2.3.9 - Google+ Image post, delayed postings (Pro Only), compatibility fixes and new networks - Stumbleupon, vBulletin, Diigo, support for Wordpress Miltisite (ex Wordpress MU) (Pro Only), 
+Latest version 2.4 - "Image" posts for Facebook and Twitter, bit.ly support.
 
 Supported Networks:
 
@@ -127,6 +127,10 @@ Sure you can use it for just one or two networks.
 
 Yes, it can. Specify page IDs in the settings, and it will post to pages. 
 
+= Why it's not so easy to setup? Why do I need all those apps? There are other plugins (Jetpack Publicize, Linksalpha Network Publisher, etc ) that could do it much easier. =
+
+There is a major difference between SNAP and other auto-posting plugins. Plugin MUST use an "App" to make posts. if plugin doesn't ask you to create your own app, it will use an app set by plugin author. Yes, it's easier to setup but it means that with every post you make you will promote that plugin author to all your friends and followers. All those posts will be marked as "Shared via Wordpress.com" or "posted by Linksalpha". SNAP gives you an ability to setup your own apps and promote only yourself. We have a very detailed and illustrated setup instructions and our support can help you with that. We beleive that it's well worth to spend your time by setting it up, instead of doing free advertisement for somebody else.
+
 Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked questions</a>
 
 == Screenshots ==
@@ -135,6 +139,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.4.0 =
+
+* New - Facebook "Photo" posts.
+* New - Ablity to attach image to Twitter posts
+* New - Bit.ly support for short link.
+* New - wp.me support for short links. (Jetpack users only)
+* Improvement - "Click-through URL" for the Tumblr "Photo" posts.
 
 = 2.3.12 =
 

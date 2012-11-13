@@ -106,7 +106,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
                 <input value="1"  id="SNAP_AttachGP<?php echo $ii; ?>" onchange="if (jQuery('#SNAP_AttachGP<?php echo $ii; ?>').is(':checked')) jQuery('#SNAP_GPImgPost<?php echo $ii; ?>').removeAttr('checked');" type="checkbox" name="gp[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachGP == 1) echo "checked"; ?> /> </th><td><strong>Add blogpost to Google+ message as an attachment</strong></td></tr>
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                 <input value="1"  id="SNAP_GPImgPost<?php echo $ii; ?>" onchange="if (jQuery('#SNAP_GPImgPost<?php echo $ii; ?>').is(':checked')) jQuery('#SNAP_AttachGP<?php echo $ii; ?>').removeAttr('checked');" type="checkbox" name="gp[<?php echo $ii; ?>][imgPost]"  <?php if ((int)$isImgPost == 1) echo "checked"; ?> /> </th><td><strong>Post to Google+ as "Image post"</strong></td></tr>
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:80px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="gp[<?php echo $ii; ?>][SNAPformat]" size="60px" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apGPMsgFrmt".$ii); ?></td></tr>
            <?php } 
      }
