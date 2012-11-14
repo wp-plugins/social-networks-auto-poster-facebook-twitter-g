@@ -30,16 +30,16 @@ if (!class_exists("NS_SNAutoPoster")) {
         function init() { $this->getAPOptions(); }
         //## Administrative Functions
         //## Options loader function
-        function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();
+        function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array(); 
             //## Some Default Values            
             //$options = array('nsOpenGraph'=>1);            
-            $dbOptions = get_option($this->dbOptionsName);
+            $dbOptions = get_option($this->dbOptionsName); 
             $this->nxs_ntoptions = get_site_option($this->dbOptionsName); 
             if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  restore_current_blog(); 
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
             }              
-            if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option;  $updTime = "+2 hours"; // $updTime = "+15 seconds"; // $updTime = "+5 minutes"; $updTime = "+1 day"";                       
-                        
+            if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option; 
+            if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);  //$ttt = function_exists('nxs_getInitAdd'); var_dump($ttt);
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
@@ -514,13 +514,6 @@ if (!function_exists("nsGetBoards_ajax")) {
    $options['pn'][$_POST['ii']]['pnSvC'] = serialize($nxs_gCookiesArr); if (is_array($options)) update_option('NS_SNAutoPoster', $options); echo $gPNBoards; die();
   }
 }     
-if (!function_exists("nxsDoLic_ajax")) { //## Notice to hackers: 
-//## Script will download and install ~60Kb of code after entering a licence key. You can make it saying "I am a Multisite Edition", but it won't work without this downloaded code"
-  function nxsDoLic_ajax() { check_ajax_referer('doLic'); global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-    if(isset($_POST['lk']) && trim($_POST['lk'])!='') $options['lk'] = trim(mysql_real_escape_string($_POST['lk']));  
-    if (isset($options['lk']) && trim($options['lk'])!='' ) { $options = getRemNSXOption($options); if (is_array($options)) update_option('NS_SNAutoPoster', $options); }
-    if (strlen($options['uk'])>100) echo "OK"; else echo "NO"; die();
-}} 
 
 if (!function_exists("nxs_clLgo_ajax")) { function nxs_clLgo_ajax() { check_ajax_referer('nxsSsPageWPN'); 
   update_option('NS_SNAutoPosterLog', ''); echo "OK";
@@ -542,6 +535,8 @@ if (!function_exists("NS_SNAutoPoster_ap")) { function NS_SNAutoPoster_ap() { gl
  if (function_exists('add_options_page')) {
    add_options_page('Social Networks Auto Poster', '<img src="'.$nxs_plurl.'img/snap-icon12.png"/><span style="color:#287A0A">{SNAP}</span> Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));     
  }
+ if (function_exists('nxs_doChAPIU')) { add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);  }
+ if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');  }
 }}
 
 //## Main Function to Post 
@@ -713,7 +708,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   if (function_exists('nxs_doSMAS3')) nxs_doSMAS3($isS, $isO);
 
   add_action('admin_init', 'nxs_adminInitFunc');  
-  add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');     
+  
   
   add_action('wp_ajax_nxs_clLgo', 'nxs_clLgo_ajax');
   add_action('wp_ajax_nxs_rfLgo', 'nxs_rfLgo_ajax');
