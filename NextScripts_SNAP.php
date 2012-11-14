@@ -133,8 +133,9 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             foreach ($options['whoCanSeeSNAPBox'] as $uRole) { $role = get_role($uRole); $role->add_cap('see_snap_box'); }            
             
             update_option($this->dbOptionsName, $options); // prr($options);
-            ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php           
-          }   $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
+            ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php        
+          }  if (function_exists("nxs_chkProPath")) nxs_chkProPath();    
+          $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           
           $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']);
 if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($pk)) { ?>
@@ -153,7 +154,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 </ul>
 <form method="post" id="nsStForm" action="<?php echo $nxs_snapThisPageUrl?>">
 <div class="nsx_tab_container">
-    <div id="nsx_tab1" class="nsx_tab_content"><a href="#" class="NXSButton" id="nxs_snapAddNew">Add new account</a> <div class="nxsInfoMsg"><img style="position: relative; top: 8px;" alt="Arrow" src="http://cdn.gtln.us/img/icons/arrow_l_green_c1.png"/> You can add Facebook, Twitter, Google+, Pinterest, LinkedIn, Tumblr, Blogger/Blogspot, Delicious accounts</div><br/><br/>
+    <div id="nsx_tab1" class="nsx_tab_content"><a href="#" class="NXSButton" id="nxs_snapAddNew">Add new account</a> <div class="nxsInfoMsg"><img style="position: relative; top: 8px;" alt="Arrow" src="<?php echo $nxs_plurl; ?>img/arrow_l_green_c1.png"/> You can add Facebook, Twitter, Google+, Pinterest, LinkedIn, Tumblr, Blogger/Blogspot, Delicious accounts</div><br/><br/>
            <div id="nxs_spPopup"><span class="nxspButton bClose"><span>X</span></span>Add New Network: <select onchange="doShowFillBlockX(this.value);" id="nxs_ntType"><option value =""></option>
            <?php foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) $mt=0; else $mt = 1+max(array_keys($options[$avNt['lcode']]));
               echo '<option value ="'.$avNt['code'].$mt.'">'.$avNt['name'].'</option>'; 
@@ -267,7 +268,7 @@ function nxs_chAllCats(ch){
              <strong>Use advanced image finder</strong> - Check this if your images could be found only in the fully processed posts. <br/>This feature could interfere with some plugins using post processing functions incorrectly. Your site could become messed up, have troubles displaying content or start giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.                        
             </div>
             
-            <strong style="font-size: 11px; margin: 10px; margin-left: 10px;">Default Image URL for og:image tag:</strong> <img src="http://www.nextscripts.com/gif.php<?php echo "?g=".$nxsOne; ?> "/>
+            <strong style="font-size: 11px; margin: 10px; margin-left: 10px;">Default Image URL for og:image tag:</strong> 
             <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'NS_SNAutoPoster') ?>" />
             
             </div>
@@ -303,25 +304,25 @@ function nxs_chAllCats(ch){
      
    <div style="margin:0 25px 0 0; line-height: 24px;">   
 
-<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/application_form.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">Plugin Setup/Installation</a>
+<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/application_form.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">Plugin Setup/Installation</a>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/facebook.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">  Facebook </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/facebook.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">  Facebook </a>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/twitter.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">  Twitter </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/twitter.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">  Twitter </a>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/googleplus.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"> Google+ </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/googleplus.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"> Google+ </a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/pinterest.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">  Pinterest</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/pinterest.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">  Pinterest</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/tumblr.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">  Tumblr </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/tumblr.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">  Tumblr </a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/linkedin.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">  LinkedIn </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/linkedin.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">  LinkedIn </a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/blogger.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">  Blogger </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/blogger.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">  Blogger </a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/delicious.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/"> Delicious </a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/delicious.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/"> Delicious </a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(http://www.nextscripts.com/wp-content/themes/NXS/images/icons/16/led-icons/blogcom.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"> Wordpress.com/Blog.com</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="background-image:url(<?php echo $nxs_plurl; ?>img/led/blogcom.png) !important;" class="nxs_icon16" target="_parent" href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"> Wordpress.com/Blog.com</a>
 <br/><br/>
 <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/faq">FAQ</a><br/>
 <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a>
@@ -406,10 +407,11 @@ Please see #4 and #5 for Twitter:<br/>
            
            
            <div style="float:right; padding-top: 10px; padding-right: 10px;">
-              <div style="float:right; text-align: center;"><a target="_blank" href="http://www.nextscripts.com"><img src="http://www.nextscripts.net/wp-content/uploads/2012/07/Next_Scripts_Logo2.1-HOR-100px.png"></a><br/>
+              <div style="float:right; text-align: center;"><a target="_blank" href="http://www.nextscripts.com"><img src="<?php echo $nxs_plurl; ?>img/Next_Scripts_Logo2.1-HOR-100px.png"></a><br/>
               <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">[Contact support]</a> 
               <?php if(!$options['isMA']) { ?><br/> <span style="color:#800000;">Ready to to Upgrade to Multiple Accounts Edition<br/> and get Google+ and Pinterest Auto-Posting?</span>
-              <br/><a style="font-weight: normal; font-size: 12px; line-height: 24px;" target="_blank" id="showLic" href="#">[Enter your Activation Key]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts#getit">[Get Key]</a>  <?php } ?>
+              <?php if(function_exists('nxsDoLic_ajax')) { ?> <br/><a style="font-weight: normal; font-size: 12px; line-height: 24px;" target="_blank" id="showLic" href="#">[Enter your Activation Key]</a>&nbsp;&nbsp;&nbsp;&nbsp; <?php } ?>
+              <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts#getit">[Get It here]</a>  <?php } ?>
               </div>
               <div id="showLicForm"><span class="nxspButton bClose"><span>X</span></span><div style="position: absolute; right: 10px; top:10px; font-family: 'News Cycle'; font-size: 34px; font-weight: lighter;">Activation</div>
               <br/><br/>
@@ -536,7 +538,7 @@ if (!function_exists("NS_SNAutoPoster_ap")) { function NS_SNAutoPoster_ap() { gl
    add_options_page('Social Networks Auto Poster', '<img src="'.$nxs_plurl.'img/snap-icon12.png"/><span style="color:#287A0A">{SNAP}</span> Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));     
  }
  if (function_exists('nxs_doChAPIU')) { add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);  }
- if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');  }
+ if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');  } 
 }}
 
 //## Main Function to Post 
@@ -756,8 +758,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       add_action( 'wp_footer', 'nxs_end_flush_ob', 10000 ); 
       add_action('wp_head', 'nxs_addOGTagsPreHolder', 150);
     }    
-  }
-    
+  }    
   if ($nxs_isWPMU){      
       if (function_exists('nxssnapmu_columns_head')) add_filter('wpmu_blogs_columns', 'nxssnapmu_columns_head');
       if (function_exists('nxssnapmu_columns_content')) add_action('manage_blogs_custom_column', 'nxssnapmu_columns_content', 10, 2);
