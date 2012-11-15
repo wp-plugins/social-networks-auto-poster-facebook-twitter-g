@@ -137,7 +137,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           }  if (function_exists("nxs_chkProPath")) nxs_chkProPath();    
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           
-          $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']);
+          $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
 if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($pk)) { ?>
   <div class="error" id="message"><p><strong>All your categories are excluded from auto-posting.</strong> Nothing will be auto-posted. Please Click "Other Settings" and select some categories.</div>
 <?php }
@@ -191,7 +191,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> Publish Immediately  - <i>Use if WP Cron is disabled or broken on your website</i><br/>
             
             <h3 style="font-size: 14px; margin-bottom: 2px;">Who can see auto-posting options on the "New Post" pages?</h3>                
-            <?php $editable_roles = get_editable_roles(); if (!is_array($options['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = array(); 
+            <?php $editable_roles = get_editable_roles(); if (!isset($options['whoCanSeeSNAPBox']) || !is_array($options['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = array(); 
 
     foreach ( $editable_roles as $role => $details ) { $name = translate_user_role($details['name'] ); echo '<input type="checkbox" '; 
         if (in_array($role, $options['whoCanSeeSNAPBox']) || $role=='administrator') echo ' checked="checked" '; if ($role=='administrator' || $role=='subscriber') echo '  disabled="disabled" ';
@@ -234,7 +234,8 @@ function nxs_chAllCats(ch){
  <div id="taxonomy-category" class="categorydiv">
         <div id="category-all" class="tabs-panel"><input type='hidden' name='post_category[]' value='0' />
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-                <?php $category_ids = get_all_category_ids(); $pk = maybe_unserialize($options['exclCats']); if (is_array($pk) && count($pk)>0 ) $selCats = array_diff($category_ids, $pk); else $selCats = $category_ids;            
+                <?php $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
+                  if (is_array($pk) && count($pk)>0 ) $selCats = array_diff($category_ids, $pk); else $selCats = $category_ids;            
                   $args = array( 'descendants_and_self' => 0, 'selected_cats' => $selCats, 'taxonomy' => 'category', 'checked_ontop' => false);    
                   if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); 
                 ?>
@@ -264,7 +265,7 @@ function nxs_chAllCats(ch){
             
             <div style="width:100%; margin-left: 15px;">            
              
-            <div style="margin: 7px; margin-left: 10px;"><input value="1" id="useUnProc" name="useUnProc"  type="checkbox" <?php if ((int)$options['useUnProc'] == 1) echo "checked"; ?> /> 
+            <div style="margin: 7px; margin-left: 10px;"><input value="1" id="useUnProc" name="useUnProc"  type="checkbox" <?php if (isset($options['useUnProc']) && (int)$options['useUnProc'] == 1) echo "checked"; ?> /> 
              <strong>Use advanced image finder</strong> - Check this if your images could be found only in the fully processed posts. <br/>This feature could interfere with some plugins using post processing functions incorrectly. Your site could become messed up, have troubles displaying content or start giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.                        
             </div>
             
@@ -536,9 +537,7 @@ if (!function_exists("nxs_AddSUASettings")) { function nxs_AddSUASettings() {  g
 if (!function_exists("NS_SNAutoPoster_ap")) { function NS_SNAutoPoster_ap() { global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;       
  if (function_exists('add_options_page')) {
    add_options_page('Social Networks Auto Poster', '<img src="'.$nxs_plurl.'img/snap-icon12.png"/><span style="color:#287A0A">{SNAP}</span> Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAutoPosterOptionsPage'));     
- }
- if (function_exists('nxs_doChAPIU')) { add_action('nxs_chAPIU','nxs_doChAPIU', 1, 1);  }
- if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic' , 'nxsDoLic_ajax');  } 
+ } 
 }}
 
 //## Main Function to Post 
@@ -634,6 +633,8 @@ if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ globa
   $nxs_snapThisPageUrl = admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php'; 
   //## Javascript to Admin Panel        
   if (( ($pagenow=='options-general.php'||$pagenow=='admin.php')&& $_GET['page']=='NextScripts_SNAP.php') ||$pagenow=='post.php'||$pagenow=='post-new.php'){add_action('admin_head', 'jsPostToSNAP'); add_action('admin_head', 'nxs_jsPostToSNAP2');}
+  if (function_exists('nxs_doChAPIU')) { add_action('nxs_chAPIU', 'nxs_doChAPIU', 1, 1);  }
+  if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic', 'nxsDoLic_ajax');  } 
 }}
 if (!function_exists("nxs_adminInitFunc2")) { function nxs_adminInitFunc2(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow;   $nxs_snapThisPageUrl = admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php';  //## Add MEtaBox to Post Edit Page
   if (current_user_can("see_snap_box") || current_user_can("manage_options")) add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));        

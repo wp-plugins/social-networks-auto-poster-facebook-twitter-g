@@ -89,7 +89,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
             
            // function blinks(hide) { if(hide==1) { jQuery('.blnkg').show(); hide = 0; } else {  jQuery('.blnkg').hide(); hide = 1; } setTimeout("blinks("+hide+")",400);}            
            // jQuery(document).ready(function(){ blinks(1);});
-<?php if( $options['exclCats']!='' && $options['exclCats']!='a:0:{}') { ?>
+<?php if( isset($options['exclCats']) && $options['exclCats']!='' && $options['exclCats']!='a:0:{}') { ?>
 
 jQuery(function(){
   jQuery("form input:checkbox[name='post_category[]']").click ( function(){ var thVal = jQuery(this).val(); var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
