@@ -88,7 +88,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
      foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapSU', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doSU = $ntOpt['doSU'];   
-        $isAvailSU =  $ntOpt['suUName']!='' && $ntOpt['suPass']!=''; $suMsgFormat = $ntOpt['suMsgFormat']; $suMsgTFormat = $ntOpt['suMsgTFormat'];      
+        $isAvailSU =  $ntOpt['suUName']!='' && $ntOpt['suPass']!=''; $suMsgFormat = htmlentities($ntOpt['suMsgFormat'], ENT_COMPAT, "UTF-8"); $suMsgTFormat = htmlentities($ntOpt['suMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2">
       <?php if ($isAvailSU) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="su[<?php echo $ii; ?>][SNAPincludeSU]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doSU == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>

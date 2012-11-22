@@ -39,10 +39,13 @@ if (!function_exists('nsSubStrEl')){ function nsSubStrEl($string, $length, $end=
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';
-  if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0];} 
+if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
+  if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') { $imgURL = trim(get_post_meta($postID, $options['featImgLoc'], true)); 
+    if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
+  }
+  if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } }
   if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
-  if ($imgURL=='' && $def=='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $imgURL = $options['ogImgDef']; } 
+  if ($imgURL=='' && $def=='') $imgURL = $options['ogImgDef']; 
   if ($imgURL=='' && $def!='') $imgURL = $def; 
   return $imgURL;
 }}
@@ -333,6 +336,16 @@ if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){
 
 if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, $selLng){  
   if (function_exists('nxs_doSMAS5')) return nxs_doSMAS5($nt, $ii, $selLng); else return '<br/>';  
+}}
+
+if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
+    if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
+      $response  = wp_remote_get('https://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); $rtr = json_decode($response['body'],true);
+      if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
+    } //echo "###".$rurl;
+    if ($options['nxsURLShrtnr']=='W' && function_exists('wpme_get_shortlink')) { $rurl = wp_get_shortlink($post->ID, 'post'); }
+    if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
+    if ($rurl!='') $url = $rurl;    return $url;
 }}
 
 class NXS_HtmlFixer { public $dirtyhtml; public $fixedhtml; public $allowed_styles; private $matrix; public $debug; private $fixedhtmlDisplayCode;

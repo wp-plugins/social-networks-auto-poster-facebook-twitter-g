@@ -142,9 +142,9 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
         $status = $nxsToWPclient->query('metaWeblog.newMediaObject', $postID, $options['wpUName'], $pass, $data);  $imgResp = $nxsToWPclient->getResponse();  $gid = $imgResp['id'];
       } else $gid = '';
       
-      $params = array(0, $options['wpUName'], $pass, array('software_version'));
+      $params = array(0, $options['wpUName'], $pass, array('software_version')); 
       if (!$nxsToWPclient->query('wp.getOptions', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
-      $rwpOpt = $nxsToWPclient->getResponse(); $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);
+      $rwpOpt = $nxsToWPclient->getResponse(); prr($rwpOpt); $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);
       
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#1A9EE6">WP</span> - '.$options['nName'];
       

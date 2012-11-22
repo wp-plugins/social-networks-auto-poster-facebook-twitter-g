@@ -174,7 +174,7 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs); $tags = nsTrnc($tags, 195, ',', ''); }
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">'.$ntNm.'</span> - '.$options['nName']; 
     
-    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg); $nxshf = new NXS_HtmlFixer(); $msg = $nxshf->getFixedHtml($msg);
+    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg); $nxshf = new NXS_HtmlFixer(); $msg = $nxshf->getFixedHtml($msg); //prr($msg);
     
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}

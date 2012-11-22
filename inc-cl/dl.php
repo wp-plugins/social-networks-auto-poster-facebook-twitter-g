@@ -74,7 +74,7 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
      foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDL', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doDL = $ntOpt['doDL'];   
-        $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!=''; $dlMsgFormat = $ntOpt['dlMsgFormat']; $dlMsgTFormat = $ntOpt['dlMsgTFormat'];      
+        $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!=''; $dlMsgFormat = htmlentities($ntOpt['dlMsgFormat'], ENT_COMPAT, "UTF-8"); $dlMsgTFormat = htmlentities($ntOpt['dlMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2">
       <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDL == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>

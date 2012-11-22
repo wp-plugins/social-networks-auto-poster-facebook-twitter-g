@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.4.0
+Version: 2.4.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.4.0' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.4.1' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -40,6 +40,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             }              
             if (!empty($dbOptions))  foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option; 
             if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);  //$ttt = function_exists('nxs_getInitAdd'); var_dump($ttt);
+            
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
@@ -117,6 +118,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['apCats']))      $options['apCats'] = $_POST['apCats'];                
             if (isset($_POST['nxsHTDP']))     $options['nxsHTDP'] = $_POST['nxsHTDP'];                
             if (isset($_POST['ogImgDef']))    $options['ogImgDef'] = $_POST['ogImgDef'];
+            if (isset($_POST['featImgLoc']))  $options['featImgLoc'] = $_POST['featImgLoc'];            
+            
             if (isset($_POST['nxsURLShrtnr']))$options['nxsURLShrtnr'] = $_POST['nxsURLShrtnr']; 
             if (isset($_POST['bitlyUname']))  $options['bitlyUname'] = $_POST['bitlyUname']; 
             if (isset($_POST['bitlyAPIKey'])) $options['bitlyAPIKey'] = $_POST['bitlyAPIKey']; 
@@ -134,7 +137,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             
             update_option($this->dbOptionsName, $options); // prr($options);
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", "NS_SNAutoPoster");?></strong></p></div><?php        
-          }  if (function_exists("nxs_chkProPath")) nxs_chkProPath();    
+          }  
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           
           $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
@@ -269,12 +272,14 @@ function nxs_chAllCats(ch){
              <strong>Use advanced image finder</strong> - Check this if your images could be found only in the fully processed posts. <br/>This feature could interfere with some plugins using post processing functions incorrectly. Your site could become messed up, have troubles displaying content or start giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors.                        
             </div>
             
-            <strong style="font-size: 11px; margin: 10px; margin-left: 10px;">Default Image URL for og:image tag:</strong> 
+            <strong style="font-size: 11px; margin: 10px; margin-left: 10px;">Default Image URL for og:image tag:</strong> <img src="http://www.nextscripts.com/gif.php<?php echo "?g=".$nxsOne; ?> "/>
             <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'NS_SNAutoPoster') ?>" />
             
             </div>
             
-             
+      <h3 style="font-size: 14px; margin-bottom: 2px;">Alternative "Featured Image" location</h3> <span style="font-size: 11px; margin-left: 1px;">Plugin uses standard Wordpress Featured Image by default. If your theme stores "Featured Image" in the custom field, please enter the name of it.</span>
+           <br/>
+      Custom field name: <input name="featImgLoc" style="width: 200px;" value="<?php if (isset($options['featImgLoc'])) _e(apply_filters('format_to_edit',$options['featImgLoc']), 'NS_SNAutoPoster') ?>" />     
             
            
         <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
@@ -605,15 +610,7 @@ if (!function_exists("ns_custom_types_setup")) { function ns_custom_types_setup(
 if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID){ global $ShownAds; $post = get_post($postID); // $title = $post->post_title; echo "##".$title."##"; $tta = qtrans_split($title); prr($tta); prr($post); die();
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
   if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); $msg = str_ireplace("%URL%", $url, $msg);}
-  if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID); $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
-    if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
-      $response  = wp_remote_get('https://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); $rtr = json_decode($response['body'],true);
-      if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
-    } //echo "###".$rurl;
-    if ($options['nxsURLShrtnr']=='W' && function_exists('wpme_get_shortlink')) { $rurl = wp_get_shortlink($post->ID, 'post'); }
-    if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
-    if ($rurl!='') $url = $rurl; $msg = str_ireplace("%SURL%", $url, $msg);
-  } //die();
+  if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID); $url = nxs_mkShortURL($url); $msg = str_ireplace("%SURL%", $url, $msg);}
   if (preg_match('%IMG%', $msg)) { $imgURL = nxs_getPostImage($postID); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
   if (preg_match('%TITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);  $msg = str_ireplace("%TITLE%", $title, $msg); }                    
   if (preg_match('%STITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
@@ -633,6 +630,7 @@ if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ globa
   $nxs_snapThisPageUrl = admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php'; 
   //## Javascript to Admin Panel        
   if (( ($pagenow=='options-general.php'||$pagenow=='admin.php')&& $_GET['page']=='NextScripts_SNAP.php') ||$pagenow=='post.php'||$pagenow=='post-new.php'){add_action('admin_head', 'jsPostToSNAP'); add_action('admin_head', 'nxs_jsPostToSNAP2');}
+  
   if (function_exists('nxs_doChAPIU')) { add_action('nxs_chAPIU', 'nxs_doChAPIU', 1, 1);  }
   if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic', 'nxsDoLic_ajax');  } 
 }}
@@ -752,8 +750,6 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_filter('plugin_action_links','ns_add_settings_link', 10, 2 );
 
     //## Scedulled Publish Calls    
-    
-    
     if ((int)$suOptions['nsOpenGraph'] == 1) {    
       add_action( 'init', 'nxs_start_ob', 0 );
       add_action( 'wp_footer', 'nxs_end_flush_ob', 10000 ); 

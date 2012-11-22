@@ -865,6 +865,7 @@ abstract class NXS_BaseFacebook
       $params
     ), true);
 
+    // prr($domainKey); prr($path);  prr($params);
     // results are returned, errors are thrown
     if (is_array($result) && isset($result['error'])) {
       $this->throwAPIException($result);

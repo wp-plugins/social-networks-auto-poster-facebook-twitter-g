@@ -89,7 +89,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
      foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapGP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doGP = $ntOpt['doGP'];   
-        $isAvailGP =  $ntOpt['gpUName']!='' && $ntOpt['gpPass']!='';  $isAttachGP = $ntOpt['gpAttch']; $isImgPost = $ntOpt['imgPost']; $gpMsgFormat = $ntOpt['gpMsgFormat'];      
+        $isAvailGP =  $ntOpt['gpUName']!='' && $ntOpt['gpPass']!='';  $isAttachGP = $ntOpt['gpAttch']; $isImgPost = $ntOpt['imgPost']; $gpMsgFormat = htmlentities($ntOpt['gpMsgFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2">
       <?php if ($isAvailGP) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="gp[<?php echo $ii; ?>][SNAPincludeGP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doGP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>

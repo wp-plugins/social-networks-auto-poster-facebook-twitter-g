@@ -5,7 +5,7 @@ $nxs_snapAvNts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Common Settings  
   function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'FB'; $lcode = 'fb'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
-    if ( isset($_GET['code']) && $_GET['code']!='' && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info =- <br/><br/><br/>-= Code:".$at;
+    if ( isset($_GET['code']) && $_GET['code']!='' && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>-= Code:".$at;
      //$fbo = array('wfa'=> 1339160000); //foreach ($ntOpts as $two) { if (isset($two['wfa']) && $two['wfa']>$fbo['wfa']) $fbo =  $two; }
      $fbo = $ntOpts[$_GET['acc']]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg); 
      if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
@@ -22,7 +22,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $facebook -> setAccessToken($fbo['fbAppAuthToken']); $user = $facebook->getUser(); echo "USER:"; prr($user);
       if ($user) {
         try { $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-";          
-          if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
+          if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { //$fbPgIDR = wp_remote_get('nxs.php?g='.$fbo['fbURL']); // TODO - how to replace
              $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
           } $page_info = $facebook->api("/$page_id?fields=access_token"); prr($page_info);
           if( !empty($page_info['access_token']) ) { $fbo['fbAppPageAuthToken'] = $page_info['access_token']; }
@@ -96,8 +96,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 </div><br/>
    </div><br/>
   
-<div class="popShAtt" id="popShAtt<?php echo $ii; ?>"><h3>Two ways of attaching post on Facebook</h3><img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/></div>
-<div class="popShAtt" id="popShAtt<?php echo $ii; ?>X"><h3>Facebook Post Types</h3><img src="http://cdn.gtln.us/img/nxs/fbPostTypesDiff6.png" width="600" height="398" alt="Facebook Post Types"/></div>
+<div class="popShAtt" id="popShAtt<?php echo $ii; ?>"><h3>Two ways of attaching post on Facebook</h3><img src="<?php echo $nxs_plurl; ?>img/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/></div>
+<div class="popShAtt" id="popShAtt<?php echo $ii; ?>X"><h3>Facebook Post Types</h3><img src="<?php echo $nxs_plurl; ?>img/fbPostTypesDiff6.png" width="600" height="398" alt="Facebook Post Types"/></div>
 
               
             <?php if ($fbo['fbPgID']!='') {?><div style="width:100%;"><strong>Your Facebook Page ID:</strong> <?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbPgID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?> </div><?php } ?>
@@ -154,7 +154,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapFB', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doFB = $ntOpt['doFB'];
-        $isAvailFB =  $ntOpt['fbURL']!='' && $ntOpt['fbAppID']!='' && $ntOpt['fbAppSec']!=''; $isAttachFB = $ntOpt['fbAttch']; $fbMsgFormat = $ntOpt['fbMsgFormat'];    $fbPostType = $ntOpt['fbPostType'];
+        $isAvailFB =  $ntOpt['fbURL']!='' && $ntOpt['fbAppID']!='' && $ntOpt['fbAppSec']!=''; $isAttachFB = $ntOpt['fbAttch']; $fbMsgFormat = htmlentities($ntOpt['fbMsgFormat'], ENT_COMPAT, "UTF-8");    $fbPostType = $ntOpt['fbPostType'];
       ?>  
       
       <tr><th style="text-align:left;" colspan="2">
@@ -188,8 +188,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                <input value="1"  id="apFBAttch<?php echo $ii; ?>" onchange="doSwitchShAtt(1,<?php echo $ii; ?>);" type="radio" name="fb[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachFB == 1) echo "checked"; ?> /> 
               Attach your blogpost          
 </div> 
-<div class="popShAtt" id="popShAtt<?php echo $ii; ?>"><h3>Two ways of attaching post on Facebook</h3> <img src="http://cdn.gtln.us/img/nxs/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/></div>
-<div class="popShAtt" id="popShAtt<?php echo $ii; ?>X"><h3>Facebook Post Types</h3><img src="http://cdn.gtln.us/img/nxs/fbPostTypesDiff6.png" width="600" height="398" alt="Facebook Post Types"/></div>
+<div class="popShAtt" id="popShAtt<?php echo $ii; ?>"><h3>Two ways of attaching post on Facebook</h3> <img src="<?php echo $nxs_plurl; ?>img/fb2wops.jpg" width="600" height="271" alt="Two ways of attaching post on Facebook"/></div>
+<div class="popShAtt" id="popShAtt<?php echo $ii; ?>X"><h3>Facebook Post Types</h3><img src="<?php echo $nxs_plurl; ?>img/fbPostTypesDiff6.png" width="600" height="398" alt="Facebook Post Types"/></div>
      </td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
@@ -247,6 +247,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       
       $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
       $postSubtitle = home_url();  $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg);
+      if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';
       if ($fbPostType=='A' || $fbPostType=='') {
         if (($isAttachFB=='1' || $isAttachFB=='2')) { $attArr = array('name' => nxs_doQTrans($post->post_title, $lng), 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc); $mssg = array_merge($mssg, $attArr); }      
         if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        

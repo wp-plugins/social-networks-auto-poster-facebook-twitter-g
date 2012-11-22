@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, forums, forum, open graph, og, tags
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 License: GPLv2 or later
 
 Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger and Tumblr, Delicious, etc profiles and/or pages.
@@ -13,6 +13,8 @@ Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest,
 == Description ==
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+
+**Plugin makes 100% White Labeled Posts** The main idea behind the plugin is to give you the ability to promote only yourself. Plugin uses your own apps and all posts to all networks come only from you. No "Shared via NextScripts.com" or "Posted by SNAP for Wordpress" messages.
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
@@ -26,9 +28,9 @@ Supported Networks:
 
 **Diigo** - Auto-submit bookmark to your account. 
 
-**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. 
+**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 
-**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. 
+**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
 
 **LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages (*with third party library*)
 
@@ -38,7 +40,7 @@ Supported Networks:
 
 **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
 
-**Twitter** - Autopost to your account.
+**Twitter** - Autopost to your account. Ability to attach Image to tweets.
 
 **vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
 
@@ -139,6 +141,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.4.1 =
+
+* Bug fix - Twitter error if  attachmet image is missing
+* Bug fix - Issue with apostrophees and quotes
+* Improvement - "Click-through URL" for the Tumblr "Photo" posts can use shorthened URLs.
+* Improvement - Ability to select custom field instead of the featued image.
 
 = 2.4.0 =
 
