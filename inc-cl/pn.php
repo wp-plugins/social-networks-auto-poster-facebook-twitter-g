@@ -68,7 +68,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
               
               <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?>
             </div><br/>    
-            
+            <?php if ($isNew) { ?> <input type="hidden" name="pn[<?php echo $ii; ?>][apDoPN]" value="1" id="apDoNewPN<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['pnPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToPN', 'rePostToPN_wpnonce' ); ?>
             <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('PN', '<?php echo $ii; ?>'); return false;">Submit Test Post to Pinterest</a>         

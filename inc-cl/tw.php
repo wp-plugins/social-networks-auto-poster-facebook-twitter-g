@@ -123,12 +123,21 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);
         $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl); $twLim = $twLim - strlen($noRepl); 
         
+        if (stripos($twMsgFormat, '%TAGS%')!==false) {
+          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = '#'.$tagA->name;} $tags = implode(' ',$tggs); $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat); $twLim = $twLim - strlen($tags);
+        }
+        if (stripos($twMsgFormat, '%CATS%')!==false) {
+          $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $cats[] = '#'.str_ireplace('&','&amp;',$cat->name); } 
+          $ctts = implode(' ',$cats); $twMsgFormat = str_ireplace("%CATS%", $ctts, $twMsgFormat); $twLim = $twLim - strlen($ctts);
+        }  
+        
         if (stripos($twMsgFormat, '%TITLE%')!==false) {
           $title = $post->post_title; $title = nsTrnc($title, $twLim); $twMsgFormat = str_ireplace("%TITLE%", $title, $twMsgFormat); $twLim = $twLim - strlen($title);
         } 
         if (stripos($twMsgFormat, '%SITENAME%')!==false) {
           $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - strlen($siteTitle);
         }
+        
         if (stripos($twMsgFormat, '%TEXT%')!==false) {
           if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', $post->post_excerpt); else $excerpt= apply_filters('the_content', $post->post_content);
           $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "...");
@@ -137,13 +146,16 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         if (stripos($twMsgFormat, '%FULLTEXT%')!==false) {
           $postContent = apply_filters('the_content', $post->post_content); $postContent = nsTrnc(strip_tags($postContent), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $postContent, $twMsgFormat); $twLim = $twLim - strlen($postContent);
         }          
-        $msg = nsFormatMessage($twMsgFormat, $postID);         
+               
+        $msg = nsFormatMessage($twMsgFormat, $postID);       
+        
+          
     } //prr($msg);
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; $img = '';
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
     if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); if(trim($imgURL)=='') $options['attchImg'] = 0; else { $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; }}
-    if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'https://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
+    if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'http://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
       else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
       else { nxs_metaMarkAsPosted($postID, 'TW', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} 
