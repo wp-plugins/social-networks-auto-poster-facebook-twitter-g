@@ -5,10 +5,10 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, Plurk, forums, forum, open graph, og, tags
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.4.1
+Stable tag: 2.4.3
 License: GPLv2 or later
 
-Automatically publishes your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages.
+Automatically publishe your blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages.
 
 == Description ==
 
@@ -59,6 +59,8 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter, Delicious, Diigo, Plurk, Stumbleupon or all of them.
 
 **Please, see more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress **
+
+Below are the quick instructions for Facebook, Twitter and Google+. Please see other networks at the link above...
 
 Social Networks Auto Poster (SNAP).
 
@@ -117,7 +119,7 @@ Google+ don't yet have API for automated posts. You need to get special library 
    2. Click green "Add new account" button, select "Google+" from the list. 
    3. Fill Google+ Login and Password. Please note that Wordpress is not storing your Google+ password in very secure manner, so you better create a separate G+ account for your website.
    4. Fill the ID of your page. You can get this ID from your URL (Step 2 above). If your URL is https://plus.google.com/u/0/b/117008619877691455570/ - your ID is 117008619877691455570
-3. Your Twitter is ready to use. 
+3. Your Google+ is ready to use. 
 
 Please see <a href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">complete installation instructions with screenshots</a>
 
@@ -143,6 +145,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 2. Google+  Post 
 
 == Changelog ==
+
+= 2.4.3 =
+
+* New - Support for Wordpress Built-in Shortener
+* Improvement/Bug fix - Facebook - better image posting.
+* Bug fix - Blogger Error  "Attribute name associated with an element type "####" must be followed by the ' = ' character
+* Bug fix - Blogger taking over the WP Admin after the error.
+* Bug fix - Blogger "Invalid JSON" Error
+* Bug fix - Plurk Error "Call to undefined function http_build_url()"
+* Bug fix - LinkedIn "We were unable to post your update" error.
+* Bug fix - Pinterest UTF characters in the Board names.
+* Bug fix - Pinterest - better Handling of Error 502.
 
 = 2.4.2 =
 

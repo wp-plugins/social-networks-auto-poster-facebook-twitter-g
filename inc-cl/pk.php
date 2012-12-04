@@ -20,7 +20,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
               
               switch ($tum_oauth->http_code) { case 200: $url = 'http://www.plurk.com/OAuth/authorize?oauth_token='.$options['pkOAuthToken']; 
                 $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
-                echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
+                echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to Plurk. Refresh the page or try again later.</b>'; die();
               }
               die();
@@ -39,7 +39,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
               
               $options['pkPgID'] = $userinfo; $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
 
-              if ($options['pkPgID']!='') {  echo '<script type="text/javascript">window.location = "'.$nxs_snapThisPageUrl.'"</script>'; break;  die();}
+              if ($options['pkPgID']!='') {  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapThisPageUrl.'"</script>'; break;  die();}
                 else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".$options['pkPgID']."</span></span>");              
             }
     ?>    
@@ -161,7 +161,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
             </select></td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $pkMsgFormat ?>" type="text" name="pk[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPKMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPKMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $pkMsgFormat ?>" type="text" name="pk[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPKMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPKMsgFrmt".$ii); ?></td></tr>
                                
    <?php } 
     }

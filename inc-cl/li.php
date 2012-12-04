@@ -194,7 +194,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachment</strong></td> </tr>               
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo ($liMsgFormat); ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo ($liMsgFormat); ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
 
    <?php } 
     }      
@@ -241,7 +241,7 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!==false) die($auth);
       $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
        if ($postID=='0') { $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = home_url();  
-         } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc( strip_tags($post->post_title), 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }} prr($msg);
+         } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc( strip_tags($post->post_title), 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }} //prr($msg);
       $ret = doPostToLinkedIn($msg, $lnk, $to); 
     } else { require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     

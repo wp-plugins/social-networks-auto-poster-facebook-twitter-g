@@ -142,8 +142,8 @@ class wpPlurkOAuth{
         'oauth_signature_method' => 'HMAC-SHA1'
         
       );      
-      $req = array();  $req['method'] = 'GET';  $parsed = parse_url($this->baseURL.PLURK_REQUEST_TOKEN_PATH);
-      $req['normalized_url'] = http_build_url(array("scheme" => $parsed['scheme'], "host" => $parsed['host'], "path" => $parsed['path']));
+      $req = array();  $req['method'] = 'GET';  
+      $req['normalized_url'] = $this->baseURL.PLURK_REQUEST_TOKEN_PATH; 
       $req['normalized_parameters'] = $this->get_normalized_parameters($args);
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $token);      
       $cbu = nxspk_SigMethod_HMAC_SHA1::urlencode_rfc3986($cbu);  
@@ -165,8 +165,7 @@ class wpPlurkOAuth{
         'oauth_verifier' => $verifier,
         'oauth_signature_method' => 'HMAC-SHA1'        
       );      
-      $req = array();  $req['method'] = 'GET';  $parsed = parse_url($this->baseURL.PLURK_ACCESS_TOKEN_PATH);
-      $req['normalized_url'] = http_build_url(array("scheme" => $parsed['scheme'], "host" => $parsed['host'], "path" => $parsed['path']));
+      $req = array();  $req['method'] = 'GET';  $req['normalized_url'] = $this->baseURL.PLURK_ACCESS_TOKEN_PATH; echo "ARGS:"; prr($args); 
       $req['normalized_parameters'] = $this->get_normalized_parameters($args);
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $this->access_secret); 
       $url = $this->baseURL.PLURK_ACCESS_TOKEN_PATH.'?oauth_nonce='.$args['oauth_nonce'].'&oauth_timestamp='.$args['oauth_timestamp'].'&oauth_token_secret='.$this->access_secret.'&oauth_signature_method='.$args['oauth_signature_method'].'&oauth_consumer_key='.$this->consumer_key.'&oauth_verifier='.$verifier.'&oauth_version='.$args['oauth_version'].'&oauth_token='.$this->access_token.'&oauth_signature='.$args['oauth_signature'];
@@ -186,9 +185,8 @@ class wpPlurkOAuth{
         'oauth_version' => $this->version,        
         'oauth_signature_method' => 'HMAC-SHA1'        
       );      
-      if (is_array($params)) { $argsTS = array_merge($args, $params);}
-      $req = array();  $req['method'] = 'GET';  $parsed = parse_url($url);
-      $req['normalized_url'] = http_build_url(array("scheme" => $parsed['scheme'], "host" => $parsed['host'], "path" => $parsed['path']));
+      if (is_array($params)) { $argsTS = array_merge($args, $params);} else $argsTS = $args;
+      $req = array();  $req['method'] = 'GET';  $req['normalized_url'] = $url; 
       $req['normalized_parameters'] = $this->get_normalized_parameters($argsTS);
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $this->access_secret); 
       if (is_array($params)) { $params = nxspk_SigMethod_HMAC_SHA1::urlencode_rfc3986($params);   $args = array_merge($args, $params);} //prr($args);
@@ -200,5 +198,4 @@ class wpPlurkOAuth{
     }
     
 }
-
 ?>

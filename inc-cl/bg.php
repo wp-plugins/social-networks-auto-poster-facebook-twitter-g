@@ -104,9 +104,9 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 <?php if (!$isAvailBG) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Blogger Account to AutoPost to Blogger</b>
                 <?php } elseif ($post->post_status != "publish") { ?> 
                  <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPTformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGTMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPTformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGTMsgFrmt".$ii); ?></td></tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $bgMsgFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $bgMsgFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGMsgFrmt".$ii); ?></td></tr>
                 <?php }
     }      
   }
@@ -142,6 +142,7 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
 if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); 
+    $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);
     if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$text); $doc->encoding = 'UTF-8'; $text = $doc->saveHTML(); $text = CutFromTo($text, '<body>', '</body>'); 
       $text = preg_replace('/<br(.*?)\/?>/','<br$1/>',$text);   $text = preg_replace('/<img(.*?)\/?>/','<img$1/>',$text);
       require_once ('apis/htmlNumTable.php');  $text = strtr($text, $HTML401NamedToNumeric);  $title = strtr($title, $HTML401NamedToNumeric);
@@ -155,15 +156,12 @@ if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blo
     $result = curl_exec($ch); curl_close($ch); if (stripos($result,'tag:blogger.com')!==false) return 'OK'; else { prr($result); return false;}
 }}
 if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
-  function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';
-      
-    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
-    
+  function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';      
+    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();     
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
         nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-    }     
-    
+    }         
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.htmlentities($blogTitle);  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
       else { $post = get_post($postID); if(!$post) return; $msgFormat = $options['bgMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); 
         $link = get_permalink($postID); $msgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
@@ -171,16 +169,17 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     //## Actual POST Code
     $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID'];
     //echo "###".$auth."|".$blogID."|".$msgT."|".$msg;
-    if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs); $tags = nsTrnc($tags, 195, ',', ''); }
+    if ($options['bgInclTags']=='1'){$t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode('","',$tggs);  $tags = nsTrnc($tags, 195, ',', ''); }
+    if (substr($tags, -1)=='"') $tags = substr($tags, 0, -1);
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">'.$ntNm.'</span> - '.$options['nName']; 
     
-    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg); $nxshf = new NXS_HtmlFixer(); $msg = $nxshf->getFixedHtml($msg); //prr($msg);
-    
+    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg); 
+    // prr($msg);
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     //## /Actual POST Code
     
-    if ($ret!='OK') { if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); return  $ret; }
+    if ($ret!='OK') { if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '. strip_tags(print_r($ret, true)), $extInfo); return  $ret; }
       else { if ($postID=='0') { echo 'OK - Message Posted, please see your '.$ntNm.' Page '; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); return 201;} 
         else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
   }

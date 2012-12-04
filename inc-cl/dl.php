@@ -88,10 +88,10 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
                 <?php } elseif ($post->post_status != "publish") { ?> 
                
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?></td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]" size="115" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -113,7 +113,7 @@ if (!function_exists("nxs_rePostToDL_ajax")) {
 }  
 if (!function_exists("doConnectToDelicious")) { function doConnectToDelicious($u, $p){ global $nxs_gCookiesArr;  $nxs_gCookiesArr = array(); $advSettings = array();
   $fldsTxt = 'username='.$u.'&password='.$p;
-  $contents = getCurlPageX(' https://www.delicious.com/login ','', false, $fldsTxt, false, $advSettings);   prr($nxs_gCookiesArr);   prr($contents);
+  $contents = getCurlPageX(' http://www.delicious.com/login ','', false, $fldsTxt, false, $advSettings);   prr($nxs_gCookiesArr);   prr($contents);
 }}
 if (!function_exists("doPostToDelicious")) { function doPostToDelicious($postID, $options){  global $nxs_gCookiesArr; 
 
@@ -137,12 +137,12 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
       
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
-      $apicall = "https://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
+      $apicall = "http://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
       $cnt = wp_remote_get( $apicall, '' );// prr($cnt);      
       
       if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); $cnt = wp_remote_get( $apicall, '' );}}      
       if(is_wp_error($cnt)) {
-        $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+        $ret = 'Something went wrong - '."http://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii']);  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
         elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
