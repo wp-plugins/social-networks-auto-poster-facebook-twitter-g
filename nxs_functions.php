@@ -98,7 +98,8 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
 <?php if( isset($options['exclCats']) && $options['exclCats']!='' && $options['exclCats']!='a:0:{}') { ?>
 
 jQuery(function(){
-  jQuery("form input:checkbox[name='post_category[]']").click ( function(){ var thVal = jQuery(this).val(); var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
+  jQuery("form input:checkbox[name='post_category[]']").click ( function(){  var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
+     var thVal = jQuery(this).val(); var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
      if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
      
   });
@@ -425,14 +426,15 @@ class NXS_HtmlFixer { public $dirtyhtml; public $fixedhtml; public $allowed_styl
         array(' ', ' ', '', '', '', '', '', '', '', '', '', ' ', '', '' ) , trim($s));
       }return $s;
     }
-    private function charByCharJob() { $s = $this->removeSpacesAndBadTags($this->dirtyhtml); if ($s=="") return;
+    private function charByCharJob() { $s = $this->removeSpacesAndBadTags($this->dirtyhtml); if ($s=="") return; //echo "\r\n=!= ".$s." =!=\r\n<br/>\r\n";
         $s = "<root>".$s."</root>"; $contenuto = ""; $ns = ""; $i=0; $j=0; $ss=''; $indexparentTag=0; $padri=array(); array_push($padri,"0"); $this->matrix[$j]["tagType"]="";
         $this->matrix[$j]["tag"]=""; $this->matrix[$j]["parentTag"]="0"; $this->matrix[$j]["pre"]=""; $this->matrix[$j]["post"]=""; $tags=array();
+        // echo "\r\n=#= ".$s." =#=\r\n<br/>\r\n";
         while($i<strlen($s)) {
             if ( $s[$i] =="<") { $contenuto = $ns; $ns = ""; $tag=""; while( $i<strlen($s) && $s[$i]!=">" ){ $tag.=$s[$i]; $i++;} $tag.=$s[$i]; if (stristr($tag,'<param') && stristr($tag,'/>')) $tag = str_replace('/>','></param>',$tag);
             $ss .= $tag;                 
-        } $i++; }
-        $i=0; $s = $ss;
+        } else $ss .= $s[$i]; $i++; }
+        $i=0; $s = $ss; //echo "\r\n== ".$s." ==\r\n<br/>\r\n";
         while($i<strlen($s)) {
             if ( $s[$i] =="<") { $contenuto = $ns; $ns = ""; $tag=""; while( $i<strlen($s) && $s[$i]!=">" ){ $tag.=$s[$i]; $i++;} $tag.=$s[$i];                
                 if($s[$i]==">") { $tag = $this->fixTag($tag); $tagType = $this->getTypeOfTag($tag); $tag = $this->fixAutoclosingTags($tag,$tagType);

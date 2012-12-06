@@ -146,6 +146,15 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.4.4 =
+
+* New - 
+* Improvement - Twitter - If tags and categories are alredy in the text will become hashtags, not duplicates.
+* Improvement/Bug fix - "Check All/Uncheck All" links now have prioraty over category selection.
+* Bug fix - Blogger - broken messages.
+* Bug fix - Plurk - 180 characters limit.
+* Bug fix - Twitter correct characters count (119) for "Posts with image"
+
 = 2.4.3 =
 
 * New - Support for Wordpress Built-in Shortener

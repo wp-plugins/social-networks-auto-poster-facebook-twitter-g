@@ -89,7 +89,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
               
               <input name="pk[<?php echo $ii; ?>][apPKMsgFrmt]" id="apPKMsgFrmt" style="width: 50%;" value="<?php if ($options['pkMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pkMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo htmlentities("%TITLE% - %URL%"); ?>" onfocus="jQuery('#apPKMsgFrmt<?php echo $ii; ?>Hint').show();" /><br/>
                <?php nxs_doShowHint("apPKMsgFrmt".$ii); ?>
-              
+              <br/>
               <?php 
             if($options['pkConsSec']=='') { ?>
             <b>Authorize Your Plurk Account</b>. Please save your settings and come back here to Authorize your account.
@@ -195,8 +195,40 @@ if (!function_exists("nxs_doPublishToPK")) { //## Second Function to Post to TR
     }  
     //## Format
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;  $msgT = 'Test Post from '.$blogTitle;}
-      else{ $post = get_post($postID); if(!$post) return; $pkMsgFormat = $options['pkMsgFormat'];  $msg = nsFormatMessage($pkMsgFormat, $postID); 
-        $pkMsgTFormat = $options['pkMsgTFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));   
+      else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['pkMsgFormat']; nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $twLim = 180;
+      
+      if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 5; 
+        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - strlen($aun); } 
+        
+        $noRepl = str_ireplace("%TITLE%", "", $twMsgFormat); $noRepl = str_ireplace("%SITENAME%", "", $noRepl); $noRepl = str_ireplace("%URL%", "", $noRepl);
+        $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);
+        $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl); $twLim = $twLim - strlen($noRepl); 
+        
+        $pTitle = $title = $post->post_title;
+        if ($post->post_excerpt!="") $pText = apply_filters('the_content', $post->post_excerpt); else $pText= apply_filters('the_content', $post->post_content);
+        $pFullText = apply_filters('the_content', $post->post_content); 
+        $pRawText = $post->post_content;
+        
+       
+        if (stripos($twMsgFormat, '%TITLE%')!==false) {
+           $pTitle = nsTrnc($pTitle, $twLim); $twMsgFormat = str_ireplace("%TITLE%", $pTitle, $twMsgFormat); $twLim = $twLim - strlen($pTitle);
+        } 
+        if (stripos($twMsgFormat, '%SITENAME%')!==false) {
+          $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - strlen($siteTitle);
+        }        
+        if (stripos($twMsgFormat, '%TEXT%')!==false) {          
+          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 300, " ", "...");
+          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%TEXT%", $pText, $twMsgFormat); $twLim = $twLim - strlen($pText);
+        }
+        if (stripos($twMsgFormat, '%FULLTEXT%')!==false) {
+           $pFullText = nsTrnc(strip_tags($pFullText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pFullText, $twMsgFormat); $twLim = $twLim - strlen($pFullText);
+        }          
+        if (stripos($twMsgFormat, '%RAWTEXT%')!==false) {
+           $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - strlen($pRawText);
+        }          
+      
+      $msg = nsFormatMessage($twMsgFormat, $postID); 
+        
     } 
     //## Post    
     require_once('apis/plurkOAuth.php'); $consumer_key = $options['pkConsKey']; $consumer_secret = $options['pkConsSec'];

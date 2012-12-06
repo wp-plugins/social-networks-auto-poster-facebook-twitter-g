@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.4.3
+Version: 2.4.4
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.4.3' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.4.4' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -481,13 +481,13 @@ Please see #4 and #5 for Twitter:<br/>
           
           <input value="SNAPEdit" type="hidden" name="SNAPEdit" />
           <?php if($post->post_status != "publish" ) { ?>
-          <div style="float: right;">          
-          <a href="#" onclick="jQuery('.nxsGrpDoChb').attr('checked','checked'); return false;">Check All</a>&nbsp;<a href="#" onclick="jQuery('.nxsGrpDoChb').removeAttr('checked'); return false;">Uncheck All</a>
+          <div style="float: right;">   <input type="hidden" id="nxsLockIt" value="0" />       
+          <a href="#" onclick="jQuery('#nxsLockIt').val('1'); jQuery('.nxsGrpDoChb').attr('checked','checked'); return false;">Check All</a>&nbsp;<a href="#" onclick="jQuery('#nxsLockIt').val('1');jQuery('.nxsGrpDoChb').removeAttr('checked'); return false;">Uncheck All</a>
           </div>
           <?php } ?>
            
           
-          <table style="margin-bottom:40px; clear:both;" border="0"><?php        
+          <table style="margin-bottom:40px; clear:both;" width="100%" border="0"><?php        
           
           foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; 
              if (count($options[$avNt['lcode']])>0) { $ntClInst = new $clName(); $ntClInst->showEdPostNTSettings($options[$avNt['lcode']], $post); }
@@ -616,18 +616,22 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   if (preg_match('%STITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
   if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
   if (preg_match('%TEXT%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt), $lng); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content), $lng); 
+    if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); 
       $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%TEXT%", $excerpt, $msg);
+  }
+  if (preg_match('%RAWEXTEXT%', $msg)) {      
+    if ($post->post_excerpt!="") $excerpt = nxs_doQTrans($post->post_excerpt, $lng); else $excerpt= nxs_doQTrans($post->post_content, $lng); 
+      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%RAWEXTEXT%", $excerpt, $msg);
   }
   if (preg_match('%TAGS%', $msg)) { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(', ',$tggs); $msg = str_ireplace("%TAGS%", $tags, $msg);}
   if (preg_match('%CATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $cats[] = str_ireplace('&','&amp;',$cat->name); } 
           $ctts = implode(', ',$cats); $msg = str_ireplace("%CATS%", $ctts, $msg);
   }
-  if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content), $lng); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
+  if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
   if (preg_match('%RAWTEXT%', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng); $msg = str_ireplace("%RAWTEXT%", $postContent, $msg);}
   if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
   if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
-  return $msg;
+  return trim($msg);
 }}
 
 if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow, $nxs_isWPMU; 

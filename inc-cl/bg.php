@@ -143,10 +143,7 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
 }}
 if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); 
     $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);
-    if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$text); $doc->encoding = 'UTF-8'; $text = $doc->saveHTML(); $text = CutFromTo($text, '<body>', '</body>'); 
-      $text = preg_replace('/<br(.*?)\/?>/','<br$1/>',$text);   $text = preg_replace('/<img(.*?)\/?>/','<img$1/>',$text);
-      require_once ('apis/htmlNumTable.php');  $text = strtr($text, $HTML401NamedToNumeric);  $title = strtr($title, $HTML401NamedToNumeric);
-    }  //  prr($text); 
+    
     $postText = '<entry xmlns="http://www.w3.org/2005/Atom"><title type="text">'.$title.'</title><content type="xhtml">'.$text.'</content></entry>'; //prr($postText);
     $len = strlen($entry); $ch = curl_init("https://www.blogger.com/feeds/$blogID/posts/default"); 
     $headers = array("Content-type: application/atom+xml", "Content-Length: ".strlen($postText), "Authorization: GoogleLogin auth=".$auth, $postText);
@@ -173,8 +170,13 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     if (substr($tags, -1)=='"') $tags = substr($tags, 0, -1);
     $extInfo = ' | PostID: '.$postID; $logNT = '<span style="color:#F87907">'.$ntNm.'</span> - '.$options['nName']; 
     
+    if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$msg); $doc->encoding = 'UTF-8'; $msg = $doc->saveHTML(); $msg = CutFromTo($msg, '<body>', '</body>'); 
+      $msg = preg_replace('/<br(.*?)\/?>/','<br$1/>',$msg);   $msg = preg_replace('/<img(.*?)\/?>/','<img$1/>',$msg);
+      require_once ('apis/htmlNumTable.php');  $msg = strtr($msg, $HTML401NamedToNumeric);  $msgT = strtr($msgT, $HTML401NamedToNumeric);
+    }  //  prr($text); 
+    // prr($msg); echo " =HT= ";
     $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg); 
-    // prr($msg);
+    // prr($msg); die();
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     //## /Actual POST Code
