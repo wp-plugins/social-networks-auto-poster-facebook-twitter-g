@@ -39,16 +39,16 @@ if (!function_exists('nsSubStrEl')){ function nsSubStrEl($string, $length, $end=
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url){ $rsp  = wp_remote_get($url); if(is_wp_error($rsp)) return false; if ((is_array($rsp) && ($rsp['response']['code']=='200'))) return true; else  return false;}}
+if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url){ $rsp  = wp_remote_head($url); if(is_wp_error($rsp)) return false; if ((is_array($rsp) && ($rsp['response']['code']=='200'))) return true; else  return false;}}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
   if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') { $imgURL = trim(get_post_meta($postID, $options['featImgLocPrefix'], true)).trim(get_post_meta($postID, $options['featImgLoc'], true)); 
     if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
   } 
-  if ($imgURL!='' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
-  if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } }
-  if ($imgURL!='' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
+  if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
   if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
-  if ($imgURL!='' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
   if ($imgURL=='' && $def=='') $imgURL = $options['ogImgDef']; 
   if ($imgURL=='' && $def!='') $imgURL = $def; 
   return $imgURL;

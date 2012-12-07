@@ -154,7 +154,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
     else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
-      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); 
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); // echo "WW".$postID."|";
     } 
     
     $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();

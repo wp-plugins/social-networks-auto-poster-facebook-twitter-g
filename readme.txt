@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, Plurk, forums, forum, open graph
 Requires at least: 2.8
 Tested up to: 3.4.2
-Stable tag: 2.4.3
+Stable tag: 2.4.5
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -146,9 +146,15 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.4.5 =
+
+* Improvement/Bug fix - Google+ better "Post type" selection.
+* Bug fix - Google+ - image uploads for pages go to the right album, not profile.
+* Bug fix - Google+ - Correct image for "attached" posts
+* Bug fix - Twitter image attachement broken in 2.4.4
+
 = 2.4.4 =
 
-* New - 
 * Improvement - Twitter - If tags and categories are alredy in the text will become hashtags, not duplicates.
 * Improvement/Bug fix - "Check All/Uncheck All" links now have prioraty over category selection.
 * Bug fix - Blogger - broken messages.

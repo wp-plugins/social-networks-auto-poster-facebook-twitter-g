@@ -178,11 +178,12 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <td></td>
                 </tr>
                 
-             <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> Post Type: </th><td>     
+             <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> Post Type: <br/>
+                (<a id="showShAtt" style="font-weight: normal" onmouseout="hidePopShAtt('<?php echo $ii; ?>X');" onmouseover="showPopShAtt('<?php echo $ii; ?>X', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>)</th><td>     
         
         <input type="radio" name="fb[<?php echo $ii; ?>][PostType]" value="T" <?php if ($fbPostType == 'T') echo 'checked="checked"'; ?> /> Text Post  - <i>just text message</i><br/>       
         <input type="radio" name="fb[<?php echo $ii; ?>][PostType]" value="I" <?php if ($fbPostType == 'I') echo 'checked="checked"'; ?> /> Image Post - <i>big image with text message</i><br/>             
-        <input type="radio" name="fb[<?php echo $ii; ?>][PostType]" value="A" <?php if ( !isset($fbPostType) || $fbPostType == '' || $fbPostType == 'A') echo 'checked="checked"'; ?> /> Text Post with "attached" link &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>) <br/>
+        <input type="radio" name="fb[<?php echo $ii; ?>][PostType]" value="A" <?php if ( !isset($fbPostType) || $fbPostType == '' || $fbPostType == 'A') echo 'checked="checked"'; ?> /> Text Post with "attached" blogpost &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/">What's the difference?</a>) <br/>
 
 <div style="width:100%; margin-left: 25px;"><strong>Link attachment type:&nbsp;</strong> <input value="2"  id="apFBAttchShare<?php echo $ii; ?>" onchange="doSwitchShAtt(0,<?php echo $ii; ?>);" type="radio" name="fb[<?php echo $ii; ?>][AttachPost]" <?php if ((int)$isAttachFB == 2) echo "checked"; ?> /> 
                 Share a link to your blogpost .. or ..                                  

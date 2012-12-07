@@ -107,7 +107,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
 } 
 
 if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW 
-  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter';
+  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $img = ''; $imgURL = '';
     
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
@@ -180,7 +180,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
           
     } //prr($msg);
     
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; $img = '';
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; 
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
       
