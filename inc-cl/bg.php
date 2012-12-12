@@ -177,8 +177,8 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     // prr($msg); echo " =HT= ";
     $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg); 
     // prr($msg); die();
-    if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
-      else {$auth = nsBloggerGetAuth($email, $pass); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
+    if (!function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
+      else {$auth = nsBloggerGetAuth($email, $pass);  $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     //## /Actual POST Code
     
     if ($ret!='OK') { if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '. strip_tags(print_r($ret, true)), $extInfo); return  $ret; }

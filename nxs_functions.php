@@ -39,7 +39,18 @@ if (!function_exists('nsSubStrEl')){ function nsSubStrEl($string, $length, $end=
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url){ $rsp  = wp_remote_head($url); if(is_wp_error($rsp)) return false; if ((is_array($rsp) && ($rsp['response']['code']=='200'))) return true; else  return false;}}
+if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref, $post=false){ $hdrsArr = array(); 
+ $hdrsArr['Connection']='keep-alive'; $hdrsArr['Referer']=$ref;
+ $hdrsArr['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.22 Safari/537.11';
+ if($post) $hdrsArr['Content-Type']='application/x-www-form-urlencoded'; 
+ $hdrsArr['Accept']='application/json, text/javascript, */*; q=0.01'; 
+ $hdrsArr['Accept-Encoding']='gzip,deflate,sdch'; $hdrsArr['Accept-Language']='en-US,en;q=0.8'; $hdrsArr['Accept-Charset']='ISO-8859-1,utf-8;q=0.7,*;q=0.3'; return $hdrsArr;
+}}
+if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url){ $hdrsArr = nxs_getNXSHeaders(home_url()); $rsp  = wp_remote_head($url, array('headers' => $hdrsArr));  
+  if(is_wp_error($rsp)) { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; }
+  if (is_array($rsp) && ($rsp['response']['code']=='200' || ( $rsp['response']['code']=='403' &&  $rsp['headers']['server']=='cloudflare-nginx') )) return true; 
+    else { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; } 
+}}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
   if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') { $imgURL = trim(get_post_meta($postID, $options['featImgLocPrefix'], true)).trim(get_post_meta($postID, $options['featImgLoc'], true)); 
     if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
@@ -342,12 +353,12 @@ if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, 
   if (function_exists('nxs_doSMAS5')) return nxs_doSMAS5($nt, $ii, $selLng); else return '<br/>';  
 }}
 
-if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
+if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=''){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
     if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
       $response  = wp_remote_get('http://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); $rtr = json_decode($response['body'],true);
       if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
     } //echo "###".$rurl;
-    if ($options['nxsURLShrtnr']=='W' && function_exists('wp_get_shortlink')) { global $post; $post = get_post($postID); $rurl = wp_get_shortlink($postID, 'post'); }
+    if ($options['nxsURLShrtnr']=='W' && function_exists('wp_get_shortlink')) { global $post; $post = get_post($postID);  $rurl = wp_get_shortlink($postID, 'post'); }
     if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
     if ($rurl!='') $url = $rurl;    return $url;
 }}
