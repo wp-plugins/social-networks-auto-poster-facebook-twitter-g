@@ -94,12 +94,12 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
       <?php if ($isAvailSU) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="su[<?php echo $ii; ?>][SNAPincludeSU]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doSU == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/su16.png);">StumbleUpon - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailSU) { ?><input alt="<?php echo $ii; ?>" style="float: right;" type="button" class="button" name="rePostToSU_repostButton" id="rePostToSU_button" value="<?php _e('Repost to StumbleUpon', 're-post') ?>" />
+                    if ($post->post_status == "publish" && $isAvailSU) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToSU_repostButton" id="rePostToSU_button" value="<?php _e('Repost to StumbleUpon', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToSU', 'rePostToSU_wpnonce' ); } ?>
                 </td></tr>                
                 
                 <?php if (!$isAvailSU) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your StumbleUpon Account to AutoPost to StumbleUpon</b>
-                <?php } elseif ($post->post_status != "publish") { ?> 
+                <?php } elseif ($post->post_status != "puZblish") { ?> 
                
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">Category:</th>
                 <td><div id="altFormat" style="">  
