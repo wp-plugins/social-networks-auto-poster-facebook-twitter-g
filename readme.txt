@@ -2,7 +2,7 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Stumble upon, Diigo, vBulletin, Plurk, forums, forum, open graph
+Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph
 Requires at least: 2.8
 Tested up to: 3.4.2
 Stable tag: 2.4.7
@@ -18,7 +18,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-Latest version 2.4 - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
+**Latest version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
 
 Supported Networks:
 
@@ -165,12 +165,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement/Bug fix - Google+ better "Post type" selection.
 * Bug fix - Google+ - image uploads for pages go to the right album, not profile.
 * Bug fix - Google+ - Correct image for "attached" posts
-* Bug fix - Twitter image attachement broken in 2.4.4
+* Bug fix - Twitter image attachment broken in 2.4.4
 
 = 2.4.4 =
 
-* Improvement - Twitter - If tags and categories are alredy in the text will become hashtags, not duplicates.
-* Improvement/Bug fix - "Check All/Uncheck All" links now have prioraty over category selection.
+* Improvement - Twitter - If tags and categories are already in the text will become hashtags, not duplicates.
+* Improvement/Bug fix - "Check All/Uncheck All" links now have priority over category selection.
 * Bug fix - Blogger - broken messages.
 * Bug fix - Plurk - 180 characters limit.
 * Bug fix - Twitter correct characters count (119) for "Posts with image"
@@ -199,9 +199,9 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.4.1 =
 
 * Bug fix - Twitter error if  attachmet image is missing
-* Bug fix - Issue with apostrophees and quotes
+* Bug fix - Issue with apostrophes and quotes
 * Improvement - "Click-through URL" for the Tumblr "Photo" posts can use shorthened URLs.
-* Improvement - Ability to select custom field instead of the featued image.
+* Improvement - Ability to select custom field instead of the featured image.
 
 = 2.4.0 =
 
@@ -257,7 +257,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.3.6 =
 
-* Improvement/Bug fix - Compatibility mode. Activate it in Plugin Settings->Other Settings if your site is having problems dispaying content or giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors. 
+* Improvement/Bug fix - Compatibility mode. Activate it in Plugin Settings->Other Settings if your site is having problems displaying content or giving you "ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers" errors. 
 
 = 2.3.5 =
 
@@ -270,7 +270,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.3.4 =
 
-* Improvement - Completely redone og:tags. Now compartible with SEO Optimizations from Plugins and Themes.
+* Improvement - Completely redone og:tags. Now compatible with SEO Optimizations from Plugins and Themes.
 
 = 2.3.3 =
 
