@@ -1,4 +1,5 @@
 <?php
+
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('nsx_stripSlashes')){ function nsx_stripSlashes(&$value){$value = stripslashes($value);}}
 if (!function_exists('nsx_fixSlashes')){ function nsx_fixSlashes(&$value){ while (strpos($value, '\\\\')!==false) $value = str_replace('\\\\','\\',$value);
@@ -185,16 +186,16 @@ jQuery(function(){
             
             function doLic(){ var lk = jQuery('#eLic').val(); 
                 jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
-                    if (j=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
+                    if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
                 }, "html")
             }
             
            
             
-            function getBoards(u,p,ii){ jQuery("#pnLoadingImg").show();
+            function getBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
                 
                 jQuery.post(ajaxurl,{u:u,p:p,ii:ii, action: 'getBoards', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
-                    jQuery("select#apPNBoard").html(j); jQuery("#pnLoadingImg").hide();
+                    jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
                 }, "html")
 
             }            
@@ -234,6 +235,11 @@ jQuery(function(){
         function nxs_rfLog(){
               jQuery.post(ajaxurl,{action: 'nxs_rfLgo', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
                     jQuery("#nxslogDiv").html(j);
+              }, "html")
+        }
+        function nxs_prxTest(){  jQuery('#nxs_pchAjax').show();
+              jQuery.post(ajaxurl,{action: 'nxs_prxTest', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+                    jQuery('#nxs_pchAjax').hide(); jQuery("#prxList").html(j);  
               }, "html")
         }
         function nxs_TRSetEnable(ptype, ii){
@@ -328,6 +334,7 @@ if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($p
   if ($args=='' || $args['isPosted']==1) $mpo[$did]['isPosted'] = '1';  
   if (is_array($args) && isset($args['isPrePosted']) && $args['isPrePosted']==1) $mpo[$did]['isPrePosted'] = '1';  
   if (is_array($args) && isset($args['pgID'])) $mpo[$did]['pgID'] = $args['pgID'];  
+  if (is_array($args) && isset($args['pDate'])) $mpo[$did]['pDate'] = $args['pDate'];  
   $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);
 }}
 if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ global $nxs_tpWMPU; if($nxs_tpWMPU=='S') switch_to_blog(1);  $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 

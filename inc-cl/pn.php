@@ -52,8 +52,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             <div style="width:100%;"><strong>Board:</strong> 
             Please <a href="#" onclick="getBoards(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>'); return false;">click here to retrieve your boards</a>
             </div>
-            <?php wp_nonce_field( 'getBoards', 'getBoards_wpnonce' ); ?><img id="pnLoadingImg" style="display: none;" src='http://gtln.us/img/misc/ajax-loader-sm.gif' />
-            <select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard">
+            <?php wp_nonce_field( 'getBoards', 'getBoards_wpnonce' ); ?><img id="pnLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
+            <select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard<?php echo $ii; ?>">
             <?php if ($options['pnBoardsList']!=''){ $gPNBoards = $options['pnBoardsList']; if ($options['pnBoard']!='') $gPNBoards = str_replace($options['pnBoard'].'"', $options['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
               <option value="0">None(Click above to retrieve your boards)</option>
             <?php } ?>

@@ -37,7 +37,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     <br/>
     <strong id="altFormatText">Message Text Format:</strong>
     <div style="width:100%;">
-      <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name. <i>Twitter takes only 140 characters.</i></p>
+      <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp; %TAGS% - Inserts the post tags as hashtags. &nbsp; %CATS% - Inserts the post categories as hashtags. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name. <i>Please remember that Twitter takes only 140 characters.</i></p>
     </div>
     <input name="tw[<?php echo $ii; ?>][apTWMsgFrmt]" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit', htmlentities($two['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo "%TITLE% - %URL%"; ?>" />
                
@@ -74,8 +74,12 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       <tr><th style="text-align:left;" colspan="2">
       <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTW == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailTW) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
+      if ($post->post_status == "publish" && $isAvailTW) { ?>
+                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); } ?>
+                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID'])) { ?> <span style="float: right;padding-top: 4px; padding-right: 10px;">
+                      <a href="<?php echo $ntOpt['twURL'].'/status/'.$pMeta[$ii]['pgID'];  ?>" target="_blank">Posted on Twitter <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
                 </td></tr>
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
                 <?php }elseif ($post->post_status != "puZblish") { ?> 
@@ -135,27 +139,27 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $pRawText = $post->post_content;
         
         if (stripos($twMsgFormat, '%TAGS%')!==false) {
-          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  str_replace(' ','_', str_replace('  ',' ',preg_replace("/[^A-Za-z0-9\s\s+\_]/","",$tagA->name)));
-              if (stripos($pTitle, $tagA->name)!=false) $pTitle = str_ireplace($tagA->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!=false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
-              if (stripos($pText, $tagA->name)!=false) $pText = str_ireplace($tagA->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!=false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
-              if (stripos($pFullText, $tagA->name)!=false) $pFullText = str_ireplace($tagA->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!=false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
-              if (stripos($pRawText, $tagA->name)!=false) $pRawText = str_ireplace($tagA->name, '#'.$frmTag, $pRawText); elseif (stripos($pRawText, $frmTag)!=false) $pRawText = str_ireplace($frmTag, '#'.$frmTag, $pRawText); 
-              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && (stripos($pTitle, $tagA->name)!=false || stripos($pTitle, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $tagA->name)!=false || stripos($pText, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $tagA->name)!=false || stripos($pFullText, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $tagA->name)!=false || stripos($pRawText, $frmTag)!=false)) ) {} else $tggs[] = '#'.$frmTag;
+          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','_', str_replace('  ', ' ', trim($tagA->name))));
+              if (stripos($pTitle, $tagA->name)!==false) $pTitle = str_ireplace($tagA->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
+              if (stripos($pText, $tagA->name)!==false) $pText = str_ireplace($tagA->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
+              if (stripos($pFullText, $tagA->name)!==false) $pFullText = str_ireplace($tagA->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!==false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
+              if (stripos($pRawText, $tagA->name)!==false) $pRawText = str_ireplace($tagA->name, '#'.$frmTag, $pRawText); elseif (stripos($pRawText, $frmTag)!==false) $pRawText = str_ireplace($frmTag, '#'.$frmTag, $pRawText); 
+              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && (stripos($pTitle, $tagA->name)!==false || stripos($pTitle, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $tagA->name)!==false || stripos($pText, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $tagA->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $tagA->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $tggs[] = '#'.$frmTag;
           } $tags = implode(' ',$tggs); $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat); $twLim = $twLim - strlen($tags);
         }
         if (stripos($twMsgFormat, '%CATS%')!==false) {
-          $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  str_replace(' ','_', str_replace('  ',' ',str_ireplace('&','&amp;',preg_replace("/[^A-Za-z0-9\s\s+\_]/","",$cat->name))));
-          if (stripos($pTitle, $cat->name)!=false) $pTitle = str_ireplace($cat->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!=false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
-              if (stripos($pText, $cat->name)!=false) $pText = str_ireplace($cat->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!=false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
-              if (stripos($pFullText, $cat->name)!=false) $pFullText = str_ireplace($cat->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!=false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
-              if (stripos($pRawText, $cat->name)!=false) $pRawText = str_ireplace($cat->name, '#'.$frmTag, $pRawText); elseif (stripos($pRawText, $frmTag)!=false) $pRawText = str_ireplace($frmTag, '#'.$frmTag, $pRawText); 
-              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && (stripos($pTitle, $cat->name)!=false || stripos($pTitle, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $cat->name)!=false || stripos($pText, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $cat->name)!=false || stripos($pFullText, $frmTag)!=false)) ||
-                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $cat->name)!=false || stripos($pRawText, $frmTag)!=false)) ) {} else $cats[] = '#'.$frmTag; 
+          $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  trim(str_replace(' ','_', str_replace('  ',' ',str_ireplace('&','&amp;',trim($cat->name)))));
+          if (stripos($pTitle, $cat->name)!==false) $pTitle = str_ireplace($cat->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
+              if (stripos($pText, $cat->name)!==false) $pText = str_ireplace($cat->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
+              if (stripos($pFullText, $cat->name)!==false) $pFullText = str_ireplace($cat->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!==false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
+              if (stripos($pRawText, $cat->name)!==false) $pRawText = str_ireplace($cat->name, '#'.$frmTag, $pRawText); elseif (stripos($pRawText, $frmTag)!==false) $pRawText = str_ireplace($frmTag, '#'.$frmTag, $pRawText); 
+              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && (stripos($pTitle, $cat->name)!==false || stripos($pTitle, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $cat->name)!==false || stripos($pText, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $cat->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
+                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $cat->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $cats[] = '#'.$frmTag; 
           } $ctts = implode(' ',$cats); $twMsgFormat = str_ireplace("%CATS%", $ctts, $twMsgFormat); $twLim = $twLim - strlen($ctts);
         }
         if (stripos($twMsgFormat, '%TITLE%')!==false) { if (stripos($pTitle, '.co.uk')!==false) $twLim = $twLim - 14;
@@ -173,12 +177,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
            $pFullText = nsTrnc(strip_tags($pFullText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pFullText, $twMsgFormat); $twLim = $twLim - strlen($pFullText);
         }          
         if (stripos($twMsgFormat, '%RAWTEXT%')!==false) {
-           $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - strlen($pRawText);
-        }          
-               
+           $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%RAWTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - strlen($pRawText);
+        }               
         $msg = nsFormatMessage($twMsgFormat, $postID);       
-        
-          
     } //prr($msg);
     
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; 
@@ -188,7 +189,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'http://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
       else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
-      else { nxs_metaMarkAsPosted($postID, 'TW', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} 
+      else { $twResp = json_decode($tmhOAuth->response['response'], true); if (is_array($twResp) && isset($twResp['id_str'])) $twNewPostID = $twResp['id_str'];  
+        $args = array('pgID'=>$twNewPostID, 'isPosted'=>1, 'pDate'=>date('Y-m-d H:i:s')); nxs_metaMarkAsPosted($postID, 'TW', $options['ii'], $args); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);
+      } 
     } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 
       $code .= " | ".$tmhOAuth->response['response']." | ".print_r($msg, true);
     }

@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.4.7
+Version: 2.4.8
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.4.7' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.4.8' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -462,14 +462,13 @@ Please see #4 and #5 for Twitter:<br/>
 <?php }  
         }
         
-        function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
-          if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"];  
+        function NS_SNAP_SavePostMetaTags($id) {   global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  
+          $post = get_post($id); if ($post->post_type=='revision') return;   if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"];  
           if (isset($nspost_edit) && !empty($nspost_edit)) { delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );
             foreach ($nxs_snapAvNts as $avNt) { 
               if (count($options[$avNt['lcode']])>0 && isset($_POST[$avNt['lcode']]) && count($_POST[$avNt['lcode']])>0) { $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); $newMeta = $_POST[$avNt['lcode']]; 
-              // echo "<br/>Code - ".$avNt['code']; echo "<br/>Saved"; prr($savedMeta); echo "<br/>Posted"; prr($newMeta);
-                if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], (serialize($newMeta))); 
-              // echo "<br/>ToBeSaved:"; prr($newMeta);  
+              if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); 
+              delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], (serialize($newMeta))); 
               }
             }            
           } // prr($_POST);
@@ -484,10 +483,6 @@ Please see #4 and #5 for Twitter:<br/>
 .underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
 .underdash a:hover {border-bottom: 1px #21759B dashed}
 </style>
-          <script type="text/javascript"> if (typeof jQuery == 'undefined') { var script = document.createElement('script'); script.type = "text/javascript"; 
-               script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
-          }</script>
-          
           <input value="SNAPEdit" type="hidden" name="SNAPEdit" />  
           <div class="popShAtt" style="width: 200px;" id="popShAttSV">Please "Update" the post before reposting, if you made any changes to the format</div>
           <?php if($post->post_status != "publish" ) { ?>

@@ -152,15 +152,16 @@ if (!function_exists("nxs_doCheckSU")) {function nxs_doCheckSU(){ global $nxs_su
   return false;  
 }}
 if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true);    echo "LOGGIN";
-    $response = wp_remote_get('http://www.stumbleupon.com/home'); $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
+    $response = wp_remote_get('https://www.stumbleupon.com/login'); $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; 
-    $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array();
+    $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array(); prr($frmTxt);
     while (stripos($frmTxt, '<input')!==false){ $inpField = trim(CutFromTo($frmTxt,'<input', '>')); $name = trim(CutFromTo($inpField,'name="', '"'));
      if ( stripos($inpField, '"hidden"')!==false && $name!='' && !in_array($name, $md)) { $md[] = $name; $val = trim(CutFromTo($inpField,'value="', '"')); $flds[$name]= $val; $mids .= "&".$name."=".$val;}
      $frmTxt = substr($frmTxt, stripos($frmTxt, '<input')+8);
     } $flds['user'] = $u; $flds['pass'] = $p; $flds['remember'] = 'true'; $flds['nativeSubmit'] = '0'; $flds['_method'] = 'create';   
     
     $r2 = wp_remote_post( 'https://www.stumbleupon.com/login', array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));
+    //prr($flds); prr($ckArr); prr($r2);
     $resp = json_decode($r2['body'], true);  
     if ($resp['_success']=='1') { $ckArr = nxsMergeArraysOV($ckArr, $r2['cookies']); $nxs_suCkArray = $ckArr; return false; } elseif (isset($resp['_reason'])) { return $resp['_reason']; } else return "ERROR";   
 }}
@@ -197,7 +198,7 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">StumbleUpon</span> - '.$options['nName'];      
       if ($options['suInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
       if (isset($options['suSvC'])) $nxs_suCkArray = maybe_unserialize( $options['suSvC']); $loginError = true;
-      if (is_array($nxs_suCkArray)) $loginError = nxs_doCheckSU(); if ($loginError!==false) $loginError = nxs_doConnectToSU($email, $pass); 
+      if (is_array($nxs_suCkArray)) $loginError = nxs_doCheckSU(); if ($loginError!=false) $loginError = nxs_doConnectToSU($email, $pass); 
       if (serialize($nxs_suCkArray)!=$options['suSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options;
         if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['su'][$options['ii']]['suSvC'] = serialize($nxs_suCkArray); update_option('NS_SNAutoPoster', $gOptions);  }
         else foreach ($gOptions['su'] as $ii=>$gpn) { $result = array_diff($options, $gpn); 

@@ -126,7 +126,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
     } 
       if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
       $email = $options['wpUName'];  $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
-      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); $img = $src; 
+      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; $msg = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); $img = $src; 
         $msgFormat = $options['wpMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['wpMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }
@@ -144,19 +144,20 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       
       $params = array(0, $options['wpUName'], $pass, array('software_version')); 
       if (!$nxsToWPclient->query('wp.getOptions', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
-      $rwpOpt = $nxsToWPclient->getResponse(); prr($rwpOpt); $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);
+      $rwpOpt = $nxsToWPclient->getResponse();  $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);prr($nxsToWPclient);
       
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#1A9EE6">WP</span> - '.$options['nName'];
       
-      if ($rwpOpt==0)  $ret = 'XMLRPC is not found or not active. WP admin - Settings - Writing - Enable XML-RPC'; 
-      else if ($rwpOpt<3.0)  $ret = 'XMLRPC is too OLD - '.$rwpOpt.' You need at least 3.0'; else {
+      if ($rwpOpt==0) { 
+        $errMsg = $nxsToWPclient->getErrorMessage(); if ($errMsg!='') $ret = $errMsg; else  $ret = 'XMLRPC is not found or not active. WP admin - Settings - Writing - Enable XML-RPC'; 
+      } else if ($rwpOpt<3.0)  $ret = 'XMLRPC is too OLD - '.$rwpOpt.' You need at least 3.0'; else {
        
         if ($rwpOpt>3.3){
           $nxsToWPContent = array('title'=>$msgT, 'description'=>$msg, 'post_status'=>'draft', 'mt_allow_comments'=>1, 'mt_allow_pings'=>1, 'post_type'=>'post', 'mt_keywords'=>$tags, 'categories'=>($cats), 'custom_fields' =>  $customfields);
           $params = array(0, $options['wpUName'], $pass, $nxsToWPContent, true);
           if (!$nxsToWPclient->query('metaWeblog.newPost', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
           $pid = $nxsToWPclient->getResponse();  
-      
+       
           if ($gid!='') {      
             $nxsToWPContent = array('post_thumbnail'=>$gid);  $params = array(0, $options['wpUName'], $pass, $pid, $nxsToWPContent, true);      
             if (!$nxsToWPclient->query('wp.editPost', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
