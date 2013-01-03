@@ -78,6 +78,15 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="li[<?php echo $ii; ?>][nName]" id="linName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('li', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('li', $ii, $options['nHrs'], $options['nMin']); ?>
             
+            <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="li[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSLI<?php echo $ii; ?>" type="radio" name="li[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_LI<?php echo $ii; ?>" onclick="jQuery('#catSelSLI<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('LI<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_LI<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="li[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_LI<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
+            
             <table width="800" border="0" cellpadding="10">
             <tr><td colspan="2">
             <div style="width:100%; text-align: center; color:#005800; font-weight: bold; font-size: 14px;">You can choose what API you would like to use. </div>
@@ -164,6 +173,10 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['apLIAPIKey']))$options[$ii]['liAPIKey'] = trim($pval['apLIAPIKey']);                                
         if (isset($pval['apLIAPISec']))$options[$ii]['liAPISec'] = trim($pval['apLIAPISec']);        
         if (isset($pval['apLIAttch'])) $options[$ii]['liAttch'] = $pval['apLIAttch']; else $options[$ii]['liAttch'] = 0;        
+        
+        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+        
         if (isset($pval['ulName']))     $options[$ii]['ulName'] = trim($pval['ulName']);        
         if (isset($pval['uPass']))     $options[$ii]['uPass'] = trim($pval['uPass']);        
         if (isset($pval['grpID']))     $options[$ii]['grpID'] = trim($pval['grpID']);                
@@ -176,19 +189,25 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; //prr($ntOpts);
-    foreach($ntOpts as $ii=>$options)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapLI', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doLI = $options['doLI']; 
+    foreach($ntOpts as $ii=>$options)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapLI', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doLI = $options['doLI'] && $options['catSel']!='1'; 
         $isAvailLI =  (isset($options['liOAuthVerifier']) && $options['liOAuthVerifier']!='' && $options['liAccessTokenSecret']!='' && $options['liAccessToken']!='' && $options['liAPIKey']!='') || ($options['ulName']!=='' && $options['uPass']!=='');
         $isAttachLI = $options['liAttch']; $liMsgFormat = htmlentities($options['liMsgFormat'], ENT_COMPAT, "UTF-8"); 
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailLI) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="li[<?php echo $ii; ?>][SNAPincludeLI]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doLI == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+<tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_LI<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailLI) { ?><input class="nxsGrpDoChb" value="1" id="doLI<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="li[<?php echo $ii; ?>][SNAPincludeLI]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doLI == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/li16.png);">LinkedIn - publish to (<i style="color: #005800;"><?php echo $options['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailLI) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToLI_repostButton" id="rePostToLI_button" value="<?php _e('Repost to LinkedIn', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToLI', 'rePostToLI_wpnonce' ); } ?>
+                    
+                    <?php if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
+                        ?> <span id="pstdLI<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+                      <a style="font-size: 10px;" href="<?php if ($options['uPage']!='') echo $options['uPage']; else { echo "http://www.linkedin.com/profile/view?id=".CutFromTo("XWEXW".$pMeta[$ii]['pgID'], "XWEXW", ' - '); } ?>" target="_blank">Posted on LinkedIn <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>
                 <?php if (!$isAvailLI) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your LinkedIn Account to AutoPost to LinkedIn</b>
-                <?php }elseif ($post->post_status != "puZblish") { ?> 
+                <?php } elseif ($post->post_status != "puZblish") { ?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                 <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachment</strong></td> </tr>               
@@ -196,7 +215,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo ($liMsgFormat); ?>" type="text" name="li[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLIMsgFrmt".$ii); ?></td></tr>
 
-   <?php } 
+                <?php } 
     }      
   }
   
@@ -242,7 +261,7 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
        if ($postID=='0') { $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = home_url();  
          } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc( strip_tags($post->post_title), 200); $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }} //prr($msg);
-      $ret = doPostToLinkedIn($msg, $lnk, $to); 
+      $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];
     } else { require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
       $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
@@ -252,9 +271,12 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
         try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
         catch (Exception $o){ echo "<br/>Linkedin Status couldn't be updated!</br>"; prr($o); echo '<br/>'; $ret="ERROR:".print_r($o, true); }     
       }    
+      //$liPostID = $linkedin->getCurrentShare(); prr($liPostID);
+      $liPostID = $options['liUserInfo'];
     }
-    if ($ret!='201') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } 
-      else if ($postID=='0') { echo 'OK - Linkedin status updated successfully';  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else {nxs_metaMarkAsPosted($postID, 'LI', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
+    if ($ret!='201') { if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } 
+      else if ($postID=='0') { echo 'OK - Linkedin status updated successfully';  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else 
+        { nxs_metaMarkAsPosted($postID, 'LI', $options['ii'], array('isPosted'=>'1', 'pgID'=>$liPostID, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
     if ($ret=='201') return true; else return 'Something Wrong';
   }
 }

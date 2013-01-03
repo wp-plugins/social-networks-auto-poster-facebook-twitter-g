@@ -41,6 +41,15 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">Detailed Pinterest Installation/Configuration Instructions</a></div>
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('pn', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('pn', $ii, $options['nHrs'], $options['nMin']); ?>
+            
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="pn[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSPN<?php echo $ii; ?>" type="radio" name="pn[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_PN<?php echo $ii; ?>" onclick="jQuery('#catSelSPN<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('PN<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_PN<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="pn[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_PN<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
                   
             <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -89,6 +98,10 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
         if (isset($pval['apPNPass']))    $options[$ii]['pnPass'] = 'g9c1a'.nsx_doEncode($pval['apPNPass']); else $options[$ii]['pnPass'] = '';
         if (isset($pval['apPNBoard']))   $options[$ii]['pnBoard'] = trim($pval['apPNBoard']);                
         if (isset($pval['apPNDefImg']))  $options[$ii]['pnDefImg'] = trim($pval['apPNDefImg']);
+        
+        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+        
         if (isset($pval['apPNMsgFrmt'])) $options[$ii]['pnMsgFormat'] = trim($pval['apPNMsgFrmt']);     
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
@@ -97,14 +110,20 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doPN = $ntOpt['doPN'];   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doPN = $ntOpt['doPN'] && $ntOpt['catSel']!='1';   
         $isAvailPN =  $ntOpt['pnUName']!='' && $ntOpt['pnPass']!=''; $pnMsgFormat = htmlentities($ntOpt['pnMsgFormat'], ENT_COMPAT, "UTF-8");        
       ?>  
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][SNAPincludePN]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPN == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_PN<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][SNAPincludePN]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPN == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToPN', 'rePostToPN_wpnonce' ); } ?>
+
+                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
+                        ?> <span id="pstdPN<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+          <a style="font-size: 10px;" href="http://pinterest.com<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Pinterest <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>                
                 
                 <?php if (!$isAvailPN) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Pinterest Account to AutoPost to Pinterest</b>
@@ -145,34 +164,33 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
   function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest'; 
   
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    $isAttachVid = $options['isAttachVid']; $isAttachVid = '1';
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
         nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-    }     
-  
+    }  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
+    
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
     else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); // echo "WW".$postID."|";
-    } 
-    
-    $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();
-    
+      if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
+    }
+    $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();    
     if (isset($options['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pnSvC']); $loginError = true;
     if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
-    if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}  
-    
+    if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}      
     if (serialize($nxs_gCookiesArr)!=$options['pnSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
         if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['pn'][$options['ii']]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions);  }        
         else foreach ($gOptions['pn'] as $ii=>$gpn) { $result = array_diff($options, $gpn);
           if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;
-    $ret = doPostToPinterest($msg, $imgURL, $link, $boardID);
-    if ($ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
-    if ($ret == 'OK') return 200; else return $ret;
+    $ret = doPostToPinterest($msg, $imgURL, $link, $boardID); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
+    if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+    if ($ret['code']=='OK') return 200; else return $ret;
   }
 }  
 ?>

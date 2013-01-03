@@ -1,5 +1,4 @@
 <?php
-
 if (!function_exists('prr')){ function prr($str) { echo "<pre>"; print_r($str); echo "</pre>\r\n"; }}        
 if (!function_exists('nsx_stripSlashes')){ function nsx_stripSlashes(&$value){$value = stripslashes($value);}}
 if (!function_exists('nsx_fixSlashes')){ function nsx_fixSlashes(&$value){ while (strpos($value, '\\\\')!==false) $value = str_replace('\\\\','\\',$value);
@@ -23,12 +22,16 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
 }}
 if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  
   if ($advImgFnd) $postCnt = apply_filters('the_content', $post->post_content); else $postCnt = $post->post_content;   $postImgs = array();
-  //$output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;} prr($matches);
-  $postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/src="([^"]*)"/', $postCnt, $matches ); if ($output === false){return false;}// prr($matches);
-  foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postImgs;
+  //$output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;} 
+  //$postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/src="([^"]*)"/', $postCnt, $matches ); if ($output === false){return false;}
+  $postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $postCnt, $matches ); // prr($matches);  
+  if ($output === false || $output == 0){ $vids = nsFindVidsInPost($post); if (count($vids)>0)  $postImgs[] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg';  else return false;} 
+    else { foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; }  
+  return $postImgs;
 }}
-if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
-  global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postCnt = apply_filters('the_content', $post->post_content); $postVids = array();
+if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+  global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
+  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;
   $output = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $postCnt, $matches ); if ($output === false){return false;}
   foreach ($matches[1] as $match) {  $match = trim($match); $postVids[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
 }}
@@ -40,29 +43,35 @@ if (!function_exists('nsSubStrEl')){ function nsSubStrEl($string, $length, $end=
 if (!function_exists('nxs_snapCleanHTML')){ function nxs_snapCleanHTML($html) { 
     $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html); $html = preg_replace('/<!--(.*)-->/Uis', "", $html); return $html;
 }}
-if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref, $post=false){ $hdrsArr = array(); 
+if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref='', $post=false){ $hdrsArr = array(); 
  $hdrsArr['Connection']='keep-alive'; $hdrsArr['Referer']=$ref;
  $hdrsArr['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.22 Safari/537.11';
  if($post) $hdrsArr['Content-Type']='application/x-www-form-urlencoded'; 
- $hdrsArr['Accept']='application/json, text/javascript, */*; q=0.01'; 
+ $hdrsArr['Accept']='application/json, text/javascript, */*; q=0.01';  
  $hdrsArr['Accept-Encoding']='gzip,deflate,sdch'; $hdrsArr['Accept-Language']='en-US,en;q=0.8'; $hdrsArr['Accept-Charset']='ISO-8859-1,utf-8;q=0.7,*;q=0.3'; return $hdrsArr;
 }}
-if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url){ $hdrsArr = nxs_getNXSHeaders(home_url()); $rsp  = wp_remote_head($url, array('headers' => $hdrsArr));  
+if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType='head'){ $hdrsArr = nxs_getNXSHeaders(); $nxsWPRemWhat = 'wp_remote_'.$chType; $rsp  = $nxsWPRemWhat($url, array('headers' => $hdrsArr));  
   if(is_wp_error($rsp)) { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; }
   if (is_array($rsp) && ($rsp['response']['code']=='200' || ( $rsp['response']['code']=='403' &&  $rsp['headers']['server']=='cloudflare-nginx') )) return true; 
-    else { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; } 
+    else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), $url); return false; }
+    } 
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
   if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') { $imgURL = trim(get_post_meta($postID, $options['featImgLocPrefix'], true)).trim(get_post_meta($postID, $options['featImgLoc'], true)); 
     if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
   } 
-  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';  if ($imgURL!='') return $imgURL;
   if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
-  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
-  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post);  if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
-  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
+  if ($imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
+      if (is_array($attachments) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID); $imgURL = $imgURL[0];      
+  }
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
+  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   if ($imgURL=='' && $def=='') $imgURL = $options['ogImgDef']; 
   if ($imgURL=='' && $def!='') $imgURL = $def; 
+  
   return $imgURL;
 }}
  
@@ -96,167 +105,57 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
 if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; 
    if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
 ?>
-
- <script type="text/javascript"> if (typeof jQuery == 'undefined') {var script = document.createElement('script'); script.type = "text/javascript"; 
-              script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"; document.getElementsByTagName('head')[0].appendChild(script);
-            }</script>
-            <script type="text/javascript">
-            (function(b){b.fn.bPopup=function(n,p){function t(){b.isFunction(a.onOpen)&&a.onOpen.call(c);k=(e.data("bPopup")||0)+1;d="__bPopup"+k;l="auto"!==a.position[1];m="auto"!==a.position[0];i="fixed"===a.positionStyle;j=r(c,a.amsl);f=l?a.position[1]:j[1];g=m?a.position[0]:j[0];q=s();a.modal&&b('<div class="bModal '+d+'"></div>').css({"background-color":a.modalColor,height:"100%",left:0,opacity:0,position:"fixed",top:0,width:"100%","z-index":a.zIndex+k}).each(function(){a.appending&&b(this).appendTo(a.appendTo)}).animate({opacity:a.opacity},a.fadeSpeed);c.data("bPopup",a).data("id",d).css({left:!a.follow[0]&&m||i?g:h.scrollLeft()+g,position:a.positionStyle||"absolute",top:!a.follow[1]&&l||i?f:h.scrollTop()+f,"z-index":a.zIndex+k+1}).each(function(){a.appending&&b(this).appendTo(a.appendTo);if(null!=a.loadUrl)switch(a.contentContainer=b(a.contentContainer||c),a.content){case "iframe":b('<iframe scrolling="no" frameborder="0"></iframe>').attr("src",a.loadUrl).appendTo(a.contentContainer);break;default:a.contentContainer.load(a.loadUrl)}}).fadeIn(a.fadeSpeed,function(){b.isFunction(p)&&p.call(c);u()})}function o(){a.modal&&b(".bModal."+c.data("id")).fadeOut(a.fadeSpeed,function(){b(this).remove()});c.stop().fadeOut(a.fadeSpeed,function(){null!=a.loadUrl&&a.contentContainer.empty()});e.data("bPopup",0<e.data("bPopup")-1?e.data("bPopup")-1:null);a.scrollBar||b("html").css("overflow","auto");b("."+a.closeClass).die("click."+d);b(".bModal."+d).die("click");h.unbind("keydown."+d);e.unbind("."+d);c.data("bPopup",null);b.isFunction(a.onClose)&&setTimeout(function(){a.onClose.call(c)},a.fadeSpeed);return!1}function u(){e.data("bPopup",k);b("."+a.closeClass).live("click."+d,o);a.modalClose&&b(".bModal."+d).live("click",o).css("cursor","pointer");(a.follow[0]||a.follow[1])&&e.bind("scroll."+d,function(){q&&c.stop().animate({left:a.follow[0]&&!i?h.scrollLeft()+g:g,top:a.follow[1]&&!i?h.scrollTop()+f:f},a.followSpeed)}).bind("resize."+d,function(){if(q=s())j=r(c,a.amsl),a.follow[0]&&(g=m?g:j[0]),a.follow[1]&&(f=l?f:j[1]),c.stop().each(function(){i?b(this).css({left:g,top:f},a.followSpeed):b(this).animate({left:m?g:g+h.scrollLeft(),top:l?f:f+h.scrollTop()},a.followSpeed)})});a.escClose&&h.bind("keydown."+d,function(a){27==a.which&&o()})}function r(a,b){var c=(e.width()-a.outerWidth(!0))/2,d=(e.height()-a.outerHeight(!0))/2-b;return[c,20>d?20:d]}function s(){return e.height()>c.outerHeight(!0)+20&&e.width()>c.outerWidth(!0)+20}b.isFunction(n)&&(p=n,n=null);var a=b.extend({},b.fn.bPopup.defaults,n);a.scrollBar||b("html").css("overflow","hidden");var c=this,h=b(document),e=b(window),k,d,q,l,m,i,j,f,g;this.close=function(){a=c.data("bPopup");o()};return this.each(function(){c.data("bPopup")||t()})};b.fn.bPopup.defaults={amsl:50,appending:!0,appendTo:"body",closeClass:"bClose",content:"ajax",contentContainer:null,escClose:!0,fadeSpeed:250,follow:[!0,!0],followSpeed:500,loadUrl:null,modal:!0,modalClose:!0,modalColor:"#000",onClose:null,onOpen:null,opacity:0.7,position:["auto","auto"],positionStyle:"absolute",scrollBar:!0,zIndex:9997}})(jQuery);
-            </script>
-            <script type="text/javascript">   
             
-           // function blinks(hide) { if(hide==1) { jQuery('.blnkg').show(); hide = 0; } else {  jQuery('.blnkg').hide(); hide = 1; } setTimeout("blinks("+hide+")",400);}            
-           // jQuery(document).ready(function(){ blinks(1);});
-<?php if( isset($options['exclCats']) && $options['exclCats']!='' && $options['exclCats']!='a:0:{}') { ?>
+<script type="text/javascript">   
 
-jQuery(function(){
-  jQuery("form input:checkbox[name='post_category[]']").click ( function(){  var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
-     var thVal = jQuery(this).val(); var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
-     if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
-     
+  jQuery(function(){
+    jQuery("form input:checkbox[name='post_category[]']").click ( function(){  var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
+       var thVal = jQuery(this).val();           
+       jQuery(".nxs_SC").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_SC_", "do", "gi");
+         if (jQuery.inArray(thVal, catsA)>-1)  jQuery('#'+uqID).attr('checked','checked')
+         //alert( uqID + "|" + catsA +  "|" + thVal);  
+       });         
+       var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
+       if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
+    });
   });
-});
+   
+  function seFBA(pgID,fbAppID,fbAppSec){ var data = { pgID: pgID, action: 'nsAuthFBSv', _wpnonce: jQuery('input#nsFB_wpnonce').val()}; 
+    jQuery.post(ajaxurl, data, function(response) {  
+      window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&scope=publish_stream,offline_access,read_stream,manage_pages&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>";
+    });                       
+  }
+  function doLic(){ var lk = jQuery('#eLic').val();  jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
+      if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
+    }, "html")
+  }
+  function testPost(nt, nid){ jQuery(".blnkg").hide(); <?php foreach ($nxs_snapAvNts as $avNt) {?>
+    if (nt=='<?php echo $avNt['code']; ?>') { 
+       var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: 0, nid: nid, _wpnonce: jQuery('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); 
+    }<?php } ?>
+  }
+  
+  jQuery(document).ready(function() {
+    jQuery('#nxsAPIUpd').dblclick(function() { doLic(); });
+    //When page loads...
+    jQuery(".nsx_tab_content").hide(); //Hide all content
+    jQuery("ul.nsx_tabs li:first").addClass("active").show(); //Activate first tab
+    jQuery(".nsx_tab_content:first").show(); //Show first tab content
 
-<?php } ?>
-      
-      
-      function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
-      function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
-      function doSwitchShAtt(att, idNum){
-        //if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
-        if (att==1) { if (jQuery('#apFBAttch'+idNum).is(":checked")) jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else { if( jQuery('#apFBAttchShare'+idNum).is(":checked")) jQuery('#apFBAttch'+idNum).attr('checked', false);}
-      }
+    //On Click Event
+    jQuery("ul.nsx_tabs li").click(function() {
+      jQuery("ul.nsx_tabs li").removeClass("active"); //Remove any "active" class
+      jQuery(this).addClass("active"); //Add "active" class to selected tab
+      jQuery(".nsx_tab_content").hide(); //Hide all tab content
+    
+      var activeTab = jQuery(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
+      jQuery(activeTab).fadeIn(); //Fade in the active ID content
+      return false;
+    });
+  });
+</script>
 
-            
-     (function($) {
-        $(function() {
-            $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });
-            $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false]}); });
-         });
-     })(jQuery);
-     
-     jQuery(document).ready(function() {
-         
-          jQuery('#nxsAPIUpd').dblclick(function() { doLic();  });
-
- //When page loads...
- jQuery(".nsx_tab_content").hide(); //Hide all content
- jQuery("ul.nsx_tabs li:first").addClass("active").show(); //Activate first tab
- jQuery(".nsx_tab_content:first").show(); //Show first tab content
-
- //On Click Event
- jQuery("ul.nsx_tabs li").click(function() {
-
-  jQuery("ul.nsx_tabs li").removeClass("active"); //Remove any "active" class
-  jQuery(this).addClass("active"); //Add "active" class to selected tab
-  jQuery(".nsx_tab_content").hide(); //Hide all tab content
-
-  var activeTab = jQuery(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
-  jQuery(activeTab).fadeIn(); //Fade in the active ID content
-  return false;
- });
-
-});
-            
-                
-            function doShowHideAltFormat(){ if (jQuery('#NS_SNAutoPosterAttachPost').is(':checked')) { 
-                    jQuery('#altFormat').css('margin-left', '20px'); jQuery('#altFormatText').html('Post Announce Text:'); } else {jQuery('#altFormat').css('margin-left', '0px'); jQuery('#altFormatText').html('Post Text Format:');}
-            }
-            function doShowHideBlocks(blID){ if (jQuery('#apDo'+blID).is(':checked')) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();}
-            function doShowHideBlocks1(blID, shhd){ if (shhd==1) jQuery('#do'+blID+'Div').show(); else jQuery('#do'+blID+'Div').hide();}            
-            function doShowHideBlocks2(blID){ if (jQuery('#apDoS'+blID).val()=='0') { jQuery('#do'+blID+'Div').show(); jQuery('#do'+blID+'A').text('[Hide Settings]'); jQuery('#apDoS'+blID).val('1'); } 
-              else { jQuery('#do'+blID+'Div').hide(); jQuery('#do'+blID+'A').text('[Show Settings]'); jQuery('#apDoS'+blID).val('0'); }
-            }
-            
-            function doShowFillBlock(blIDTo, blIDFrm){ jQuery('#'+blIDTo).html(jQuery('#do'+blIDFrm+'Div').html());}
-            function doCleanFillBlock(blIDFrm){ jQuery('#do'+blIDFrm+'Div').html('');}
-            
-            function doShowFillBlockX(blIDFrm){ jQuery('.clNewNTSets').hide(); jQuery('#do'+blIDFrm+'Div').show(); }
-            
-            function doDelAcct(nt, blID, blName){  var answer = confirm("Remove "+blName+" account?");
-              if (answer){ var data = { action: 'nsDN', id: 0, nt: nt, id: blID, _wpnonce: jQuery('input#nsDN_wpnonce').val()}; 
-                  jQuery.post(ajaxurl, data, function(response) { location.reload();  });
-              }           
-            }
-            function seFBA(pgID,fbAppID,fbAppSec){ var data = { pgID: pgID, action: 'nsAuthFBSv', _wpnonce: jQuery('input#nsFB_wpnonce').val()}; 
-              jQuery.post(ajaxurl, data, function(response) {  
-                window.location = "https://www.facebook.com/dialog/oauth?client_id="+fbAppID+"&client_secret="+fbAppSec+"&scope=publish_stream,offline_access,read_stream,manage_pages&redirect_uri=<?php echo $nxs_snapThisPageUrl;?>";
-              });                       
-            }
-            
-            function doLic(){ var lk = jQuery('#eLic').val(); 
-                jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
-                    if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
-                }, "html")
-            }
-            
-           
-            
-            function getBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
-                
-                jQuery.post(ajaxurl,{u:u,p:p,ii:ii, action: 'getBoards', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
-                    jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
-                }, "html")
-
-            }            
-            
-            function callAjSNAP(data, label) { 
-            var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
-            jQuery('body').append("<div id='test_results' style='" + style + "'></div>");
-            jQuery('#test_results').html("<p>Sending update to "+label+"</p>" + "<p><img src='http://gtln.us/img/misc/ajax-loader-med.gif' /></p>");
-            jQuery('#test_results').show();            
-            jQuery.post(ajaxurl, data, function(response) { if (response=='') response = 'Message Posted';
-                jQuery('#test_results').html('<p> ' + response + '</p>' +'<input type="button" class="button" name="results_ok_button" id="results_ok_button" value="OK" />');
-                
-                jQuery('#results_ok_button').click(remove_results);
-            });
-            
-        }       
-        function remove_results() { jQuery("#results_ok_button").unbind("click");jQuery("#test_results").remove();
-            if (typeof document.body.style.maxHeight == "undefined") { jQuery("body","html").css({height: "auto", width: "auto"}); jQuery("html").css("overflow","");}
-            document.onkeydown = "";document.onkeyup = "";  return false;
-        }
-        function testPost(nt, nid){ jQuery(".blnkg").hide(); <?php foreach ($nxs_snapAvNts as $avNt) {?>
-            if (nt=='<?php echo $avNt['code']; ?>') { 
-                var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: 0, nid: nid, _wpnonce: jQuery('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); 
-            }<?php } ?>
-        }
-        function mxs_showHideFrmtInfo(hid){
-              if(!jQuery('#'+hid+'Hint').is(':visible')) mxs_showFrmtInfo(hid); else {jQuery('#'+hid+'Hint').hide(); jQuery('#'+hid+'HintInfo').html('Show format info');}
-        }
-        function mxs_showFrmtInfo(hid){
-              jQuery('#'+hid+'Hint').show(); jQuery('#'+hid+'HintInfo').html('Hide format info'); 
-        }
-        function nxs_clLog(){
-              jQuery.post(ajaxurl,{action: 'nxs_clLgo', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
-                    jQuery("#nxslogDiv").html('');
-              }, "html")
-        }
-        function nxs_rfLog(){
-              jQuery.post(ajaxurl,{action: 'nxs_rfLgo', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
-                    jQuery("#nxslogDiv").html(j);
-              }, "html")
-        }
-        function nxs_prxTest(){  jQuery('#nxs_pchAjax').show();
-              jQuery.post(ajaxurl,{action: 'nxs_prxTest', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
-                    jQuery('#nxs_pchAjax').hide(); jQuery("#prxList").html(j);  
-              }, "html")
-        }
-        function nxs_TRSetEnable(ptype, ii){
-              if (ptype=='I'){ jQuery('#apTRMsgTFrmt'+ii).attr('disabled', 'disabled'); jQuery('#apTRDefImg'+ii).removeAttr('disabled'); } 
-                else { jQuery('#apTRDefImg'+ii).attr('disabled', 'disabled');  jQuery('#apTRMsgTFrmt'+ii).removeAttr('disabled'); }                
-        }
-        function nxsTRURLVal(ii){ var val = jQuery('#apTRURL'+ii).val(); var srch = val.toLowerCase().indexOf('http://www.tumblr.com/blog/');
-        if (srch>-1) { jQuery('#apTRURL'+ii).css({"background-color":"#FFC0C0"}); jQuery('#apTRURLerr'+ii).html('<br/>Incorrect URL: Please note that URL of your Tumblr Blog should be your public URL. (i.e. like http://nextscripts.tumblr.com/, not http://www.tumblr.com/blog/nextscripts'); } else { jQuery('#apTRURL'+ii).css({"background-color":"#ffffff"}); jQuery('#apTRURLerr'+ii).text(''); }
-
-            
-        }
-        
-        
-        
-        
-        </script>
-<link href='http://fonts.googleapis.com/css?family=News+Cycle' rel='stylesheet' type='text/css'>            
+  <link href='http://fonts.googleapis.com/css?family=News+Cycle' rel='stylesheet' type='text/css'>            
 <style type="text/css">
 .NXSButton { background-color:#89c403;
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
@@ -335,7 +234,7 @@ if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($p
   if (is_array($args) && isset($args['isPrePosted']) && $args['isPrePosted']==1) $mpo[$did]['isPrePosted'] = '1';  
   if (is_array($args) && isset($args['pgID'])) $mpo[$did]['pgID'] = $args['pgID'];  
   if (is_array($args) && isset($args['pDate'])) $mpo[$did]['pDate'] = $args['pDate'];  
-  $mpo = mysql_real_escape_string(serialize($mpo)); delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);
+  /*$mpo = mysql_real_escape_string(serialize($mpo)); */ delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, $mpo);
 }}
 if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ global $nxs_tpWMPU; if($nxs_tpWMPU=='S') switch_to_blog(1);  $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); 
   $logItem = array('date'=>date('Y-m-d H:i:s'), 'msg'=>$msg, 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt); if(!is_array($nxsDBLog)) $nxsDBLog = array();

@@ -4,8 +4,7 @@ $nxs_snapAvNts[] = array('code'=>'BG', 'lcode'=>'bg', 'name'=>'Blogger');
 
 if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'BG'; $lcode = 'bg'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
- 
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'BG'; $lcode = 'bg'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' );  
     ?>    
     <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Blogger Settings:   <?php $cfbo = count($ntOpts); $mfbo =  1+max(array_keys($ntOpts)); ?> <?php wp_nonce_field( 'nsFB', 'nsFB_wpnonce' ); ?>
     <div class="nsBigText">You have <?php echo $cfbo=='0'?'No':$cfbo; ?> Blogger account<?php if ($cfbo!=1){ ?>s<?php } ?> <!-- - <a href="#" class="NXSButton" onclick="doShowHideBlocks2('FB<?php echo $mfbo; ?>');return false;">Add new Facebook Account</a> --> </div></div>    
@@ -32,6 +31,15 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('bg', $ii, $options['qTLng']); ?>
             <?php echo nxs_addPostingDelaySel('bg', $ii, $options['nHrs'], $options['nMin']); ?>
+            
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="bg[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSBG<?php echo $ii; ?>" type="radio" name="bg[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_BG<?php echo $ii; ?>" onclick="jQuery('#catSelSBG<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('BG<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_BG<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="bg[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_BG<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
             
             <div style="width:100%;"><strong>Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGUName]" id="apBGUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['bgUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Blogger Password:</strong> </div><input name="bg[<?php echo $ii; ?>][apBGPass]" id="apBGPass" autocomplete="off" type="password" style="width: 30%;" value="<?php if (trim($options['bgPass'])!='') _e(apply_filters('format_to_edit', htmlentities(substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
@@ -75,6 +83,9 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
         
                 if (isset($pval['apDoBG']))   $options[$ii]['doBG'] = $pval['apDoBG']; else $options[$ii]['doBG'] = 0;
                 
+                if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+                if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+                
                 if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
                 if (isset($pval['apBGUName']))   $options[$ii]['bgUName'] = trim($pval['apBGUName']);
                 if (isset($pval['apBGPass']))    $options[$ii]['bgPass'] = 'b4d7s'.nsx_doEncode($pval['apBGPass']); else $options[$ii]['bgPass'] = '';
@@ -91,17 +102,22 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
-    foreach($ntOpts as $ii=>$options){ $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapBG', true)); if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doBG = $options['doBG']; 
+    foreach($ntOpts as $ii=>$options){ $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapBG', true)); if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doBG = $options['doBG'] && $options['catSel']!='1'; 
        $isAvailBG =  $options['bgUName']!='' && $options['bgPass']!='';  $bgMsgFormat = htmlentities($options['bgMsgFormat'], ENT_COMPAT, "UTF-8");  $bgMsgTFormat = htmlentities($options['bgMsgTFormat'], ENT_COMPAT, "UTF-8");
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailBG) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="bg[<?php echo $ii; ?>][SNAPincludeBG]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doBG == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+   <tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_BG<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailBG) { ?><input class="nxsGrpDoChb" value="1" id="doBG<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="bg[<?php echo $ii; ?>][SNAPincludeBG]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doBG == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);">Blogger - publish to (<i style="color: #005800;"><?php echo $options['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailBG) { ?>
-                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToBG_repostButton" id="rePostToBG_button" value="<?php _e('Repost to Blogger', 're-post') ?>" />
-                    
+                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToBG_repostButton" id="rePostToBG_button" value="<?php _e('Repost to Blogger', 're-post') ?>" />                    
                     <?php wp_nonce_field( 'rePostToBG', 'rePostToBG_wpnonce' ); } ?>
+                    
+                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
+                        ?> <span id="pstdBG<?php echo $ii; ?>" style="float: right; padding-top: 4px; padding-right: 10px;">
+          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Blogger <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>                    
+                    
                 </td></tr>
                 <?php if (!$isAvailBG) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Blogger Account to AutoPost to Blogger</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
@@ -144,7 +160,7 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
 if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); 
-    $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);
+    $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);  $text = preg_replace('/<iframe\b[^>]*>(.*?)<\/iframe>/is', "", $text);
     
     $postText = '<entry xmlns="http://www.w3.org/2005/Atom"><title type="text">'.$title.'</title><content type="xhtml">'.$text.'</content></entry>'; //prr($postText);
     $len = strlen($entry); $ch = curl_init("https://www.blogger.com/feeds/$blogID/posts/default"); 
@@ -152,7 +168,8 @@ if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blo
     curl_setopt($ch, CURLOPT_UNRESTRICTED_AUTH, 1);  curl_setopt($ch, CURLOPT_POST, true);  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)");
     curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1); curl_setopt($ch, CURLINFO_HEADER_OUT, true); 
-    $result = curl_exec($ch); curl_close($ch); if (stripos($result,'tag:blogger.com')!==false) return 'OK'; else { prr($result); return false;}
+    $result = curl_exec($ch); curl_close($ch); 
+    if (stripos($result,'tag:blogger.com')!==false) { $postID = CutFromTo($result, " rel='alternate' type='text/html' href='", "'"); return array("code"=>"OK", "post_id"=>$postID); } else { prr($result); return false;}
 }}
 if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
   function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';      
@@ -181,11 +198,10 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     // prr($msg); die();
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass);  $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
-    //## /Actual POST Code
-    
-    if ($ret!='OK') { if ($postID=='0') echo $ret;  nxs_addToLog($logNT, 'E', '-=ERROR=- '. strip_tags(print_r($ret, true)), $extInfo); return  $ret; }
+    //## /Actual POST Code    
+    if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret);  nxs_addToLog($logNT, 'E', '-=ERROR=- '. strip_tags(print_r($ret, true)), $extInfo); return  $ret; }
       else { if ($postID=='0') { echo 'OK - Message Posted, please see your '.$ntNm.' Page '; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); return 201;} 
-        else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
+        else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} return 200; }
   }
 }
 

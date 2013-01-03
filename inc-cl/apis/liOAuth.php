@@ -138,6 +138,19 @@ class nsx_LinkedIn {
     $response = $this->httpRequest($search_url, $auth_header, "GET");
     return $response;
   }
+
+  function getCurrentShare($parameters='') { 
+    $search_url = $this->base_url . "/v1/people/~/current-share";    
+    $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "GET", $search_url);
+    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
+    $auth_header = $request->to_header("https://api.linkedin.com");
+    if ($debug) {
+      echo $request->get_signature_base_string() . "\n";
+      echo $auth_header . "\n";
+    }
+    $response = $this->httpRequest($search_url, $auth_header, "GET");
+    return $response;
+  }
   
   function httpRequest($url, $auth_header, $method, $body = NULL) { // $this->debug = true; //if (!is_array($auth_header)) $auth_header = array($auth_header);
     if (!is_array($auth_header)) $auth_header = array($auth_header); 
@@ -154,13 +167,13 @@ class nsx_LinkedIn {
       curl_setopt($curl, CURLOPT_HTTPHEADER, $auth_header);   
     }
  
-    $data = curl_exec($curl); $errmsg = curl_error($curl);
+    $data = curl_exec($curl); $errmsg = curl_error($curl); //prr($data);// die();
     
     //## NextScripts Fix
     if (curl_errno($curl) == 60 || stripos($errmsg, 'SSL')!==false) {  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); $data = curl_exec($curl);}
     if (curl_errno($curl) > 0) { $err = curl_errno($curl); $errmsg = curl_error($curl); prr($errmsg); prr($err);}    
     //## /NextScripts Fix    
-    $header = curl_getinfo($curl); curl_close($curl); 
+    $header = curl_getinfo($curl); curl_close($curl);// prr($header);
 
     if ($this->debug) echo $data . "\n";    
     if (trim($data)=='' && $header['http_code']=='201') $data = '201';

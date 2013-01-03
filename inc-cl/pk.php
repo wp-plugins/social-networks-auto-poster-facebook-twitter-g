@@ -67,6 +67,15 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="pk[<?php echo $ii; ?>][nName]" id="pknName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('pk', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('pk', $ii, $options['nHrs'], $options['nMin']); ?>
             
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="pk[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSPK<?php echo $ii; ?>" type="radio" name="pk[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_PK<?php echo $ii; ?>" onclick="jQuery('#catSelSPK<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('PK<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_PK<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="pk[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_PK<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
+            
             <div style="width:100%;"><strong>Your Plurk URL:</strong> </div><input onchange="nxsPKURLVal(<?php echo $ii; ?>);" name="pk[<?php echo $ii; ?>][apPKURL]" id="apPKURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pkURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apPKURLerr<?php echo $ii; ?>"></span>
             <div style="width:100%;"><strong>Your Plurk App Key:</strong> </div><input name="pk[<?php echo $ii; ?>][apPKConsKey]" id="apPKConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pkConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
             <div style="width:100%;"><strong>Your Plurk App Secret:</strong> </div><input name="pk[<?php echo $ii; ?>][apPKConsSec]" id="apPKConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pkConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
@@ -124,7 +133,11 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
                 if (isset($pval['apDoPK']))         $options[$ii]['doPK'] = $pval['apDoPK']; else $options[$ii]['doPK'] = 0;
                 if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
                 if (isset($pval['apPKConsKey']))    $options[$ii]['pkConsKey'] = trim($pval['apPKConsKey']);
-                if (isset($pval['apPKConsSec']))    $options[$ii]['pkConsSec'] = trim($pval['apPKConsSec']);                                
+                if (isset($pval['apPKConsSec']))    $options[$ii]['pkConsSec'] = trim($pval['apPKConsSec']);
+                
+                if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+                if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+                                                
                 if (isset($pval['apPKMsgFrmt']))    $options[$ii]['pkMsgFormat'] = trim($pval['apPKMsgFrmt']);                                
                 if (isset($pval['Cat']))      $options[$ii]['pkCat'] = $pval['Cat']; else $options[$ii]['pkCat'] = "";
                 if (isset($pval['attchImg'])) $options[$ii]['attchImg'] = $pval['attchImg']; else $options[$ii]['attchImg'] = 0;                
@@ -135,16 +148,22 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
-    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPK', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doPK = $options['doPK']; 
+    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPK', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doPK = $options['doPK'] && $options['catSel']!='1'; 
        $isAvailPK =  isset($options['pkAccessTocken']) && isset($options['pkAccessTocken']['oauth_token_secret']) && $options['pkAccessTocken']['oauth_token_secret']!=='';          
        $pkMsgFormat = htmlentities($options['pkMsgFormat'], ENT_COMPAT, "UTF-8");  $pkMsgTFormat = htmlentities($options['pkMsgTFormat'], ENT_COMPAT, "UTF-8");
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailPK) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pk[<?php echo $ii; ?>][SNAPincludePK]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPK == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+<tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_PK<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailPK) { ?><input class="nxsGrpDoChb" value="1" id="doPK<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pk[<?php echo $ii; ?>][SNAPincludePK]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPK == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pk16.png);">Plurk - publish to (<i style="color: #005800;"><?php echo $options['nName']; ?></i>) </div></th><td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailPK) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToPK_repostButton" id="rePostToPK_button" value="<?php _e('Repost to Plurk', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToPK', 'rePostToPK_wpnonce' ); } ?>
+                    
+                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
+                        ?> <span id="pstdPK<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+          <a style="font-size: 10px;" href="http://www.plurk.com/p/<?php echo base_convert($pMeta[$ii]['pgID'], 10, 36); ?>" target="_blank">Posted on Plurk <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>
                 <?php if (!$isAvailPK) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and authorize your Plurk Account to AutoPost to Plurk</b>
                 <?php }elseif ($post->post_status != "puZblish") { ?> 
@@ -178,14 +197,14 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
 if (!function_exists("nxs_rePostToPK_ajax")) { function nxs_rePostToPK_ajax() {  check_ajax_referer('rePostToPK');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
     $options = get_option('NS_SNAutoPoster');  foreach ($options['pk'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapPK', true); $mpo =  maybe_unserialize($mpo); 
-      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassPN(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); }
+      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassPK(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); }
       $result = nxs_doPublishToPK($postID, $po); if ($result == 200 || $result == 201) die("Your post has been successfully sent to Plurk."); else { echo $result; die(); }
     }    
   }
 }
 
 if (!function_exists("nxs_doPublishToPK")) { //## Second Function to Post to TR
-  function nxs_doPublishToPK($postID, $options){ $ntCd = 'PK'; $ntCdL = 'pk'; $ntNm = 'Plurk';
+  function nxs_doPublishToPK($postID, $options){ $ntCd = 'PK'; $ntCdL = 'pk'; $ntNm = 'Plurk'; 
       
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
     
@@ -241,11 +260,12 @@ if (!function_exists("nxs_doPublishToPK")) { //## Second Function to Post to TR
     $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#014A76">Plurk</span> - '.$options['nName'];
     $postArr = array('content'=>$msg, 'qualifier'=>$options['pkCat']);
-    $postinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Timeline/plurkAdd', $postArr);    
+    $postinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Timeline/plurkAdd', $postArr);  // prr($postinfo);
+    if (is_array($postinfo) && isset($postinfo['plurk_id'])) $pkID = $postinfo['plurk_id'];    
     
     $code = $tum_oauth->http_code;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 200) { if ($postID=='0') { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Plurk  Page. <br/> Result:'; prr($postinfo); } 
-      else { nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  nxs_metaMarkAsPosted($postID, 'PK', $options['ii']);  } } 
+      else { nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  nxs_metaMarkAsPosted($postID, 'PK', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pkID, 'pDate'=>date('Y-m-d H:i:s')));  } } 
     else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($postinfo, true), $extInfo); if ($postID=='0') prr($postinfo); $code .= " ERROR: - ".$postinfo['error_text']; }
     
     return $code;

@@ -31,7 +31,16 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
             <?php if ($isNew){ ?> <br/>You can setup any Wordpress based blog with activated XML-RPC support (WP Admin->Settimgs->Writing->Remote Publishing->Check XML-RPC). Wordpress.com and Blog.com supported as well.<br/><br/> <?php } ?> 
             
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
-            <?php echo nxs_addQTranslSel('wp', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
+            <?php echo nxs_addQTranslSel('wp', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
+            
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="wp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSWP<?php echo $ii; ?>" type="radio" name="wp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_WP<?php echo $ii; ?>" onclick="jQuery('#catSelSWP<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('WP<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_WP<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($gpo['catSelEd']!='') echo "[".(substr_count($gpo['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="wp[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_WP<?php echo $ii; ?>" value="<?php echo $gpo['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
             
             <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
             <p style="font-size: 11px; margin: 0px;">Usually its a URL of your Wordpress installation with /xmlrpc.php at the end.<br/> Please use <b style="color: #005800;">http://YourUserName.wordpress.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.wordpress.com/xmlrpc.php</i>) for Wordpress.com blogs. <br/> Please  use <b style="color: #005800;">http://YourUserName.blog.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.blog.com/xmlrpc.php</i> for Blog.com blogs</p>
@@ -69,7 +78,11 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
         if (isset($pval['apWPUName']))   $options[$ii]['wpUName'] = trim($pval['apWPUName']);
         if (isset($pval['apWPPass']))    $options[$ii]['wpPass'] = 'n5g9a'.nsx_doEncode($pval['apWPPass']); else $options[$ii]['wpPass'] = '';  
         if (isset($pval['apWPMsgFrmt'])) $options[$ii]['wpMsgFormat'] = trim($pval['apWPMsgFrmt']);                                                  
-        if (isset($pval['apWPMsgTFrmt'])) $options[$ii]['wpMsgTFormat'] = trim($pval['apWPMsgTFrmt']);                                                  
+        if (isset($pval['apWPMsgTFrmt'])) $options[$ii]['wpMsgTFormat'] = trim($pval['apWPMsgTFrmt']);               
+        
+        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+                                           
         if (isset($pval['apDoWP']))      $options[$ii]['doWP'] = $pval['apDoWP']; else $options[$ii]['doWP'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
@@ -78,14 +91,21 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapWP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doWP = $ntOpt['doWP'];   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapWP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doWP = $ntOpt['doWP'] && $ntOpt['catSel']!='1';   
         $isAvailWP =  $ntOpt['wpUName']!='' && $ntOpt['wpPass']!=''; $wpMsgFormat = htmlentities($ntOpt['wpMsgFormat'], ENT_COMPAT, "UTF-8"); $wpMsgTFormat = htmlentities($ntOpt['wpMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_WP<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToWP', 'rePostToWP_wpnonce' ); } ?>
+                    
+                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { $wpURL = str_ireplace('/xmlrpc.php', '', $ntOpt['wpURL']);
+                        if (substr($wpURL, -1)=='/') $wpURL = substr($wpURL, 0, -1);  $wpURL = $wpURL."/";
+                        ?> <span id="pstdWP<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+          <a style="font-size: 10px;" href="<?php echo $wpURL; ?>?p=<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Wordpress Blog <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>                
                 
                 <?php if (!$isAvailWP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your WP Blog Account to AutoPost to WP Blogs</b>
@@ -124,9 +144,9 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
         nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
     } 
-      if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}      
+      $imgURL = nxs_getPostImage($postID);
       $email = $options['wpUName'];  $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
-      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; $msg = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); $img = $src; 
+      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; $msg = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); 
         $msgFormat = $options['wpMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['wpMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }
@@ -136,8 +156,8 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
 
       //## Post   
       require_once ('apis/xmlrpc-client.php'); $nxsToWPclient = new NXS_XMLRPC_Client($options['wpURL']); $nxsToWPclient->debug = false;
-      if ($src!=='' && stripos($src, 'http')!==false) {      
-        $handle = fopen($src, "rb"); $filedata = ''; while (!feof($handle)) {$filedata .= fread($handle, 8192);} fclose($handle);
+      if ($imgURL!=='' && stripos($imgURL, 'http')!==false) {      
+        $handle = fopen($imgURL, "rb"); $filedata = ''; while (!feof($handle)) {$filedata .= fread($handle, 8192);} fclose($handle);
         $data = array('name'  => 'image-'.$postID.'.jpg', 'type'  => 'image/jpg', 'bits'  => new NXS_XMLRPC_Base64($filedata), true); 
         $status = $nxsToWPclient->query('metaWeblog.newMediaObject', $postID, $options['wpUName'], $pass, $data);  $imgResp = $nxsToWPclient->getResponse();  $gid = $imgResp['id'];
       } else $gid = '';
@@ -172,7 +192,8 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
         }
       } if ($ret!='OK') { if ($postID=='0') echo $ret; 
         nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);
-      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else { nxs_metaMarkAsPosted($postID, 'WP', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else 
+        { nxs_metaMarkAsPosted($postID, 'WP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
       if ($ret == 'OK') return 200; else return $ret;
   }
 }  

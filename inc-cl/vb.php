@@ -33,6 +33,15 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="vb[<?php echo $ii; ?>][nName]" id="vbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('vb', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('vb', $ii, $options['nHrs'], $options['nMin']); ?>
             
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="vb[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSVB<?php echo $ii; ?>" type="radio" name="vb[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_VB<?php echo $ii; ?>" onclick="jQuery('#catSelSVB<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('VB<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_VB<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="vb[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_VB<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
+            
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">vBulletin URL:</strong> <span style="font-size: 11px; margin: 0px;">Could be Forum URL or Thread URL. Either new thread of new post will be created.</span></div>
                 <input name="vb[<?php echo $ii; ?>][apVBURL]" id="apVBURL" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vbURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/> 
@@ -81,6 +90,10 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
         if (isset($pval['vbInclTags']))     $options[$ii]['vbInclTags'] = $pval['vbInclTags']; else $options[$ii]['vbInclTags'] = 0;
         if (isset($pval['apVBMsgTFrmt'])) $options[$ii]['vbMsgTFormat'] = trim($pval['apVBMsgTFrmt']);
         if (isset($pval['apVBMsgFrmt'])) $options[$ii]['vbMsgFormat'] = trim($pval['apVBMsgFrmt']);
+        
+        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+        
         if (isset($pval['apDoVB']))      $options[$ii]['doVB'] = $pval['apDoVB']; else $options[$ii]['doVB'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
@@ -89,15 +102,22 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapVB', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doVB = $ntOpt['doVB'];   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapVB', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doVB = $ntOpt['doVB'] && $ntOpt['catSel']!='1';   
         $isAvailVB =  $ntOpt['vbUName']!='' && $ntOpt['vbPass']!=''; $vbMsgFormat = htmlentities($ntOpt['vbMsgFormat'], ENT_COMPAT, "UTF-8"); $vbMsgTFormat = htmlentities($ntOpt['vbMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][SNAPincludeVB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_VB<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" id="doVB<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][SNAPincludeVB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);">vBulletin - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailVB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToVB_repostButton" id="rePostToVB_button" value="<?php _e('Repost to vBulletin', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToVB', 'rePostToVB_wpnonce' ); } ?>
+                    
+                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { $wpURL = str_ireplace('/xmlrpc.php', '', $ntOpt['vbURL']);
+                        if (substr($wpURL, -1)=='/') $wpURL = substr($wpURL, 0, -1);  $wpURL = $wpURL."/";
+                        ?> <span id="pstdVB<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on vBulletin <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>                
                 
                 <?php if (!$isAvailVB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your vBulletin Account to AutoPost to vBulletin</b>
@@ -191,11 +211,11 @@ if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, 
   }
  
   //echo $smURL."|"; prr($flds);
-  $r2 = wp_remote_post( $smURL, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));   
+  $r2 = wp_remote_post( $smURL, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));// prr($r2['response']);   prr(htmlentities($r2['body'])); $r2['body'] = ''; prr($r2); die();
   if (stripos($r2['body'], 'errorblock')!==false) return trim(strip_tags( CutFromTo($r2['body'], 'errorblock','</div>')));
   if (stripos($r2['body'], 'exec_refresh()')!==false && stripos($r2['body'], 'blockrow restore">')!==false) return trim(strip_tags( CutFromTo($r2['body'], 'blockrow restore">','</p>')));
   if (stripos($r2['body'], '<error>')!==false) return trim(strip_tags( CutFromTo($r2['body'], '<error>','</error>')));
-  if ( $r2['response']['code']=='302' || $r2['response']['code']=='303') return 'OK';
+  if ( $r2['response']['code']=='302' || $r2['response']['code']=='303') { return array("code"=>"OK", "post_id"=>$r2['headers']['location']); }
   if (stripos($r2['body'], '<newpostid>')!==false || stripos($r2['body'], 'postbit postid="')!==false ) return 'OK';
   
   // $r2['body'] = htmlentities($r2['body']);  prr($r2);    die();
@@ -229,9 +249,10 @@ if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
       }  //var_dump($loginError);
       if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";} 
       $ret = nxs_doPostToVB($options['vbURL'], $msgT, $msg, $link, $tags);      
-      if ($ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
-        else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your vBulletin Page '; } else { nxs_metaMarkAsPosted($postID, 'VB', $options['ii']); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
-      if ($ret == 'OK') return 200; else return $ret;
+      if ( (!is_array($ret)) && $ret!='OK'){ if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
+        else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your vBulletin Page '; } else 
+          { nxs_metaMarkAsPosted($postID, 'VB', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
+      if ($ret['code']=='OK') return 200; else return $ret;
       
   }
 }  

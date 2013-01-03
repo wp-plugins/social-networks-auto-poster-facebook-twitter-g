@@ -60,6 +60,15 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
             <?php echo nxs_addQTranslSel('tr', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('tr', $ii, $options['nHrs'], $options['nMin']); ?>
             
+             <?php if (!$isNew) { ?>
+    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="tr[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSTR<?php echo $ii; ?>" type="radio" name="tr[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_TR<?php echo $ii; ?>" onclick="jQuery('#catSelSTR<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('TR<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_TR<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="tr[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_TR<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    </div> 
+    <br/>
+    <?php } ?>
+            
             <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
             <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
@@ -145,6 +154,8 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 if (isset($pval['apTRPostType']))   $options[$ii]['trPostType'] = trim($pval['apTRPostType']);   
                 if (isset($pval['cImgURL']))        $options[$ii]['cImgURL'] = trim($pval['cImgURL']);   
                 
+                if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+                if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';                
                 
                 if (isset($pval['apTRDefImg']))     $options[$ii]['trDefImg'] = trim($pval['apTRDefImg']);   
                 if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
@@ -154,16 +165,22 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
-    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTR', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doTR = $options['doTR']; 
+    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTR', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doTR = $options['doTR'] && $options['catSel']!='1'; 
        $isAvailTR =  isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='';          
        $trMsgFormat = htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8");  $trMsgTFormat = htmlentities($options['trMsgTFormat'], ENT_COMPAT, "UTF-8");
       ?>  
       
-      <tr><th style="text-align:left;" colspan="2">
-      <?php if ($isAvailTR) { ?><input class="nxsGrpDoChb" value="1" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tr[<?php echo $ii; ?>][SNAPincludeTR]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTR == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+ <tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_TR<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
+      <?php if ($isAvailTR) { ?><input class="nxsGrpDoChb" value="1" id="doTR<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tr[<?php echo $ii; ?>][SNAPincludeTR]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTR == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);">Tumblr - publish to (<i style="color: #005800;"><?php echo $options['nName']; ?></i>) </div></th><td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailTR) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"Z type="button" class="button" name="rePostToTR_repostButton" id="rePostToTR_button" value="<?php _e('Repost to Tumblr', 're-post') ?>" />
                     <?php wp_nonce_field( 'rePostToTR', 'rePostToTR_wpnonce' ); } ?>
+                    
+                    <?php if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
+                        ?> <span id="pstdTR<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
+                      <a style="font-size: 10px;" href="<?php echo $options['trURL']; ?>post/<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Tumblr <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>
+                    
                 </td></tr>
                 <?php if (!$isAvailTR) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and authorize your Tumblr Account to AutoPost to Tumblr</b>
                 <?php }elseif ($post->post_status != "puZblish") { ?> 
@@ -227,11 +244,11 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
         elseif ($options['cImgURL']=='S' ) {$postArr['link'] = get_permalink($postID); $postArr['link'] = nxs_mkShortURL($postArr['link']);} 
     } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = get_permalink($postID); $postArr['body'] = $msg; } 
     
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); // prr($postArr);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); //prr($postinfo); // prr($postArr);
     
     $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } 
-      else { nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  nxs_metaMarkAsPosted($postID, 'TR', $options['ii']);  } } 
+      else { nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  nxs_metaMarkAsPosted($postID, 'TR', $options['ii'], array('isPosted'=>'1', 'pgID'=>$postinfo->response->id, 'pDate'=>date('Y-m-d H:i:s')));  } } 
     else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($postinfo, true), $extInfo); if ($postID=='0') prr($postinfo); $code .= " - ".$postinfo->meta->msg.$postinfo->errmsg; }
     
     return $code;

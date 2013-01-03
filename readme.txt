@@ -3,9 +3,9 @@
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph
-Requires at least: 2.8
-Tested up to: 3.4.2
-Stable tag: 2.4.8
+Requires at least: 3.0
+Tested up to: 3.5
+Stable tag: 2.5.0
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -18,7 +18,9 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-**Latest version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
+**Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the “Edit” page, ability to assign categories to each Social Network.  
+*Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
+*Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
 
 Supported Networks:
 
@@ -146,23 +148,36 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 2.4.8 =
+= 2.5.0 [01/02/2013] =
+
+* New - Export/Import plugin settings 
+* New/Improvement - Direct links to posts in the "Edit" page.
+* New/Improvement - Pinterest - ability to "Pin" videos.
+* Improvement - Facebook - Photos could be posted to the App Album or to the "Wall" album to avoid grouping
+* Improvement - if post has video and no images, video preview image wil be used.
+* Improvement/Bug fix - Fixed incorrect image checking against websites blocking HEAD request.
+* Improvement/Bug fix - support for "attached" but not "featured" images.
+* Bug fix - Facebook broken "image" post if post has video.
+* Bug fix - Plurk was not taking settings from the "Edit" page
+* Bug fix - Blogger (Free API) iframe was breaking autoposting
+
+= 2.4.8 [12/21/2012] =
 
 * New/Improvement - external jQuery reference removed.
 * Bug fix - Pinterest board selection fix.
 * Bug fix - StumbleUpon connection fix.
 * Bug fix - Twitter %TAGS% and %CATS% for non English characters
 * Bug fix - Twitter %TAGS% and %CATS% were not found in the text sometimes.
-* Bug fix - Wordpress better handlying of connection errors.
+* Bug fix - Wordpress better handling of connection errors.
 * Bug fix - Post status saving.
 
-= 2.4.7 =
+= 2.4.7 [12/13/2012] =
 
 * New/Improvement - Ability to change format before reposting when you edit post.
 * Bug fix - Critical Blogger "Function not found" fix.
 * Bug fix - Escaped quotes in Message Format.
 
-= 2.4.6 =
+= 2.4.6 [12/12/2012] =
 
 * Improvement - Wordpress 3.5 compatibility
 * Improvement/Bug fix - Better image handling.
@@ -170,14 +185,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Fixed LinkedIn for European accounts.
 * Bug fix - Twitter Message length tweaks.
 
-= 2.4.5 =
+= 2.4.5 [12/07/2012] =
 
 * Improvement/Bug fix - Google+ better "Post type" selection.
 * Bug fix - Google+ - image uploads for pages go to the right album, not profile.
 * Bug fix - Google+ - Correct image for "attached" posts
 * Bug fix - Twitter image attachment broken in 2.4.4
 
-= 2.4.4 =
+= 2.4.4 [12/06/2012] =
 
 * Improvement - Twitter - If tags and categories are already in the text will become hashtags, not duplicates.
 * Improvement/Bug fix - "Check All/Uncheck All" links now have priority over category selection.
@@ -185,7 +200,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Plurk - 180 characters limit.
 * Bug fix - Twitter correct characters count (119) for "Posts with image"
 
-= 2.4.3 =
+= 2.4.3 [12/04/2012] =
 
 * New - Support for Wordpress Built-in Shortener
 * Improvement/Bug fix - Facebook - better image posting.
@@ -197,7 +212,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Pinterest UTF characters in the Board names.
 * Bug fix - Pinterest - better Handling of Error 502.
 
-= 2.4.2 =
+= 2.4.2 [11/30/2012] =
 
 * New - New network: Plurk. share your new blogpost on your Plurk account.
 * New - Twitter - ability to post tags and categories as #hashtags
@@ -206,14 +221,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - SSL connections fix and SSL cerificate update
 * Bug fix - Broken URL Shorthener selection
 
-= 2.4.1 =
+= 2.4.1 [11/22/2012] =
 
 * Bug fix - Twitter error if  attachmet image is missing
 * Bug fix - Issue with apostrophes and quotes
 * Improvement - "Click-through URL" for the Tumblr "Photo" posts can use shorthened URLs.
 * Improvement - Ability to select custom field instead of the featured image.
 
-= 2.4.0 =
+= 2.4.0 [11/13/2012] =
 
 * New - Facebook "Photo" posts.
 * New - Ablity to attach image to Twitter posts
@@ -221,7 +236,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * New - wp.me support for short links. (Jetpack users only)
 * Improvement - "Click-through URL" for the Tumblr "Photo" posts.
 
-= 2.3.12 =
+= 2.3.12 [11/09/2012] =
 
 * Improvement/Bug fix - Blogger Better support for broken HTML.
 * Bug fix - LinkedIn "Empty Message" Fix 
@@ -303,7 +318,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Facebook stability.
 * Bug fix - WP Multisite Management problems.
 
-= 2.3.0 =
+= 2.3.0 [10/12/2012] =
 
 * New - Support for WP Multisite (Pro Only) - http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions/
 * New - New network: Stumbleupon. Share your new blogpost on your StumbleUpon account.
@@ -353,7 +368,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - LinkedIn was still attaching a post if not selected.
 * Bug fix - Problem with Log/History saving.
 
-= 2.2.0 =
+= 2.2.0 [09/25/2012] =
 
 * New - NextScript LinkeIn API support for company pages auto-posting (Beta).
 * New - Actions Log - see the log of the auto-postings.
@@ -382,7 +397,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Broken quotes in the "Message Format".
 * Bug fix - "Post Immediately" was broken for free accounts.
 
-= 2.1.0 =
+= 2.1.0 [09/12/2012] =
 * New - New network: Wordpress based websites. This option includes Wordpress.com, Blog.com, and and any other blogs based on WP.
 * Improvement - nicknames for your accounts. You can give each account a nickname to make it easier to identify in the list.
 * Improvement - better looking settings pages. 
@@ -406,7 +421,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.0.9 =
 * Bug fix - Facebook Authorization "Error 100" Fix.
 
-= 2.0.8 =
+= 2.0.8 [08/06/2012] =
 * Improvement - Better list of available accounts.
 * Improvement/Bug fix - a lot of cosmetic interface changes and code optimizations for problem fixing and better looking.
 * Bug fix - Google+ Wrong options when using "Repost Button"
@@ -434,7 +449,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.0.3 =
 * Initial public 2.0 Release.
 
-= 1.9.13 =
+= 1.9.13 [08/28/2012] =
 * Improvement - Pinterest is caching login info to prevent "multiple logins" issues.
 * Bug fix - Pinterest special characters
 * Bug fix - Tumblr Authorization issue.
@@ -492,7 +507,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Correct Special Character Encoding
 * Bug fix - Blooger Encoding issues.
 
-= 1.9.0 =
+= 1.9.0  [07/13/2012]=
 * New - LinkedIn Support
 * Improvement - Post Options are now movable
 * Improvement - Security for Google+, Pinterest, Blogger - passwords are better encoded in the DB.
@@ -509,7 +524,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Facebook %TEXT% and %FULLTEXT% formatiing issues.
 * Bug fix - Some Blogger Authorization issues.
 
-= 1.8.5 =
+= 1.8.5  [07/05/2012]=
 * Bug fix - Format settings disappeared after update post
 * Bug fix - Twitter 140 characters limit when used with %TEXT% and %FULLTEXT%
 
@@ -532,7 +547,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - Pinterest - ability to change board during the post writing
 * Bug fix - Several small bugs and formating fixes.
 
-= 1.8.0 =
+= 1.8.0  [06/29/2012]=
 * New - Pinterest Support
 * New - Tumblr Support
 * New/Improvement - %IMG% replacement tag - Inserts Featured Image URL
@@ -547,7 +562,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - Google+ Phone Verification support
 * Bug fix - Google+ "You are not authorized for this page" Error
 
-= 1.7.5 =
+= 1.7.5  [06/14/2012]=
 * New/Improvement - %SURL% replacement tag - Shortens URL
 * Improvement - Wordpress 3.4 Compatibility
 * Improvement - Better handling of Twitter's "140 characters limit" 
@@ -565,7 +580,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 1.7.1 =
 * Bug fix - Repost button fixed.
 
-= 1.7.0 =
+= 1.7.0 [06/05/2012] =
 * New - Support for Wordpress "Custom Post Types".
 * New - Ability to add open graph tags without third party plugins.
 * Improvement - Better compatibility/faster Google+ posting.
@@ -575,7 +590,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug fix - Fixed missing "Pending-to-Publish" status change.
 * Bug fix - Twitter settings page format fixed.
 
-= 1.6.2 =
+= 1.6.2 [05/09/2012]=
 * Bug fix - Fix for "Cannot modify header information" message while posting to Twitter.
 
 = 1.6.1 =
