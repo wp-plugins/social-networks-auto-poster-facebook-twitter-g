@@ -32,8 +32,13 @@ if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advI
 if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
   if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;
-  $output = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $postCnt, $matches ); if ($output === false){return false;}
-  foreach ($matches[1] as $match) {  $match = trim($match); $postVids[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
+  $output = preg_match_all( '@((https?://)?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?(#[a-z_.-][a-z0-9+\$_.-]*)?)*)@', $postCnt, $matches );  if ($output === false){return false;} 
+  foreach ($matches[0] as $match) {  
+     $output2 = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"<>&?/ ]{11})%i', $match, $matches2 );  if ($output2 === false){return false;} 
+     foreach ($matches2[1] as $match2) {  $match2 = trim($match2); if (strlen($match2)==11) $postVids[] = $match2;} 
+     $output3 = preg_match_all( '/^http:\/\/(www\.)?vimeo\.com\/(clip\:)?(\d+).*$/', $match, $matches3 );  if ($output3 === false){return false;} 
+     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
+  } $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
 }}
 if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(strlen($string) <= $limit) return $string; $string = substr($string, 0, $limit-strlen($pad)); 
   $brLoc = strripos($string, $break);  if ($brLoc===false) return $string.$pad; else return substr($string, 0, $brLoc).$pad; 
@@ -210,7 +215,7 @@ if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t){ ?>
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
 }}
 
-if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){  global $nxs_snapAvNts; 
+if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){   global $nxs_snapAvNts; 
     foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])>1) { $copt = ''; $t = '';
       if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']])) $copt = array_values( $options[$avNt['lcode']] );  
       $t = (isset($copt[0]) && is_array($copt[0]) && count($copt[0]>2))?$copt[0]:''; $options[$avNt['lcode']] = array(); if ($t!='') $options[$avNt['lcode']][] = $t;

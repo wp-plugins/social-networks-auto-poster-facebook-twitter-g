@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -18,13 +18,15 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-**Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the “Edit” page, ability to assign categories to each Social Network.  
+**Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network.  
+
 *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
+
 *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
 
 Supported Networks:
 
-**Blogger/Blogspot** - Autopost to your Blog.
+**Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
 
 **Delicious** - Auto-submit bookmark to your account. 
 
@@ -32,15 +34,15 @@ Supported Networks:
 
 **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 
-**Google+** (*with third party library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
+**Google+** (*with third party API library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
 
-**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages (*with third party library*)
+**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
 
-**Pinterest** (*with third party library*) - Pin your blogpost's featured image to your Pinterest board.
+**Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
 
 **Stumbleupon** - Auto-submit bookmark to your account. 
 
-**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. 
+**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
 
 **Twitter** - Autopost to your account. Ability to attach Image to tweets.
 
@@ -148,6 +150,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.5.1 [01/06/2013] =
+
+* New - New network: LiveJournal. Repost your blogposts to your LiveJournal account.
+* New/Improvement - Facebook - support for Vimeo videos
+* Improvement/Bug fix - Facebook - better handling of videos in the post.
+* Bug fix - Import was button broken on some sites
+
 = 2.5.0 [01/02/2013] =
 
 * New - Export/Import plugin settings 
@@ -157,9 +166,9 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - if post has video and no images, video preview image wil be used.
 * Improvement/Bug fix - Fixed incorrect image checking against websites blocking HEAD request.
 * Improvement/Bug fix - support for "attached" but not "featured" images.
-* Bug fix - Facebook broken "image" post if post has video.
+* Bug fix - Facebook were getting a broken "image" post if post contained a video.
 * Bug fix - Plurk was not taking settings from the "Edit" page
-* Bug fix - Blogger (Free API) iframe was breaking autoposting
+* Bug fix - Blogger (Free API) iframe was breaking autoposting with "iframe" must be followed by the ' = ' character." message
 
 = 2.4.8 [12/21/2012] =
 
