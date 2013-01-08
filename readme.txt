@@ -22,35 +22,22 @@ Social Networks Auto Poster can automatically publish nicely formatted announcem
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
 * *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
 
-=Supported Networks=
+= Supported Networks =
 
-**Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
-
-**Delicious** - Auto-submit bookmark to your account. 
-
-**Diigo** - Auto-submit bookmark to your account. 
-
-**Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
-
-**Google+** (*with third party API library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
-
-**LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
-
-**LiveJournal** - Auto-submit your blogpost to LiveJournal. 
-
-**Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
-
-**Stumbleupon** - Auto-submit bookmark to your account. 
-
-**Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
-
-**Twitter** - Autopost to your account. Ability to attach Image to tweets.
-
-**Plurk**  - Autopost to your account. Ability to attach Image to messages.
-
-**vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
-
-**Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
+* **Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
+* **Delicious** - Auto-submit bookmark to your account. 
+* **Diigo** - Auto-submit bookmark to your account. 
+* **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
+* **Google+** (*with third party API library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
+* **LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
+* **LiveJournal** - Auto-submit your blogpost to LiveJournal. 
+* **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
+* **Stumbleupon** - Auto-submit bookmark to your account. 
+* **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
+* **Twitter** - Autopost to your account. Ability to attach Image to tweets.
+* **Plurk**  - Autopost to your account. Ability to attach Image to messages.
+* **vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
+* **Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 
 ... more networks are coming soon ...
 
@@ -153,6 +140,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.5.2 [01/07/2013] =
 
 * Bug fix - Critical Facebook posting issue.
+* Bug fix - Critical Stumbleupon posting issue.
 * Bug fix - Tumblr and SU were not taking settings from the "Edit" page
 * Bug fix - Post/Don't Post checkboxes issues.
 * Bug fix - Twitter - incomatibility with url_f_open set to off.
