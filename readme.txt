@@ -2,13 +2,13 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, auto, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph, LiveJournal
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv2 or later
 
-Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, LiveJournal, Tumblr, Delicious, Plurk, etc profiles and/or pages
+Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
@@ -18,11 +18,11 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, LiveJournal, Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
-**Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
-*Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
-*Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
+* **Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
+* *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
+* *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
 
-Supported Networks:
+=Supported Networks=
 
 **Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
 
@@ -151,9 +151,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 == Changelog ==
 
 = 2.5.2 [01/07/2013] =
+
 * Bug fix - Critical Facebook posting issue.
 * Bug fix - Tumblr and SU were not taking settings from the "Edit" page
 * Bug fix - Post/Don't Post checkboxes issues.
+* Bug fix - Twitter - incomatibility with url_f_open set to off.
 
 = 2.5.1 [01/06/2013] =
 

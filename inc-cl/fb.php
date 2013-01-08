@@ -266,7 +266,8 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     } else { $post = get_post($postID); if(!$post) return; $fbMsgFormat = $options['fbMsgFormat']; $msg = nsFormatMessage($fbMsgFormat, $postID); $fbMsgAFormat = $options['fbMsgAFrmt'];
       $isAttachFB = $options['fbAttch']; $fbPostType = $options['fbPostType']; $isAttachVidFB = $options['fbAttchAsVid'];
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
-      if (($isAttachFB=='1' || $isAttachFB=='2' || $fbPostType=='A' || $fbPostType=='I')) $imgURL = nxs_getPostImage($postID); // prr($options); echo "PP - ".$postID; prr($src);      
+      if (($isAttachFB=='1' || $isAttachFB=='2' || $fbPostType=='A')) $imgURL = nxs_getPostImage($postID); // prr($options); echo "PP - ".$postID; prr($src);      
+      if ($fbPostType=='I') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);            
       
       if (trim($fbMsgAFormat)!='') {$dsc = nsFormatMessage($fbMsgAFormat, $postID);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
         if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
@@ -308,12 +309,15 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
         if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
           $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
-        } $page_info = $facebook->api("/$page_id?fields=access_token"); 
+        } try {  $page_info = $facebook->api("/$page_id?fields=access_token"); } catch (NXS_FacebookApiException $er2) { }
         if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; 
-          nxs_addToLog($logNT, 'M', 'Personal Auth used instead of Page. Please re-authorize Facebook.');  $ret = $facebook->api("/$page_id/".$fbWhere,"post", $mssg); 
-        } else { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo); return "ERROR:".$e->getMessage();}
+          nxs_addToLog($logNT, 'M', 'Personal Auth used instead of Page. Please re-authorize Facebook.');  
+          try { $ret = $facebook->api("/$page_id/".$fbWhere,"post", $mssg); } catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR 2=- '.$e->getMessage(), $extInfo);}
+        } else { $rMsg = '-= ERROR =- (invalid app_id) Authorization Error. Your app is not authorized. Please go to the Plugin Settings - Facebook and authorize it.<br/>'; 
+          nxs_addToLog($logNT, 'E', $rMsg, $extInfo); return $rMsg.$e->getMessage();
+        }
       }        
-      if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "ERROR:".$e->getMessage();      
+      if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "Valid app_id ERROR:".$e->getMessage();      
     }   
     if ($postID=='0') { prr($ret); if (isset($ret['id']) && $ret['id']!='') { echo 'OK - Message Posted, please see your Facebook Page '; nxs_addToLog($logNT, 'M', 'Test Message Posted, please see your Facebook Page'); }}
       else { if (isset($ret['id']) && $ret['id']!='') { 

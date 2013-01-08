@@ -55,7 +55,8 @@ if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref=''
  $hdrsArr['Accept']='application/json, text/javascript, */*; q=0.01';  
  $hdrsArr['Accept-Encoding']='gzip,deflate,sdch'; $hdrsArr['Accept-Language']='en-US,en;q=0.8'; $hdrsArr['Accept-Charset']='ISO-8859-1,utf-8;q=0.7,*;q=0.3'; return $hdrsArr;
 }}
-if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType='head'){ $hdrsArr = nxs_getNXSHeaders(); $nxsWPRemWhat = 'wp_remote_'.$chType; $rsp  = $nxsWPRemWhat($url, array('headers' => $hdrsArr));  
+if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType='head'){ if( ini_get('allow_url_fopen')=='1' && @getimagesize($url)!==false) return true;
+  $hdrsArr = nxs_getNXSHeaders(); $nxsWPRemWhat = 'wp_remote_'.$chType; $rsp  = $nxsWPRemWhat($url, array('headers' => $hdrsArr));  
   if(is_wp_error($rsp)) { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; }
   if (is_array($rsp) && ($rsp['response']['code']=='200' || ( $rsp['response']['code']=='403' &&  $rsp['headers']['server']=='cloudflare-nginx') )) return true; 
     else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), $url); return false; }
@@ -69,7 +70,7 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   if ($imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
-      if (is_array($attachments) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID); $imgURL = $imgURL[0];      
+      if (is_array($attachments) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID, $size); $imgURL = $imgURL[0];      
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
