@@ -210,6 +210,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                 
                 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
+                <input value="0"  type="hidden" name="li[<?php echo $ii; ?>][AttachPost]"/>
                 <input value="1"  id="SNAP_AttachLI" onchange="doShowHideAltFormatX();" type="checkbox" name="li[<?php echo $ii; ?>][AttachPost]"  <?php if ((int)$isAttachLI == 1) echo "checked"; ?> /> </th><td><strong>Publish Post to LinkedIn as Attachment</strong></td> </tr>               
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>

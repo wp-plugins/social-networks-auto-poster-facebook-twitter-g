@@ -142,7 +142,7 @@ if (!function_exists("nxs_rePostToVB_ajax")) {
   function nxs_rePostToVB_ajax() { check_ajax_referer('rePostToVB');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['vb'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['gpPageID'].$two['gpUName']==$_POST['nid']) {  
       $gppo =  get_post_meta($postID, 'snapVB', true); $gppo =  maybe_unserialize($gppo);// prr($gppo);
-      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassTW(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); }
+      if (is_array($gppo) && isset($gppo[$ii]) && is_array($gppo[$ii])){ $ntClInst = new nxs_snapClassVB(); $two = $ntClInst->adjMetaOpt($two, $gppo[$ii]); }
       $result = nxs_doPublishToVB($postID, $two); if ($result == 200) die("Successfully sent your post to vBulletin."); else die($result);        
     }    
   }

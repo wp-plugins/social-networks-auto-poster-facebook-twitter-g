@@ -102,6 +102,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
                 
 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
+                 <input value="0"  type="hidden" name="tw[<?php echo $ii; ?>][attchImg]"/>
                  <input value="1" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$isAttchImg == 1) echo "checked"; ?> /> </th><td><strong>Attach Image to Twitter Post</strong></td> </tr>                  
        <?php } 
     } 

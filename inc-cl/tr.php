@@ -209,9 +209,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
 }}
 
 if (!function_exists("nxs_rePostToTR_ajax")) { function nxs_rePostToTR_ajax() {  check_ajax_referer('rePostToTR');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
-    $options = get_option('NS_SNAutoPoster');  foreach ($options['tr'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
+    $options = get_option('NS_SNAutoPoster');  foreach ($options['tr'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj'; 
       $mpo =  get_post_meta($postID, 'snapTR', true); $mpo =  maybe_unserialize($mpo); 
-      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassPN(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); }
+      if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassTR();  $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]);  } 
       $result = nxs_doPublishToTR($postID, $po); if ($result == 200 || $result == 201) die("Your post has been successfully sent to Tumblr."); else { echo $result; die(); }
     }    
   }
@@ -230,7 +230,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle;  $msgT = 'Test Post from '.$blogTitle; $options['trPostType']=='T';} 
       else{ $post = get_post($postID); if(!$post) return; $trMsgFormat = $options['trMsgFormat'];  $msg = nsFormatMessage($trMsgFormat, $postID); 
         $trMsgTFormat = $options['trMsgTFormat']; $msgT = nsFormatMessage($trMsgTFormat, $postID);  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));   
-    } 
+    } //prr($options); die();
     //## Post    
     require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);
@@ -244,7 +244,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
         elseif ($options['cImgURL']=='S' ) {$postArr['link'] = get_permalink($postID); $postArr['link'] = nxs_mkShortURL($postArr['link']);} 
     } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = get_permalink($postID); $postArr['body'] = $msg; } 
     
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); //prr($postinfo); // prr($postArr);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); // prr($postinfo);  prr($postArr);
     
     $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     if ($code == 201) { if ($postID=='0') { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Tumblr  Page. <br/> Result:'; prr($postinfo->meta); } 

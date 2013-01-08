@@ -303,7 +303,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     } //  prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
     $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng); $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName']; //prr($mssg);
-    prr($mssg);
+
     try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);
       if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
         if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 

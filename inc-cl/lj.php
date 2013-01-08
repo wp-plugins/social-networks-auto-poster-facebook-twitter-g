@@ -145,6 +145,9 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       } //prr($msg); prr($msgFormat);
       //## Post   
       require_once ('apis/xmlrpc-client.php'); $nxsToLJclient = new NXS_XMLRPC_Client('http://www.livejournal.com/interface/xmlrpc'); $nxsToLJclient->debug = false;
+      
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#2097EE">LJ</span> - '.$options['nName'];
+      
       $date = time(); $year = date("Y", $date); $mon = date("m", $date); $day = date("d", $date); $hour = date("G", $date); $min = date("i", $date);
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);
       if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';

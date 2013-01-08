@@ -114,7 +114,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           if (isset($_POST['upload_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc()) {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Import Settings            
             $secCheck =  wp_verify_nonce($_POST['nxsChkUpl_wpnonce'], 'nxsChkUpl');
-            if ($secCheck!==false && isset($_FILES['impFileSettings_button']) && is_uploaded_file($_FILES['impFileSettings_button']['tmp_name'])) { $fileData = file_get_contents($_FILES['impFileSettings_button']['tmp_name']);            
+            if ($secCheck!==false && isset($_FILES['impFileSettings_button']) && is_uploaded_file($_FILES['impFileSettings_button']['tmp_name'])) { $fileData = trim(file_get_contents($_FILES['impFileSettings_button']['tmp_name']));
+              while (substr($fileData, 0,1)!=='a') $fileData = substr($fileData, 1);              
               $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['imgNoCheck'])) { $options = $uplOpt;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
             } 
           }
@@ -465,7 +466,7 @@ Please see #4 and #5 for Twitter:<br/>
            </form>
            
            <form method="post" enctype="multipart/form-data"  id="nsStFormUpl" action="<?php echo $nxs_snapThisPageUrl?>">
-              <input type="file" accept="text/plain" onchange="$('#nsStFormUpl').submit();" id="impFileSettings_button" name="impFileSettings_button" style="display: block; visibility: hidden; width: 0; height: 0;" size="chars">
+              <input type="file" accept="text/plain" onchange="jQuery('#nsStFormUpl').submit();" id="impFileSettings_button" name="impFileSettings_button" style="display: block; visibility: hidden; width: 0; height: 0;" size="chars">
               <input type="hidden" value="1" name="upload_NS_SNAutoPoster_settings" /> <?php wp_nonce_field( 'nxsChkUpl', 'nxsChkUpl_wpnonce' ); ?> 
             </form>
            
@@ -519,7 +520,12 @@ Please see #4 and #5 for Twitter:<br/>
           $post = get_post($id); if ($post->post_type=='revision') return;   if (isset($_POST["SNAPEdit"])) $nspost_edit = $_POST["SNAPEdit"];  
           if (isset($nspost_edit) && !empty($nspost_edit)) { delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );
             foreach ($nxs_snapAvNts as $avNt) { 
-              if (count($options[$avNt['lcode']])>0 && isset($_POST[$avNt['lcode']]) && count($_POST[$avNt['lcode']])>0) {  $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); $newMeta = $_POST[$avNt['lcode']]; 
+              if (count($options[$avNt['lcode']])>0 && isset($_POST[$avNt['lcode']]) && count($_POST[$avNt['lcode']])>0) {  $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); 
+              if(is_array($_POST[$avNt['lcode']])) { $ii=0;
+                  foreach ($_POST[$avNt['lcode']] as $pst ) { 
+                    if (is_array($pst) && $pst['SNAPinclude'.$avNt['code']]=='') $_POST[$avNt['lcode']][$ii]['SNAPinclude'.$avNt['code']]= 0; $ii++;
+                  }
+              } $newMeta = $_POST[$avNt['lcode']];// prr($newMeta); echo "~~~~~";
               if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); // echo "## snap".$avNt['code']; prr($savedMeta); echo "||"; prr($newMeta);
               delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], $newMeta); 
               }
