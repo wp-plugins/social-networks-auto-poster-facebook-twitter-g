@@ -152,7 +152,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 == Screenshots ==
 
 1.Settings Page
-4.Add new post metadata box
+2.Add new post metadata box
 3.Facebook Types of Post 
 4.Google+ Types of Post 
 
