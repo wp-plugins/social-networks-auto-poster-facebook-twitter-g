@@ -116,7 +116,26 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 
 == Frequently Asked Questions ==
 
-= Can I use it just for Twitter(Facebook, G+) or it requres all three networks to be set? =
+= What is the difference between "Free" and "Pro" versions? =
+
+Free plugin is limited to one account per each type of connected network. In other works you can add 1 Facebook, AND 1 Twitter AND 1 LinkedIn AND 1 etc ... accounts in the "Free" version. This is enough for about 85% of users.
+
+Pro plugin is NOT limited in number of accounts per each type of connected network.  You can add 10 (or 100) Facebook, AND 15 Twitter AND 5 LinkedIn AND 25 etc ... accounts in the "Pro" version. 
+
+Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions//">Compare Editions</a>
+
+=  What networks in your auto-poster plugin are free and what are not? Why some networks are not free? =
+
+All networks except Google+, Pinterest and LinkedIn Company Pages are available for free.
+
+It really depends on the availability of the free API from the Social Network itself.
+Facebook, Twitter, Tumblr, LinkedIn and others have a very good and powerful free APIs that could be used for publishing posts. Those networks are free for you. Some networks like Google+ and Pinterest don’t have API or have a read-only API that doesn’t allow to make posts. We had to create our own API libraries for such networks and those libraries are availble separatelly for some fee.
+
+=  Does the free plugin support Wordpress Multisite (ex-WPMU)? =
+
+Free plugin does not support Wordpress Multisite. There is a separate "Pro for WPMU" plugin available for Wordpress Multisite. Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions//">Compare Editions</a>
+
+= Can I use it just for Twitter (Facebook, LinkedIn, Delicious) or it requres all networks to be set? =
 
 Sure you can use it for just one or two networks.
 
@@ -132,8 +151,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Screenshots ==
 
-1. Settings  Page
-2. Google+  Post 
+1.Settings Page
+4.Add new post metadata box
+3.Facebook Types of Post 
+4.Google+ Types of Post 
 
 == Changelog ==
 
