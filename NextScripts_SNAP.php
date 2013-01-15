@@ -4,18 +4,18 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.5.2
+Version: 2.5.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.5.2' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.5.3' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
 
 $nxs_snapThisPageUrl = admin_url().'options-general.php?page=NextScripts_SNAP.php'; 
 $nxs_plurl = plugin_dir_url(__FILE__);
-$nxs_isWPMU = (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true && defined('MULTISITE') && MULTISITE==true); 
+$nxs_isWPMU = defined('MULTISITE') && MULTISITE==true; 
 
 //## Define SNAutoPoster class
 if (!class_exists("NS_SNAutoPoster")) {
@@ -138,6 +138,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
             if (isset($_POST['imgNoCheck']))   $options['imgNoCheck'] = 0;  else $options['imgNoCheck'] = 1;
+            if (isset($_POST['useForPages']))  $options['useForPages'] = 1;  else $options['useForPages'] = 0;
+            
             
             if (isset($_POST['showPrxTab']))   $options['showPrxTab'] = 1;  else $options['showPrxTab'] = 0;
             if (isset($_POST['useRndProxy']))   $options['useRndProxy'] = 1;  else $options['useRndProxy'] = 0;
@@ -147,7 +149,9 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             
             if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;                            
             if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
-            if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; $cIds = get_all_category_ids(); $options['exclCats'] = serialize(array_diff($cIds, $pk)); } // prr($options['exclCats']);
+            if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; if (!is_array($pk)) { $pk = urldecode($pk); parse_str($pk); } 
+              $cIds = get_all_category_ids(); if(is_array($pk) && $cIds) $options['exclCats'] = serialize(array_diff($cIds, $pk)); else $options['exclCats'] = '';
+            }  //prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
             if (isset($_POST['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = $_POST['whoCanSeeSNAPBox'];
             if ($nxs_isWPMU && (!isset($options['suaMode'])||$options['suaMode'] = '')) $options['suaMode'] = $nxs_tpWMPU; 
@@ -193,7 +197,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            </div>
            
            <div id="showCatSel" style="display: none;background-color: #fff; width: 300px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span>Select Categories: 
-                    <div id="fbSelCats<?php echo $ii; ?>" class="categorydiv" style="padding-left: 15px; background-color: #fff;"> 
+                    <div id="fbSelCats<?php echo $ii; ?>" class="categorydivInd" style="padding-left: 15px; background-color: #fff;"> 
        <a href="#" onclick="nxs_chAllCatsL(1, 'fbSelCats<?php echo $ii; ?>'); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCatsL(0, 'fbSelCats<?php echo $ii; ?>'); return false;">UnCheck all</a>
           <div id="category-all" class="tabs-panel"> <input type="hidden" id="tmpCatSelNT" name="tmpCatSelNT" value="" />
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
@@ -240,7 +244,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
         if (in_array($role, $options['whoCanSeeSNAPBox']) || $role=='administrator') echo ' checked="checked" '; if ($role=='administrator' || $role=='subscriber') echo '  disabled="disabled" ';
         echo 'name="whoCanSeeSNAPBox[]" value="'.esc_attr($role).'"> '.$name; 
         if ($role=='administrator') echo ' - Somebody who has access to all the administration features';
-        if ($role=='editor') echo ' - Somebody who can publish and manage posts and pages as well as manage other users\' posts, etc. ';
+        if ($role=='editor') echo " - Somebody who can publish and manage posts and pages as well as manage other users' posts, etc. ";
         if ($role=='author') echo ' - Somebody who can publish and manage their own posts ';
         if ($role=='contributor') echo ' - Somebody who can write and manage their posts but not publish them';
         if ($role=='subscriber') echo ' - Somebody who can only manage their profile';        
@@ -260,7 +264,14 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                 ?><option <?php if (in_array($cptID,$nxsCPTSeld)) echo 'selected="selected"'; ?> value="<?php echo $cptID; ?>"><?php echo $cptName; ?></option><?php
               }
             ?>
-            </select>            
+            </select>       
+            
+             <h3 style="font-size: 14px; margin-bottom: 2px;">Use for pages</h3>
+             
+        <p style="margin: 0px;margin-left: 5px;"><input value="set" id="useForPages" name="useForPages"  type="checkbox" <?php if ((int)$options['useForPages'] != 1) echo "checked"; ?> /> 
+              <strong>Use for pages</strong>     
+             <span style="font-size: 11px; margin-left: 1px;">Show the metabox and autopost for pages.</span>            
+        </p>         
             
            <div style="width:500px;"><strong style="font-size: 14px;"><br/>Categories to Include/Exclude:</strong> 
               <p style="font-size: 11px; margin: 0px;">Each blogpost will be autoposted to all categories selected below. All categories are selected by default. 
@@ -270,6 +281,13 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 function nxs_chAllCats(ch){
     jQuery("form input:checkbox[name='post_category[]']").attr('checked', ch==1);
 }
+(function($) {
+  $(function() {
+     $('.button-primary[name="update_NS_SNAutoPoster_settings"]').bind('click', function(e) { var str = $('input[name="post_category[]"]').serialize(); $('div.categorydivInd').replaceWith('<input type="hidden" name="pcInd" value="" />'); 
+       str = str.replace(/post_category/g, "pk"); $('div.categorydiv').replaceWith('<input type="hidden" name="post_category" value="'+str+'" />');  
+     });
+  });
+})(jQuery);
 </script>            
             
 <a href="#" onclick="nxs_chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCats(0); return false;">UnCheck all</a>
@@ -502,7 +520,7 @@ Please see #4 and #5 for Twitter:<br/>
            Here you can setup "Social Networks Auto Poster".<br/> You can start by clicking "Add new account" button and choosing the Social Network you would like to add.<?php }} ?><br/> 
            <?php 
            if (!function_exists('curl_init')) {  
-               echo ('<br/><b style=\'font-size:16px; color:red;\'>Error: No CURL Found</b> <br/><i>Social Networks AutoPoster needs the CURL PHP extension. Please install it or contact your hosting company to install it.</i><br/>'); 
+               echo ("<br/><b style='font-size:16px; color:red;'>Error: No CURL Found</b> <br/><i>Social Networks AutoPoster needs the CURL PHP extension. Please install it or contact your hosting company to install it.</i><br/>"); 
            }
            /*
            if ((defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true) || (defined('MULTISITE') &&  MULTISITE==true) ) { 
@@ -560,8 +578,11 @@ Please see #4 and #5 for Twitter:<br/>
          ?></table></div></div></div> <?php 
         }
         //## Add MetaBox to Post->Edit
-        function NS_SNAP_addCustomBoxes() { add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'post' );           
+        function NS_SNAP_addCustomBoxes() { add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'post' );
           global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+          
+          if ($options['useForPages']=='1') add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'NS_SNAutoPoster' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'page' );
+          
           $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
           if ((isset($options['nxsCPTSeld'])) && $options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);
           foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ 
@@ -626,7 +647,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
   if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); //prr($nxsCPTSeld);  
   $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1') return;    
   
-  if ($post->post_type == 'post' || in_array($post->post_type, $post_types) && in_array($post->post_type, $nxsCPTSeld)) foreach ($nxs_snapAvNts as $avNt) { 
+  if ($post->post_type == 'post' || ($options['useForPages']=='1' && $post->post_type == 'page') || in_array($post->post_type, $post_types) && in_array($post->post_type, $nxsCPTSeld)) foreach ($nxs_snapAvNts as $avNt) { 
     if (count($options[$avNt['lcode']])>0) { $clName = 'nxs_snapClass'.$avNt['code'];
       if ($isPost) $po = $_POST[$avNt['lcode']]; else { $po =  get_post_meta($postID, 'snap'.$avNt['code'], true); $po =  maybe_unserialize($po);}            
       $optMt = $options[$avNt['lcode']][0]; if (isset($po) && is_array($po)) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }   
@@ -740,7 +761,8 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!
       $ogD = '<meta property="og:description" content="'.esc_attr( apply_filters( 'nxsog_desc', $ogD ) ).'" />'."\r\n";          
     }    
     $ogSN = '<meta property="og:site_name" content="'.get_bloginfo('name').'" />'."\r\n";
-    $ogLoc = '<meta property="og:locale" content="'.strtolower(esc_attr(get_locale())).'" />'."\r\n"; $iss = is_home();  
+    $ogLoc = strtolower(esc_attr(get_locale())); if (strlen($ogLoc)==2) $ogLoc .= "_".strtoupper($ogLoc);
+    $ogLoc = '<meta property="og:locale" content="'.$ogLoc.'" />'."\r\n"; $iss = is_home();  
     $ogType = is_singular()?'article':'website'; if($vidsFromPost == false) $ogType = '<meta property="og:type" content="'.esc_attr(apply_filters('nxsog_type', $ogType)).'" />'."\r\n";                  
         
     if (is_home() || is_front_page()) $ogUrl = get_bloginfo( 'url' ); else $ogUrl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];

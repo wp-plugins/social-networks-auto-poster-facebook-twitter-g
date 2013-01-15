@@ -115,6 +115,11 @@ function nxsTRURLVal(ii){ var val = jQuery('#apTRURL'+ii).val(); var srch = val.
   $(function() {
      $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });
      $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false]}); });                                 
+     /* // Will move it here later for better compatibility
+     $('.button-primary[name="update_NS_SNAutoPoster_settings"]').bind('click', function(e) { var str = $('input[name="post_category[]"]').serialize(); $('div.categorydivInd').replaceWith('<input type="hidden" name="pcInd" value="" />'); 
+       str = str.replace(/post_category/g, "pk"); $('div.categorydiv').replaceWith('<input type="hidden" name="post_category" value="'+str+'" />');  
+     });
+     */
   });
 })(jQuery);
 

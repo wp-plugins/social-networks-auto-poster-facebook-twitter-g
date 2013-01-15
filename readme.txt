@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -118,9 +118,9 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 
 = What is the difference between "Free" and "Pro" versions? =
 
-Free plugin is limited to one account per each type of connected network. In other works you can add 1 Facebook, AND 1 Twitter AND 1 LinkedIn AND 1 etc ... accounts in the "Free" version. This is enough for about 85% of users.
+Free plugin is limited to one account per each type of connected networks. In other words you can add 1 Facebook, AND 1 Twitter AND 1 LinkedIn AND 1 etc ... accounts in the "Free" version. This is enough for about 95% of users.
 
-Pro plugin is NOT limited in number of accounts per each type of connected network.  You can add 10 (or 100) Facebook, AND 15 Twitter AND 5 LinkedIn AND 25 etc ... accounts in the "Pro" version. 
+Pro plugin is NOT limited in number of accounts per each type of connected networks.  You can add 10 (or 100) Facebook, AND 15 Twitter AND 5 LinkedIn AND 25 etc ... accounts in the "Pro" version. 
 
 Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions//">Compare Editions</a>
 
@@ -129,7 +129,7 @@ Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-p
 All networks except Google+, Pinterest and LinkedIn Company Pages are available for free.
 
 It really depends on the availability of the free API from the Social Network itself.
-Facebook, Twitter, Tumblr, LinkedIn and others have a very good and powerful free APIs that could be used for publishing posts. Those networks are free for you. Some networks like Google+ and Pinterest don’t have API or have a read-only API that doesn’t allow to make posts. We had to create our own API libraries for such networks and those libraries are availble separatelly for some fee.
+Facebook, Twitter, Tumblr, LinkedIn and others have a very good and powerful free APIs that could be used for publishing posts. Those networks are free for you. Some networks like Google+ and Pinterest don't have API or have a read-only API that doesn't allow to make posts. We had to create our own API libraries for such networks and those libraries are available separately for some fee.
 
 =  Does the free plugin support Wordpress Multisite (ex-WPMU)? =
 
@@ -157,6 +157,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4.Google+ Types of Post 
 
 == Changelog ==
+
+= 2.5.3 [01/15/2013] =
+
+* New - Support for posting to Google+ Communities.
+* New - Auto-posting is now supported for Wordpress pages as well. 
+* Bug fix - Twitter over the limit if a lot of tags were used.
+* Bug fix - Blogger posted the wrong title.
 
 = 2.5.2 [01/07/2013] =
 

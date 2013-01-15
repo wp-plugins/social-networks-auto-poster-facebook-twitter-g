@@ -251,9 +251,8 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       else { $post = get_post($postID); if(!$post) return; $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID); 
         $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }
-    
-    if ($isAttachLI=='1' && function_exists("get_post_thumbnail_id") ){ $src = nxs_getPostImage($postID); }         
-    if ($isAttachLI=='1') { $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  
+           
+    if ($isAttachLI=='1') { $src = nxs_getPostImage($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  
      $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);
     }  
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000058">LinkedIn</span> - '.$options['nName'];

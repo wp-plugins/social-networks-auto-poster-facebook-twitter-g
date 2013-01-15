@@ -163,7 +163,8 @@ if (!function_exists("nxs_doCheckVB")) {function nxs_doCheckVB($url){ global $nx
   return false;  
 }}
 if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url, true);    echo "LOGGIN";
-    $response = wp_remote_get($url); $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
+    $response = wp_remote_get($url); if(is_wp_error($response)) { nxs_addToLog('VB', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
+    $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; $mdhashLoc = stripos($contents, 'md5hash(vb_login_password');
     if ($mdhashLoc===false) return "No VB found";
     $frmTxt = CutFromTo($contents, 'md5hash(vb_login_password','</form>'); $md = array(); $flds  = array();
@@ -184,6 +185,7 @@ if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p,
 }}
 if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, $msg, $lnk, $tags){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url); $ckArr = $nxs_vbCkArray;   
   $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));   
+  if(is_wp_error($response)) { nxs_addToLog('VB', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
   $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
   if (stripos($contents, 'base href="')!==false) $baseURL = trim(CutFromTo($contents,'base href="', '"')); else { $uarr = explode('/',$url); $dd = $uarr[count($uarr)-1]; $baseURL = str_replace($dd, '', $url);}
   if (stripos($contents, 'newthread.php?do=newthread')!==false) $mdd='t'; elseif (stripos($contents, 'newreply.php?')!==false) $mdd='p'; else return "No Thread/Post Controls found";

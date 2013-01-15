@@ -53,7 +53,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show NEW Settings Page
   function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'imgUpl'=>'1', 'fbPostType'=>'A', 'fbMsgAFormat'=>'', 'fbAppSec'=>'', 'fbAttch'=>'1', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($mfbo, $fbo, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl; if ((int)$fbo['fbAttch']==0 && (!isset($fbo['trPostType']) || $fbo['trPostType']=='')) $fbo['trPostType'] = 'T';  ?>
+  function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl; if ((int)$fbo['fbAttch']==0 && (!isset($fbo['trPostType']) || $fbo['trPostType']=='')) $fbo['trPostType'] = 'T';  
+    if (!isset($fbo['nHrs'])) $fbo['nHrs'] = 0; if (!isset($fbo['nMin'])) $fbo['nMin'] = 0;  if (!isset($fbo['catSel'])) $fbo['catSel'] = 0;  if (!isset($fbo['catSelEd'])) $fbo['catSelEd'] = ''; ?> 
     <div id="doFB<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/fb-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>1)||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
     
@@ -303,7 +304,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       }
     } //  prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
     if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
-    $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng); $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName']; //prr($mssg);
+    $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng); $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName']; // prr($mssg);
 
     try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);
       if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
@@ -318,10 +319,10 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
         }
       }        
       if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "Valid app_id ERROR:".$e->getMessage();      
-    }   
+    }  // prr($ret);
     if ($postID=='0') { prr($ret); if (isset($ret['id']) && $ret['id']!='') { echo 'OK - Message Posted, please see your Facebook Page '; nxs_addToLog($logNT, 'M', 'Test Message Posted, please see your Facebook Page'); }}
       else { if (isset($ret['id']) && $ret['id']!='') { 
-          nxs_metaMarkAsPosted($postID, 'FB', $options['ii'],  array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')) ); nxs_addToLog($logNT, 'M', 'OK - Message Posted'.print_r($ret, true), $extInfo); 
+          nxs_metaMarkAsPosted($postID, 'FB', $options['ii'],  array('isPosted'=>'1', 'pgID'=>$ret['id'], 'pDate'=>date('Y-m-d H:i:s')) ); nxs_addToLog($logNT, 'M', 'OK - Message Posted'.print_r($ret, true), $extInfo); 
         } else nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); 
       }
   }

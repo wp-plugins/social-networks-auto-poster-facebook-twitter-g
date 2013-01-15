@@ -159,7 +159,7 @@ if (!function_exists('nsBloggerGetAuth')){ function nsBloggerGetAuth($email, $pa
     $result = curl_exec($ch); $resultArray = curl_getinfo($ch); 
     curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') die('Incorrect Username/Password'); return $token;
 }}
-if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); 
+if (!function_exists('nsBloggerNewPost')){ function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); $title = utf8_decode(strip_tags($title)); 
     $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);  $text = preg_replace('/<iframe\b[^>]*>(.*?)<\/iframe>/is', "", $text);
     
     $postText = '<entry xmlns="http://www.w3.org/2005/Atom"><title type="text">'.$title.'</title><content type="xhtml">'.$text.'</content></entry>'; //prr($postText);
@@ -196,6 +196,7 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     // prr($msg); echo " =HT= ";
     $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg); 
     // prr($msg); die();
+    
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) die($auth);  $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass);  $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);}
     //## /Actual POST Code    

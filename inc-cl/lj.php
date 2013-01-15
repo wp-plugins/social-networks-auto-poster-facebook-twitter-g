@@ -26,8 +26,7 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
   function showNTSettings($ii, $gpo, $isNew=false){ global $nxs_plurl; ?>
             <div id="doLJ<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/lj-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSLJ<?php echo $ii; ?>" value="0" id="apDoSLJ<?php echo $ii; ?>" />
             
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/lj16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-lj-based-social-networks-auto-poster-livejournal/">Detailed LiveJournal Installation/Configuration Instructions</a></div>
-            
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/lj16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-livejournal-social-networks-auto-poster-for-wordpress/">Detailed LiveJournal Installation/Configuration Instructions</a></div>            
             <?php if ($isNew){ ?> <br/>You can setup LiveJournal blog.<br/><br/> <?php } ?> 
             
             <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="lj[<?php echo $ii; ?>][nName]" id="ljnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>

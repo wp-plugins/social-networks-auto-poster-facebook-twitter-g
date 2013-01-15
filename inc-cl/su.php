@@ -172,7 +172,7 @@ if (!function_exists("nxs_doCheckSU")) {function nxs_doCheckSU(){ global $nxs_su
   } else return 'No Saved Login';
   return false;  
 }}
-if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true);    echo "LOGGIN";
+if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true); //   echo "LOGGIN";
     $response = wp_remote_get('https://www.stumbleupon.com/login'); $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; 
     $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array();// prr($frmTxt); 
@@ -203,10 +203,20 @@ if (!function_exists("nxs_doPostToSU")) {  function nxs_doPostToSU($msg, $lnk, $
   $r2 = wp_remote_post('http://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
   $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
   
+  if (stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
+    $r2 = wp_remote_post('http://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
+    $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+  }
+  
   if (stripos($resp['_error'], 'Invalid token')!==false) { // In case we got the Wrong Cookies
     $r2 = wp_remote_post('http://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
     $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
-  }
+    
+    if (stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
+      $r2 = wp_remote_post('http://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
+      $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+    }    
+  } 
   
   if (isset($resp['discovery']['publicid'])) $pageID = $resp['discovery']['publicid']; elseif (isset($resp['discovery']['url']['publicid']))$pageID = $resp['discovery']['url']['publicid'];   
   if ($resp['_success']=='1') { $ckArr = nxsMergeArraysOV($ckArr, $r2['cookies']); $nxs_suCkArray = $ckArr; return array("code"=>"OK", "post_id"=>$pageID); } 
@@ -245,9 +255,9 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
       elseif ($ret['code']=='OK')  if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your StumbleUpon Page '; } else 
           { nxs_metaMarkAsPosted($postID, 'SU', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  return 200; }
       else { if ($options['reset'] == '1') {
-          nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo.$options['reset']);
-          return print_r($ret, true);    
-        } else { $options['reset'] = '1'; $options['suSvC'] = '';  nxs_doPublishToSU($postID, $options);  }
+          nxs_addToLog($logNT, 'E', '-=ERROR TRY #2=- '.print_r($ret, true), $extInfo.$options['reset']);
+          return "ERROR = ".print_r($ret, true);    
+        } else { $options['reset'] = '1'; $options['suSvC'] = ''; return nxs_doPublishToSU($postID, $options);  }
       }
       
       

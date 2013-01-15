@@ -11,7 +11,8 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <?php } else { $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
               <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Google+ account<?php if ($cgpo!=1){ ?>s<?php } ?> <!--- <a href="#" class="NXSButton" onclick="doShowHideBlocks2('GP<?php echo $mgpo; ?>');return false;">Add new Google+ Account</a> --> </div></div> 
               <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) { $gpo['nName'] = $gpo['gpUName'];  if($gpo['gpPageID']!='') $gpo['nName'] .= "Page: ".$gpo['gpPageID']; else $gpo['nName'] .= " Profile"; } ?>
+              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) { $gpo['nName'] = $gpo['gpUName'];  
+                if($gpo['gpPageID']!='') $gpo['nName'] .= "Page: ".$gpo['gpPageID']; elseif ($gpo['gpCommID']!='') $gpo['nName'] .= "Community: ".$gpo['gpCommID']; else $gpo['nName'] .= " Profile"; } ?>
                 <p style="margin: 0px;margin-left: 5px;">
                   <input value="1" id="apDoGP" name="gp[<?php echo $indx; ?>][apDoGP]" type="checkbox" <?php if ((int)$gpo['doGP'] == 1) echo "checked"; ?> /> 
                   <strong>Auto-publish your Posts to your Google+ <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i> </strong>                                         
@@ -23,7 +24,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <?php }
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'postType'=>'A', 'gpPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
+  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'gpCommID'=>'', 'postType'=>'A', 'gpPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
             <div id="doGP<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/gp-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
@@ -49,9 +50,13 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             
             <div style="width:100%;"><strong>Google+ Username:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
             <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['gpPass'], 5)):$gpo['gpPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
-            <p><div style="width:100%;"><strong>Google+ Page ID (Optional - for Google+ Pages Only. <b style="color: #580000;"> Leave Empty to publish to your profile</b>):</strong> 
-            <p style="font-size: 11px; margin: 0px;">For example if URL of your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. <b>Leave Empty to publish to your profile.</b></p>
+            <p><div style="width:100%;"><strong>Google+ Page ID (Optional - for Google+ Pages Only. <b style="color: #580000;"> Leave Empty to publish to your profile or community</b>):</strong> 
+            <p style="font-size: 11px; margin: 0px;">For example if URL of your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. <b>Leave Empty to publish to your profile or community.</b></p>
             </div><input name="gp[<?php echo $ii; ?>][apGPPage]" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpPageID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+            <br/>
+            <p><div style="width:100%;"><strong>Google+ Community ID (Optional - for Google+ Communities Only. <b style="color: #580000;"> Leave Empty to publish to your profile or page</b>):</strong> 
+            <p style="font-size: 11px; margin: 0px;">For example if URL of your Community is https://plus.google.com/communities/100396001601096060160 your Page ID is: 100396001601096060160. <b>Leave Empty to publish to your profile or page.</b></p>
+            </div><input name="gp[<?php echo $ii; ?>][gpCommID]" id="gpCommID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpCommID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
             <br/><br/>
             
             <div id="altFormat" style="">
@@ -91,6 +96,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apGPPass']))    $options[$ii]['gpPass'] = 'n5g9a'.nsx_doEncode($pval['apGPPass']); else $options[$ii]['gpPass'] = '';  
         if (isset($pval['apGPPage']))    $options[$ii]['gpPageID'] = trim($pval['apGPPage']);  
+        if (isset($pval['gpCommID']))    $options[$ii]['gpCommID'] = trim($pval['gpCommID']);  
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
@@ -176,7 +182,8 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {if ($postID=='0') echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return "BAD USER/PASS";} 
       $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  
       if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL;      //prr($lnk);
-      if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} else $ret = doPostToGooglePlus2($msg, $lnk); prr($ret);
+      if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
+        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($msg, $lnk); prr($ret);
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
       if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
         else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Google+ Page'; } else 
