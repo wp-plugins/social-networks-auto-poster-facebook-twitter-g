@@ -295,117 +295,17 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         $ret = nxs_doPostToVK($msg, $options['url'], $msgOpts); //  prr($ret);
       }
       if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; }}
-      if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $link; 
-      
-        $atts = implode(',', $atts);
+      if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $link;       
+        if (is_array($atts)) $atts = implode(',', $atts);
         $postUrl = 'https://api.vkontakte.ru/method/wall.post?owner_id='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'].'&from_group=1&message='.urlencode($msg).'&attachment='.urlencode($atts); 
         $response = wp_remote_get($postUrl);
-        if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
+        if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) {nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($response, true), $extInfo); }
          else { $respJ = json_decode($response['body'], true);  $ret = array("code"=>"OK", "post_id"=>$options['pgIntID'].'_'.$respJ['response']['post_id']);   }
           
-      }                                           prr($ret);
+      }                                
       if (is_array($ret) && $ret['code']=='OK') {  if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your VK Page '; } else 
           { nxs_metaMarkAsPosted($postID, 'VK', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  return 200; }          
       } else {if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);}       
   }
-}
-     /*
-if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
-  function nxs_doPublishToVK($postID, $options){ global $ShownAds; $ntCd = 'VK'; $ntCdL = 'vk'; $ntNm = 'vKontakte(VK)'; $dsc = ''; require_once ('apis/facebook.php'); 
-    $vkWhere = 'feed'; $page_id = $options['vkPgID']; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  
-     
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
-    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-    }     
-  
-    if (isset($options['qTLng'])) $lng = $options['qTLng']; else $lng = '';
-    $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();    
-    
-    $msg = 'Test To Post'; $link = home_url();        $imgURL = nxs_getPostImage($postID);
-    $atts = array(); 
-    
-    if ($postType=='I' && trim($imgURL)=='') $postType='T';
-    
-    if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; }
-    
-    $atts[] = $link;
-    $atts = implode(',',$atts);
-
-    $postUrl = 'https://api.vkontakte.ru/method/wall.post?owner_id='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'].'&from_group=1&message='.urlencode($msg).'&attachment='.urlencode($atts); prr($postUrl);
-    $response = wp_remote_get($postUrl);
-    if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
-      else $respJ = json_decode($response['body'], true); 
-      
-    prr($respJ);   die();
-      
-    
-    
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; 
-    $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => 'Test Post', 'name' => 'Test Post', 'caption' => 'Test Post', 'link' => home_url(),
-       'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) ); 
-    } else { $post = get_post($postID); if(!$post) return; $msgFrmt = $options['msgFrmt']; $msg = nsFormatMessage($msgFrmt, $postID); $msgAFormat = $options['msgAFormat'];
-      $isAttachFB = $options['attch']; $postType = $options['postType']; $isAttachVidFB = $options['attchAsVid'];
-      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
-      if (($isAttachFB=='1' || $isAttachFB=='2' || $postType=='A')) $imgURL = nxs_getPostImage($postID); // prr($options); echo "PP - ".$postID; prr($src);      
-      if ($postType=='I') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);            
-      
-      if (trim($msgAFormat)!='') {$dsc = nsFormatMessage($msgAFormat, $postID);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
-        if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
-        if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
-        if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
-        if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
-        if ($dsc=='') $dsc = get_bloginfo('description'); 
-      }
-      
-      $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
-      $postSubtitle = home_url();  $msg = str_replace('<br>', "\n", $msg); $msg = str_replace('<br/>', "\n", $msg); $msg = str_replace('<br />', "\n", $msg);  
-      $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg); //prr($imgURL);
-      if ($postType=='I' && trim($imgURL)=='') $postType='T';
-      if ($postType=='A' || $postType=='') {
-        if (($isAttachFB=='1' || $isAttachFB=='2')) { $attArr = array('name' => nxs_doQTrans($post->post_title, $lng), 'caption' => $postSubtitle, 'link' => get_permalink($postID), 'description' => $dsc); $mssg = array_merge($mssg, $attArr); }      
-        if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
-        if (trim($imgURL)!='') $mssg['picture'] = $imgURL;
-        if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { 
-          if (strlen($vids[0])==11) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }
-          if (strlen($vids[0])==8) { $mssg['source'] = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';
-            //$mssg['source'] = 'http://player.vimeo.com/video/'.$vids[0]; 
-            $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);
-            if (!is_wp_error($json)) { $json = $json['body']; $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $mssg['picture'] = $json[0]['thumbnail_large']; }           
-          }
-        }}
-      } elseif ($postType=='I') { $facebook->setFileUploadSupport(true); $fbWhere = 'photos'; $mssg['url'] = $imgURL; 
-        if ($options['imgUpl']!='2') {
-          $aacct = array('access_token'  => $options['fbAppPageAuthToken']);  $albums = $facebook->api("/$page_id/albums", "get", $aacct);
-          foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
-          if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
-        }
-        
-      }
-    } //  prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
-    if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
-    $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng); $logNT = '<span style="color:#0000FF">vKontakte(VK)</span> - '.$options['nName']; // prr($mssg);
-
-    try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);
-      if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
-        if ( !is_numeric($page_id) && stripos($options['url'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$options['url']); 
-          $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
-        } try {  $page_info = $facebook->api("/$page_id?fields=access_token"); } catch (NXS_FacebookApiException $er2) { }
-        if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; 
-          nxs_addToLog($logNT, 'M', 'Personal Auth used instead of Page. Please re-authorize vKontakte(VK).');  
-          try { $ret = $facebook->api("/$page_id/".$fbWhere,"post", $mssg); } catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR 2=- '.$e->getMessage(), $extInfo);}
-        } else { $rMsg = '-= ERROR =- (invalid app_id) Authorization Error. Your app is not authorized. Please go to the Plugin Settings - vKontakte(VK) and authorize it.<br/>'; 
-          nxs_addToLog($logNT, 'E', $rMsg, $extInfo); return $rMsg.$e->getMessage();
-        }
-      }        
-      if ($postID=='0') echo 'Error:',  $e->getMessage(), "\n";  return "Valid app_id ERROR:".$e->getMessage();      
-    }  // prr($ret);
-    if ($postID=='0') { prr($ret); if (isset($ret['id']) && $ret['id']!='') { echo 'OK - Message Posted, please see your vKontakte(VK) Page '; nxs_addToLog($logNT, 'M', 'Test Message Posted, please see your vKontakte(VK) Page'); }}
-      else { if (isset($ret['id']) && $ret['id']!='') { 
-          nxs_metaMarkAsPosted($postID, 'FB', $options['ii'],  array('isPosted'=>'1', 'pgID'=>$ret['id'], 'pDate'=>date('Y-m-d H:i:s')) ); nxs_addToLog($logNT, 'M', 'OK - Message Posted'.print_r($ret, true), $extInfo); 
-        } else nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); 
-      }
-  }
-}
-    */
+}       
 ?>
