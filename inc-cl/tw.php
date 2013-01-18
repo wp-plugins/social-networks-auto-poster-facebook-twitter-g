@@ -154,7 +154,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $pFullText = apply_filters('the_content', $post->post_content); 
         $pRawText = $post->post_content;
         
-        if (stripos($twMsgFormat, '%TAGS%')!==false) {
+        if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
           $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','_', str_replace('  ', ' ', trim($tagA->name))));
               if (stripos($pTitle, $tagA->name)!==false) $pTitle = str_ireplace($tagA->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
               if (stripos($pText, $tagA->name)!==false) $pText = str_ireplace($tagA->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
@@ -164,9 +164,10 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $tagA->name)!==false || stripos($pText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $tagA->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $tagA->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $tggs[] = '#'.$frmTag;
-          } $tags = implode(' ',$tggs); while(strlen($tags)>($twLim-10)) {array_pop($tggs); $tags = implode(' ',$tggs);} $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat); $twLim = $twLim - strlen($tags);
+          } $tags = implode(' ',$tggs); while(strlen($tags)>($twLim-10)) {array_pop($tggs); $tags = implode(' ',$tggs);} $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
+          $twLim = $twLim - strlen($tags);
         }
-        if (stripos($twMsgFormat, '%CATS%')!==false) {
+        if (stripos($twMsgFormat, '%CATS%')!==false || stripos($twMsgFormat, '%HCATS%')!==false) {
           $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  trim(str_replace(' ','_', str_replace('  ',' ',str_ireplace('&','&amp;',trim($cat->name)))));
           if (stripos($pTitle, $cat->name)!==false) $pTitle = str_ireplace($cat->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
               if (stripos($pText, $cat->name)!==false) $pText = str_ireplace($cat->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
@@ -176,7 +177,8 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $cat->name)!==false || stripos($pText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $cat->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $cat->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $cats[] = '#'.$frmTag; 
-          } $ctts = implode(' ',$cats); while(strlen($cats)>($twLim-10)) {array_pop($ctts); $cats = implode(' ',$ctts);} $twMsgFormat = str_ireplace("%CATS%", $ctts, $twMsgFormat); $twLim = $twLim - strlen($ctts);
+          } $ctts = implode(' ',$cats); while(strlen($cats)>($twLim-10)) {array_pop($ctts); $cats = implode(' ',$ctts);} $twMsgFormat = str_ireplace("%CATS%", $ctts, $twMsgFormat);  $twMsgFormat = str_ireplace("%HCATS%", $ctts, $twMsgFormat);
+          $twLim = $twLim - strlen($ctts);
         }
         if (stripos($twMsgFormat, '%TITLE%')!==false) { if (stripos($pTitle, '.co.uk')!==false) $twLim = $twLim - 14;
            if (stripos($pTitle, '.com')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.net')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.org')!==false) $twLim = $twLim - 16;

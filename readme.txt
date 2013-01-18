@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.4
+Stable tag: 2.5.5
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -152,14 +152,20 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Screenshots ==
 
-1. Settings Page
-2. Add new post metadata box
+1. Add new post metadata box (Pro Version)
+2. Settings Page (Pro Version)
 3. Facebook Types of Post 
 4. Google+ Types of Post 
 
 == Changelog ==
 
-= 2.5.4 [01/18/2013] =
+= 2.5.5 [01/18/2013] =
+
+* New/Improvement - Tumblr - Audio and Video Post types
+* New/Improvement - %HTAGS% and %HCATS% for insert tags and categories as hashtags
+* Bug fix - Critical Facebook Authorization Problem
+
+= 2.5.4 [01/17/2013] =
 
 * New - New network: VKontakte(vk.com). Repost your blogposts to your VK account.
 * Bug fix - Facebook settings saving problem on some configurations

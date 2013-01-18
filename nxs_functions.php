@@ -29,6 +29,17 @@ if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advI
     else { foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; }  
   return $postImgs;
 }}
+
+
+if (!function_exists('nsFindAudioInPost')){function nsFindAudioInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+  global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
+  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;
+  $regex_pattern = "((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*\.(mp3|aac|m4a))";
+  $output = preg_match_all( $regex_pattern, $postCnt, $matches );  if ($output === false){return false;}    
+  foreach ($matches[0] as $match) { $postAu[] = $match; 
+     
+  } $postAu = array_unique($postAu); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postAu;
+}}
 if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
   if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;

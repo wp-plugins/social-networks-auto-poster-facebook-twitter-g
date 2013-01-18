@@ -72,9 +72,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
             <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
             <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
-            <br/><br/>
+            <br/>
             
-<div style="width:100%;"><strong id="altFormatText">Post Type:</strong></div>                      
+<div style="width:100%;"><strong id="altFormatText">Default Post Type:</strong></div>                      
 <div style="margin-left: 10px;">
     
     <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?> onchange="nxs_TRSetEnable('T','<?php echo $ii; ?>');" /> Text Post<br/>            
@@ -99,6 +99,10 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
 <strong>Defailt Image to Post:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post is missing "Featured Image" and doesn't have any images in the text body this will be used instead.</p>
             </div><input name="tr[<?php echo $ii; ?>][apTRDefImg]" id="apTRDefImg<?php echo $ii; ?>" style=" margin-left: 15px; width: 30%;" <?php if ($options['trPostType'] != 'I') echo 'disabled="disabled"'; ?> value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trDefImg'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+<br/>            
+<input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="U" <?php if ($options['trPostType'] == 'U') echo 'checked="checked"'; ?> /> Audio Post<br/>
+<input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="V" <?php if ($options['trPostType'] == 'V') echo 'checked="checked"'; ?> /> Video Post<br/>            
+<i style="">Tip: Your post must contain link to Audio or Video file if you select "Audio Post" or "Video Post" , otherwise it will reverted to the "Text Post"</i>
             <br/><br/>
 
 </div>            
@@ -186,10 +190,18 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <?php }elseif ($post->post_status != "puZblish") { ?> 
                          
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">
-                <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?>  /> <br/>
-                
+                <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?>  /> <br/>                
                 </th>
-                <td><b><?php _e('Text Post. Title Format:', 'NS_SPAP') ?></b><input value="<?php echo $trMsgTFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPTformat]" style="width:270px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>');"/>&nbsp; .. or .. &nbsp;<input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="I" <?php if ($options['trPostType'] == 'I') echo 'checked="checked"'; ?>  /> <b>Image Post</b> <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> </td></tr>
+                <td><b><?php _e('Text Post. Title Format:', 'NS_SPAP') ?></b>&nbsp;<input value="<?php echo $trMsgTFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPTformat]" style="width:270px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>');"/>
+                 <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> </td></tr>
+                
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">
+                <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="I" <?php if ($options['trPostType'] == 'I') echo 'checked="checked"'; ?>  />  <br/>                
+                </th>
+                <td><b>Image Post</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="V" <?php if ($options['trPostType'] == 'V') echo 'checked="checked"'; ?>  /> <b>Video Post</b> <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="U" <?php if ($options['trPostType'] == 'U') echo 'checked="checked"'; ?>  /> <b>Audio Post</b> <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> 
+                </td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
                 <td><input value="<?php echo $trMsgFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTRMsgFrmt".$ii); ?></td></tr>
@@ -239,9 +251,15 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#014A76">Tumblr</span> - '.$options['nName'];
     $postArr = array('tags'=>$tags, 'date'=>$postDate);
+    if($options['trPostType']=='V') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytUrl = $vids[0]; if (trim($ytUrl)=='') $options['trPostType']='T'; }
+    if($options['trPostType']=='U') { $aud = nsFindAudioInPost($post); if (count($aud)>0) $aUrl = $aud[0]; if (trim($aUrl)=='') $options['trPostType']='T'; }
     if ($options['trPostType']=='I') { $postArr['type'] = 'photo'; $postArr['caption'] = $msg;  $postArr['source'] = nxs_getPostImage($postID, 'large', $options['trDefImg']);       
       if (!isset($options['cImgURL']) || $options['cImgURL']=='' || $options['cImgURL']=='R' ) $postArr['link'] = get_permalink($postID); 
         elseif ($options['cImgURL']=='S' ) {$postArr['link'] = get_permalink($postID); $postArr['link'] = nxs_mkShortURL($postArr['link']);} 
+    } elseif($options['trPostType']=='U') { $postArr['type'] = 'audio'; $postArr['caption'] = $msg;  $postArr['external_url'] = $aUrl;
+    } elseif($options['trPostType']=='V') { $postArr['type'] = 'video'; $postArr['caption'] = $msg;   
+      $embedTxt = '<iframe width="560" height="315" src="http://www.youtube.com/embed/'.$ytUrl.'" frameborder="0" allowfullscreen></iframe>';
+      $postArr['embed'] = $embedTxt;           
     } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = get_permalink($postID); $postArr['body'] = $msg; } 
     
     $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$trURL."/post", $postArr); // prr($postinfo);  prr($postArr);
