@@ -5,7 +5,7 @@ $nxs_snapAvNts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Common Settings  
   function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'FB'; $lcode = 'fb'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
-    if ( isset($_GET['code']) && $_GET['code']!='' && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>-= Code:".$at;
+    if ( isset($_GET['code']) && $_GET['code']!='' && (isset($_GET['auth']) && $_GET['auth']=='fb') && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>-= Code:".$at;
      //$fbo = array('wfa'=> 1339160000); //foreach ($ntOpts as $two) { if (isset($two['wfa']) && $two['wfa']>$fbo['wfa']) $fbo =  $two; }
      $fbo = $ntOpts[$_GET['acc']]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg); 
      if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
@@ -31,9 +31,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         }
       } else echo "Can't get Facebook User. Please login to Facebook.";                
                                                 
-      if ($user>0) { $fbo['fbAppAuthUser'] = $user;  $options = get_option('NS_SNAutoPoster');      
-        foreach ($options['fb'] as $two) { if ($two['fbPgID']==$fbo['fbPgID']) $fbs[] = $fbo; else $fbs[] = $two; } $options['fb'] = $fbs; // prr($options); die();
-         update_option('NS_SNAutoPoster', $options);
+      if ($user>0) { $fbo['fbAppAuthUser'] = $user;  
+        $optionsG = get_option('NS_SNAutoPoster'); $optionsG['fb'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapThisPageUrl; ?>"</script>      
       <?php } die(); }
     } ?>
@@ -127,7 +126,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>0) { ?>
             Your Facebook Account has been authorized. User ID: <?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbAppAuthUser'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>.
             You can Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo $fbo['fbAppID'];?>&client_secret='<?php echo $fbo['fbAppSec'];?>&scope=publish_stream,user_photos,offline_access,read_stream,manage_pages&redirect_uri=<?php echo urlencode($nxs_snapThisPageUrl.'&acc='.$fbo['ii']);?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo $fbo['fbAppID'];?>&client_secret='<?php echo $fbo['fbAppSec'];?>&scope=publish_stream,user_photos,offline_access,read_stream,manage_pages&redirect_uri=<?php echo urlencode($nxs_snapThisPageUrl.'&auth=fb&acc='.$fbo['ii']);?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($fbo['fbAppAuthUser']) || $fbo['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>
             
             <?php if (!isset($fbo['fbAppAuthUser']) || $fbo['fbAppAuthUser']<1) { ?>
@@ -308,7 +307,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
 
     try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR=- '.$e->getMessage(), $extInfo);
       if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { $page_id = $options['fbPgID'];
-        if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$fbo['fbURL']); 
+        if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) { $fbPgIDR = wp_remote_get('http://www.nextscripts.com/nxs.php?g='.$options['fbURL']); 
           $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
         } try {  $page_info = $facebook->api("/$page_id?fields=access_token"); } catch (NXS_FacebookApiException $er2) { }
         if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; 

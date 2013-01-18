@@ -2,21 +2,21 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, forum, open graph, LiveJournal
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, LiveJournal, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Plurk, Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, LiveJournal, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, and Tumblr profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's announcement with back link will be published to all your configured social networks.
 
 **Plugin makes 100% White Labeled Posts** The main idea behind the plugin is to give you the ability to promote only yourself. Plugin uses your own apps and all posts to all networks come only from you. No "Shared via NextScripts.com" or "Posted by SNAP for Wordpress" messages.
 
-Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, LiveJournal, Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
+Social Networks Auto Poster can automatically publish nicely formatted announcements to your Facebook, Twitter, LinkedIn, Tumblr, Wordpress, vBulletin, Delicious, Stumbleupon, LiveJournal, VKontakte(VK.com), Diigo, Plurk, Blogger, and Google+ (Google Plus) accounts, so you can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, Facebook groups, etc. Plugin supports custom WordPress post types. 
 
 * **Latest version 2.5** - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
@@ -37,6 +37,7 @@ Social Networks Auto Poster can automatically publish nicely formatted announcem
 * **Twitter** - Autopost to your account. Ability to attach Image to tweets.
 * **Plurk**  - Autopost to your account. Ability to attach Image to messages.
 * **vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
+* **vKontakte(VK.com)** - Autopost to your profile or group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 
 ... more networks are coming soon ...
@@ -151,12 +152,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Screenshots ==
 
-1.Settings Page
-2.Add new post metadata box
-3.Facebook Types of Post 
-4.Google+ Types of Post 
+1. Settings Page
+2. Add new post metadata box
+3. Facebook Types of Post 
+4. Google+ Types of Post 
 
 == Changelog ==
+
+= 2.5.4 [01/18/2013] =
+
+* New - New network: VKontakte(vk.com). Repost your blogposts to your VK account.
+* Bug fix - Facebook settings saving problem on some configurations
+* Bug fix - Google+ debug text removed
+* Bug fix - WPMU Edition only. - Lost settings opages on users websites.
 
 = 2.5.3 [01/15/2013] =
 

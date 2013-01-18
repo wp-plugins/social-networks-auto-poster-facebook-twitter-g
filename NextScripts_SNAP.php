@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.5.3
+Version: 2.5.4
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.5.3' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.5.4' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -35,11 +35,12 @@ if (!class_exists("NS_SNAutoPoster")) {
             //$options = array('nsOpenGraph'=>1);            
             $dbOptions = get_option($this->dbOptionsName); 
             $this->nxs_ntoptions = get_site_option($this->dbOptionsName); 
-            if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  restore_current_blog(); 
+            if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  
+              if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($dbMUOptions); restore_current_blog(); 
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
             }              
             if (!empty($dbOptions) && is_array($dbOptions)) foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option; 
-            if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);  //$ttt = function_exists('nxs_getInitAdd'); var_dump($ttt);
+            if ( (!$nxs_isWPMU || $blog_id==1) && function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);  //$ttt = function_exists('nxs_getInitAdd'); var_dump($ttt);
             if (isset($options['uk']) && $options['uk']!='') $options['uk']='API';
 
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
@@ -543,7 +544,7 @@ Please see #4 and #5 for Twitter:<br/>
                   foreach ($_POST[$avNt['lcode']] as $pst ) { 
                     if (is_array($pst) && $pst['SNAPinclude'.$avNt['code']]=='') $_POST[$avNt['lcode']][$ii]['SNAPinclude'.$avNt['code']]= 0; $ii++;
                   }
-              } $newMeta = $_POST[$avNt['lcode']];// prr($newMeta); echo "~~~~~";
+              } $newMeta = $_POST[$avNt['lcode']]; // prr($newMeta); echo "~~~~~";
               if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); // echo "## snap".$avNt['code']; prr($savedMeta); echo "||"; prr($newMeta);
               delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], $newMeta); 
               }

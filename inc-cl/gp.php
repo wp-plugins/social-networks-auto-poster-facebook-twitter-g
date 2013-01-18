@@ -183,7 +183,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  
       if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL;      //prr($lnk);
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
-        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($msg, $lnk); prr($ret);
+        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($msg, $lnk); //prr($ret);
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
       if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
         else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Google+ Page'; } else 
