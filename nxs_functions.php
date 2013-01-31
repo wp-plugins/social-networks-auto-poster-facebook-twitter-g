@@ -237,7 +237,7 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
 -moz-user-select: none;border-bottom-style: solid;border-bottom-width: 1px;}
 .nxs_box_inside{line-height: 1.4em; padding: 10px;}
 .nxs_box_inside input{ padding: 5px; border: 1px solid #ACACAC;}
-.nxs_box_inside .insOneDiv{max-width: 1020px; background-color: #f8f9f9; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;}
+.nxs_box_inside .insOneDiv, #nsx_addNT .insOneDiv{max-width: 1020px; background-color: #f8f9f9; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;}
 
 
 </style>
