@@ -111,6 +111,12 @@ function nxsTRURLVal(ii){ var val = jQuery('#apTRURL'+ii).val(); var srch = val.
   if (srch>-1) { jQuery('#apTRURL'+ii).css({"background-color":"#FFC0C0"}); jQuery('#apTRURLerr'+ii).html('<br/>Incorrect URL: Please note that URL of your Tumblr Blog should be your public URL. (i.e. like http://nextscripts.tumblr.com/, not http://www.tumblr.com/blog/nextscripts'); } else { jQuery('#apTRURL'+ii).css({"background-color":"#ffffff"}); jQuery('#apTRURLerr'+ii).text(''); }            
 }
 
+function nxs_hideTip(id){  
+  jQuery.post(ajaxurl,{action: 'nxs_hideTip', id: id, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';                    
+     jQuery('#'+id).hide(); 
+  }, "html")
+}
+
 (function($) {
   $(function() {
      $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });

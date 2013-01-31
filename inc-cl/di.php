@@ -1,79 +1,79 @@
 <?php    
 //## NextScripts Facebook Connection Class
-$nxs_snapAvNts[] = array('code'=>'DI', 'lcode'=>'di', 'name'=>'Diigo (Beta)');
+$nxs_snapAvNts[] = array('code'=>'DI', 'lcode'=>'di', 'name'=>'Diigo');
 
 if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'DI'; $lcode = 'di'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Diigo Settings:           
-            <?php $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
-              <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Diigo account<?php if ($cgpo!=1){ ?>s<?php } ?>  </div></div> 
-              <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$options){ if (trim($options['nName']=='')) $options['nName'] =$options['diUName']; ?>
-                <p style="margin: 0px;margin-left: 5px;">
-                  <input value="1" id="apDoDI" name="di[<?php echo $indx; ?>][apDoDI]" onchange="doShowHideBlocks('DI');" type="checkbox" <?php if ((int)$options['doDI'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your Diigo Account <i style="color: #005800;"><?php if($options['nName']!='') echo "(".$options['nName'].")"; ?></i>  </strong>                                         
-                  &nbsp;&nbsp;<a id="doDI<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('DI<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
-                  <a href="#" onclick="doDelAcct('di','<?php echo $indx; ?>', '<?php echo $options['diUName']; ?>');return false;">[Remove Account]</a>
-                </p>            
-                <?php $this->showNTSettings($indx, $options);             
-              } ?>            
-            <?php 
-  }  
-  //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doDI'=>'1', 'diUName'=>'', 'diInclTags'=>'1', 'diAttch'=>'', 'diAPIKey'=>'', 'diPass'=>''); $this->showNTSettings($mgpo, $options, true);}
   
+  function showGenNTSettings($ntOpts){ global $nxs_plurl; $ntInfo = array('code'=>'DI', 'lcode'=>'di', 'name'=>'Diigo', 'defNName'=>'diUName', 'tstReq' => false); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php
+  }   
+  
+  //#### Show NEW Settings Page
+  function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doDI'=>'1', 'diUName'=>'', 'diInclTags'=>'1', 'diAttch'=>'', 'diAPIKey'=>'', 'diPass'=>''); $this->showNTSettings($mgpo, $options, true);}  
   
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-            <div id="doDI<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/di-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSDI<?php echo $ii; ?>" value="0" id="apDoSDI<?php echo $ii; ?>" />          
+            <div id="doDI<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew){ ?> clNewNTSets<?php } ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/di-bg.png);background-position:90% 10%;"> <input type="hidden" name="apDoSDI<?php echo $ii; ?>" value="0" id="apDoSDI<?php echo $ii; ?>" />          
             
-             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Detailed Diigo Installation/Configuration Instructions</a></div>
+             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/"><?php $nType="Diigo"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="di[<?php echo $ii; ?>][nName]" id="dinName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('di', $ii, $options['qTLng']); ?>
             <?php echo nxs_addPostingDelaySel('di', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="di[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSDI<?php echo $ii; ?>" type="radio" name="di[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_DI<?php echo $ii; ?>" onclick="jQuery('#catSelSDI<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('DI<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_DI<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="di[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_DI<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
                         <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">Diigo API Key:</strong> <span style="font-size: 11px; margin: 0px;">Get it from <a target="_blank" href="http://www.diigo.com/api_keys/">http://www.diigo.com/api_keys</a>.</span></div>
-                <input name="di[<?php echo $ii; ?>][apDIAPIKey]" id="apDIAPIKey" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diAPIKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/> 
+                <input name="di[<?php echo $ii; ?>][apDIAPIKey]" id="apDIAPIKey" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diAPIKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/> 
             </div>   
-           <div style="width:100%;"><strong>Diigo Username:</strong> </div><input name="di[<?php echo $ii; ?>][apDIUName]" id="apDIUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Diigo Password:</strong> </div><input name="di[<?php echo $ii; ?>][apDIPass]" id="apDIPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
+           <div style="width:100%;"><strong>Diigo Username:</strong> </div><input name="di[<?php echo $ii; ?>][apDIUName]" id="apDIUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['diUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Diigo Password:</strong> </div><input name="di[<?php echo $ii; ?>][apDIPass]" id="apDIPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
-            <?php if ($isNew) { ?> <input type="hidden" name="di[<?php echo $ii; ?>][apDoDI]" value="1" id="apDoNewDI<?php echo $ii; ?>" /> <?php } ?>
-            <br/>            
-            
+            <?php if ($isNew) { ?> <input type="hidden" name="di[<?php echo $ii; ?>][apDoDI]" value="1" id="apDoNewDI<?php echo $ii; ?>" /> <?php } ?><br/>            
             <p style="margin-bottom: 20px;margin-top: 5px;"><input value="1"  id="diInclTags" type="checkbox" name="di[<?php echo $ii; ?>][diInclTags]"  <?php if ((int)$options['diInclTags'] == 1) echo "checked"; ?> /> 
-              <strong>Post with tags</strong> Tags from the blogpost will be auto posted to Diigo                                
+              <strong><?php _e('Post with tags', 'nxs_snap'); ?></strong> <?php _e('Tags from the blogpost will be auto posted to Diigo', 'nxs_snap'); ?>                                
             </p>
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong> (<a href="#" id="apDIMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="di[<?php echo $ii; ?>][apDIMsgTFrmt]" id="apDIMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDIMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
+              <input name="di[<?php echo $ii; ?>][apDIMsgTFrmt]" id="apDIMsgTFrmt<?php echo $ii; ?>" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?>
             </div><br/> 
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apDIMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="di[<?php echo $ii; ?>][apDIMsgFrmt]" id="apDIMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDIMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
+              <input name="di[<?php echo $ii; ?>][apDIMsgFrmt]" id="apDIMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['diPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToDI', 'rePostToDI_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('DI', '<?php echo $ii; ?>'); return false;">Submit Test Post to Diigo</a>      
-               
-            <?php } 
-            
-            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div></div><?php
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('DI', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>            <?php } 
+          ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'DI'; $lcode = 'di'; 
@@ -98,30 +98,26 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDI', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doDI = $ntOpt['doDI'] && $ntOpt['catSel']!='1';   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDI', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+        $doDI = $ntOpt['doDI'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailDI =  $ntOpt['diUName']!='' && $ntOpt['diPass']!=''; $diMsgFormat = htmlentities($ntOpt['diMsgFormat'], ENT_COMPAT, "UTF-8"); $diMsgTFormat = htmlentities($ntOpt['diMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_DI<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailDI) { ?><input class="nxsGrpDoChb" value="1" id="doDI<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="di[<?php echo $ii; ?>][SNAPincludeDI]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDI == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailDI) { ?><input class="nxsGrpDoChb" value="1" id="doDI<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="di[<?php echo $ii; ?>][doDI]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDI == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);">Diigo - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailDI) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDI_repostButton" id="rePostToDI_button" value="<?php _e('Repost to Diigo', 're-post') ?>" />
-                    <?php wp_nonce_field( 'rePostToDI', 'rePostToDI_wpnonce' ); } ?>
-                    
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);">Diigo - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailDI) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDI_repostButton" id="rePostToDI_button" value="<?php _e('Repost to Diigo', 'nxs_snap') ?>" />
+                    <?php wp_nonce_field( 'rePostToDI', 'rePostToDI_wpnonce' ); } ?>                    
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
                         ?> <span id="pstdDI<?php echo $ii; ?>" style="float: right; padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="http://www.diigo.com/user/<?php echo $ntOpt['diUName']; ?>" target="_blank">Posted on Diigo <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
-                    </span><?php } ?>
-                    
-                </td></tr>                
-                
+          <a style="font-size: 10px;" href="http://www.diigo.com/user/<?php echo $ntOpt['diUName']; ?>" target="_blank"><?php $nType="Diigo"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                    </span><?php } ?>                    
+                </td></tr>
                 <?php if (!$isAvailDI) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Diigo Account to AutoPost to Diigo</b>
-                <?php } elseif ($post->post_status != "pubZlish") { ?> 
-               
-       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
-        <td><input value="<?php echo $diMsgTFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformatT]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?></td></tr>
-                
-      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <?php } elseif ($post->post_status != "pubZlish") { ?>                
+       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+        <td><input value="<?php echo $diMsgTFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformatT]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?></td></tr>                
+      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
         <td><input value="<?php echo $diMsgFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
@@ -130,7 +126,7 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['diMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['diMsgTFormat'] = $pMeta['SNAPformatT']; 
-     if (isset($pMeta['SNAPincludeDI'])) $optMt['doDI'] = $pMeta['SNAPincludeDI'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDI'] = 0; } return $optMt;
+     if (isset($pMeta['doDI'])) $optMt['doDI'] = $pMeta['doDI'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDI'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDI_ajax")) {

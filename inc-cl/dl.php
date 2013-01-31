@@ -4,66 +4,70 @@ $nxs_snapAvNts[] = array('code'=>'DL', 'lcode'=>'dl', 'name'=>'Delicious');
 
 if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'DL'; $lcode = 'dl'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Delicious Settings:           
-            <?php $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
-              <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Delicious account<?php if ($cgpo!=1){ ?>s<?php } ?>  </div></div> 
-              <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) $gpo['nName'] =$gpo['dlUName']; ?>
-                <p style="margin: 0px;margin-left: 5px;">
-                  <input value="1" id="apDoDL" name="dl[<?php echo $indx; ?>][apDoDL]" onchange="doShowHideBlocks('DL');" type="checkbox" <?php if ((int)$gpo['doDL'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your Delicious Account <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i>  </strong>                                         
-                  &nbsp;&nbsp;<a id="doDL<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('DL<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
-                  <a href="#" onclick="doDelAcct('dl','<?php echo $indx; ?>', '<?php echo $gpo['dlUName']; ?>');return false;">[Remove Account]</a>
-                </p>            
-                <?php $this->showNTSettings($indx, $gpo);             
-              } ?>            
-            <?php 
+  function showGenNTSettings($ntOpts){ global $nxs_plurl; $ntInfo = array('code'=>'DL', 'lcode'=>'dl', 'name'=>'Delicious', 'defNName'=>'dlUName', 'tstReq' => false); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php 
   }  
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doDL'=>'1', 'dlUName'=>'', 'dlPageID'=>'', 'dlAttch'=>'', 'dlPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
-            <div id="doDL<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/dl-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSDL<?php echo $ii; ?>" value="0" id="apDoSDL<?php echo $ii; ?>" />          
+            <div id="doDL<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/dl-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSDL<?php echo $ii; ?>" value="0" id="apDoSDL<?php echo $ii; ?>" />          
             
-             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/">Detailed Delicious Installation/Configuration Instructions</a></div>
+             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/"><?php $nType="Delicious"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="dl[<?php echo $ii; ?>][nName]" id="dlnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('dl', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('dl', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
             
             <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="dl[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSDL<?php echo $ii; ?>" type="radio" name="dl[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_DL<?php echo $ii; ?>" onclick="jQuery('#catSelSDL<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('DL<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_DL<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($gpo['catSelEd']!='') echo "[".(substr_count($gpo['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="dl[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_DL<?php echo $ii; ?>" value="<?php echo $gpo['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
-            <div style="width:100%;"><strong>Delicious Username:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLUName]" id="apDLUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['dlUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Delicious Username:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLUName]" id="apDLUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($gpo['dlUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Delicious Password:</strong> </div><input name="dl[<?php echo $ii; ?>][apDLPass]" id="apDLPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['dlPass'], 5)):$gpo['dlPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="dl[<?php echo $ii; ?>][apDoDL]" value="1" id="apDoNewDL<?php echo $ii; ?>" /> <?php } ?>
             <br/>            
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong> (<a href="#" id="apDLTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDLTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
   
-              <input name="dl[<?php echo $ii; ?>][apDLMsgTFrmt]" id="apDLMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit',htmlentities($gpo['dlMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>" onfocus="mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?>
+              <input name="dl[<?php echo $ii; ?>][apDLMsgTFrmt]" id="apDLMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit',htmlentities($gpo['dlMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" onfocus="mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?>
             </div>   
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apDLMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" id="apDLMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['dlMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDLMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
+              <input name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" id="apDLMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['dlMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($gpo['dlPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToDL', 'rePostToDL_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('DL', '<?php echo $ii; ?>'); return false;">Submit Test Post to Delicious</a>      
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('DL', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>      
                
             <?php } 
             
-            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div></div><?php
+            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'DL'; $lcode = 'dl'; 
@@ -86,19 +90,20 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDL', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doDL = $ntOpt['doDL'] && $ntOpt['catSel']!='1';   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDL', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+        $doDL = $ntOpt['doDL'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!=''; $dlMsgFormat = htmlentities($ntOpt['dlMsgFormat'], ENT_COMPAT, "UTF-8"); $dlMsgTFormat = htmlentities($ntOpt['dlMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_DL<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" id="doDL<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][SNAPincludeDL]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDL == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" id="doDL<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][doDL]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDL == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailDL) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDL_repostButton" id="rePostToDL_button" value="<?php _e('Repost to Delicious', 're-post') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailDL) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDL_repostButton" id="rePostToDL_button" value="<?php _e('Repost to Delicious', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToDL', 'rePostToDL_wpnonce' ); } ?>
                     
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
                         ?> <span id="pstdDL<?php echo $ii; ?>" style="float: right; padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="http://delicious.com/<?php echo $ntOpt['dlUName']; ?>" target="_blank">Posted on Delicious <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="http://delicious.com/<?php echo $ntOpt['dlUName']; ?>" target="_blank"><?php $nType="Delicious"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -106,19 +111,19 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
                 <?php if (!$isAvailDL) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Delicious Account to AutoPost to Delicious</b>
                 <?php } elseif ($post->post_status != "pubZlish") { ?> 
                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
   //#### Save Meta Tags to the Post
-  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
+  function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = ''; 
      if (isset($pMeta['SNAPformat'])) $optMt['dlMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['dlMsgTFormat'] = $pMeta['SNAPformatT'];      
-     if (isset($pMeta['SNAPincludeDL'])) $optMt['doDL'] = $pMeta['SNAPincludeDL'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDL'] = 0; } return $optMt;
+     if (isset($pMeta['doDL'])) $optMt['doDL'] = $pMeta['doDL'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDL'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDL_ajax")) {
@@ -132,11 +137,20 @@ if (!function_exists("nxs_rePostToDL_ajax")) {
 }  
 if (!function_exists("doConnectToDelicious")) { function doConnectToDelicious($u, $p){ global $nxs_gCookiesArr;  $nxs_gCookiesArr = array(); $advSettings = array();
   $fldsTxt = 'username='.$u.'&password='.$p;
-  $contents = getCurlPageX(' http://www.delicious.com/login ','', false, $fldsTxt, false, $advSettings);   prr($nxs_gCookiesArr);   prr($contents);
+  $contents = getCurlPageX(' http://www.delicious.com/login ','', false, $fldsTxt, false, $advSettings); //  prr($nxs_gCookiesArr);   prr($contents);
 }}
 if (!function_exists("doPostToDelicious")) { function doPostToDelicious($postID, $options){  global $nxs_gCookiesArr; 
 
 }}
+
+if (!function_exists("nxs_getDLHeaders")) {  function nxs_getDLHeaders($up){ $hdrsArr = array(); 
+ $hdrsArr['Cache-Control']='no-cache'; $hdrsArr['Connection']='keep-alive'; 
+ $hdrsArr['User-Agent']='SNAP for Wordpress; Ver '.NextScripts_SNAP_Version;
+ $hdrsArr['Accept']='text/html, application/xhtml+xml, */*'; $hdrsArr['DNT']='1';
+ $hdrsArr['Authorization'] = 'Basic ' . base64_encode("$up");
+ $hdrsArr['Accept-Encoding']='gzip,deflate'; $hdrsArr['Accept-Language']='en-US,en;q=0.8'; $hdrsArr['Accept-Charset']='ISO-8859-1,utf-8;q=0.7,*;q=0.3'; return $hdrsArr;
+}}
+
 if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
   function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious';
       
@@ -149,24 +163,22 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
         $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);  $msg = nsFormatMessage($msgFormat, $postID); 
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }
-      
-      $dusername = $options['dlUName']; $pass = urlencode(substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
+      $dusername = $options['dlUName']; $pass = (substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
       $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
-      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
-      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
-      $apicall = "http://$dusername:$pass@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; // prr($apicall);
-      $cnt = wp_remote_get( $apicall, '' ); // prr($cnt);      
+      $apicall = "https://$api/posts/add?red=api&url=$link&description=$desc&extended=$ext&tags=$tags";
+      $hdrsArr = nxs_getDLHeaders($dusername.':'.$pass); $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) ); // prr($cnt);      
       
-      // nxs_addToLog($logNT, 'E', '-=ER!!ROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
-      
-      if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); $cnt = wp_remote_get( $apicall, '' );}}      
+      if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); 
+        $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );}
+      }      
       if(is_wp_error($cnt)) {
         $ret = 'Something went wrong - '."http://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) 
           { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DL', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
+        elseif (is_array($cnt) &&  $cnt['body']='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Delicious  API is Down'; nxs_addToLog($logNT, 'M', 'It looks like Delicious API is Down', $extInfo); }    
         elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
           else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }

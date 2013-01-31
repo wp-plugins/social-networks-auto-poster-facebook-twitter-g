@@ -4,32 +4,32 @@ $nxs_snapAvNts[] = array('code'=>'PN', 'lcode'=>'pn', 'name'=>'Pinterest');
 
 if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'PN'; $lcode = 'pn'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Pinterest Settings  
-            
-            <?php if(!function_exists('doPostToPinterest')) {?></div>  Pinterest doesn't have a built-in API for automated posts yet. <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/pinterest-automated-posting">library module</a> to be able to publish your content to Pinterest. <br/><br/>           
-            
-            <?php } else { 
-              $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts));  $nxsOne .= "&p=1"; ?>            
-              <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Pinterest account<?php if ($cgpo!=1){ ?>s<?php } ?> <!--- <a href="#" class="NXSButton" onclick="doShowHideBlocks2('PN<?php echo $mgpo; ?>');return false;">Add new Google+ Account</a> --> </div> </div>                  
-              <?php // if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Pinterest', 'PN'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$po){ if (trim($po['nName']=='')) { $po['nName'] = $po['pnUName']." Pinterest";  if($po['pnBoard']!='') $po['nName'] .= " Board: ".$po['pnBoard']; else $po['nName'] .= " Profile"; } ?>
-                <p style="margin: 0px;margin-left: 5px;">
-                  <input value="1" id="apDoPN" name="pn[<?php echo $indx; ?>][apDoPN]"  type="checkbox" <?php if ((int)$po['doPN'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your <i style="color: #005800;"><?php if($po['nName']!='') echo "(".$po['nName'].")"; ?></i> </strong>                                         
-                  &nbsp;&nbsp;<a id="doPN<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('PN<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
-                  <a href="#" onclick="doDelAcct('pn','<?php echo $indx; ?>', '<?php echo $po['pnUName']; ?>');return false;">[Remove Account]</a>
-                </p>            
-                <?php $this->showNTSettings($indx, $po);             
-              } ?>                        
-            
-            <?php } 
+  function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'PN', 'lcode'=>'pn', 'name'=>'Pinterest', 'defNName'=>'pnUName', 'tstReq' => false); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php if(!function_exists('doPostToPinterest')) {?>  Pinterest doesn't have a built-in API for automated posts yet. <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/pinterest-automated-posting">library module</a> to be able to publish your content to Pinterest.
+        <?php } else foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        } ?>
+      </div>
+    </div> <?php 
   }  
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $po = array('nName'=>'', 'doPN'=>'1', 'pnUName'=>'', 'pnBoard'=>'', 'gpAttch'=>'', 'pnPass'=>'', 'pnDefImg'=>'', 'pnMsgFormat'=>'', 'pnBoard'=>'', 'pnBoardsList'=>'', 'doPN'=>1); $this->showNTSettings($mgpo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-             <div id="doPN<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/pn-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSPN<?php echo $ii; ?>" value="0" id="apDoSPN<?php echo $ii; ?>" />         
+             <div id="doPN<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/pn-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSPN<?php echo $ii; ?>" value="0" id="apDoSPN<?php echo $ii; ?>" />         
              
              <?php if(!function_exists('doPostToPinterest')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b>Pinterest API Library not found</b>
@@ -38,24 +38,24 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             <?php return; }; ?>
              
            
-            <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">Detailed Pinterest Installation/Configuration Instructions</a></div>
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/"><?php $nType="Pinterest"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('pn', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('pn', $ii, $options['nHrs'], $options['nMin']); ?>
             
              <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="pn[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSPN<?php echo $ii; ?>" type="radio" name="pn[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_PN<?php echo $ii; ?>" onclick="jQuery('#catSelSPN<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('PN<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_PN<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="pn[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_PN<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
                   
-            <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             <div style="width:100%;"><strong>Default Image to Pin:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post missing Featured Image this will be used instead.</p>
-            </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+            </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
             <br/><br/>            
             
             <div style="width:100%;"><strong>Board:</strong> 
@@ -63,7 +63,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             </div>
             <?php wp_nonce_field( 'getBoards', 'getBoards_wpnonce' ); ?><img id="pnLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
             <select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard<?php echo $ii; ?>">
-            <?php if ($options['pnBoardsList']!=''){ $gPNBoards = $options['pnBoardsList']; if ($options['pnBoard']!='') $gPNBoards = str_replace($options['pnBoard'].'"', $options['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
+            <?php if ($options['pnBoardsList']!=''){ $gPNBoards = $options['pnBoardsList']; if ( base64_encode(base64_decode($gPNBoards)) === $gPNBoards) $gPNBoards = base64_decode($gPNBoards); 
+              if ($options['pnBoard']!='') $gPNBoards = str_replace($options['pnBoard'].'"', $options['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
               <option value="0">None(Click above to retrieve your boards)</option>
             <?php } ?>
             </select>
@@ -72,18 +73,18 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText">Message Text Format:</strong>  <a href="#" id="apPNMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>             
-              </div><input  name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" id="apPNMsgFrmt" style="width: 50%;" value="<?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster');  else echo "%TITLE% - %URL%"; ?>" onfocus="mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"  />
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>  <a href="#" id="apPNMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>             
+              </div><input  name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" id="apPNMsgFrmt" style="width: 50%;" value="<?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap');  else echo "%TITLE% - %URL%"; ?>" onfocus="mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"  />
               
               <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?>
             </div><br/>    
             <?php if ($isNew) { ?> <input type="hidden" name="pn[<?php echo $ii; ?>][apDoPN]" value="1" id="apDoNewPN<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['pnPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToPN', 'rePostToPN_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('PN', '<?php echo $ii; ?>'); return false;">Submit Test Post to Pinterest</a>         
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('PN', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>         
             <?php } ?>
             
-            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
             </div>
   </div>
             <?php
@@ -110,18 +111,19 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doPN = $ntOpt['doPN'] && $ntOpt['catSel']!='1';   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+        $doPN = $ntOpt['doPN'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailPN =  $ntOpt['pnUName']!='' && $ntOpt['pnPass']!=''; $pnMsgFormat = htmlentities($ntOpt['pnMsgFormat'], ENT_COMPAT, "UTF-8");        
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_PN<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][SNAPincludePN]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPN == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 're-post') ?>" />
+      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][doPN]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPN == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToPN', 'rePostToPN_wpnonce' ); } ?>
 
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
                         ?> <span id="pstdPN<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="http://pinterest.com<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Pinterest <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="http://pinterest.com<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Pinterest"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -131,13 +133,14 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Select Board</th>
                 <td><select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard">
-            <?php if ($ntOpt['pnBoardsList']!=''){ $gPNBoards = $ntOpt['pnBoardsList']; if ($ntOpt['pnBoard']!='') $gPNBoards = str_replace($ntOpt['pnBoard'].'"', $ntOpt['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
+            <?php if ($ntOpt['pnBoardsList']!=''){ $gPNBoards = $ntOpt['pnBoardsList']; if ( base64_encode(base64_decode($gPNBoards)) === $gPNBoards) $gPNBoards = base64_decode($gPNBoards); 
+              if ($ntOpt['pnBoard']!='') $gPNBoards = str_replace($ntOpt['pnBoard'].'"', $ntOpt['pnBoard'].'" selected="selected"', $gPNBoards);  echo $gPNBoards;} else { ?>
               <option value="0">None(Click above to retrieve your boards)</option>
             <?php } ?>
             </select></td>
                 </tr> 
                               
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Message Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Message Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $pnMsgFormat ?>" type="text" name="pn[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>
                                 
                 <?php } 
@@ -146,8 +149,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
   //#### Save Meta Tags to the Post
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['pnMsgFormat'] = $pMeta['SNAPformat'];      
-     if (isset($pMeta['SNAPincludePN'])) $optMt['doPN'] = $pMeta['SNAPincludePN'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPN'] = 0; }
-     if (isset($pMeta['apPNBoard'])) $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
+     if (isset($pMeta['doPN'])) $optMt['doPN'] = $pMeta['doPN'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPN'] = 0; }
+     if (isset($pMeta['apPNBoard']) && $pMeta['apPNBoard']!='' && $pMeta['apPNBoard']!='0') $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToPN_ajax")) {
@@ -174,7 +177,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
     else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
-      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['ogImgDef']); //echo $imgURL."######"; // echo "WW".$postID."|";
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['pnDefImg']); //prr($options); echo $imgURL."######"; // echo "WW".$postID."|";
       if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
     }
     $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();    

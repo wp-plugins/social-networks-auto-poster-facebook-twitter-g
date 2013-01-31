@@ -165,13 +165,14 @@ class wpPlurkOAuth{
         'oauth_verifier' => $verifier,
         'oauth_signature_method' => 'HMAC-SHA1'        
       );      
-      $req = array();  $req['method'] = 'GET';  $req['normalized_url'] = $this->baseURL.PLURK_ACCESS_TOKEN_PATH; echo "ARGS:"; prr($args); 
+      $req = array();  $req['method'] = 'GET';  $req['normalized_url'] = $this->baseURL.PLURK_ACCESS_TOKEN_PATH; // echo "ARGS:"; prr($args); 
       $req['normalized_parameters'] = $this->get_normalized_parameters($args);
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $this->access_secret); 
       $url = $this->baseURL.PLURK_ACCESS_TOKEN_PATH.'?oauth_nonce='.$args['oauth_nonce'].'&oauth_timestamp='.$args['oauth_timestamp'].'&oauth_token_secret='.$this->access_secret.'&oauth_signature_method='.$args['oauth_signature_method'].'&oauth_consumer_key='.$this->consumer_key.'&oauth_verifier='.$verifier.'&oauth_version='.$args['oauth_version'].'&oauth_token='.$this->access_token.'&oauth_signature='.$args['oauth_signature'];
       echo "<br/>REQ Token URL: ".$url."<br/>";
       $hdrsArr = $this->makeHTTPHeaders($url); $ckArr = $nxs_vbCkArray;   
       $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));  
+      if ( is_wp_error($response) ) return $response;
       $this->http_code = $response['response']['code']; 
       if (stripos($response['body'],'oauth_token_secret=')===false) echo 'Bad oAuth Login:'.$response['body']; else return $this->oAuthRespToArr($response['body']);        
     }
@@ -193,6 +194,7 @@ class wpPlurkOAuth{
       $argsStr = ''; $argsT = array(); foreach ($args as $arN=>$arV){$argsT[] = $arN.'='.$arV;} $argsStr = implode('&', $argsT); $url .= '?'.$argsStr;
       $hdrsArr = $this->makeHTTPHeaders($url); $ckArr = $nxs_vbCkArray;  
       $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr)); //  prr($response);
+      if ( is_wp_error($response) ) return $response;
       $this->http_code = $response['response']['code']; 
       return json_decode($response['body'], true);   
     }

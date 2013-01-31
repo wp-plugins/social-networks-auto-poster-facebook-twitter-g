@@ -4,8 +4,7 @@ $nxs_snapAvNts[] = array('code'=>'TR', 'lcode'=>'tr', 'name'=>'Tumblr');
 
 if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'TR'; $lcode = 'tr'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); 
-    
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl;  $ntInfo = array('code'=>'TR', 'lcode'=>'tr', 'name'=>'Tumblr', 'defNName'=>'', 'tstReq' => true);
    if ( isset($_GET['auth']) && $_GET['auth']=='tr'){ require_once('apis/trOAuth.php'); $options = $ntOpts[$_GET['acc']];
      $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
               $callback_url = $nxs_snapThisPageUrl."&auth=tra&acc=".$_GET['acc'];
@@ -19,7 +18,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
               }
               die();
             }
-            if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $options = $ntOpts[$_GET['acc']];
+   if ( isset($_GET['auth']) && $_GET['auth']=='tra'){ require_once('apis/trOAuth.php'); $options = $ntOpts[$_GET['acc']];
               $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];  
               $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trOAuthToken'], $options['trOAuthTokenSecret']);
               $options['trAccessTocken'] = $tum_oauth->getAccessToken($_REQUEST['oauth_verifier']); // prr($_GET);  prr($_REQUEST);   prr($options['trAccessTocken']);         
@@ -33,45 +32,51 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 die("<span style='color:red;'>ERROR: Authorized USER don't have access to the specified blog: <span style='color:darkred; font-weight: bold;'>".$options['trPgID']."</span></span>");
               }
             }
-    
-    
     ?>    
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Tumblr Settings:   <?php $cfbo = count($ntOpts); $mfbo =  1+max(array_keys($ntOpts)); ?> <?php wp_nonce_field( 'nsFB', 'nsFB_wpnonce' ); ?>
-    <div class="nsBigText">You have <?php echo $cfbo=='0'?'No':$cfbo; ?> Tumblr account<?php if ($cfbo!=1){ ?>s<?php } ?> <!-- - <a href="#" class="NXSButton" onclick="doShowHideBlocks2('FB<?php echo $mfbo; ?>');return false;">Add new Facebook Account</a> --> </div></div>
-    
-    <?php // if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mfbo); else nxs_doSMAS('Tumblr', 'TR'.$mfbo); ?>
-    <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('https://','', str_ireplace('http://','', $pbo['trURL']));  ?>
-      <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoTR" name="tr[<?php echo $indx; ?>][apDoTR]" type="checkbox" <?php if ((int)$pbo['doTR'] == 1) echo "checked"; ?> /> 
-      <strong>Auto-publish your Posts to your Tumblr Blog <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i> </strong>
-      &nbsp;&nbsp;<a id="doTR<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('TR<?php echo $indx; ?>');return false;">[Show Settings]</a>&nbsp;&nbsp;
-      <a href="#" onclick="doDelAcct('tr', '<?php echo $indx; ?>', '<?php if (isset($pbo['trURL'])) echo $pbo['trURL']; ?>');return false;">[Remove Account]</a>
-      </p><?php $this->showNTSettings($indx, $pbo);             
-    } //## END TR Settings 
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('https://','', str_ireplace('http://','', $pbo['trURL'])); 
+        if (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='') $pbo[$ntInfo['lcode'].'OK'] = (isset($pbo['trOAuthTokenSecret']) && $pbo['trOAuthTokenSecret']!='')?'1':''; ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php 
   }  
   //#### Show NEW Settings Page
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'doTR'=>'1', 'trURL'=>'', 'trPgID'=>'', 'trConsKey'=>'', 'trInclTags'=>'1', 'cImgURL'=>'R', 'trConsSec'=>'', 'trPostType'=>'T', 'trDefImg'=>'', 'trOAuthTokenSecret'=>'', 'trAccessTocken'=>'', 'trMsgFormat'=>'<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\'%IMG%\'/></p><p>%FULLTEXT%</p></blockquote>', 'trMsgTFormat'=>'New Post has been published on %SITENAME%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapThisPageUrl; ?>
-    <div id="doTR<?php echo $ii; ?>Div"<?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($options['trOAuthTokenSecret']) && $options['trOAuthTokenSecret']!='')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
+    <div id="doTR<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="tr[<?php echo $ii; ?>][apDoTR]" value="1" id="apDoNewTR<?php echo $ii; ?>" /> <?php } ?>
     
-    <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">Detailed Tumblr Installation/Configuration Instructions</a></div>
+    <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/"><?php $nType="Tumblr"; printf( __( 'Detailed %s Installation/Configuration Instructions' , 'nxs_snap'), $nType); ?></a></div>
     
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="tr[<?php echo $ii; ?>][nName]" id="trnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('tr', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('tr', $ii, $options['nHrs'], $options['nMin']); ?>
             
              <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="tr[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSTR<?php echo $ii; ?>" type="radio" name="tr[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_TR<?php echo $ii; ?>" onclick="jQuery('#catSelSTR<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('TR<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_TR<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="tr[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_TR<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
-            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
-            <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />             
-            <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>Your Tumblr URL:</strong> </div><input onchange="nxsTRURLVal(<?php echo $ii; ?>);" name="tr[<?php echo $ii; ?>][apTRURL]" id="apTRURL<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><span style="color: #F00000;" id="apTRURLerr<?php echo $ii; ?>"></span>
+            <div style="width:100%;"><strong>Your Tumblr OAuth Consumer Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsKey]" id="apTRConsKey" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />             
+            <div style="width:100%;"><strong>Your Tumblr Secret Key:</strong> </div><input name="tr[<?php echo $ii; ?>][apTRConsSec]" id="apTRConsSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trConsSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
             <br/>
             
 <div style="width:100%;"><strong id="altFormatText">Default Post Type:</strong></div>                      
@@ -79,8 +84,8 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
     
     <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?> onchange="nxs_TRSetEnable('T','<?php echo $ii; ?>');" /> Text Post<br/>            
 
-    <div style="width:100%; margin-left: 15px;"><strong id="altFormatText">Text Post Title Format:</strong> (<a href="#" id="apTRTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)  </div><div onblur="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').hide();">
-              <input name="tr[<?php echo $ii; ?>][apTRMsgTFrmt]" id="apTRMsgTFrmt<?php echo $ii; ?>" style="margin-left: 15px; width: 50%;" value="<?php if ($options['trMsgTFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo "New Post has been published on %SITENAME%"; ?>"  onfocus="jQuery('#apTRTMsgFrmt<?php echo $ii; ?>Hint').show();"  <?php if ($options['trPostType'] == 'I') echo 'disabled="disabled"'; ?>  /><br/>
+    <div style="width:100%; margin-left: 15px;"><strong id="altFormatText">Text <?php _e('Post Title Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apTRTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)  </div><div onblur="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').hide();">
+              <input name="tr[<?php echo $ii; ?>][apTRMsgTFrmt]" id="apTRMsgTFrmt<?php echo $ii; ?>" style="margin-left: 15px; width: 50%;" value="<?php if ($options['trMsgTFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo "New Post has been published on %SITENAME%"; ?>"  onfocus="jQuery('#apTRTMsgFrmt<?php echo $ii; ?>Hint').show();"  <?php if ($options['trPostType'] == 'I') echo 'disabled="disabled"'; ?>  /><br/>
               <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?>
             </div>
             
@@ -98,7 +103,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
 
 <strong>Defailt Image to Post:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post is missing "Featured Image" and doesn't have any images in the text body this will be used instead.</p>
-            </div><input name="tr[<?php echo $ii; ?>][apTRDefImg]" id="apTRDefImg<?php echo $ii; ?>" style=" margin-left: 15px; width: 30%;" <?php if ($options['trPostType'] != 'I') echo 'disabled="disabled"'; ?> value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trDefImg'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /> 
+            </div><input name="tr[<?php echo $ii; ?>][apTRDefImg]" id="apTRDefImg<?php echo $ii; ?>" style=" margin-left: 15px; width: 30%;" <?php if ($options['trPostType'] != 'I') echo 'disabled="disabled"'; ?> value="<?php _e(apply_filters('format_to_edit', htmlentities($options['trDefImg'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
 <br/>            
 <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="U" <?php if ($options['trPostType'] == 'U') echo 'checked="checked"'; ?> /> Audio Post<br/>
 <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="V" <?php if ($options['trPostType'] == 'V') echo 'checked="checked"'; ?> /> Video Post<br/>            
@@ -107,9 +112,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
 
 </div>            
             
-  <div style="width:100%;"><strong id="altFormatText">Post Text Format:</strong> (<a href="#" id="apTRMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>) </div>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apTRMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apTRMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>) </div>
               
-              <input name="tr[<?php echo $ii; ?>][apTRMsgFrmt]" id="apTRMsgFrmt" style="width: 50%;" value="<?php if ($options['trMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo htmlentities("<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\"%IMG%\"/></p><p>%FULLTEXT%</p></blockquote>"); ?>" onfocus="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').show();" /><br/>
+              <input name="tr[<?php echo $ii; ?>][apTRMsgFrmt]" id="apTRMsgFrmt" style="width: 50%;" value="<?php if ($options['trMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo htmlentities("<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\"%IMG%\"/></p><p>%FULLTEXT%</p></blockquote>"); ?>" onfocus="jQuery('#apTRMsgFrmt<?php echo $ii; ?>Hint').show();" /><br/>
                <?php nxs_doShowHint("apTRMsgFrmt".$ii); ?>
                
               
@@ -121,7 +126,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             if($options['trConsSec']=='') { ?>
             <b>Authorize Your Tumblr Account</b>. Please save your settings and come back here to Authorize your account.
             <?php } else { if(isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='') { ?>
-            Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['trPgID'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>. 
+            Your Tumblr Account has been authorized. Blog ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['trPgID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>. 
             You can Re- <?php } ?>            
             <a href="<?php echo $nxs_snapThisPageUrl;?>&auth=tr&acc=<?php echo $ii; ?>">Authorize Your Tumblr Account</a> 
               <?php if (!isset($options['trOAuthTokenSecret']) || $options['trOAuthTokenSecret']=='') { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>            
@@ -130,9 +135,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
             
             <?php if( isset($options['trOAuthTokenSecret']) && $options['trOAuthTokenSecret']!='') { ?>
             <?php wp_nonce_field( 'rePostToTR', 'rePostToTR_wpnonce' ); ?>
-            <br/><br/><b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TR', '<?php echo $ii; ?>'); return false;">Submit Test Post to Tumblr</a>  <br/><br/>
+            <br/><br/><b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('TR', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s' , 'nxs_snap'), $nType); ?></a>  <br/><br/>
             <?php }?>
-            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>  
+            <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>  
             
         </div>
         <?php
@@ -169,20 +174,21 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
   } 
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; 
-    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTR', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); $doTR = $options['doTR'] && $options['catSel']!='1'; 
+    foreach($ntOpts as $ii=>$options)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTR', true));  if (is_array($pMeta)) $options = $this->adjMetaOpt($options, $pMeta[$ii]); 
+       $doTR = $options['doTR'] && (is_array($pMeta) || (is_array($pMeta) || $options['catSel']!='1')); 
        $isAvailTR =  isset($options['trAccessTocken']) && isset($options['trAccessTocken']['oauth_token_secret']) && $options['trAccessTocken']['oauth_token_secret']!=='';          
        $trMsgFormat = htmlentities($options['trMsgFormat'], ENT_COMPAT, "UTF-8");  $trMsgTFormat = htmlentities($options['trMsgTFormat'], ENT_COMPAT, "UTF-8");
       ?>  
       
  <tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_TR<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailTR) { ?><input class="nxsGrpDoChb" value="1" id="doTR<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tr[<?php echo $ii; ?>][SNAPincludeTR]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTR == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);">Tumblr - publish to (<i style="color: #005800;"><?php echo $options['nName']; ?></i>) </div></th><td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailTR) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"Z type="button" class="button" name="rePostToTR_repostButton" id="rePostToTR_button" value="<?php _e('Repost to Tumblr', 're-post') ?>" />
+      <?php if ($isAvailTR) { ?><input class="nxsGrpDoChb" value="1" id="doTR<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tr[<?php echo $ii; ?>][doTR]" <?php if (($post->post_status == "publish" && $options['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTR == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tr16.png);">Tumblr - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $options['nName']; ?></i>) </div></th><td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailTR) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"Z type="button" class="button" name="rePostToTR_repostButton" id="rePostToTR_button" value="<?php _e('Repost to Tumblr', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToTR', 'rePostToTR_wpnonce' ); } ?>
                     
                     <?php if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) {                         
                         ?> <span id="pstdTR<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a style="font-size: 10px;" href="<?php echo $options['trURL']; ?>post/<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Tumblr <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a style="font-size: 10px;" href="<?php echo $options['trURL']; ?>post/<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Tumblr"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>
@@ -192,7 +198,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">
                 <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="T" <?php if ($options['trPostType'] != 'I') echo 'checked="checked"'; ?>  /> <br/>                
                 </th>
-                <td><b><?php _e('Text Post. Title Format:', 'NS_SPAP') ?></b>&nbsp;<input value="<?php echo $trMsgTFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPTformat]" style="width:270px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>');"/>
+                <td><b><?php _e('Text Post. Title Format:', 'nxs_snap') ?></b>&nbsp;<input value="<?php echo $trMsgTFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPTformat]" style="width:270px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRTMsgFrmt<?php echo $ii; ?>');"/>
                  <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> </td></tr>
                 
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">
@@ -203,7 +209,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <input type="radio" name="tr[<?php echo $ii; ?>][apTRPostType]" value="U" <?php if ($options['trPostType'] == 'U') echo 'checked="checked"'; ?>  /> <b>Audio Post</b> <?php nxs_doShowHint("apTRTMsgFrmt".$ii); ?> 
                 </td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $trMsgFormat ?>" type="text" name="tr[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTRMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTRMsgFrmt".$ii); ?></td></tr>
                                
    <?php } 
@@ -216,7 +222,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
      if (isset($pMeta['SNAPTformat'])) $optMt['trMsgTFormat'] = $pMeta['SNAPTformat']; 
      if (isset($pMeta['apTRPostType'])) $optMt['trPostType'] = $pMeta['apTRPostType']; 
      if (isset($pMeta['AttachPost'])) $optMt['trAttch'] = $pMeta['AttachPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['trAttch'] = 0; }
-     if (isset($pMeta['SNAPincludeTR'])) $optMt['doTR'] = $pMeta['SNAPincludeTR'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTR'] = 0; }return $optMt;
+     if (isset($pMeta['doTR'])) $optMt['doTR'] = $pMeta['doTR'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTR'] = 0; }return $optMt;
   }
 }}
 

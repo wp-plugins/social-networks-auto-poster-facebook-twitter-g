@@ -34,10 +34,11 @@ class nsx_LinkedIn {
     $consumer = $this->consumer;
     $request = nsx_trOAuthRequest::from_consumer_and_token($consumer, NULL, "GET", $this->request_token_path);
     $request->set_parameter("oauth_callback", $this->oauth_callback);
-    $request->sign_request($this->signature_method, $consumer, NULL); prr($request);
+    $request->sign_request($this->signature_method, $consumer, NULL); // prr($request);
     $headers = Array();
-    $url = $request->to_url(); echo "^^^^^";  prr($url); 
-    $response = $this->httpRequest($url, $headers, "GET"); prr($response); if ($response!='') $this->http_code = 200;
+    $url = $request->to_url(); // echo "^^^^^";  prr($url); 
+    $response = $this->httpRequest($url, $headers, "GET"); //prr($response); 
+    if ($response!='') $this->http_code = 200;
     parse_str($response, $response_params); //prr($response_params); echo "!!!!";
     $this->request_token = new nsx_trOAuthConsumer($response_params['oauth_token'], $response_params['oauth_token_secret'], 1); return $this->request_token;
   }
@@ -53,9 +54,9 @@ class nsx_LinkedIn {
     $request->set_parameter("oauth_verifier", $oauth_verifier);
     $request->sign_request($this->signature_method, $this->consumer, $this->request_token);
     $headers = Array();
-    $url = $request->to_url(); echo "==========";
-    $response = $this->httpRequest($url, $headers, "GET"); prr($request);
-    parse_str($response, $response_params);  prr($response_params);
+    $url = $request->to_url(); // echo "==========";
+    $response = $this->httpRequest($url, $headers, "GET"); //prr($request);
+    parse_str($response, $response_params); // prr($response_params);
     if($debug) {
       echo $response . "\n";
     }
@@ -119,7 +120,7 @@ class nsx_LinkedIn {
     if ($debug) {
       echo $auth_header . "\n";
     }
-    $response = $this->httpRequest($status_url, $auth_header, "PUT", $xml); prr($response);
+    $response = $this->httpRequest($status_url, $auth_header, "PUT", $xml); // prr($response);
     return $response;
   }
   

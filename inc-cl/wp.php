@@ -4,70 +4,74 @@ $nxs_snapAvNts[] = array('code'=>'WP', 'lcode'=>'wp', 'name'=>'WP Based Blog');
 
 if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'WP'; $lcode = 'wp'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?> 
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Wordpress Compatible Blog Settings:           
-            <?php $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
-              <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> Blog account<?php if ($cgpo!=1){ ?>s<?php } ?>  </div></div> 
-              <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$gpo){ if (trim($gpo['nName']=='')) $gpo['nName'] = str_ireplace('/xmlrpc.php','', str_ireplace('http://','', str_ireplace('https://','', $gpo['wpURL']))); ?>
-                <p style="margin: 0px; margin-left: 5px;">
-                  <input value="1" id="apDoWP" name="wp[<?php echo $indx; ?>][apDoWP]"type="checkbox" <?php if ((int)$gpo['doWP'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your Blog <i style="color: #005800;"><?php if($gpo['nName']!='') echo "(".$gpo['nName'].")"; ?></i></strong> 
-                  &nbsp;&nbsp;<a id="doWP<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('WP<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
-                  <a href="#" onclick="doDelAcct('wp','<?php echo $indx; ?>', '<?php echo $gpo['wpUName']; ?>');return false;">[Remove Account]</a>
-                </p>            
-                <?php $this->showNTSettings($indx, $gpo);             
-              } ?>            
-            <?php 
-  }  
+  function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'WP', 'lcode'=>'wp', 'name'=>'WP Based Blog', 'defNName'=>'dlUName', 'tstReq' => false); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('/xmlrpc.php','', str_ireplace('http://','', str_ireplace('https://','', $pbo['wpURL']))); ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php 
+  }   
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doWP'=>'1', 'wpUName'=>'', 'wpPageID'=>'', 'wpAttch'=>'', 'wpPass'=>'', 'wpURL'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $gpo, $isNew=false){ global $nxs_plurl; ?>
-            <div id="doWP<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/wp-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSWP<?php echo $ii; ?>" value="0" id="apDoSWP<?php echo $ii; ?>" />
+            <div id="doWP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/wp-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSWP<?php echo $ii; ?>" value="0" id="apDoSWP<?php echo $ii; ?>" />
             
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/">Detailed Wordpress Blog Installation/Configuration Instructions</a></div>
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"><?php $nType="Wordpress"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
             <?php if ($isNew){ ?> <br/>You can setup any Wordpress based blog with activated XML-RPC support (WP Admin->Settimgs->Writing->Remote Publishing->Check XML-RPC). Wordpress.com and Blog.com supported as well.<br/><br/> <?php } ?> 
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('wp', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
             
              <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="wp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSWP<?php echo $ii; ?>" type="radio" name="wp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_WP<?php echo $ii; ?>" onclick="jQuery('#catSelSWP<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('WP<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_WP<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($gpo['catSelEd']!='') echo "[".(substr_count($gpo['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="wp[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_WP<?php echo $ii; ?>" value="<?php echo $gpo['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
-            <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
+            <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
             <p style="font-size: 11px; margin: 0px;">Usually its a URL of your Wordpress installation with /xmlrpc.php at the end.<br/> Please use <b style="color: #005800;">http://YourUserName.wordpress.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.wordpress.com/xmlrpc.php</i>) for Wordpress.com blogs. <br/> Please  use <b style="color: #005800;">http://YourUserName.blog.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.blog.com/xmlrpc.php</i> for Blog.com blogs</p>
             
-            <div style="width:100%;"><br/><strong>Blog Username:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPUName]" id="apWPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>Blog Password:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPPass]" id="apWPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['wpPass'], 5)):$gpo['wpPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><br/><strong>Blog Username:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPUName]" id="apWPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['wpUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Blog Password:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPPass]" id="apWPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['wpPass'], 5)):$gpo['wpPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="wp[<?php echo $ii; ?>][apDoWP]" value="1" id="apDoNewWP<?php echo $ii; ?>" /> <?php } ?>
             
             <br/><strong id="altFormatText">Post Title and Post Text Formats</strong> 
               <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>            
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong>               
-              </div><input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>" />
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong>               
+              </div><input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" />
             </div>            
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong>               
-              </div><input name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" id="apWPMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>" />
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong>               
+              </div><input name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" id="apWPMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" />
             </div><br/>    
             
             <?php if ($gpo['wpPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToWP', 'rePostToWP_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('WP', '<?php echo $ii; ?>'); return false;">Submit Test Post to WP Blog</a>      
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('WP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>      
                
             <?php } 
             
-            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div></div><?php
+            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'WP'; $lcode = 'wp'; 
@@ -91,19 +95,20 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapWP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doWP = $ntOpt['doWP'] && $ntOpt['catSel']!='1';   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapWP', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+        $doWP = $ntOpt['doWP'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailWP =  $ntOpt['wpUName']!='' && $ntOpt['wpPass']!=''; $wpMsgFormat = htmlentities($ntOpt['wpMsgFormat'], ENT_COMPAT, "UTF-8"); $wpMsgTFormat = htmlentities($ntOpt['wpMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_WP<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][SNAPincludeWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 're-post') ?>" />
+      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][doWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToWP', 'rePostToWP_wpnonce' ); } ?>
                     
                      <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { $wpURL = str_ireplace('/xmlrpc.php', '', $ntOpt['wpURL']);
                         if (substr($wpURL, -1)=='/') $wpURL = substr($wpURL, 0, -1);  $wpURL = $wpURL."/";
                         ?> <span id="pstdWP<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="<?php echo $wpURL; ?>?p=<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on Wordpress Blog <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="<?php echo $wpURL; ?>?p=<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Wordpress Blog"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?> <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -111,10 +116,10 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
                 <?php if (!$isAvailWP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your WP Blog Account to AutoPost to WP Blogs</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $wpMsgTFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $wpMsgFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPMsgFrmt".$ii); ?></td></tr>
   
   <?php } 
@@ -124,7 +129,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
     if (isset($pMeta['SNAPformat'])) $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; 
     if (isset($pMeta['SNAPformatT'])) $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  
-    if (isset($pMeta['SNAPincludeWP'])) $optMt['doWP'] = $pMeta['SNAPincludeWP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doWP'] = 0; } return $optMt;
+    if (isset($pMeta['doWP'])) $optMt['doWP'] = $pMeta['doWP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doWP'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToWP_ajax")) {
@@ -157,7 +162,8 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       //## Post   
       require_once ('apis/xmlrpc-client.php'); $nxsToWPclient = new NXS_XMLRPC_Client($options['wpURL']); $nxsToWPclient->debug = false;
       if ($imgURL!=='' && stripos($imgURL, 'http')!==false) {      
-        $handle = fopen($imgURL, "rb"); $filedata = ''; while (!feof($handle)) {$filedata .= fread($handle, 8192);} fclose($handle);
+        // $handle = fopen($imgURL, "rb"); $filedata = ''; while (!feof($handle)) {$filedata .= fread($handle, 8192);} fclose($handle);
+        $filedata = wp_remote_get($imgURL); if (! is_wp_error($filedata) ) $filedata = $filedata['body']; // echo "AWC?";
         $data = array('name'  => 'image-'.$postID.'.jpg', 'type'  => 'image/jpg', 'bits'  => new NXS_XMLRPC_Base64($filedata), true); 
         $status = $nxsToWPclient->query('metaWeblog.newMediaObject', $postID, $options['wpUName'], $pass, $data);  $imgResp = $nxsToWPclient->getResponse();  $gid = $imgResp['id'];
       } else $gid = '';

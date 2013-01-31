@@ -1,24 +1,28 @@
 <?php    
 //## NextScripts Facebook Connection Class
-$nxs_snapAvNts[] = array('code'=>'VB', 'lcode'=>'vb', 'name'=>'vBulletin (Beta)');
+$nxs_snapAvNts[] = array('code'=>'VB', 'lcode'=>'vb', 'name'=>'vBulletin');
 
 if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl, $nxsOne; $code = 'VB'; $lcode = 'vb'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">vBulletin Settings:           
-            <?php $cgpo = count($ntOpts); $mgpo = 1+max(array_keys($ntOpts)); $nxsOne .= "&g=1"; ?>            
-              <div class="nsBigText">You have <?php echo $cgpo=='0'?'No':$cgpo; ?> vBulletin account<?php if ($cgpo!=1){ ?>s<?php } ?>  </div></div> 
-              <?php  //if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mgpo); else nxs_doSMAS('Google+', 'GP'.$mgpo); ?>
-              <?php foreach ($ntOpts as $indx=>$options){ if (trim($options['nName']=='')) $options['nName'] =$options['vbUName']; ?>
-                <p style="margin: 0px;margin-left: 5px;">
-                  <input value="1" id="apDoVB" name="vb[<?php echo $indx; ?>][apDoVB]" onchange="doShowHideBlocks('VB');" type="checkbox" <?php if ((int)$options['doVB'] == 1) echo "checked"; ?> /> 
-                  <strong>Auto-publish your Posts to your vBulletin Account <i style="color: #005800;"><?php if($options['nName']!='') echo "(".$options['nName'].")"; ?></i>  </strong>                                         
-                  &nbsp;&nbsp;<a id="doVB<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('VB<?php echo $indx; ?>');return false;">[Show Settings]</a> &nbsp;&nbsp;
-                  <a href="#" onclick="doDelAcct('vb','<?php echo $indx; ?>', '<?php echo $options['vbUName']; ?>');return false;">[Remove Account]</a>
-                </p>            
-                <?php $this->showNTSettings($indx, $options);             
-              } ?>            
-            <?php 
+  function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'VB', 'lcode'=>'vb', 'name'=>'vBulletin', 'defNName'=>'vbUName', 'tstReq' => false); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php 
   }  
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doVB'=>'1', 'vbUName'=>'', 'vbInclTags'=>'1', 'vbAttch'=>'', 'vbURL'=>'', 'vbPass'=>''); $this->showNTSettings($mgpo, $options, true);}
@@ -26,30 +30,30 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
-            <div id="doVB<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/vb-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSVB<?php echo $ii; ?>" value="0" id="apDoSVB<?php echo $ii; ?>" />          
+            <div id="doVB<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/vb-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSVB<?php echo $ii; ?>" value="0" id="apDoSVB<?php echo $ii; ?>" />          
             
-             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-vbulletin-social-networks-auto-poster-wordpress/">Detailed vBulletin Installation/Configuration Instructions</a></div>
+             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-vbulletin-social-networks-auto-poster-wordpress/"><?php $nType="vBulletin"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="vb[<?php echo $ii; ?>][nName]" id="vbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="vb[<?php echo $ii; ?>][nName]" id="vbnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('vb', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('vb', $ii, $options['nHrs'], $options['nMin']); ?>
             
              <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="vb[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSVB<?php echo $ii; ?>" type="radio" name="vb[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_VB<?php echo $ii; ?>" onclick="jQuery('#catSelSVB<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('VB<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_VB<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="vb[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_VB<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText">vBulletin URL:</strong> <span style="font-size: 11px; margin: 0px;">Could be Forum URL or Thread URL. Either new thread of new post will be created.</span></div>
-                <input name="vb[<?php echo $ii; ?>][apVBURL]" id="apVBURL" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vbURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/> 
+                <input name="vb[<?php echo $ii; ?>][apVBURL]" id="apVBURL" style="width: 60%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vbURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/> 
             
             </div>   
             
-            <div style="width:100%;"><strong>vBulletin Username:</strong> </div><input name="vb[<?php echo $ii; ?>][apVBUName]" id="apVBUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vbUName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />                
-            <div style="width:100%;"><strong>vBulletin Password:</strong> </div><input name="vb[<?php echo $ii; ?>][apVBPass]" id="apVBPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  <br/>                
+            <div style="width:100%;"><strong>vBulletin Username:</strong> </div><input name="vb[<?php echo $ii; ?>][apVBUName]" id="apVBUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vbUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>vBulletin Password:</strong> </div><input name="vb[<?php echo $ii; ?>][apVBPass]" id="apVBPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="vb[<?php echo $ii; ?>][apDoVB]" value="1" id="apDoNewVB<?php echo $ii; ?>" /> <?php } ?>
             <br/>            
@@ -61,22 +65,22 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
             </p>
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Title Format</strong> (<a href="#" id="apVBMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="vb[<?php echo $ii; ?>][apVBMsgTFrmt]" id="apVBMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgTFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong> (<a href="#" id="apVBMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
+              <input name="vb[<?php echo $ii; ?>][apVBMsgTFrmt]" id="apVBMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?>
             </div><br/> 
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText">Post Text Format</strong> (<a href="#" id="apVBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>'); return false;">Show format info</a>)</div>
-              <input name="vb[<?php echo $ii; ?>][apVBMsgFrmt]" id="apVBMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apVBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
+              <input name="vb[<?php echo $ii; ?>][apVBMsgFrmt]" id="apVBMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['vbPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToVB', 'rePostToVB_wpnonce' ); ?>
-            <b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('VB', '<?php echo $ii; ?>'); return false;">Submit Test Post to vBulletin</a>      
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('VB', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>      
                
             <?php } 
             
-            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div></div><?php
+            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'VB'; $lcode = 'vb'; 
@@ -102,20 +106,21 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapVB', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doVB = $ntOpt['doVB'] && $ntOpt['catSel']!='1';   
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapVB', true));   if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+        $doVB = $ntOpt['doVB'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailVB =  $ntOpt['vbUName']!='' && $ntOpt['vbPass']!=''; $vbMsgFormat = htmlentities($ntOpt['vbMsgFormat'], ENT_COMPAT, "UTF-8"); $vbMsgTFormat = htmlentities($ntOpt['vbMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_VB<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" id="doVB<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][SNAPincludeVB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" id="doVB<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][doVB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);">vBulletin - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailVB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToVB_repostButton" id="rePostToVB_button" value="<?php _e('Repost to vBulletin', 're-post') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);">vBulletin - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailVB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToVB_repostButton" id="rePostToVB_button" value="<?php _e('Repost to vBulletin', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToVB', 'rePostToVB_wpnonce' ); } ?>
                     
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { $wpURL = str_ireplace('/xmlrpc.php', '', $ntOpt['vbURL']);
                         if (substr($wpURL, -1)=='/') $wpURL = substr($wpURL, 0, -1);  $wpURL = $wpURL."/";
                         ?> <span id="pstdVB<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank">Posted on vBulletin <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="vBulletin"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -123,10 +128,10 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
                 <?php if (!$isAvailVB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your vBulletin Account to AutoPost to vBulletin</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                
-       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
         <td><input value="<?php echo $vbMsgTFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?></td></tr>
                 
-      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'NS_SPAP') ?></th>
+      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
         <td><input value="<?php echo $vbMsgFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
@@ -135,7 +140,7 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['vbMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['vbMsgTFormat'] = $pMeta['SNAPformatT'];
-     if (isset($pMeta['SNAPincludeVB'])) $optMt['doVB'] = $pMeta['SNAPincludeVB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVB'] = 0; } return $optMt;
+     if (isset($pMeta['doVB'])) $optMt['doVB'] = $pMeta['doVB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVB'] = 0; } return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToVB_ajax")) {
@@ -162,7 +167,7 @@ if (!function_exists("nxs_doCheckVB")) {function nxs_doCheckVB($url){ global $nx
   } else return 'No Saved Login';
   return false;  
 }}
-if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url, true);    echo "LOGGIN";
+if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url, true); //   echo "LOGGIN";
     $response = wp_remote_get($url); if(is_wp_error($response)) { nxs_addToLog('VB', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
     $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; $mdhashLoc = stripos($contents, 'md5hash(vb_login_password');

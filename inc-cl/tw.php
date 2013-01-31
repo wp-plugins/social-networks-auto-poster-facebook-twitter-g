@@ -4,57 +4,65 @@ $nxs_snapAvNts[] = array('code'=>'TW', 'lcode'=>'tw', 'name'=>'Twitter');
 
 if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $code = 'TW'; $lcode = 'tw'; wp_nonce_field( 'ns'.$code, 'ns'.$code.'_wpnonce' ); ?>
-    <hr/><div class="nsx_iconedTitle" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $lcode; ?>16.png);">Twitter Settings:     <?php $ctwo = count($ntOpts); $mtwo = 1+max(array_keys($ntOpts)); ?>        
-    <div class="nsBigText">You have <?php echo $ctwo=='0'?'No':$ctwo; ?> Twitter account<?php if ($ctwo!=1){ ?>s<?php } ?> <!-- set - <a href="#" class="NXSButton" onclick="doShowHideBlocks2('TW<?php echo $mtwo; ?>');return false;">Add new Twitter Account</a> --></div><br/></div>
-    <?php // if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($this, $mtwo); else nxs_doSMAS('Twitter', 'TW'.$mtwo);  ?>            
-    <?php foreach ($ntOpts as $indx=>$two){ if (trim($two['nName']=='')) $two['nName'] = str_ireplace('https://','', str_ireplace('http://','', $two['twURL'])); ?>            
-      <p style="margin: 0px;margin-left: 5px;"><input value="1" id="apDoTW" name="tw[<?php echo $indx; ?>][apDoTW]" type="checkbox" <?php if ((int)$two['doTW'] == 1) echo "checked"; ?> /> 
-        <strong>Auto-publish your Posts to your Twitter <i style="color: #005800;"><?php if($two['nName']!='') echo "(".$two['nName'].")"; ?></i></strong>                                 
-        &nbsp;&nbsp;<a id="doTW<?php echo $indx; ?>A" href="#" onclick="doShowHideBlocks2('TW<?php echo $indx; ?>');return false;">[Show Settings]</a>&nbsp;&nbsp;
-        <a href="#" onclick="doDelAcct('tw','<?php echo $indx; ?>', '<?php echo $two['twURL']; ?>');return false;">[Remove Account]</a>
-      </p><?php $this->showNTSettings($indx, $two);             
-    } //## END TW Settings 
+  function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'TW', 'lcode'=>'tw', 'name'=>'Twitter', 'defNName'=>'dlUName', 'tstReq' => true); ?>    
+    <div class="nxs_box">
+      <div class="nxs_box_header"> 
+        <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+          <?php $cbo = count($ntOpts); ?> <?php wp_nonce_field( 'ns'.$ntInfo['code'], 'ns'.$ntInfo['code'].'_wpnonce' ); ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+        </div>
+      </div>
+      <div class="nxs_box_inside">
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('https://','', str_ireplace('http://','', $pbo['twURL'])); ?>
+          <p style="margin:0px;margin-left:5px;">
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+          </p><?php $this->showNTSettings($indx, $pbo);             
+        }?>
+      </div>
+    </div> <?php 
   }  
   //#### Show NEW Settings Page
   function showNewNTSettings($mtwo){ $two = array('nName'=>'', 'doTW'=>'1', 'twURL'=>'', 'twConsKey'=>'',  'twConsSec'=>'', 'twAccToken'=>'', 'twAccTokenSec'=>'', 'attchImg'=>0, 'twAttch'=>'', 'twAccTokenSec'=>''); $this->showNTSettings($mtwo, $two, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $two, $isNew=false){ global $nxs_plurl; ?>
-    <div id="doTW<?php echo $ii; ?>Div" <?php if ($isNew){ ?>class="clNewNTSets"<?php } ?> style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/tw-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; <?php if ((isset($two['twOK']) && $two['twOK']=='1')||$isNew) { ?>display:none;<?php } ?>">   <input type="hidden" name="apDoSTW<?php echo $ii; ?>" value="0" id="apDoSTW<?php echo $ii; ?>" />      
+    <div id="doTW<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/tw-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSTW<?php echo $ii; ?>" value="0" id="apDoSTW<?php echo $ii; ?>" />      
     
-     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">Detailed Twitter Installation/Configuration Instructions</a></div>
+     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/"><?php $nType="Twitter"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
     
-    <div style="width:100%;"><strong>Account Nickname:</strong> <i>Just so you can easely identify it</i> </div><input name="tw[<?php echo $ii; ?>][nName]" id="twnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['nName'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" /><br/>
+    <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="tw[<?php echo $ii; ?>][nName]" id="twnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
     <?php echo nxs_addQTranslSel('tw', $ii, $two['qTLng']); ?><?php echo nxs_addPostingDelaySel('tw', $ii, $two['nHrs'], $two['nMin']); ?>
     
      <?php if (!$isNew) { ?>
-    <div style="width:100%;"><strong>Auto-Post Categories:</strong>
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="tw[<?php echo $ii; ?>][catSel]" <?php if ((int)$two['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSTW<?php echo $ii; ?>" type="radio" name="tw[<?php echo $ii; ?>][catSel]" <?php if ((int)$two['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_TW<?php echo $ii; ?>" onclick="jQuery('#catSelSTW<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('TW<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_TW<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($two['catSelEd']!='') echo "[".(substr_count($two['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="tw[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_TW<?php echo $ii; ?>" value="<?php echo $two['catSelEd']; ?>" />
-    </div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
     
-    <div style="width:100%;"><strong>Your Twitter URL:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWURL]" id="apTWURL" style="width: 40%;border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twURL'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
-    <div style="width:100%;"><strong>Your Twitter Consumer Key:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWConsKey]" id="apTWConsKey" style="width: 40%; border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twConsKey'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />  
-    <div style="width:100%;"><strong>Your Twitter Consumer Secret:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWConsSec]" id="apTWConsSec" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twConsSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
-    <div style="width:100%;"><strong>Your Access Token:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWAccToken]" id="apTWAccToken" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twAccToken'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
-    <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWAccTokenSec]" id="apTWAccTokenSec" style="width: 40%;" value="<?php  _e(apply_filters('format_to_edit', htmlentities($two['twAccTokenSec'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster') ?>" />
+    <div style="width:100%;"><strong>Your Twitter URL:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWURL]" id="apTWURL" style="width: 40%;border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+    <div style="width:100%;"><strong>Your Twitter Consumer Key:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWConsKey]" id="apTWConsKey" style="width: 40%; border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twConsKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
+    <div style="width:100%;"><strong>Your Twitter Consumer Secret:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWConsSec]" id="apTWConsSec" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twConsSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+    <div style="width:100%;"><strong>Your Access Token:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWAccToken]" id="apTWAccToken" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['twAccToken'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+    <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWAccTokenSec]" id="apTWAccTokenSec" style="width: 40%;" value="<?php  _e(apply_filters('format_to_edit', htmlentities($two['twAccTokenSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
     <?php if ($isNew) { ?> <input type="hidden" name="tw[<?php echo $ii; ?>][apDoTW]" value="1" id="apDoNewTW<?php echo $ii; ?>" /> <?php } ?>
     <br/><br/>
     <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$two['attchImg'] == 1) echo "checked"; ?> /> <strong>Attach Image to Twitter Post</strong></p>
     <br/>
-    <strong id="altFormatText">Message Text Format:</strong>
+    <strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>
     <div style="width:100%;">
       <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %SURL% - Inserts the <b>Shortened URL</b> of your post. &nbsp;  %TEXT% - Inserts the excerpt of your post. &nbsp; %TAGS% - Inserts the post tags as hashtags. &nbsp; %CATS% - Inserts the post categories as hashtags. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name. <i>Please remember that Twitter takes only 140 characters.</i></p>
     </div>
-    <input name="tw[<?php echo $ii; ?>][apTWMsgFrmt]" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit', htmlentities($two['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'NS_SNAutoPoster'); else echo "%TITLE% - %URL%"; ?>" />
+    <input name="tw[<?php echo $ii; ?>][apTWMsgFrmt]" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit', htmlentities($two['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo "%TITLE% - %URL%"; ?>" />
                
     <?php if($two['twAccTokenSec']!='') { ?> <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); ?>
-      <br/><br/><b>Test your settings:</b>&nbsp;&nbsp;&nbsp; <?php if (!isset($two['twOK']) || $two['twOK']!='1') { ?> <div class="blnkg">=== Submit Test Post to Complete ===&gt;</div> <?php } ?> <a href="#" class="NXSButton" onclick="testPost('TW', '<?php echo $ii; ?>'); return false;">Submit Test Post to Twitter</a> <br/>
+      <br/><br/><b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <?php if (!isset($two['twOK']) || $two['twOK']!='1') { ?> <div class="blnkg">=== Submit Test Post to Complete ===&gt;</div> <?php } ?> <a href="#" class="NXSButton" onclick="testPost('TW', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s' , 'nxs_snap'), $nType); ?></a> <br/>
       <?php }?>
-      <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'NS_SNAutoPoster') ?>" /></div>
+      <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
     </div>
     <?php
   }
@@ -82,23 +90,24 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   }    
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;
-    foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTW', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); $doTW = $ntOpt['doTW'] && $ntOpt['catSel']!='1';  
+    foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapTW', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+         $doTW = $ntOpt['doTW'] && (is_array($pMeta) || $ntOpt['catSel']!='1');  
          $isAvailTW =  $ntOpt['twURL']!='' && $ntOpt['twConsKey']!='' && $ntOpt['twConsSec']!='' && $ntOpt['twAccToken']!=''; $twMsgFormat = htmlentities($ntOpt['twMsgFormat'], ENT_COMPAT, "UTF-8");   $isAttchImg = $ntOpt['attchImg'];    
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_TW<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" id="doTW<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][SNAPincludeTW]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTW == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - publish to (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
+      <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" id="doTW<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][doTW]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doTW == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th><td><?php //## Only show RePost button if the post is "published"
       if ($post->post_status == "publish" && $isAvailTW) { ?>
-                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 're-post') ?>" />
+                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToTW', 'rePostToTW_wpnonce' ); } ?>
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID'])) { ?> <span style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a id="pstdTW<?php echo $ii; ?>" style="font-size: 10px;" href="<?php echo $ntOpt['twURL'].'/status/'.$pMeta[$ii]['pgID'];  ?>" target="_blank">Posted on Twitter <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a id="pstdTW<?php echo $ii; ?>" style="font-size: 10px;" href="<?php echo $ntOpt['twURL'].'/status/'.$pMeta[$ii]['pgID'];  ?>" target="_blank"><?php $nType="Twitter"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                 </td></tr>
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
                 <?php }elseif ($post->post_status != "puZblish") { ?> 
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
                 
 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
@@ -111,7 +120,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['twMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['attchImg'])) $optMt['attchImg'] = $pMeta['attchImg'] == 1?1:0; else { if (isset($pMeta['attchImg'])) $optMt['attchImg'] = 0; } 
-     if (isset($pMeta['SNAPincludeTW'])) $optMt['doTW'] = $pMeta['SNAPincludeTW'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTW'] = 0; } return $optMt;
+     if (isset($pMeta['doTW'])) $optMt['doTW'] = $pMeta['doTW'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTW'] = 0; } return $optMt;
   }
 }}
 
@@ -203,8 +212,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; 
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
-    $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
-      
+    $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));      
     if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'http://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
       else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
     if ($code == 200){if ($postID=='0'){ nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}

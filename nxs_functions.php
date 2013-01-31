@@ -74,6 +74,7 @@ if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType=
     } 
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
+  $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1';
   if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') { $imgURL = trim(get_post_meta($postID, $options['featImgLocPrefix'], true)).trim(get_post_meta($postID, $options['featImgLoc'], true)); 
     if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
   } 
@@ -91,7 +92,17 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   
   return $imgURL;
 }}
- 
+if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) {  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
+    if (!isset($options['addURLParams']) || $options['addURLParams']=='') return false; else $templ = $options['addURLParams'];
+    if (preg_match('%NTNAME%', $templ)) $templ = str_ireplace("%NTNAME%", urlencode($params['NTNAME']), $templ);
+    if (preg_match('%NTCODE%', $templ)) $templ = str_ireplace("%NTCODE%", urlencode($params['NTCODE']), $templ);
+    if (preg_match('%ACCNAME%', $templ)) $templ = str_ireplace("%ACCNAME%", urlencode($params['ACCNAME']), $templ);
+    if (preg_match('%POSTID%', $templ)) $templ = str_ireplace("%POSTID%", urlencode($params['POSTID']), $templ);
+    if (preg_match('%POSTTITLE%', $templ)) { $post = $params['POSTID']; if (is_object($post)) {$postName = $post->post_title; $templ = str_ireplace("%POSTTITLE%", urlencode($postName), $templ);}}
+    if (preg_match('%SITENAME%', $templ)) { $siteTitle = urlencode(htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES)); $templ = str_ireplace("%SITENAME%", $siteTitle, $templ); }
+    return $templ;
+}}
+
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>
     <script type="text/javascript" >
@@ -99,6 +110,9 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     <?php       
       foreach ($nxs_snapAvNts as $avNt) {?>
         $('input#rePostTo<?php echo $avNt['code']; ?>_button').click(function() { var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: $('input#post_ID').val(), nid:$(this).attr('alt'), _wpnonce: $('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); });
+    <?php } 
+     foreach ($nxs_snapAvNts as $avNt) {?>
+        $('input#riTo<?php echo $avNt['code']; ?>_button').click(function() { var data = { action: 'rePostTo<?php echo $avNt['code']; ?>', id: $('input#post_ID').val(), ri:1, nid:$(this).attr('alt'), _wpnonce: $('input#rePostTo<?php echo $avNt['code']; ?>_wpnonce').val()}; callAjSNAP(data, '<?php echo $avNt['name']; ?>'); });
     <?php } ?>
        function callAjSNAP(data, label) { 
             var style = "position: fixed; display: none; z-index: 1000; top: 50%; left: 50%; background-color: #E8E8E8; border: 1px solid #555; padding: 15px; width: 350px; min-height: 80px; margin-left: -175px; margin-top: -40px; text-align: center; vertical-align: middle;";
@@ -143,7 +157,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
     });                       
   }
   function doLic(){ var lk = jQuery('#eLic').val();  jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val(), ajax: 'true'}, function(j){ 
-      if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('Wrong key, please contact support');
+      if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('<?php _e('Wrong key, please contact support', 'nxs_snap'); ?>');
     }, "html")
   }
   function testPost(nt, nid){ jQuery(".blnkg").hide(); <?php foreach ($nxs_snapAvNts as $avNt) {?>
@@ -217,14 +231,25 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
     padding: 1px 0 1px 23px !important;
 }
 
+.nxs_box{border-color: #DFDFDF; border-radius: 3px 3px 3px 3px; box-shadow: 0 1px 0 #FFFFFF inset; border-style: solid; border-width: 1px; line-height: 1; margin-bottom: 10px; padding: 0; max-width: 1080px;}
+.nxs_box_header{border-bottom-color: #DFDFDF; box-shadow: 0 1px 0 #FFFFFF; text-shadow: 0 1px 0 #FFFFFF;font-size: 15px;font-weight: normal;line-height: 1;margin: 0;padding: 6px;
+background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top,from(#ececec),to(#f9f9f9));background-image:-webkit-linear-gradient(bottom,#ececec,#f9f9f9);background-image:-moz-linear-gradient(bottom,#ececec,#f9f9f9);background-image:-o-linear-gradient(bottom,#ececec,#f9f9f9);background-image:linear-gradient(to top,#ececec,#f9f9f9)
+-moz-user-select: none;border-bottom-style: solid;border-bottom-width: 1px;}
+.nxs_box_inside{line-height: 1.4em; padding: 10px;}
+.nxs_box_inside input{ padding: 5px; border: 1px solid #ACACAC;}
+.nxs_box_inside .insOneDiv{max-width: 1020px; background-color: #f8f9f9; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;}
+
+
 </style>
 <?php }}
 
 if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t){ ?>
-<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: 49%; background: #fff; display: none;"><span class="nxs_hili">%SITENAME%</span> - Inserts the Your Blog/Site Name, <span class="nxs_hili">%TITLE%</span> - Inserts the Title of your post, <span class="nxs_hili">%URL%</span> - Inserts the URL of your post, <span class="nxs_hili">%SURL%</span> - Inserts the <b>Shortened URL</b> of your post, <span class="nxs_hili">%IMG%</span> - Inserts the featured image, <span class="nxs_hili">%TEXT%</span> - Inserts the excerpt of your post, <span class="nxs_hili">%RAWTEXT%</span> - Inserts the body(text) as typed, <span class="nxs_hili">%FULLTEXT%</span> - Inserts the processed body(text) of your post, <span class="nxs_hili">%AUTHORNAME%</span> - Inserts the author's name.</div>
+<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: 49%; background: #fff; display: none;"><span class="nxs_hili">%SITENAME%</span> - <?php _e('Inserts the Your Blog/Site Name', 'nxs_snap'); ?>, <span class="nxs_hili">%TITLE%</span> - <?php _e('Inserts the Title of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%URL%</span> - <?php _e('Inserts the URL of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%SURL%</span> - <?php _e('Inserts the <b>Shortened URL</b> of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%IMG%</span> - <?php _e('Inserts the featured image', 'nxs_snap'); ?>, <span class="nxs_hili">%TEXT%</span> - <?php _e('Inserts the excerpt of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWTEXT%</span> - <?php _e('Inserts the body(text) as typed', 'nxs_snap'); ?>, <span class="nxs_hili">%FULLTEXT%</span> - <?php _e('Inserts the processed body(text) of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%AUTHORNAME%</span> - <?php _e('Inserts the author\'s name', 'nxs_snap'); ?>.</div>
 <?php }}
 
-if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>You already have <?php echo $nType; ?> configured.  This plugin supports only one <?php echo $nType; ?> account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another <?php echo $nType; ?> account for auto-posting.</div></div><?php 
+if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>
+<?php printf( __( 'You already have %s configured.  This plugin supports only one %s account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another %s account for auto-posting.', 'nxs_snap' ), $nType, $nType, $nType );  ?>
+</div></div><?php 
 }}
 
 if (!function_exists('nxs_snapCleanup')){ function nxs_snapCleanup($options){   global $nxs_snapAvNts; 
@@ -280,15 +305,61 @@ if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, 
   if (function_exists('nxs_doSMAS5')) return nxs_doSMAS5($nt, $ii, $selLng); else return '<br/>';  
 }}
 
+if (!function_exists("nxs_hideTip_ajax")) { function nxs_hideTip_ajax() {  check_ajax_referer('nxsSsPageWPN');   
+   global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+   $options['hideTopTip'] = '1';    update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options);
+}}
+
 if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=''){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
     if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
-      $response  = wp_remote_get('http://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); $rtr = json_decode($response['body'],true);
+      $response  = wp_remote_get('http://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); 
+      if (is_wp_error($response)) {  nxs_addToLog('bit.ly', 'E', '-=ERROR=- '.print_r($response, true), ''); return false; }
+      $rtr = json_decode($response['body'],true);
       if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
     } //echo "###".$rurl;
     if ($options['nxsURLShrtnr']=='W' && function_exists('wp_get_shortlink')) { global $post; $post = get_post($postID);  $rurl = wp_get_shortlink($postID, 'post'); }
     if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
     if ($rurl!='') $url = $rurl;    return $url;
 }}
+//## Comments
+if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt, $aa = false) { $cmnt['comment_post_ID'] = (int) $cmnt['comment_post_ID']; 
+  $cmnt['comment_parent'] = isset($cmnt['comment_parent']) ? absint($cmnt['comment_parent']) : 0;
+  $parent_status = ( 0 < $cmnt['comment_parent'] ) ? wp_get_comment_status($cmnt['comment_parent']) : '';
+  $cmnt['comment_parent'] = ( 'approved' == $parent_status || 'unapproved' == $parent_status ) ? $cmnt['comment_parent'] : 0;
+  $cmnt['comment_author_IP'] = ''; $cmnt['comment_agent'] = 'SNAP'; $cmnt['comment_date'] =  get_date_from_gmt( $cmnt['comment_date_gmt'] );
+  $cmnt = wp_filter_comment($cmnt); if ($aa) $cmnt['comment_approved'] = 1; else $cmnt['comment_approved'] = wp_allow_comment($cmnt); $cmntID = wp_insert_comment($cmnt);
+  if ( 'spam' !== $cmnt['comment_approved'] ) { if ( '0' == $cmnt['comment_approved'] ) wp_notify_moderator($cmntID); $post = &get_post($cmnt['comment_post_ID']);
+    if ( get_option('comments_notify') && $cmnt['comment_approved'] && ( ! isset( $cmnt['user_id'] ) || $post->post_author != $cmnt['user_id'] ) ) wp_notify_postauthor($cmntID, isset( $cmnt['comment_type'] ) ? $cmnt['comment_type'] : '' );
+  } return $cmntID;
+}}
+
+
+if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array();
+   foreach ($sh as $evTime => $evData){  $evFunc = key($evData); if (strpos($evFunc, 'ns_doPublishTo')!==false)  {
+       // echo key($evData)." | ".$evTime." = ".time()." - ".date("Y-m-d H:i:s", $evTime)." - ".date("Y-m-d H:i:s")."<br/>"; 
+       if ($evTime>'1359495839' && $evTime<time()-5) { //## Missed? Let's post it. We will post just one, so no hold ups.       
+         $args = array_values($evData[$evFunc]); $args = $args[0]['args']; do_action($evFunc, $args[0], $args[1]); wp_unschedule_event( $evTime, $evFunc ); return true;         
+     }
+   }}   
+}}
+
+if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
+  $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array();  $options['riHowManyPostsToTrack'] =  (int) $options['riHowManyPostsToTrack'];  if ($options['riHowManyPostsToTrack']==0) return;
+  array_unshift($riPosts, $postID);  $riPosts = array_unique($riPosts); $riPosts = array_slice($riPosts, 0, $options['riHowManyPostsToTrack']); update_option('NS_SNriPosts', $riPosts);
+}}
+
+function nxs_activation(){ if (!wp_next_scheduled('nxs_hourly_event')){wp_schedule_event(time(), 'hourly', 'nxs_hourly_event');} }
+function nxs_do_this_hourly() { $options = get_option('NS_SNAutoPoster'); $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array(); //## Check for Incoming Comments if nessesary.
+
+  //## Facebook
+  foreach ($options['fb'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';
+    foreach ($riPosts as $postID) {  
+      $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); 
+      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); }          
+      nxs_getBackFBComments($postID, $fbo, $fbpo[$ii]);
+    }      
+  } 
+}
 
 class NXS_HtmlFixer { public $dirtyhtml; public $fixedhtml; public $allowed_styles; private $matrix; public $debug; private $fixedhtmlDisplayCode;
     public function __construct() { $this->dirtyhtml = ""; $this->fixedhtml = ""; $this->debug = false; $this->fixedhtmlDisplayCode = ""; $this->allowed_styles = array();}
