@@ -5,14 +5,14 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, DreamWidth, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, etc profiles and/or pages. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, DreamWidth, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
 * **Latest version 2.6** - Better Interface, DreamWidth support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
@@ -49,7 +49,7 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 
 You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinterest, Blogger, Twitter, Delicious, Diigo, Plurk, LiveJournal, Stumbleupon, DreamWidth or all of them.
 
-**Please, see more detailed installation instructions with screenshots here: http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress **
+**Please, see more detailed installation instructions with screenshots here:** http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress 
 
 Below are the quick instructions for Facebook, Twitter and Google+. Please see other networks at the link above...
 
@@ -153,12 +153,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 1. Add new post metadata box (Pro Version)
 2. Settings Page (Pro Version)
-3. Facebook Types of Post 
-4. Google+ Types of Post 
+3. Facebook: Types of Post 
+4. Google+: Types of Post 
 
 == Changelog ==
 
-= 2.6.0 [01/18/2013] =
+= 2.6.1 [02/01/2013] =
+
+* Bug fix - Critical bugfix for Facebook Authorization.
+* Bug fix - "Import comments" interface tweaks.
+* Bug fix - "Add new network" interface tweaks.
+
+= 2.6.0 [01/31/2013] =
 
 * New - Ability to auto-import Comments from Social Networks and post them as WP Comments (Facebook only so far)
 * New/Improvement - New Settings Interface

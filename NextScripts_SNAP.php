@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.6.0
+Version: 2.6.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.6.0' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.6.1' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; }
@@ -175,11 +175,11 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           
           if(!$nxs_isWPMU) $this->NS_SNAP_ShowPageTop();  ?>
             Please see the <a target="_blank" href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress">detailed installation/configuration instructions</a> (will open in a new tab)<br/>
-            <?php if(!isset($options['hideTopTip']) || (int)$options['hideTopTip'] != 1) { ?>
+            <?php if(!isset($options['hideTopTip']) || (int)$options['hideTopTip'] != 1) { /* ?>
             <div id="nxs_TopTip" class="nxsInfoMsg" style="font-size: 11px; margin-left: 3px; max-width: 1100px; display: block; font-style: italic; margin-bottom: 5px;">Tip: If autoposting works when you click "Test" buttons, but is not working when you publish new posts, try to switch from "Scheduled" to "Immediately" in the Plugin Settings->Other Settings->How to make auto-posts. 
               <span style="float: right;"><a style="text-decoration: none" href="#" onclick="nxs_hideTip('nxs_TopTip'); return false;">[Hide]</a></span>
             </div>                       
-            <?php } else { ?><br/><?php } ?>
+            <?php */ } else { ?><br/><?php } ?>
            
 <ul class="nsx_tabs">
     <li><a href="#nsx_tab1">Your Social Networks Accounts</a></li>
@@ -327,9 +327,9 @@ function nxs_chAllCats(ch){
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly Username: <input name="bitlyUname" style="width: 20%;" value="<?php if (isset($options['bitlyUname'])) _e(apply_filters('format_to_edit',$options['bitlyUname']), 'nxs_snap') ?>" /><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="bitlyAPIKey" style="width: 20%;" value="<?php if (isset($options['bitlyAPIKey'])) _e(apply_filters('format_to_edit',$options['bitlyAPIKey']), 'nxs_snap') ?>" /><br/>
 
-<h3 style="font-size: 14px; margin-bottom: 2px;"> Import comments from Social Networks<span style="font-size: 11px; color:red; padding-left: 5px; padding-right: 5px;">[<?php _e('New', 'nxs_snap') ?>]</span></h3> <span style="font-size: 11px; margin-left: 1px;">Plugin will automatically grab the comments posted on Social Networks and insert them as "Post Comments" </span>
+<h3 style="font-size: 14px; margin-bottom: 2px;"> Import comments from Social Networks<span style="font-size: 11px; color:red; padding-left: 5px; padding-right: 5px;">[<?php _e('New', 'nxs_snap') ?>]</span></h3> <span style="font-size: 11px; margin-left: 1px;">Plugin will automatically grab the comments posted on Social Networks and insert them as "Comments to your post". Plugin will check for the new comments every hour. </span>
  <p style="margin: 0px;margin-left: 5px;"><input value="set" id="riActive" name="riActive"  type="checkbox" <?php if ((int)$options['riActive'] == 1) echo "checked"; ?> /> 
-              <strong>Enable Import comments</strong>                  
+              <strong>Enable "Comments Import"</strong>                  
         <br/>
  <strong style="font-size: 12px; margin: 10px; margin-left: 1px;">How many posts should be tracked:</strong>
 <input name="riHowManyPostsToTrack" style="width: 50px;" value="<?php if (isset($options['riHowManyPostsToTrack'])) _e(apply_filters('format_to_edit', $options['riHowManyPostsToTrack']), 'nxs_snap'); else echo "10"; ?>" /> <br/>
