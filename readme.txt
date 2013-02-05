@@ -5,16 +5,16 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, DreamWidth, Delicious, Diigo, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-* **Latest version 2.6** - Better Interface, DreamWidth support, ability to auto-import comments from social networks
+* **Latest version 2.6** - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
 * *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
@@ -25,9 +25,10 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **Delicious** - Auto-submit bookmark to your account. 
 * **Diigo** - Auto-submit bookmark to your account. 
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
+* **Instapaper** - Auto-submit bookmark to your account. 
 * **Google+** (*with third party API library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
 * **LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
-* **LiveJournal** - Auto-submit your blogpost to LiveJournal. "LiveJournal Engine" based website DreamWidth.org is also supported.
+* **LiveJournal** - Auto-submit your blogpost to LiveJournal blog or community. "LiveJournal Engine" based website DreamWidth.org is also supported. 
 * **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
 * **Stumbleupon** - Auto-submit bookmark to your account. 
 * **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
@@ -160,8 +161,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.6.2 [02/01/2013] =
 
+* New - New network "Instapaper"
 * New - Livejournal and DreamWidth - autoposting to communities and shared blogs.
-* Bug fix - StumbleUpon category selection.
+* Bug fix - LinkedIN SHARE errorfixed.
+* Bug fix - StumbleUpon wrong category selection fix.
+* Bug fix - Delicious better error handling.
+* Bug fix - Facebook better error handling.
+* Bug fix - Twitter text post fix.
 
 = 2.6.1 [02/01/2013] =
 
