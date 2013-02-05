@@ -24,6 +24,11 @@ function getBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
     jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
   }, "html")
 }
+function getWLBoards(u,p,ii){ jQuery("#wlLoadingImg"+ii).show();
+  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, action: 'getWLBoards', id: 0, _wpnonce: jQuery('input#getWLBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+    jQuery("select#apWLBoard"+ii).html(j); jQuery("#wlLoadingImg"+ii).hide();
+  }, "html")
+}
 
 //## Select/Unselect Categories
 function nxs_chAllCatsL(ch, divID){ jQuery("#"+divID+" input:checkbox[name='post_category[]']").attr('checked', ch==1); }

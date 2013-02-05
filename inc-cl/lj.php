@@ -46,6 +46,9 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
             <div style="width:100%;"><br/><strong>LiveJournal Username:</strong> </div><input name="lj[<?php echo $ii; ?>][apLJUName]" id="apLJUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['ljUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
             <div style="width:100%;"><strong>LiveJournal Password:</strong> </div><input name="lj[<?php echo $ii; ?>][apLJPass]" id="apLJPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['ljPass'], 5)):$gpo['ljPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
+            <div style="width:100%;"><br/><strong>Blog/Community URL or ID:</strong> Please specify the Blog or Community URL or ID. <i>Use this only if you are posting NOT to your own journal. </i></div> 
+            <input name="lj[<?php echo $ii; ?>][commID]" id="commID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['commID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            
             <div style="width:100%;"><br/><strong>Website:</strong> Please select your website. <i>SNAP could also post to other LJ Engine Based sites like DreamWidth.org </i></div> 
             
             <select id="lj1delayHrs" name="lj[<?php echo $ii; ?>][ljSrv]"><option  <?php if ( !isset($gpo['ljSrv']) || $gpo['ljSrv']=='' || $gpo['ljSrv']=='LJ') {?> selected="selected" <?php } ?> value="LJ">LiveJournal.com</option>
@@ -86,7 +89,11 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
         if (isset($pval['apLJMsgTFrmt'])) $options[$ii]['ljMsgTFormat'] = trim($pval['apLJMsgTFrmt']);               
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
-                                           
+        
+        if (isset($pval['commID']))  {          
+          if (stripos($pval['commID'], '.')!==false) $pval['commID'] = CutFromTo($pval['commID'], '://', '.');                                 
+          $options[$ii]['commID'] = trim($pval['commID']);
+        }                                           
         if (isset($pval['apDoLJ']))      $options[$ii]['doLJ'] = $pval['apDoLJ']; else $options[$ii]['doLJ'] = 0; 
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
@@ -160,9 +167,9 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#2097EE">LJ</span> - '.$options['nName'];
       
       $date = time(); $year = date("Y", $date); $mon = date("m", $date); $day = date("d", $date); $hour = date("G", $date); $min = date("i", $date);
-      $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);
-      if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';
-      
+      $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
+      if ($options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];      
+      if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
       $pid = $nxsToLJclient->getResponse(); if (is_array($pid)) $pid = $pid['url']; else { $ret = 'Something went wrong - NO PID '.print_r($pid, true);}
       
       if ($ret!='OK') { if ($postID=='0') echo $ret; 

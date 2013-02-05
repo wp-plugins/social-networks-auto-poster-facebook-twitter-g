@@ -158,6 +158,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.6.2 [02/01/2013] =
+
+* New - Livejournal and DreamWidth - autoposting to communities and shared blogs.
+* Bug fix - StumbleUpon category selection.
+
 = 2.6.1 [02/01/2013] =
 
 * Bug fix - Critical bugfix for Facebook Authorization.

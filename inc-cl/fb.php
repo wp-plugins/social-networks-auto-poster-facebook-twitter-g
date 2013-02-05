@@ -367,7 +367,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
         if( !empty($page_info['access_token']) ) { $options['fbAppPageAuthToken'] = $page_info['access_token']; 
           nxs_addToLog($logNT, 'M', 'Personal Auth used instead of Page. Please re-authorize Facebook.');  
           try { $ret = $facebook->api("/$page_id/".$fbWhere,"post", $mssg); } catch (NXS_FacebookApiException $e) { nxs_addToLog($logNT, 'E', '-=ERROR 2=- '.$e->getMessage(), $extInfo);}
-        } else { $rMsg = '-= ERROR =- (invalid app_id) Authorization Error. Your app is not authorized. Please go to the Plugin Settings - Facebook and authorize it.<br/>'; 
+        } else { $rMsg = "-= ERROR =- (invalid app_id) Authorization Error. <br/>\r\n<br/>\r\n Possible Reasons: <br/>\r\n 1. Your app is not authorized. Please go to the Plugin Settings - Facebook and authorize it.<br/>\r\n 2. The current authorized user have no rights to post to the specified page. Please login to Facebook as the correct user and Re-Authorize the Plugin.<br/>\r\n 3. You clicked 'Skip' or unchecked the 'Manage Pages' permissions when Authorization wizard asked you. Please Re-Authorize the Plugin<br/>\r\n"; 
           nxs_addToLog($logNT, 'E', $rMsg, $extInfo); return $rMsg.$e->getMessage();
         }
       }        

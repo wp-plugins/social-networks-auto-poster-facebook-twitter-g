@@ -57,7 +57,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
   
               <select name="su[<?php echo $ii; ?>][apSUCat]" id="apSUCat<?php echo $ii; ?>"><option value="error" selected="selected" disabled="">Select default StumbleUpon Category</option>
             <?php  $suCats = $this->suCats(); 
-              if (isset($options['suCat']) && $options['suCat']!='') $suCats = str_replace($options['suCat'].'"', $options['suCat'].'" selected="selected"', $suCats);  echo $suCats; 
+              if (isset($options['suCat']) && $options['suCat']!='') $suCats = str_replace('"'.$options['suCat'].'"', '"'.$options['suCat'].'" selected="selected"', $suCats);  echo $suCats; 
             
              ?>
             </select>

@@ -178,7 +178,7 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) 
           { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DL', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
-        elseif (is_array($cnt) &&  $cnt['body']='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Delicious  API is Down'; nxs_addToLog($logNT, 'M', 'It looks like Delicious API is Down', $extInfo); }    
+        elseif (is_array($cnt) &&  $cnt['body']=='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Delicious  API is Down'; nxs_addToLog($logNT, 'M', 'It looks like Delicious API is Down', $extInfo); }    
         elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
           else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }

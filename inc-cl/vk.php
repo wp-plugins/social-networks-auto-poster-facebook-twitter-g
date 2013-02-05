@@ -66,7 +66,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
             <?php } else { if(isset($options['vkAppAuthUser']) && $options['vkAppAuthUser']>0) { ?>
             <?php _e('Your vKontakte(VK) Account has been authorized.'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['vkAppAuthUser'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>      
-            <a target="_blank" href="http://api.vkontakte.ru/oauth/authorize?client_id=<?php echo $options['vkAppID'];?>&scope=offline,wall,photos,pages&redirect_uri=http://api.vkontakte.ru/blank.html&display=page&response_type=token<?php '&auth=vk&acc='.$options['ii'];?>">Authorize Your vKontakte(VK) Account</a>      
+            <a target="_blank" href="http://api.vkontakte.ru/oauth/authorize?client_id=<?php echo $options['vkAppID'];?>&scope=offline,wall,photos,pages&redirect_uri=http://api.vkontakte.ru/blank.html&display=page&response_type=token<?php '&auth=vk&acc='.$ii;?>">Authorize Your vKontakte(VK) Account</a>      
             <!-- <a href="http://api.vkontakte.ru/oauth/authorize?client_id=<?php echo $options['vkAppID'];?>&scope=offline,wall,photos,pages&redirect_uri=<?php echo urlencode($nxs_snapThisPageUrl.'&auth=vk&acc='.$options['ii']);?>">Authorize Your vKontakte(VK) Account</a>  -->
             <?php if (!isset($options['vkAppAuthUser']) || $options['vkAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> <?php } ?>
             
