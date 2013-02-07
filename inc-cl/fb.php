@@ -266,9 +266,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <td>
                 <?php if (1==1) { ?>
                 <textarea cols="150" rows="1" id="fb<?php echo $ii; ?>SNAPformat" name="fb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#fb<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apFBTMsgFrmt<?php echo $ii; ?>');"><?php echo $fbMsgFormat ?></textarea>
-                <? } else { ?>
+                <?php } else { ?>
                 <input value="<?php echo $fbMsgFormat ?>" type="text" name="fb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apFBTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBTMsgFrmt".$ii); ?>
-                <? } ?>
+                <?php } ?>
                 </td></tr>
                 <?php } 
     }
