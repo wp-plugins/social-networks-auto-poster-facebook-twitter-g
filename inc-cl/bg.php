@@ -142,6 +142,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
      if (isset($pMeta['SNAPformat'])) $optMt['bgMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPTformat'])) $optMt['bgMsgTFormat'] = $pMeta['SNAPTformat'];      
      if (isset($pMeta['doBG'])) $optMt['doBG'] = $pMeta['doBG'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doBG'] = 0; } 
+     if (isset($pMeta['SNAPincludeBG']) && $pMeta['SNAPincludeBG'] == '1' ) $optMt['doBG'] = 1;  
      return $optMt;
   }
 }}

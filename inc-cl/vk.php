@@ -145,6 +145,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
           $options[$ii]['vkAppAuthUser'] = trim( CutFromTo($pval['apVKAuthResp']."&", 'user_id=','&')); 
           $hdrsArr = nxs_getVKHeaders($pval['url']);
           $response = wp_remote_get($pval['url'], array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr)); $contents = $response['body'];     
+          if (stripos($contents, '"group_id":')!==false) { $options[$ii]['pgIntID'] =  '-'.CutFromTo($contents, '"group_id":', ','); $type='all'; }  
           if (stripos($contents, '"public_id":')!==false) { $options[$ii]['pgIntID'] =  '-'.CutFromTo($contents, '"public_id":', ','); $type='all'; }  
           if (stripos($contents, '"user_id":')!==false) {   $options[$ii]['pgIntID'] =  CutFromTo($contents, '"user_id":', ','); $type='own'; }  
         }
@@ -219,6 +220,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
      if (isset($pMeta['addBackLink'])) $optMt['addBackLink'] = ($pMeta['addBackLink'] != '')?$pMeta['addBackLink']:0; else { if (isset($pMeta['SNAPformat'])) $optMt['addBackLink'] = 0; } 
      if (isset($pMeta['PostType'])) $optMt['postType'] = ($pMeta['PostType'] != '')?$pMeta['PostType']:0; else { if (isset($pMeta['SNAPformat'])) $optMt['postType'] = 'T'; } 
      if (isset($pMeta['doVK'])) $optMt['doVK'] = $pMeta['doVK'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVK'] = 0; } 
+     if (isset($pMeta['SNAPincludeVK']) && $pMeta['SNAPincludeVK'] == '1' ) $optMt['doVK'] = 1;
      return $optMt;
   }
 }}

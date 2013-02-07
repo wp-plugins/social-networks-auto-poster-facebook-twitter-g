@@ -135,7 +135,9 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
     if (isset($pMeta['SNAPformat'])) $optMt['ljMsgFormat'] = $pMeta['SNAPformat']; 
     if (isset($pMeta['SNAPformatT'])) $optMt['ljMsgTFormat'] = $pMeta['SNAPformatT'];  
-    if (isset($pMeta['doLJ'])) $optMt['doLJ'] = $pMeta['doLJ'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doLJ'] = 0; } return $optMt;
+    if (isset($pMeta['doLJ'])) $optMt['doLJ'] = $pMeta['doLJ'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doLJ'] = 0; } 
+    if (isset($pMeta['SNAPincludeLJ']) && $pMeta['SNAPincludeLJ'] == '1' ) $optMt['doLJ'] = 1;  
+    return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToLJ_ajax")) {

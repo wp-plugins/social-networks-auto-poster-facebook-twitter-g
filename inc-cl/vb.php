@@ -140,7 +140,9 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['vbMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['vbMsgTFormat'] = $pMeta['SNAPformatT'];
-     if (isset($pMeta['doVB'])) $optMt['doVB'] = $pMeta['doVB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVB'] = 0; } return $optMt;
+     if (isset($pMeta['doVB'])) $optMt['doVB'] = $pMeta['doVB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doVB'] = 0; } 
+     if (isset($pMeta['SNAPincludeVB']) && $pMeta['SNAPincludeVB'] == '1' ) $optMt['doVB'] = 1;  
+     return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToVB_ajax")) {

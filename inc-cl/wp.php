@@ -129,7 +129,9 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
     if (isset($pMeta['SNAPformat'])) $optMt['wpMsgFormat'] = $pMeta['SNAPformat']; 
     if (isset($pMeta['SNAPformatT'])) $optMt['wpMsgTFormat'] = $pMeta['SNAPformatT'];  
-    if (isset($pMeta['doWP'])) $optMt['doWP'] = $pMeta['doWP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doWP'] = 0; } return $optMt;
+    if (isset($pMeta['doWP'])) $optMt['doWP'] = $pMeta['doWP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doWP'] = 0; } 
+    if (isset($pMeta['SNAPincludeWP']) && $pMeta['SNAPincludeWP'] == '1' ) $optMt['doWP'] = 1;  
+    return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToWP_ajax")) {

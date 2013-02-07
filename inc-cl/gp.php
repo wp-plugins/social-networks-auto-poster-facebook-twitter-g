@@ -140,7 +140,16 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
         <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap') ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap') ?>"/></div>
      </td></tr>
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $gpMsgFormat ?>" type="text" name="gp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apGPMsgFrmt".$ii); ?></td></tr>
+                <td>
+                
+                 <?php if (1==1) { ?>
+                <textarea cols="150" rows="1" id="gp<?php echo $ii; ?>SNAPformat" name="gp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#gp<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"><?php echo $gpMsgFormat ?></textarea>
+                <? } else { ?>
+                <input value="<?php echo $gpMsgFormat ?>" type="text" name="gp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apGPMsgFrmt".$ii); ?>
+                <? } ?>
+                
+                
+                </td></tr>
            <?php } 
      }
   }
@@ -148,7 +157,9 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = ''; 
     if (isset($pMeta['SNAPformat'])) $optMt['gpMsgFormat'] = $pMeta['SNAPformat'];   
     if (isset($pMeta['postType'])) $optMt['postType'] = $pMeta['postType'];
-    if (isset($pMeta['doGP'])) $optMt['doGP'] = $pMeta['doGP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doGP'] = 0; } return $optMt;
+    if (isset($pMeta['doGP'])) $optMt['doGP'] = $pMeta['doGP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doGP'] = 0; } 
+    if (isset($pMeta['SNAPincludeGP']) && $pMeta['SNAPincludeGP'] == '1' ) $optMt['doGP'] = 1;  
+    return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToGP_ajax")) {

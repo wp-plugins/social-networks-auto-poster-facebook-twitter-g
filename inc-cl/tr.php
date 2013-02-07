@@ -222,7 +222,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
      if (isset($pMeta['SNAPTformat'])) $optMt['trMsgTFormat'] = $pMeta['SNAPTformat']; 
      if (isset($pMeta['apTRPostType'])) $optMt['trPostType'] = $pMeta['apTRPostType']; 
      if (isset($pMeta['AttachPost'])) $optMt['trAttch'] = $pMeta['AttachPost'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['trAttch'] = 0; }
-     if (isset($pMeta['doTR'])) $optMt['doTR'] = $pMeta['doTR'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTR'] = 0; }return $optMt;
+     if (isset($pMeta['doTR'])) $optMt['doTR'] = $pMeta['doTR'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTR'] = 0; }
+     if (isset($pMeta['SNAPincludeTR']) && $pMeta['SNAPincludeTR'] == '1' ) $optMt['doTR'] = 1;  
+     return $optMt;
   }
 }}
 

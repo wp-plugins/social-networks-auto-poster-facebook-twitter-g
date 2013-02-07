@@ -146,7 +146,9 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
     if (isset($pMeta['nsfw'])) $optMt['nsfw'] = $pMeta['nsfw'];
     if (isset($pMeta['SNAPformat'])) $optMt['suMsgFormat'] = $pMeta['SNAPformat']; 
     if (isset($pMeta['apSUCat'])) $optMt['suCat'] = $pMeta['apSUCat'];     
-    if (isset($pMeta['doSU'])) $optMt['doSU'] = $pMeta['doSU'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doSU'] = 0; } return $optMt;
+    if (isset($pMeta['doSU'])) $optMt['doSU'] = $pMeta['doSU'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doSU'] = 0; } 
+    if (isset($pMeta['SNAPincludeSU']) && $pMeta['SNAPincludeSU'] == '1' ) $optMt['doSU'] = 1;  
+    return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToSU_ajax")) {

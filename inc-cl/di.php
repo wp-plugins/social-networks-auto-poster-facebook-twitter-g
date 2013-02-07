@@ -126,7 +126,9 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['diMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['diMsgTFormat'] = $pMeta['SNAPformatT']; 
-     if (isset($pMeta['doDI'])) $optMt['doDI'] = $pMeta['doDI'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDI'] = 0; } return $optMt;
+     if (isset($pMeta['doDI'])) $optMt['doDI'] = $pMeta['doDI'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doDI'] = 0; } 
+     if (isset($pMeta['SNAPincludeDI']) && $pMeta['SNAPincludeDI'] == '1' ) $optMt['doDI'] = 1;  
+     return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToDI_ajax")) {

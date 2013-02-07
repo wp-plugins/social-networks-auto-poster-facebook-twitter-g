@@ -123,7 +123,9 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = ''; 
      if (isset($pMeta['SNAPformat'])) $optMt['ipMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['SNAPformatT'])) $optMt['ipMsgTFormat'] = $pMeta['SNAPformatT'];      
-     if (isset($pMeta['doIP'])) $optMt['doIP'] = $pMeta['doIP'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doIP'] = 0; } return $optMt;
+     if (isset($pMeta['doIP'])) $optMt['doIP'] = $pMeta['doIP'] == 1?1:0; else { if (isset($pMeta['SNAPformat']))  $optMt['doIP'] = 0; } 
+     if (isset($pMeta['SNAPincludeIP']) && $pMeta['SNAPincludeIP'] == '1' ) $optMt['doIP'] = 1;  
+     return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToIP_ajax")) {

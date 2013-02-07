@@ -150,7 +150,9 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['pnMsgFormat'] = $pMeta['SNAPformat'];      
      if (isset($pMeta['doPN'])) $optMt['doPN'] = $pMeta['doPN'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPN'] = 0; }
-     if (isset($pMeta['apPNBoard']) && $pMeta['apPNBoard']!='' && $pMeta['apPNBoard']!='0') $optMt['pnBoard'] = $pMeta['apPNBoard']; return $optMt;
+     if (isset($pMeta['apPNBoard']) && $pMeta['apPNBoard']!='' && $pMeta['apPNBoard']!='0') $optMt['pnBoard'] = $pMeta['apPNBoard']; 
+     if (isset($pMeta['SNAPincludePN']) && $pMeta['SNAPincludePN'] == '1' ) $optMt['doPN'] = 1;  
+     return $optMt;
   }  
 }}
 if (!function_exists("nxs_rePostToPN_ajax")) {

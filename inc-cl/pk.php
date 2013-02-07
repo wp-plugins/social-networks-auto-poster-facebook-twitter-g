@@ -199,7 +199,9 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['pkMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['Cat'])) $optMt['pkCat'] = $pMeta['Cat'];      
-     if (isset($pMeta['doPK'])) $optMt['doPK'] = $pMeta['doPK'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPK'] = 0; }return $optMt;
+     if (isset($pMeta['doPK'])) $optMt['doPK'] = $pMeta['doPK'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doPK'] = 0; }
+     if (isset($pMeta['SNAPincludePK']) && $pMeta['SNAPincludePK'] == '1' ) $optMt['doPK'] = 1;  
+     return $optMt;
   }
 }}
 

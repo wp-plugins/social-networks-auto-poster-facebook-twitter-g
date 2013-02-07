@@ -120,7 +120,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else $optMt['isPosted'] = '';
      if (isset($pMeta['SNAPformat'])) $optMt['twMsgFormat'] = $pMeta['SNAPformat']; 
      if (isset($pMeta['attchImg'])) $optMt['attchImg'] = $pMeta['attchImg'] == 1?1:0; else { if (isset($pMeta['attchImg'])) $optMt['attchImg'] = 0; } 
-     if (isset($pMeta['doTW'])) $optMt['doTW'] = $pMeta['doTW'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTW'] = 0; } return $optMt;
+     if (isset($pMeta['doTW'])) $optMt['doTW'] = $pMeta['doTW'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doTW'] = 0; } 
+     if (isset($pMeta['SNAPincludeTW']) && $pMeta['SNAPincludeTW'] == '1' ) $optMt['doTW'] = 1; // <2.6 Compatibility fix    
+     return $optMt;
   }
 }}
 
@@ -164,20 +166,20 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $pRawText = $post->post_content;
         
         if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
-          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','_', str_replace('  ', ' ', trim($tagA->name))));
-              if (stripos($pTitle, $tagA->name)!==false) $pTitle = str_ireplace($tagA->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
-              if (stripos($pText, $tagA->name)!==false) $pText = str_ireplace($tagA->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
-              if (stripos($pFullText, $tagA->name)!==false) $pFullText = str_ireplace($tagA->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!==false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
-              if (stripos($pRawText, $tagA->name)!==false) $pRawText = str_ireplace($tagA->name, '#'.$frmTag, $pRawText); elseif (stripos($pRawText, $frmTag)!==false) $pRawText = str_ireplace($frmTag, '#'.$frmTag, $pRawText); 
-              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && (stripos($pTitle, $tagA->name)!==false || stripos($pTitle, $frmTag)!==false)) ||
-                   ((stripos($twMsgFormat, '%TEXT%')!==false) && (stripos($pText, $tagA->name)!==false || stripos($pText, $frmTag)!==false)) ||
-                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $tagA->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
-                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $tagA->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $tggs[] = '#'.$frmTag;
+          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','', str_replace('  ', ' ', trim(ucwords($tagA->name)))));
+              if (preg_match('/\b'.$frmTag.'\b/iu', $pTitle)) $pTitle = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pTitle)); 
+              if (preg_match('/\b'.$frmTag.'\b/iu', $pFullText)) $pFullText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pFullText)); 
+              if (preg_match('/\b'.$frmTag.'\b/iu', $pText)) $pText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pText)); 
+              if (preg_match('/\b'.$frmTag.'\b/iu', $pRawText)) $pRawText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pRawText)); 
+              if ( ((stripos($twMsgFormat, '%TITLE%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pTitle)) ||
+                   ((stripos($twMsgFormat, '%TEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pText)) ||
+                   ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pFullText)) ||
+                   ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pRawText)) ) {} else $tggs[] = '#'.$frmTag;
           } $tags = implode(' ',$tggs); while(strlen($tags)>($twLim-10)) {array_pop($tggs); $tags = implode(' ',$tggs);} $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
           $twLim = $twLim - strlen($tags);
         }
         if (stripos($twMsgFormat, '%CATS%')!==false || stripos($twMsgFormat, '%HCATS%')!==false) {
-          $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  trim(str_replace(' ','_', str_replace('  ',' ',str_ireplace('&','&amp;',trim($cat->name)))));
+          $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  trim(str_replace(' ','', str_replace('  ',' ',str_ireplace('&','&amp;',trim(ucwords($cat->name))))));
           if (stripos($pTitle, $cat->name)!==false) $pTitle = str_ireplace($cat->name, '#'.$frmTag, $pTitle); elseif (stripos($pTitle, $frmTag)!==false) $pTitle = str_ireplace($frmTag, '#'.$frmTag, $pTitle); 
               if (stripos($pText, $cat->name)!==false) $pText = str_ireplace($cat->name, '#'.$frmTag, $pText); elseif (stripos($pText, $frmTag)!==false) $pText = str_ireplace($frmTag, '#'.$frmTag, $pText); 
               if (stripos($pFullText, $cat->name)!==false) $pFullText = str_ireplace($cat->name, '#'.$frmTag, $pFullText); elseif (stripos($pFullText, $frmTag)!==false) $pFullText = str_ireplace($frmTag, '#'.$frmTag, $pFullText); 
