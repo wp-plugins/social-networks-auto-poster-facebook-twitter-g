@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, bookmarking, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.6.3
+Stable tag: 2.7.0
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,7 +14,8 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-* **Latest version 2.6** - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
+* **Latest version 2.6** - Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text.
+* *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
 * *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
@@ -158,6 +159,27 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.0 [02/21/2013] =
+
+* New - Ability to auto-import "Replies" and "Mentions" from Twitter and post them as WP Comments
+* New - Ability to use "Custom Fields" %CF-CustomFieldName% in autoposter message templates.
+* New - New template tag %ANNOUNCE% Inserts the text till the &lt;!--more--&gt; tag or first N words of the post.
+* New - Ability to "Spin" message post templates.
+* New - Support for YOURLS URL Shortener.
+* New - Support for goo.gl URL Shortener.
+* Improvement - Better interface for "Settings" tab
+* Improvement - Tumblr include categories as tags
+* Improvement - More clear and understandable log
+* Improvement - All "Message Format" fields are now multirow fields.
+* Improvement - no _ in hashtags anymore
+* Improvement - Featured image custom field could be an array
+* Improvement/Bug Fix - additional protection against magic quotes.
+* Bug fix - Stumbleupon category selection.
+* Bug fix - Twitter characters limit when %TEXT% is used.
+* Bug fix - Autoposting stability improvements.
+* Bug fix - Featured image location in custom field.
+* Bug fix - International characters for Blogger (Free API).
 
 = 2.6.3 [02/07/2013] =
 

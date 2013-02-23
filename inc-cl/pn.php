@@ -74,7 +74,9 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>  <a href="#" id="apPNMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>             
-              </div><input  name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" id="apPNMsgFrmt" style="width: 50%;" value="<?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap');  else echo "%TITLE% - %URL%"; ?>" onfocus="mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"  />
+              </div>
+              
+               <textarea cols="150" rows="3" id="pn<?php echo $ii; ?>SNAPformat" name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#pn<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"><?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap');  else echo "%TITLE% - %URL%"; ?></textarea>
               
               <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?>
             </div><br/>    
@@ -116,7 +118,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
         $isAvailPN =  $ntOpt['pnUName']!='' && $ntOpt['pnPass']!=''; $pnMsgFormat = htmlentities($ntOpt['pnMsgFormat'], ENT_COMPAT, "UTF-8");        
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_PN<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][doPN]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doPN == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][doPN]" <?php if ((int)$doPN == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="pn[<?php echo $ii; ?>][doPN]" value="<?php echo $doPN;?>"> <?php } ?> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToPN', 'rePostToPN_wpnonce' ); } ?>
@@ -140,8 +143,10 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             </select></td>
                 </tr> 
                               
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Message Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $pnMsgFormat ?>" type="text" name="pn[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Message Format:', 'nxs_snap') ?></th>
+                <td>                
+                <textarea cols="150" rows="1" id="pn<?php echo $ii; ?>SNAPformat" name="pn[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#pn<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"><?php echo $pnMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>
                                 
                 <?php } 
      }
@@ -166,12 +171,17 @@ if (!function_exists("nxs_rePostToPN_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
-  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest'; 
-  
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest';    
+    // $backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
+    //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToPN',  array($postID, $options));  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10));
+    $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
+    $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     $isAttachVid = $options['isAttachVid']; $isAttachVid = '1';
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
     }  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
     
@@ -185,8 +195,8 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     $email = $options['pnUName']; $boardID = $options['pnBoard'];  $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];// prr($boardID); prr($_POST); die();    
     if (isset($options['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pnSvC']); $loginError = true;
     if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
-    if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}      
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
+    if ($loginError!==false) $loginError = doConnectToPinterest($email, $pass);  if ($loginError!==false) {echo $loginError; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true), $extInfo); return "BAD USER/PASS";}      
     if (serialize($nxs_gCookiesArr)!=$options['pnSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
         if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['pn'][$options['ii']]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions);  }        
         else foreach ($gOptions['pn'] as $ii=>$gpn) { $result = array_diff($options, $gpn);
@@ -194,7 +204,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
         }        
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;
     $ret = doPostToPinterest($msg, $imgURL, $link, $boardID); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
-    if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+    if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
     if ($ret['code']=='OK') return 200; else return $ret;
   }
 }  

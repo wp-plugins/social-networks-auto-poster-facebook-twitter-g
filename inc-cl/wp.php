@@ -54,15 +54,24 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
             
             <?php if ($isNew) { ?> <input type="hidden" name="wp[<?php echo $ii; ?>][apDoWP]" value="1" id="apDoNewWP<?php echo $ii; ?>" /> <?php } ?>
             
-            <br/><strong id="altFormatText">Post Title and Post Text Formats</strong> 
-              <p style="font-size: 11px; margin: 0px;">%SITENAME% - Inserts the Your Blog/Site Name. &nbsp; %TITLE% - Inserts the Title of your post. &nbsp; %URL% - Inserts the URL of your post. &nbsp; %TEXT% - Inserts the excerpt of your post. &nbsp;  %FULLTEXT% - Inserts the body(text) of your post, %AUTHORNAME% - Inserts the author's name.</p>            
+            <br/>
+              
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong>               
-              </div><input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" />
+(<a href="#" id="apWPMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)              
+              </div>
+  <input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;"  onfocus="mxs_showFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>');"  value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" /> <?php nxs_doShowHint("apWPMsgTFrmt".$ii); ?>
+  
             </div>            
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong>               
-              </div><input name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" id="apWPMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" />
+              (<a href="#" id="apWPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
+              </div>
+              
+    
+  <textarea cols="150" rows="3" id="wp<?php echo $ii; ?>SNAPformat" name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#wp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+  <?php nxs_doShowHint("apWPMsgFrmt".$ii); ?>
+  
             </div><br/>    
             
             <?php if ($gpo['wpPass']!='') { ?>
@@ -100,7 +109,8 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
         $isAvailWP =  $ntOpt['wpUName']!='' && $ntOpt['wpPass']!=''; $wpMsgFormat = htmlentities($ntOpt['wpMsgFormat'], ENT_COMPAT, "UTF-8"); $wpMsgTFormat = htmlentities($ntOpt['wpMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_WP<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][doWP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doWP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][doWP]" <?php if ((int)$doWP == 1 ) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="wp[<?php echo $ii; ?>][doWP]" value="<?php echo $doWP;?>"> <?php } ?> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToWP', 'rePostToWP_wpnonce' ); } ?>
@@ -116,11 +126,13 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
                 <?php if (!$isAvailWP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your WP Blog Account to AutoPost to WP Blogs</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $wpMsgTFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $wpMsgFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <td>               
+                <textarea cols="150" rows="1" id="wp<?php echo $ii; ?>SNAPformat" name="wp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#wp<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"><?php echo $wpMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apWPMsgFrmt".$ii); ?></td></tr>
   
   <?php } 
      }
@@ -146,10 +158,14 @@ if (!function_exists("nxs_rePostToWP_ajax")) {
 
 if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
   function nxs_doPublishToWP($postID, $options){ $ntCd = 'WP'; $ntCdL = 'wp'; $ntNm = 'WP Based Blog';
-      
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToWP',  array($postID, $options));      
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+    $logNT = '<span style="color:#1A9EE6">WP</span> - '.$options['nName'];
+    $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
     } 
       $imgURL = nxs_getPostImage($postID);
       $email = $options['wpUName'];  $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
@@ -174,7 +190,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       if (!$nxsToWPclient->query('wp.getOptions', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
       $rwpOpt = $nxsToWPclient->getResponse();  $rwpOpt = $rwpOpt['software_version']['value']; $rwpOpt = floatval($rwpOpt); //prr($rwpOpt);prr($nxsToWPclient);
       
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#1A9EE6">WP</span> - '.$options['nName'];
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       
       if ($rwpOpt==0) { 
         $errMsg = $nxsToWPclient->getErrorMessage(); if ($errMsg!='') $ret = $errMsg; else  $ret = 'XMLRPC is not found or not active. WP admin - Settings - Writing - Enable XML-RPC'; 
@@ -199,9 +215,9 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
           $pid = $nxsToWPclient->getResponse();  
         }
       } if ($ret!='OK') { if ($postID=='0') echo $ret; 
-        nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);
-      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else 
-        { nxs_metaMarkAsPosted($postID, 'WP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+        nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);
+      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); } else 
+        { nxs_metaMarkAsPosted($postID, 'WP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
       if ($ret == 'OK') return 200; else return $ret;
   }
 }  

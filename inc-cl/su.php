@@ -70,7 +70,11 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apSUMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="su[<?php echo $ii; ?>][apSUMsgFrmt]" id="apSUMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE% - %TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['suMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
+              
+              <textarea cols="150" rows="3" id="su<?php echo $ii; ?>SNAPformat" name="su[<?php echo $ii; ?>][apSUMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#su<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%TITLE% - %EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($options['suMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              
+              
+              <?php nxs_doShowHint("apSUMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['suPass']!='') { ?>
@@ -109,7 +113,8 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
         $isAvailSU =  $ntOpt['suUName']!='' && $ntOpt['suPass']!=''; $suMsgFormat = htmlentities($ntOpt['suMsgFormat'], ENT_COMPAT, "UTF-8"); $suMsgTFormat = htmlentities($ntOpt['suMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_SU<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailSU) { ?><input class="nxsGrpDoChb" value="1" id="doSU<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="su[<?php echo $ii; ?>][doSU]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doSU == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailSU) { ?><input class="nxsGrpDoChb" value="1" id="doSU<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="su[<?php echo $ii; ?>][doSU]" <?php if ((int)$doSU == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="su[<?php echo $ii; ?>][doSU]" value="<?php echo $doSU;?>"> <?php } ?> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/su16.png);">StumbleUpon - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailSU) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToSU_repostButton" id="rePostToSU_button" value="<?php _e('Repost to StumbleUpon', 'nxs_snap') ?>" />
@@ -128,16 +133,17 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
                 <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;">Category:</th>
                 <td><div id="altFormat" style="">  
               <select name="su[<?php echo $ii; ?>][apSUCat]" id="apSUCat<?php echo $ii; ?>"><option value="error" selected="selected" disabled="">Select default StumbleUpon Category</option>
-            <?php  $suCats = $this->suCats(); 
-              if ($ntOpt['suCat']!='') $suCats = str_replace($ntOpt['suCat'].'"', $ntOpt['suCat'].'" selected="selected"', $suCats);  echo $suCats; 
-            
+            <?php  $suCats = $this->suCats();               
+              if (isset($ntOpt['suCat']) && $ntOpt['suCat']!='') $suCats = str_replace('"'.$ntOpt['suCat'].'"', '"'.$ntOpt['suCat'].'" selected="selected"', $suCats);  echo $suCats;             
              ?>
             </select> <input value="1"  id="sunsfw<?php echo $ii; ?>" type="checkbox" name="su[<?php echo $ii; ?>][nsfw]"  <?php if ((int)$options['nsfw'] == 1) echo "checked"; ?> /> <strong>NSFW</strong>
             
             </div> </td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $suMsgFormat ?>" type="text" name="su[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apSUMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <td>                
+                <textarea cols="150" rows="1" id="su<?php echo $ii; ?>SNAPformat" name="su[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#su<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apSUMsgFrmt<?php echo $ii; ?>');"><?php echo $suMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apSUMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -182,7 +188,7 @@ if (!function_exists("nxs_doCheckSU")) {function nxs_doCheckSU(){ global $nxs_su
   return false;  
 }}
 if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true); //   echo "LOGGIN";
-    $response = wp_remote_get('https://www.stumbleupon.com/login'); if (is_wp_error($response)) { nxs_addToLog('SU', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
+    $response = wp_remote_get('https://www.stumbleupon.com/login'); if (is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
     $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; 
     $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array();// prr($frmTxt); 
@@ -211,20 +217,20 @@ if (!function_exists("nxs_doPostToSU")) {  function nxs_doPostToSU($msg, $lnk, $
     } $flds['url'] = $lnk; $flds['review'] = $msg; $flds['tags'] = $cat; $flds['nsfw'] = $nsfw?'true':'false'; $flds['user-tags'] = $tags;  $flds['_output'] = 'Json';  $flds['_method'] = 'create';  $flds['language'] = 'EN'; 
     
   $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
-  $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+  $resp = json_decode($r2['body'], true); 
   
   if (stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
     $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
-    $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+    $resp = json_decode($r2['body'], true);
   }
   
   if (stripos($resp['_error'], 'Invalid token')!==false) { // In case we got the Wrong Cookies
     $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
-    $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+    $resp = json_decode($r2['body'], true);
     
     if (stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
       $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
-      $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLog('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+      $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLogN('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
     }    
   } 
   
@@ -234,11 +240,16 @@ if (!function_exists("nxs_doPostToSU")) {  function nxs_doPostToSU($msg, $lnk, $
 }}
 
 if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
-  function nxs_doPublishToSU($postID, $options){ global $nxs_suCkArray; $ntCd = 'SU'; $ntCdL = 'su'; $ntNm = 'StumbleUpon'; //prr($options);
-  
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
-    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+  function nxs_doPublishToSU($postID, $options){ global $nxs_suCkArray; $ntCd = 'SU'; $ntCdL = 'su'; $ntNm = 'StumbleUpon';    
+    //$backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
+    //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToSU',  array($postID, $options));   
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+    $logNT = '<span style="color:#000080">StumbleUpon</span> - '.$options['nName'];      
+    $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    if ($options['reset'] != '1' && $options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
     }
       $suCat = $options['suCat'];      
       // if (function_exists("get_post_thumbnail_id") ){ $src = wp_get_attachment_image_src(get_post_thumbnail_id($postID), 'thumbnail'); $src = $src[0];}
@@ -247,7 +258,7 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
         $msgFormat = $options['suMsgFormat'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['suUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">StumbleUpon</span> - '.$options['nName'];      
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       if ($options['suInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
       if (isset($options['suSvC'])) $nxs_suCkArray = maybe_unserialize( $options['suSvC']); $loginError = true;
       if (is_array($nxs_suCkArray)) $loginError = nxs_doCheckSU(); if ($loginError!=false) $loginError = nxs_doConnectToSU($email, $pass); 
@@ -257,15 +268,15 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
           if (!is_array($result) || count($result)<1) { $gOptions['su'][$ii]['suSvC'] = serialize($nxs_suCkArray); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
       }  
-      if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";}       
+      if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";}       
       
       $ret = nxs_doPostToSU($msg, $link, $options['suCat'], $tags, $options['nsfw']=='1'); // $extInfo .= "++".$msg."|".$link."|".$options['suCat']."|".$tags."|".$options['nsfw'];      
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
-      if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
-      elseif ($ret['code']=='OK')  if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your StumbleUpon Page '; } else 
-          { nxs_metaMarkAsPosted($postID, 'SU', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  return 200; }
+      if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);} 
+      elseif ($ret['code']=='OK')  if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your StumbleUpon Page '; } else 
+          { nxs_metaMarkAsPosted($postID, 'SU', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);  return 200; }
       else { if ($options['reset'] == '1') {
-          nxs_addToLog($logNT, 'E', '-=ERROR TRY #2=- '.print_r($ret, true), $extInfo.$options['reset']);
+          nxs_addToLogN('E', 'Error', $logNT, '-=ERROR TRY #2=- '.print_r($ret, true), $extInfo.$options['reset']);
           return "ERROR = ".print_r($ret, true);    
         } else { $options['reset'] = '1'; $options['suSvC'] = ''; return nxs_doPublishToSU($postID, $options);  }
       }

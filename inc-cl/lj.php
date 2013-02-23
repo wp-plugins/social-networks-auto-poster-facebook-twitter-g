@@ -66,7 +66,11 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
             </div>            
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apLJMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)               
-              </div><input name="lj[<?php echo $ii; ?>][apLJMsgFrmt]" id="apLJMsgFrmt<?php echo $ii; ?>" style="width: 50%;" value="<?php if ($isNew) echo "%FULLTEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['ljMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" onfocus="mxs_showFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apLJMsgFrmt".$ii); ?>
+              </div>
+              
+               <textarea cols="150" rows="3" id="lj<?php echo $ii; ?>SNAPformat" name="lj[<?php echo $ii; ?>][apLJMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#lj<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%FULLTEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['ljMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              
+              <?php nxs_doShowHint("apLJMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($gpo['ljPass']!='') { ?>
@@ -107,7 +111,8 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
         $isAvailLJ =  $ntOpt['ljUName']!='' && $ntOpt['ljPass']!=''; $ljMsgFormat = htmlentities($ntOpt['ljMsgFormat'], ENT_COMPAT, "UTF-8"); $ljMsgTFormat = htmlentities($ntOpt['ljMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_LJ<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailLJ) { ?><input class="nxsGrpDoChb" value="1" id="doLJ<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="lj[<?php echo $ii; ?>][doLJ]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doLJ == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailLJ) { ?><input class="nxsGrpDoChb" value="1" id="doLJ<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="lj[<?php echo $ii; ?>][doLJ]" <?php if ((int)$doLJ == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="lj[<?php echo $ii; ?>][doLJ]" value="<?php echo $doLJ;?>"> <?php } ?> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/lj16.png);">LiveJournal - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailLJ) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="shoLJopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToLJ_repostButton" id="rePostToLJ_button" value="<?php _e('Repost to LiveJournal', 'nxs_snap') ?>" />
                     <?php wp_nonce_field( 'rePostToLJ', 'rePostToLJ_wpnonce' ); } ?>
@@ -122,11 +127,13 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
                 <?php if (!$isAvailLJ) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your LiveJournal Account to AutoPost to LiveJournal</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $ljMsgTFormat ?>" type="text" name="lj[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLJTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLJTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $ljMsgFormat ?>" type="text" name="lj[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apLJMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <td>                
+                <textarea cols="150" rows="1" id="lj<?php echo $ii; ?>SNAPformat" name="lj[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#lj<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>');"><?php echo $ljMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apLJMsgFrmt".$ii); ?></td></tr>
   
   <?php } 
      }
@@ -151,22 +158,26 @@ if (!function_exists("nxs_rePostToLJ_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
-  function nxs_doPublishToLJ($postID, $options){ $ntCd = 'LJ'; $ntCdL = 'lj'; $ntNm = 'LJ Based Blog';
-      
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
-    if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-    } 
+  function nxs_doPublishToLJ($postID, $options){ $ntCd = 'LJ'; $ntCdL = 'lj'; $ntNm = 'LJ Based Blog';   
+      //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToLJ',  array($postID, $options));        
+      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+      $logNT = '<span style="color:#2097EE">LJ</span> - '.$options['nName'];
+      $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+      if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
+      } 
       $imgURL = nxs_getPostImage($postID);
       $email = $options['ljUName'];  $pass = substr($options['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ljPass'], 5)):$options['ljPass'];      
       if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; $msg = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); 
         $msgFormat = $options['ljMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['ljMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       } //prr($msg); prr($msgFormat);
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       //## Post   
       require_once ('apis/xmlrpc-client.php'); if ($options['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
-      $nxsToLJclient = new NXS_XMLRPC_Client('http://www.'.$server.'/interface/xmlrpc'); $nxsToLJclient->debug = false;       
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#2097EE">LJ</span> - '.$options['nName'];
+      $nxsToLJclient = new NXS_XMLRPC_Client('http://www.'.$server.'/interface/xmlrpc'); $nxsToLJclient->debug = false;             
       
       $date = time(); $year = date("Y", $date); $mon = date("m", $date); $day = date("d", $date); $hour = date("G", $date); $min = date("i", $date);
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
@@ -175,9 +186,9 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       $pid = $nxsToLJclient->getResponse(); if (is_array($pid)) $pid = $pid['url']; else { $ret = 'Something went wrong - NO PID '.print_r($pid, true);}
       
       if ($ret!='OK') { if ($postID=='0') echo $ret; 
-        nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);
-      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your LiveJournal'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); } else 
-        { nxs_metaMarkAsPosted($postID, 'LJ', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);} }
+        nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);
+      } else { if ($postID=='0') { echo 'OK - Message Posted, please see your LiveJournal'; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); } else 
+        { nxs_metaMarkAsPosted($postID, 'LJ', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
       if ($ret == 'OK') return 200; else return $ret;
   }
 }  

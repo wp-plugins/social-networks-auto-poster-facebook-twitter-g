@@ -66,12 +66,15 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong> (<a href="#" id="apVBMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="vb[<?php echo $ii; ?>][apVBMsgTFrmt]" id="apVBMsgTFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?>
-            </div><br/> 
+                           
+              <textarea cols="150" rows="3" id="vb<?php echo $ii; ?>SNAPformat" name="vb[<?php echo $ii; ?>][apVBMsgTFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#vb<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>                            
+              
+              <?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?>
+              </div><br/> 
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apVBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="vb[<?php echo $ii; ?>][apVBMsgFrmt]" id="apVBMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?>
+              <input name="vb[<?php echo $ii; ?>][apVBMsgFrmt]" id="apVBMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($options['vbMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['vbPass']!='') { ?>
@@ -111,7 +114,8 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
         $isAvailVB =  $ntOpt['vbUName']!='' && $ntOpt['vbPass']!=''; $vbMsgFormat = htmlentities($ntOpt['vbMsgFormat'], ENT_COMPAT, "UTF-8"); $vbMsgTFormat = htmlentities($ntOpt['vbMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_VB<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" id="doVB<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][doVB]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVB == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailVB) { ?><input class="nxsGrpDoChb" value="1" id="doVB<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vb[<?php echo $ii; ?>][doVB]" <?php if ((int)$doVB == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="vb[<?php echo $ii; ?>][doVB]" value="<?php echo $doVB;?>"> <?php } ?> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/vb16.png);">vBulletin - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailVB) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToVB_repostButton" id="rePostToVB_button" value="<?php _e('Repost to vBulletin', 'nxs_snap') ?>" />
@@ -128,11 +132,13 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
                 <?php if (!$isAvailVB) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your vBulletin Account to AutoPost to vBulletin</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                
-       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+       <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
         <td><input value="<?php echo $vbMsgTFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgTFrmt".$ii); ?></td></tr>
                 
-      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-        <td><input value="<?php echo $vbMsgFormat ?>" type="text" name="vb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVBMsgFrmt".$ii); ?></td></tr>
+      <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+        <td>        
+        <textarea cols="150" rows="1" id="vb<?php echo $ii; ?>SNAPformat" name="vb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#vb<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVBMsgFrmt<?php echo $ii; ?>');"><?php echo $vbMsgFormat; ?></textarea>
+        <?php nxs_doShowHint("apVBMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -170,7 +176,7 @@ if (!function_exists("nxs_doCheckVB")) {function nxs_doCheckVB($url){ global $nx
   return false;  
 }}
 if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url, true); //   echo "LOGGIN";
-    $response = wp_remote_get($url); if(is_wp_error($response)) { nxs_addToLog('VB', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
+    $response = wp_remote_get($url); if(is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
     $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; $mdhashLoc = stripos($contents, 'md5hash(vb_login_password');
     if ($mdhashLoc===false) return "No VB found";
@@ -192,7 +198,7 @@ if (!function_exists("nxs_doConnectToVB")) {  function nxs_doConnectToVB($u, $p,
 }}
 if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, $msg, $lnk, $tags){ global $nxs_vbCkArray; $hdrsArr = nxs_getVBHeaders($url); $ckArr = $nxs_vbCkArray;   
   $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));   
-  if(is_wp_error($response)) { nxs_addToLog('VB', 'E', '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
+  if(is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Invalid Connection. Please see log."; }
   $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
   if (stripos($contents, 'base href="')!==false) $baseURL = trim(CutFromTo($contents,'base href="', '"')); else { $uarr = explode('/',$url); $dd = $uarr[count($uarr)-1]; $baseURL = str_replace($dd, '', $url);}
   if (stripos($contents, 'newthread.php?do=newthread')!==false) $mdd='t'; elseif (stripos($contents, 'newreply.php?')!==false) $mdd='p'; else return "No Thread/Post Controls found";
@@ -234,10 +240,14 @@ if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, 
 
 if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
   function nxs_doPublishToVB($postID, $options){ global $nxs_vbCkArray; $ntCd = 'VB'; $ntCdL = 'vb'; $ntNm = 'vBulletin';
-  
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+    //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToVB',  array($postID, $options));  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+    $logNT = '<span style="color:#000080">vBulletin</span> - '.$options['nName'];      
+    $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
     } 
   
       $vbCat = $options['vbCat']; $email = $options['vbUName']; $pass = (substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass']);      
@@ -246,7 +256,7 @@ if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
           $msgFormat = $options['vbMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['vbMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
       }
       $dusername = $options['vbUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">vBulletin</span> - '.$options['nName'];      
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       if ($options['vbInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
       if (isset($options['vbSvC'])) $nxs_vbCkArray = maybe_unserialize( $options['vbSvC']); $loginError = true;
       if (is_array($nxs_vbCkArray)) $loginError = nxs_doCheckVB( $options['vbURL']); if ($loginError!==false) $loginError = nxs_doConnectToVB($email, $pass, $options['vbURL']); 
@@ -256,11 +266,11 @@ if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
           if (!is_array($result) || count($result)<1) { $gOptions['vb'][$ii]['vbSvC'] = serialize($nxs_vbCkArray); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
       }  //var_dump($loginError);
-      if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";} 
+      if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";} 
       $ret = nxs_doPostToVB($options['vbURL'], $msgT, $msg, $link, $tags);      
-      if ( (!is_array($ret)) && $ret!='OK'){ if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);} 
-        else if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your vBulletin Page '; } else 
-          { nxs_metaMarkAsPosted($postID, 'VB', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); }
+      if ( (!is_array($ret)) && $ret!='OK'){ if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);} 
+        else if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your vBulletin Page '; } else 
+          { nxs_metaMarkAsPosted($postID, 'VB', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       if ($ret['code']=='OK') return 200; else return $ret;
       
   }

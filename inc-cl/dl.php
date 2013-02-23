@@ -58,7 +58,10 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDLMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" id="apDLMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['dlMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?>
+  
+  <textarea cols="150" rows="3" id="di<?php echo $ii; ?>SNAPformat" name="dl[<?php echo $ii; ?>][apDLMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#dl<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['dlMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+  
+              <?php nxs_doShowHint("apDLMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($gpo['dlPass']!='') { ?>
@@ -95,7 +98,8 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
         $isAvailDL =  $ntOpt['dlUName']!='' && $ntOpt['dlPass']!=''; $dlMsgFormat = htmlentities($ntOpt['dlMsgFormat'], ENT_COMPAT, "UTF-8"); $dlMsgTFormat = htmlentities($ntOpt['dlMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_DL<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" id="doDL<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][doDL]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDL == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailDL) { ?><input class="nxsGrpDoChb" value="1" id="doDL<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="dl[<?php echo $ii; ?>][doDL]" <?php if ((int)$doDL == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="dl[<?php echo $ii; ?>][doDL]" value="<?php echo $doDL;?>"> <?php } ?> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);">Delicious - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailDL) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDL_repostButton" id="rePostToDL_button" value="<?php _e('Repost to Delicious', 'nxs_snap') ?>" />
@@ -111,11 +115,13 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
                 <?php if (!$isAvailDL) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Delicious Account to AutoPost to Delicious</b>
                 <?php } elseif ($post->post_status != "pubZlish") { ?> 
                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $dlMsgTFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $dlMsgFormat ?>" type="text" name="dl[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <td>                
+                <textarea cols="150" rows="1" id="dl<?php echo $ii; ?>SNAPformat" name="dl[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#dl<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDLMsgFrmt<?php echo $ii; ?>');"><?php echo $dlMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apDLMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -154,20 +160,24 @@ if (!function_exists("nxs_getDLHeaders")) {  function nxs_getDLHeaders($up){ $hd
 }}
 
 if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
-  function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious';
-      
-      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+  function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious';  
+      // if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToDL',  array($postID, $options));        
+      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+      $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
+      $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-      }           
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+          nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'); return;
+        }
+      }            
       
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msgT = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID);  
         $msgFormat = $options['dlMsgFormat']; $msgTFormat = $options['dlMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);  $msg = nsFormatMessage($msgFormat, $postID); 
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       $dusername = $options['dlUName']; $pass = (substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass']);
-      $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Delicious</span> - '.$options['nName'];
+      $api = "api.del.icio.us/v1"; $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://$api/posts/add?red=api&url=$link&description=$desc&extended=$ext&tags=$tags";
       $hdrsArr = nxs_getDLHeaders($dusername.':'.$pass); $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) ); // prr($cnt);      
@@ -176,16 +186,17 @@ if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
         $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );}
       }      
       if(is_wp_error($cnt)) {
-        $ret = 'Something went wrong - '."http://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+        $ret = 'Something went wrong - '."http://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'code="done"')!==false) 
-          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DL', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
-        elseif (is_array($cnt) &&  $cnt['body']=='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Delicious  API is Down'; nxs_addToLog($logNT, 'M', 'It looks like Delicious API is Down', $extInfo); }    
-        elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
-          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DL', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DL', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); } 
+        elseif (is_array($cnt) &&  $cnt['body']=='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Delicious  API is Down'; nxs_addToLogN('E', 'Error', $logNT, 'It looks like Delicious API is Down', $extInfo); }    
+        elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLogN('S', 'Skipped', $logNT, 'All good, but this link has already been bookmarked', $extInfo); }   
+          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
+            nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }
       }
-      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Delicious Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
+      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Delicious Page'; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); }
       if ($ret == 'OK') return 200; else return $ret;
       
   }

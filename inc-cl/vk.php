@@ -87,7 +87,10 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
     <br/>      
     <div id="altFormat">
       <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="msgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('msgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>        
-        <input name="vk[<?php echo $ii; ?>][msgFrmt]" id="vkmsgFrmt<?php echo $ii; ?>" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['msgFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" onfocus="mxs_showFrmtInfo('msgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("msgFrmt".$ii); ?><br/>
+                
+         <textarea cols="150" rows="3" id="vkmsgFrmt<?php echo $ii; ?>" name="vk[<?php echo $ii; ?>][msgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#vk<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('msgFrmt<?php echo $ii; ?>');"><?php _e(apply_filters('format_to_edit', htmlentities($options['msgFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?></textarea>
+        
+        <?php nxs_doShowHint("msgFrmt".$ii); ?><br/>
     </div>
     <div >
     <input value="1" type="checkbox" name="vk[<?php echo $ii; ?>][addBackLink]"  <?php if (isset($options['addBackLink']) && (int)$options['addBackLink'] == 1) echo "checked"; ?> /> <?php _e('Add backlink to the post', 'nxs_snap') ?>
@@ -183,7 +186,8 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
         $isAvailVK =  $ntOpt['url']!='' && $ntOpt['vkAppID']!='' || $ntOpt['uPass']!=''; $isAttachVK = $ntOpt['attch']; $msgFrmt = htmlentities($ntOpt['msgFrmt'], ENT_COMPAT, "UTF-8"); $postType = $ntOpt['postType']; 
       ?>
       <tr><th style="text-align:left;" colspan="2"> <?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_VK<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>      
-        <?php if ($isAvailVK) { ?><input class="nxsGrpDoChb" value="1" id="doVK<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vk[<?php echo $ii; ?>][doVK]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doVK == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>      
+        <?php if ($isAvailVK) { ?><input class="nxsGrpDoChb" value="1" id="doVK<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="vk[<?php echo $ii; ?>][doVK]" <?php if ((int)$doVK == 1) echo 'checked="checked" title="def"';  ?> /> 
+        <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="vk[<?php echo $ii; ?>][doVK]" value="<?php echo $doVK;?>"> <?php } ?> <?php } ?>      
         <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/vk16.png);">vKontakte(VK) - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th>
         <td><?php //## Only show RePost button if the post is "published"
         if ($post->post_status == "publish" && $isAvailVK) { ?>
@@ -196,8 +200,11 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
         </td></tr>
           <?php if (!$isAvailVK) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup and Authorize your vKontakte(VK) Account to AutoPost to vKontakte(VK)</b>
           <?php } elseif ($post->post_status != "puZblish") {?> 
-        <tr id="altFormat1" style=""><th scope="row" valign="top" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
-          <td><input value="<?php echo $msgFrmt ?>" type="text" name="vk[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVKTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apVKTMsgFrmt".$ii); ?>
+        <tr id="altFormat1" style=""><th scope="row" valign="top" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
+          <td>          
+          <textarea cols="150" rows="1" id="vk<?php echo $ii; ?>SNAPformat" name="vk[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#vk<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apVKTMsgFrmt<?php echo $ii; ?>');"><?php echo $msgFrmt; ?></textarea>
+          
+          <?php nxs_doShowHint("apVKTMsgFrmt".$ii); ?>
             <br/><div ><input value="0" type="hidden" name="vk[<?php echo $ii; ?>][addBackLink]" />
               <input value="1" type="checkbox" name="vk[<?php echo $ii; ?>][addBackLink]"  <?php if (isset($ntOpt['addBackLink']) && (int)$ntOpt['addBackLink'] == 1) echo "checked"; ?> /> <?php _e('Add backlink to the post', 'nxs_snap') ?>
             </div>
@@ -269,16 +276,21 @@ if (!function_exists("nxs_uplImgtoVK")) {  function nxs_uplImgtoVK($imgURL, $opt
 
 if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
   function nxs_doPublishToVK($postID, $options){ global $ShownAds, $nxs_vkCkArray; $ntCd = 'VK'; $ntCdL = 'vk'; $ntNm = 'vKontakte(VK)';
-      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+      //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToVK',  array($postID, $options));
+      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+      $logNT = '<span style="color:#000080">vKontakte</span> - '.$options['nName'];      
+      $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
       }
       $email = $options['uName'];  $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']);      
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return;
         $msgFormat = $options['msgFrmt'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['uName'];  $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">vKontakte</span> - '.$options['nName'];      
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
   
       $msgOpts = array(); $msgOpts['type'] = $postType; $msgOpts['uid'] =  $options['vkPgID']; $imgURL = nxs_getPostImage($postID);// if ($link!='') $msgOpts['link'] = $link;
       if ($postType=='I' && trim($imgURL)=='') $postType='T';
@@ -292,7 +304,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
             if (!is_array($result) || count($result)<1) { $gOptions['vk'][$ii]['vkSvC'] = serialize($nxs_vkCkArray); update_option('NS_SNAutoPoster', $gOptions); break; }
           }        
         }  
-        if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";}      
+        if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";}      
         //## Post
         if (trim($fbMsgAFormat)!='') {$dsc = nsFormatMessage($fbMsgAFormat, $postID);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
@@ -314,9 +326,9 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         } else { $respJ = json_decode($response['body'], true);  $ret = array("code"=>"OK", "post_id"=>$options['pgIntID'].'_'.$respJ['response']['post_id']);   }
           
       }                                
-      if (is_array($ret) && $ret['code']=='OK') {  if ($postID=='0')  { nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your VK Page '; } else 
-          { nxs_metaMarkAsPosted($postID, 'VK', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo);  return 200; }          
-      } else {if ($postID=='0') prr($ret); nxs_addToLog($logNT, 'E', '-=ERROR=- '.print_r($ret, true), $extInfo);}       
+      if (is_array($ret) && $ret['code']=='OK') {  if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo ' OK - Message Posted, please see your VK Page '; } else 
+          { nxs_metaMarkAsPosted($postID, 'VK', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);  return 200; }          
+      } else {if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);}       
   }
 }       
 ?>

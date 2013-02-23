@@ -67,7 +67,11 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apDIMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="di[<?php echo $ii; ?>][apDIMsgFrmt]" id="apDIMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
+              
+              
+              <textarea cols="150" rows="3" id="di<?php echo $ii; ?>SNAPformat" name="di[<?php echo $ii; ?>][apDIMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#di<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($options['diMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              
+              <?php nxs_doShowHint("apDIMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($options['diPass']!='') { ?>
@@ -103,7 +107,8 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
         $isAvailDI =  $ntOpt['diUName']!='' && $ntOpt['diPass']!=''; $diMsgFormat = htmlentities($ntOpt['diMsgFormat'], ENT_COMPAT, "UTF-8"); $diMsgTFormat = htmlentities($ntOpt['diMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_DI<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailDI) { ?><input class="nxsGrpDoChb" value="1" id="doDI<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="di[<?php echo $ii; ?>][doDI]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doDI == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailDI) { ?><input class="nxsGrpDoChb" value="1" id="doDI<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="di[<?php echo $ii; ?>][doDI]" <?php if ((int)$doDI == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="di[<?php echo $ii; ?>][doDI]" value="<?php echo $doDI;?>"> <?php } ?> <?php } ?>
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);">Diigo - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailDI) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDI_repostButton" id="rePostToDI_button" value="<?php _e('Repost to Diigo', 'nxs_snap') ?>" />
@@ -115,10 +120,12 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
                 </td></tr>
                 <?php if (!$isAvailDI) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Diigo Account to AutoPost to Diigo</b>
                 <?php } elseif ($post->post_status != "pubZlish") { ?>                
-       <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+       <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
         <td><input value="<?php echo $diMsgTFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformatT]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgTFrmt".$ii); ?></td></tr>                
-      <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-        <td><input value="<?php echo $diMsgFormat ?>" type="text" name="di[<?php echo $ii; ?>][SNAPformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apDIMsgFrmt".$ii); ?></td></tr>
+      <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+        <td>        
+        <textarea cols="150" rows="1" id="di<?php echo $ii; ?>SNAPformat" name="di[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#di<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apDIMsgFrmt<?php echo $ii; ?>');"><?php echo $diMsgFormat; ?></textarea>
+        <?php nxs_doShowHint("apDIMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -219,23 +226,26 @@ if (!function_exists("nxs_doPostToDI")) {  function nxs_doPostToDI($url, $subj, 
 }}
 
 if (!function_exists("nxs_doPublishToDI")) { //## Second Function to Post to DI
-  function nxs_doPublishToDI($postID, $options){ global $nxs_diCkArray; $ntCd = 'DI'; $ntCdL = 'di'; $ntNm = 'Diigo';
-  
-    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+  function nxs_doPublishToDI($postID, $options){ global $nxs_diCkArray; $ntCd = 'DI'; $ntCdL = 'di'; $ntNm = 'Diigo'; 
+  //  if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToDI',  array($postID, $options));  
+    $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+    $logNT = '<span style="color:#000080">Diigo</span> - '.$options['nName'];      
+    $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-      nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-    }
-    
+      $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'); return;
+      }
+    }     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Message from '.$link;  $msgT = 'Test Link from '.$link; } else {  
       $post = get_post($postID); if(!$post) return; $link = get_permalink($postID);
       $msgFormat = $options['diMsgFormat']; $diCat = $options['diCat']; $msg = nsFormatMessage($msgFormat, $postID); $msgFormatT = $options['diMsgTFormat']; $msgT = nsFormatMessage($msgFormatT, $postID);       
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
-    }  
-    
+    } 
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
     //## Actual POST Code        
       $email = $options['diUName'];  $pass = (substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass']);      
       $dusername = $options['diUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Diigo</span> - '.$options['nName'];      
+      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = (implode(',',$tggs)); $tags = str_replace(' ','+',$tags);             
       
       $flds = array(); $flds['key']=$options['diAPIKey']; $flds['url']=$link; $flds['title']=nsTrnc($msgT, 250); $flds['desc']=nsTrnc($msg, 250); $flds['tags']=$tags; $flds['shared']='yes';      
@@ -243,14 +253,14 @@ if (!function_exists("nxs_doPublishToDI")) { //## Second Function to Post to DI
       $cnt = wp_remote_post( 'https://secure.diigo.com/api/v2/bookmarks', array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds));   
       
       if( is_wp_error( $cnt ) ) {
-        $ret = 'Something went wrong - '; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+        $ret = 'Something went wrong - '; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'"code":1')!==false) 
-          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DI', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DI', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
-          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'DI', $options['ii'], array('isPosted'=>'1', 'pgID'=>'DI', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLogN( 'S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); } 
+          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }
       }
-      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Diigo Page'; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
+      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Diigo Page'; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); }
       if ($ret == 'OK') return 200; else return $ret;
       
   }

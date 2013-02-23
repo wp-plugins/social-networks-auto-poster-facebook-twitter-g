@@ -58,7 +58,10 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
             
             <div id="altFormat" style="">
   <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong> (<a href="#" id="apIPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apIPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="ip[<?php echo $ii; ?>][apIPMsgFrmt]" id="apIPMsgFrmt" style="width: 50%;" value="<?php if ($isNew) echo "%TEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['ipMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('apIPMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apIPMsgFrmt".$ii); ?>
+              
+              <textarea cols="150" rows="3" id="ip<?php echo $ii; ?>SNAPformat" name="ip[<?php echo $ii; ?>][apIPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#ip<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apIPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['ipMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              
+              <?php nxs_doShowHint("apIPMsgFrmt".$ii); ?>
             </div><br/>    
             
             <?php if ($gpo['ipPass']!='') { ?>
@@ -95,7 +98,8 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
         $isAvailIP =  $ntOpt['ipUName']!='' && $ntOpt['ipPass']!=''; $ipMsgFormat = htmlentities($ntOpt['ipMsgFormat'], ENT_COMPAT, "UTF-8"); $ipMsgTFormat = htmlentities($ntOpt['ipMsgTFormat'], ENT_COMPAT, "UTF-8");      
       ?>  
       <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_IP<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
-      <?php if ($isAvailIP) { ?><input class="nxsGrpDoChb" value="1" id="doIP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="ip[<?php echo $ii; ?>][doIP]" <?php if (($post->post_status == "publish" && $ntOpt['isPosted'] == '1') || ($post->post_status != "publish" && ((int)$doIP == 1)) ) echo 'checked="checked" title="def"';  ?> /> <?php } ?>
+      <?php if ($isAvailIP) { ?><input class="nxsGrpDoChb" value="1" id="doIP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="ip[<?php echo $ii; ?>][doIP]" <?php if ((int)$doIP == 1) echo 'checked="checked" title="def"';  ?> /> 
+      <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="ip[<?php echo $ii; ?>][doIP]" value="<?php echo $doIP;?>"> <?php } ?> <?php } ?> 
       
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/ip16.png);">Instapaper - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailIP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToIP_repostButton" id="rePostToIP_button" value="<?php _e('Repost to Instapaper', 'nxs_snap') ?>" />
@@ -111,11 +115,13 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
                 <?php if (!$isAvailIP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Instapaper Account to AutoPost to Instapaper</b>
                 <?php } elseif ($post->post_status != "pubZlish") { ?> 
                
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $ipMsgTFormat ?>" type="text" name="ip[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apIPTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apIPTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $ipMsgFormat ?>" type="text" name="ip[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apIPMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apIPMsgFrmt".$ii); ?></td></tr>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <td>                
+                <textarea cols="150" rows="1" id="ip<?php echo $ii; ?>SNAPformat" name="ip[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#ip<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apIPMsgFrmt<?php echo $ii; ?>');"><?php echo $ipMsgFormat; ?></textarea>
+                <?php nxs_doShowHint("apIPMsgFrmt".$ii); ?></td></tr>
                 <?php } 
      }
   }
@@ -147,20 +153,25 @@ if (!function_exists("nxs_getIPHeaders")) {  function nxs_getIPHeaders($up){ $hd
 }}
 
 if (!function_exists("nxs_doPublishToIP")) { //## Second Function to Post to IP
-  function nxs_doPublishToIP($postID, $options){ $ntCd = 'IP'; $ntCdL = 'ip'; $ntNm = 'Instapaper';
+  function nxs_doPublishToIP($postID, $options){ $ntCd = 'IP'; $ntCdL = 'ip'; $ntNm = 'Instapaper'; 
+      //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToIP',  array($postID, $options));
       
-      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+      $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
+      $logNT = '<span style="color:#000080">Instapaper</span> - '.$options['nName'];
+      $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        nxs_addToLog($ntCd.' - '.$options['nName'], 'E', '-=Duplicate=- Post ID:'.$postID, 'Not posted. No reason for posting duplicate'); return;
-      }           
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        }
+      }             
       
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msgT = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID);  
         $msgFormat = $options['ipMsgFormat']; $msgTFormat = $options['ipMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);  $msg = nsFormatMessage($msgFormat, $postID); 
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       }
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
       $dusername = $options['ipUName']; $pass = (substr($options['ipPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ipPass'], 5)):$options['ipPass']);
-      $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; $logNT = '<span style="color:#000080">Instapaper</span> - '.$options['nName'];
+      $link = urlencode($link); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));      
       $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs));     $tags = str_replace(' ','+',$tags); 
       $apicall = "https://www.instapaper.com/api/add?red=api&url=$link&title=$desc&selection=$ext";
       $hdrsArr = nxs_getIPHeaders($dusername.':'.$pass); $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );//  prr($cnt);
@@ -169,16 +180,15 @@ if (!function_exists("nxs_doPublishToIP")) { //## Second Function to Post to IP
         $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );}
       }      
       if(is_wp_error($cnt)) {
-        $ret = 'Something went wrong - '.""; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+        $ret = 'Something went wrong - '.""; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
       } else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'201')!==false) 
-          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'IP', $options['ii'], array('isPosted'=>'1', 'pgID'=>'IP', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLog($logNT, 'M', 'OK - Message Posted ', $extInfo); } 
-        elseif (is_array($cnt) &&  $cnt['body']=='<?xml version="1.0" encoding="UTF-8"?>') { $ret = 'It looks like Instapaper  API is Down'; nxs_addToLog($logNT, 'M', 'It looks like Instapaper API is Down', $extInfo); }    
-        elseif (is_array($cnt) &&  stripos($cnt['body'],'item already exists')!==false) { $ret = '..All good, but this link has already been bookmarked..'; nxs_addToLog($logNT, 'M', 'All good, but this link has already been bookmarked', $extInfo); }   
-          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; nxs_addToLog($logNT, 'E', '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
+          { $ret = 'OK'; nxs_metaMarkAsPosted($postID, 'IP', $options['ii'], array('isPosted'=>'1', 'pgID'=>'IP', 'pDate'=>date('Y-m-d H:i:s')));  nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); } 
+          else { if ($cnt['response']['code']=='401') $ret = " Incorrect Username/Password "; else  $ret = 'Something went wrong - '."https://$dusername:*********@$api/posts/add?&url=$link&description=$desc&extended=$ext&tags=$tags"; 
+            nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$ret. "ERR: ".print_r($cnt, true), $extInfo);
           }
       }
-      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Instapaper Page. '; nxs_addToLog($logNT, 'M', 'OK - TEST Message Posted '); }
+      if ($ret!='OK') { if ($postID=='0') echo $ret; } else if ($postID=='0') { echo 'OK - Message Posted, please see your Instapaper Page. '; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); }
       if ($ret == 'OK') return 200; else return $ret;
       
   }

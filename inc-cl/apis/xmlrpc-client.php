@@ -623,7 +623,7 @@ class NXS_XMLRPC_Client
         $this->timeout = $timeout;
     }
 
-    function query()
+    function queryFS()
     {
         $args = func_get_args();
         $method = array_shift($args);
@@ -708,6 +708,85 @@ class NXS_XMLRPC_Client
         return true;
     }
 
+    /**
+     * Set the query to send to the XML-RPC Server
+     * @since 0.1.0
+     */
+    function query()
+    {
+        $args = func_get_args();
+        $method = array_shift($args);
+        $request = new NXS_XMLRPC_Request($method, $args);
+        $length = $request->getLength();
+        $xml = $request->getXml();
+
+        if ($this->debug) {
+            echo '<pre>'.htmlspecialchars($xml)."\n</pre>\n\n";
+        }
+
+        //This is where we deviate from the normal query()
+        //Rather than open a normal sock, we will actually use the cURL
+        //extensions to make the calls, and handle the SSL stuff.
+
+        //Since 04Aug2004 (0.1.3) - Need to include the port (duh...)
+        //Since 06Oct2004 (0.1.4) - Need to include the colon!!!
+        //        (I swear I've fixed this before... ESP in live... But anyhu...)
+        $curl=curl_init('http://' . $this->server . ':' . $this->port . $this->path);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+        //Since 23Jun2004 (0.1.2) - Made timeout a class field
+        curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+
+        if ($this->debug) {
+            curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        }
+
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $xml);
+        curl_setopt($curl, CURLOPT_PORT, $this->port);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                                    "Content-Type: text/xml",
+                                    "Content-length: {$length}"));
+
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Call cURL to do it's stuff and return us the content
+        $contents = curl_exec($curl);
+        curl_close($curl);
+
+        // Check for 200 Code in $contents
+        if (!strstr($contents, '200 OK')) {
+            //There was no "200 OK" returned - we failed
+            $this->error = new NXS_XMLRPC_Error(-32300, 'transport error - HTTP status code was not 200');
+            return false;
+        }
+
+        if ($this->debug) {
+            echo '<pre>'.htmlspecialchars($contents)."\n</pre>\n\n";
+        }
+        // Now parse what we've got back
+        // Since 20Jun2004 (0.1.1) - We need to remove the headers first
+        // Why I have only just found this, I will never know...
+        // So, remove everything before the first <
+        $contents = substr($contents,strpos($contents, '<'));
+
+        $this->message = new NXS_XMLRPC_Message($contents);
+        if (!$this->message->parse()) {
+            // XML error
+            $this->error = new NXS_XMLRPC_Error(-32700, 'parse error. not well formed');
+            return false;
+        }
+        // Is the message a fault?
+        if ($this->message->messageType == 'fault') {
+            $this->error = new NXS_XMLRPC_Error($this->message->faultCode, $this->message->faultString);
+            return false;
+        }
+
+        // Message must be OK
+        return true;
+    }
+    
     function getResponse()
     {
         // methodResponses can only have one param - return that
