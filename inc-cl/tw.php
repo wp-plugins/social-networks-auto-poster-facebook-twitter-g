@@ -15,7 +15,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       <div class="nxs_box_inside">
         <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('https://','', str_ireplace('http://','', $pbo['twURL'])); ?>
           <p style="margin:0px;margin-left:5px;">
-            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> <?php if ((int)$pbo['catSel'] == 1) { ?>   <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
           &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
           <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
@@ -53,7 +53,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     <div style="width:100%;"><strong>Your Access Token Secret:</strong> </div><input name="tw[<?php echo $ii; ?>][apTWAccTokenSec]" id="apTWAccTokenSec" style="width: 40%;" value="<?php  _e(apply_filters('format_to_edit', htmlentities($two['twAccTokenSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
     <?php if ($isNew) { ?> <input type="hidden" name="tw[<?php echo $ii; ?>][apDoTW]" value="1" id="apDoNewTW<?php echo $ii; ?>" /> <?php } ?>
     <br/><br/>
-    <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$two['attchImg'] == 1) echo "checked"; ?> /> <strong>Attach Image to Twitter Post</strong></p>
+    <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$two['attchImg'] == 1) echo "checked"; ?> /> <strong><?php _e('Attach Image to Twitter Post', 'nxs_snap'); ?></strong></p>
     <br/>
     <strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>
     <input name="tw[<?php echo $ii; ?>][apTWMsgFrmt]" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit', htmlentities($two['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo "%TITLE% - %URL%"; ?>"  onfocus="mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');" />
@@ -166,7 +166,7 @@ if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments(
     $url = 'http://search.twitter.com/search.json?rpp=100&since_id=' . $lastID . '&q=' . urlencode( get_permalink( $postID ) );
     $data = json_decode( $response = wp_remote_retrieve_body( wp_remote_get( $url ) ), true );    
     if (is_array($data) && is_array($data['results']))
-      foreach ($data['results'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
+      foreach ($data['results'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts || $cid==$po['pgID'] )) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
         $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['from_user_name'], 'comment_author_email' => $comment['from_user'].'@twitter.com', 
           'comment_author_url' => 'http://twitter.com/'.$comment['from_user'], 'comment_content' => $comment['text'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => 'comment');
         nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
@@ -221,7 +221,8 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         if ($post->post_excerpt!="") $exrText = $post->post_excerpt; else $exrText= $post->post_content;  $pText = apply_filters('the_content', $exrText);        
         $pRawText = $post->post_content;  $pFullText = apply_filters('the_content', $pRawText); 
         if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
-          $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','', str_replace('  ', ' ', trim(ucwords($tagA->name)))));
+          $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
+          $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','', str_replace('  ', ' ', trim(ucwords($tagA->name)))));
               if (preg_match('/\b'.$frmTag.'\b/iu', $pTitle)) $pTitle = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pTitle)); 
               if (preg_match('/\b'.$frmTag.'\b/iu', $pFullText)) $pFullText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pFullText)); 
               if (preg_match('/\b'.$frmTag.'\b/iu', $pText)) $pText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pText)); 
@@ -290,7 +291,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
       else { $twResp = json_decode($tmhOAuth->response['response'], true); if (is_array($twResp) && isset($twResp['id_str'])) $twNewPostID = $twResp['id_str'];  
         $args = array('pgID'=>$twNewPostID, 'isPosted'=>1, 'pDate'=>date('Y-m-d H:i:s')); nxs_metaMarkAsPosted($postID, 'TW', $options['ii'], $args); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);
       } 
-    } else{ if ($postID=='0') {NXS_tmhUtilities::pr($tmhOAuth->response['response']); prr($msg); } nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 
+    } else{ if ($postID=='0') { prr($tmhOAuth->response['error']); prr($tmhOAuth->response['response']); prr($msg); } nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($tmhOAuth->response['error'], true)."|".print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 
       $code .= " | ".$tmhOAuth->response['response']." | ".print_r($msg, true);
     }
     return $code;

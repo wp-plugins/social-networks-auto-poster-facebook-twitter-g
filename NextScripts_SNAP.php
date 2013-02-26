@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.7.0
+Version: 2.7.1
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.0' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.1' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } do_action('nxs_doSomeMore');
@@ -130,6 +130,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['nxsHTDP']))     $options['nxsHTDP'] = $_POST['nxsHTDP'];                
             if (isset($_POST['ogImgDef']))    $options['ogImgDef'] = $_POST['ogImgDef'];
             if (isset($_POST['featImgLoc']))  $options['featImgLoc'] = $_POST['featImgLoc'];            
+            if (isset($_POST['anounTagLimit']))  $options['anounTagLimit'] = $_POST['anounTagLimit'];                        
             if (isset($_POST['featImgLocPrefix']))  $options['featImgLocPrefix'] = $_POST['featImgLocPrefix'];
             if (isset($_POST['featImgLocArrPath']))  $options['featImgLocArrPath'] = $_POST['featImgLocArrPath'];
             
@@ -212,6 +213,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            
            </div>
            
+           <div class="popShAtt" id="popOnlyCat"><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></div>
            <div id="showCatSel" style="display: none;background-color: #fff; width: 300px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span>Select Categories: 
                     <div id="fbSelCats<?php echo $ii; ?>" class="categorydivInd" style="padding-left: 15px; background-color: #fff;"> 
        <a href="#" onclick="nxs_chAllCatsL(1, 'fbSelCats<?php echo $ii; ?>'); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCatsL(0, 'fbSelCats<?php echo $ii; ?>'); return false;">UnCheck all</a>
@@ -325,8 +327,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     </div>
               </div>              
            </div></div>    
-     <!-- ##################### URL Shorthener #####################-->
-            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('URL Shorthener', 'nxs_snap') ?></h3></div>
+     <!-- ##################### URL Shortener #####################-->
+            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('URL Shortener', 'nxs_snap') ?></h3></div>
             <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;">Please use %SURL% in "Message Format" to get shortened urls. </span> <br/>
               <div class="itemDiv">
               <input type="radio" name="nxsURLShrtnr" value="G" <?php if (!isset($options['nxsURLShrtnr']) || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') echo 'checked="checked"'; ?> /> <b>gd.is</b> (Default) - fast, simple, free, no configuration nessesary.            
@@ -390,7 +392,14 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <input name="ogImgDef" style="width: 30%;" value="<?php if (isset($options['ogImgDef'])) _e(apply_filters('format_to_edit',$options['ogImgDef']), 'nxs_snap') ?>" />
               </div>             
            </div></div>            
-     <!-- ##### Alternative "Featured Image" location ##### --> 
+     <!-- ##### ANOUNCE TAG ##### --> 
+            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('%ANNOUNCE% tag settings', 'nxs_snap') ?></h3></div>
+             <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Plugin will take text untill the &lt;!--more--&gt; tag. Please specify how many characters should it get if &lt;!--more--&gt; tag is not found', 'nxs_snap') ?> </span> <br/>
+              <div class="itemDiv">
+              <b><?php _e('How many characters:', 'nxs_snap') ?></b> <input name="anounTagLimit" style="width: 100px;" value="<?php if (isset($options['anounTagLimit'])) _e(apply_filters('format_to_edit',$options['anounTagLimit']), 'nxs_snap'); else echo "300"; ?>" />              
+              </div>              
+           </div></div>  
+      <!-- ##### Alternative "Featured Image" location ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Alternative "Featured Image" location', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Plugin uses standard Wordpress "Featured Image" by default. If your theme stores "Featured Image" in the custom field, please enter the name of it. Use prefix if your custom field has only partial location.', 'nxs_snap') ?> </span> <br/>
               <div class="itemDiv">
@@ -408,7 +417,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <br/>              
              <span style="font-size: 11px; margin-left: 1px;">[<?php _e('Optional', 'nxs_snap') ?>] <?php _e('If your custom field contain only the last part of the image path, please enter the prefix', 'nxs_snap') ?></span> 
               </div>
-           </div></div>           
+           </div></div>                 
      <!-- #### Verify "Featured" Image ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Verify "Featured" Image', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Advanced Setting. Uncheck only if you are 100% sure that your images are valid or if you have troubles with image verification.', 'nxs_snap') ?> </span> <br/>
@@ -750,7 +759,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
       if (isset($po) && is_array($po)) $isPostMeta = true; else { $isPostMeta = false; $po = $options[$avNt['lcode']]; }
       delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1');
       
-      $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $pp);}       
+      $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }       
         if ($snap_isEdIT!='1') { $doPost = true; 
           if ( $optMt['catSel']=='1' && trim($optMt['catSelEd'])!='' ) { $inclCats = explode(',',$optMt['catSelEd']); foreach ($postCats as $pCat) { if (!in_array($pCat, $inclCats)) $doPost = false; else {$doPost = true; break;}} 
             if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Non-Human Post]  - Individual Category Excluded - Post ID:('.$postID.')' ); break; }
@@ -820,9 +829,10 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   if (preg_match('%TITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);  $msg = str_ireplace("%TITLE%", $title, $msg); }                    
   if (preg_match('%STITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
   if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
-  if (preg_match('%ANNOUNCE%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); 
-      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%ANNOUNCE%", $excerpt, $msg);
+  if (preg_match('%ANNOUNCE%', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng);     
+    if (stripos($postContent, '<!--more-->')!==false) { $postContentEx = explode('<!--more-->',$postContent); $postContent = $postContentEx[0]; }
+    elseif (stripos($postContent, '&lt;!--more--&gt;')!==false) { $postContentEx = explode('&lt;!--more--&gt;',$postContent); $postContent = $postContentEx[0]; }
+    else $postContent = nsTrnc($postContent, $options['anounTagLimit']);  $msg = str_ireplace("%ANNOUNCE%", $postContent, $msg);
   }
   if (preg_match('%TEXT%', $msg)) {      
     if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); 
@@ -840,11 +850,16 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     if ($post->post_excerpt!="") $excerpt = nxs_doQTrans($post->post_excerpt, $lng); else $excerpt= nxs_doQTrans($post->post_content, $lng); 
       $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%RAWEXCERPT%", $excerpt, $msg);
   }
-  if (preg_match('%TAGS%', $msg)) { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(', ',$tggs); $msg = str_ireplace("%TAGS%", $tags, $msg);}
+  if (preg_match('%TAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
+    $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(', ',$tggs); $msg = str_ireplace("%TAGS%", $tags, $msg);
+  }
   if (preg_match('%CATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $cats[] = str_ireplace('&','&amp;',$cat->name); } 
           $ctts = implode(', ',$cats); $msg = str_ireplace("%CATS%", $ctts, $msg);
   }
-  if (preg_match('%HTAGS%', $msg)) { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = "#".trim(str_replace(' ','', str_replace('  ', ' ', trim($tagA->name))));} $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);}
+  if (preg_match('%HCATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
+    foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ','', str_replace('  ', '', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
+    $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
+  }  
   if (preg_match('%HCATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
     foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ','', str_replace('  ', '', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
     $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);

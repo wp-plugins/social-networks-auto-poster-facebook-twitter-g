@@ -15,7 +15,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
       <div class="nxs_box_inside">
         <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
           <p style="margin:0px;margin-left:5px;">
-            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> <?php if ((int)$pbo['catSel'] == 1) { ?>   <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
           &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
           <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
@@ -120,7 +120,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
       
    <tr><th style="text-align:left;" colspan="2"><?php if ( $options['catSel']=='1' && trim($options['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_BG<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" /> <?php } ?>
       <?php if ($isAvailBG) { ?><input class="nxsGrpDoChb" value="1" id="doBG<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="bg[<?php echo $ii; ?>][doBG]" <?php if ((int)$doBG == 1) echo 'checked="checked" title="def"';  ?> /> <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="bg[<?php echo $ii; ?>][doBG]" value="<?php echo $doBG;?>"> <?php } ?> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);">Blogger - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $options['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/bg16.png);">Blogger - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $options['nName']; ?></i>)</div></th> <td style="min-width: 180px; width: 350px;" ><?php //## Only show RePost button if the post is "published"
                     if ($post->post_status == "publish" && $isAvailBG) { ?>
                     <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToBG_repostButton" id="rePostToBG_button" value="<?php _e('Repost to Blogger', 'nxs_snap') ?>" />                    
                     <?php wp_nonce_field( 'rePostToBG', 'rePostToBG_wpnonce' ); } ?>
@@ -134,11 +134,11 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 <?php if (!$isAvailBG) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b><?php _e('Setup your Blogger Account to AutoPost to Blogger', 'nxs_snap') ?></b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                  <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'NS_SPAP') ?></th>
-                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPTformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGTMsgFrmt".$ii); ?></td></tr>
+                <td><input value="<?php echo $bgMsgTFormat ?>" type="text" name="bg[<?php echo $ii; ?>][SNAPTformat]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apBGTMsgFrmt".$ii, '', '58'); ?></td></tr>
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'NS_SPAP') ?></th>
                 <td>
                 <textarea cols="150" rows="1" id="bg<?php echo $ii; ?>SNAPformat" name="bg[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#bg<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apBGMsgFrmt<?php echo $ii; ?>');"><?php echo $bgMsgFormat; ?></textarea>                
-                <?php nxs_doShowHint("apBGMsgFrmt".$ii); ?></td></tr>
+                <?php nxs_doShowHint("apBGMsgFrmt".$ii, '', '58'); ?></td></tr>
                 <?php }
     }      
   }
@@ -202,7 +202,7 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     }         
     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.htmlentities($blogTitle);  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; }
-    else { $post = get_post($postID); if(!$post) return; $msgFormat = $options['bgMsgFormat'];  $msg = nsFormatMessage($msgFormat, $postID, $addParams); 
+    else { $post = get_post($postID); if(!$post) return; $msgFormat = $options['bgMsgFormat'];  $msg = nsFormatMessage($msgFormat, $postID, $addParams);  
         $link = get_permalink($postID); $msgTFormat = $options['bgMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID, $addParams); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }
     $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng);
@@ -217,9 +217,8 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
       require_once ('apis/htmlNumTable.php');  $msg = strtr($msg, $HTML401NamedToNumeric);  $msgT = strtr($msgT, $HTML401NamedToNumeric);
     }  //  prr($text); 
     // prr($msg); echo " =HT= ";
-    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg); 
-    // prr($msg); die();
-    
+    $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg);      
+    $msg = str_replace("\r\n","\n", $msg); $msg = str_replace("\n\r","\n", $msg); $msg = str_replace("\r","\n", $msg); $msg = str_replace("\n","<br/>", $msg); //  prr($msg); die();    
     if (function_exists("doConnectToBlogger")) {$auth = doConnectToBlogger($email, $pass); if ($auth!==false) $ret = $auth; else $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
       else {$auth = nsBloggerGetAuth($email, $pass); if ($auth===false) $ret = 'Incorrect Username/Password'; else { $msgT = str_ireplace('&amp;', '&', $msgT); 
         $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = nsBloggerNewPost($auth, $blogID, $msgT, $msg);

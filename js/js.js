@@ -40,6 +40,9 @@ function nxs_doSetSelCats(nt, idNum){ var scc = ''; var sccA = [];
   var sccL = sccA.length; if (sccL>0) scc = sccA.join(",");  jQuery('#nxs_SC_'+nt).val(scc); jQuery('#nxs_SCA_'+nt).html('Selected ['+sccL+']');
 }
 
+function nxs_showPopUpInfo(pid, e){ if (!jQuery('div#'+pid).is(":visible")) jQuery('div#'+pid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
+function nxs_hidePopUpInfo(pid){ jQuery('div#'+pid).hide(); }
+
 function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
 function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
 function doSwitchShAtt(att, idNum){

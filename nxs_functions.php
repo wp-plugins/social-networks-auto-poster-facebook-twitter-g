@@ -246,8 +246,8 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
 </style>
 <?php }}
 
-if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t, $ex=''){ ?>
-<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: 79%; background: #fff; display: none;"><span class="nxs_hili">%TITLE%</span> - <?php _e('Inserts the Title of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%URL%</span> - <?php _e('Inserts the URL of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%SURL%</span> - <?php _e('Inserts the <b>shortened URL</b> of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%IMG%</span> - <?php _e('Inserts the featured image URL', 'nxs_snap'); ?>, <span class="nxs_hili">%EXCERPT%</span> - <?php _e('Inserts the excerpt of the post (processed)', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWEXCERPT%</span> - <?php _e('Inserts the excerpt of the post (as typed)', 'nxs_snap'); ?>,  <span class="nxs_hili">%ANNOUNCE%</span> - <?php _e('Inserts the text till the &lt;!--more--&gt; tag or first N words of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%FULLTEXT%</span> - <?php _e('Inserts the processed body(text) of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWTEXT%</span> - <?php _e('Inserts the body(text) of the post as typed', 'nxs_snap'); ?>, <span class="nxs_hili">%TAGS%</span> - <?php _e('Inserts post tags', 'nxs_snap'); ?>, <span class="nxs_hili">%CATS%</span> - <?php _e('Inserts post categories', 'nxs_snap'); ?>, <span class="nxs_hili">%HTAGS%</span> - <?php _e('Inserts post tags as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%HCATS%</span> - <?php _e('Inserts post categories as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%AUTHORNAME%</span> - <?php _e('Inserts the author\'s name', 'nxs_snap'); ?>, <span class="nxs_hili">%SITENAME%</span> - <?php _e('Inserts the the Blog/Site name', 'nxs_snap'); ?>. <?php echo $ex; ?></div>
+if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t, $ex='', $wdth='79'){ ?>
+<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: <?php echo $wdth; ?>%; background: #fff; display: none;"><span class="nxs_hili">%TITLE%</span> - <?php _e('Inserts the Title of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%URL%</span> - <?php _e('Inserts the URL of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%SURL%</span> - <?php _e('Inserts the <b>shortened URL</b> of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%IMG%</span> - <?php _e('Inserts the featured image URL', 'nxs_snap'); ?>, <span class="nxs_hili">%EXCERPT%</span> - <?php _e('Inserts the excerpt of the post (processed)', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWEXCERPT%</span> - <?php _e('Inserts the excerpt of the post (as typed)', 'nxs_snap'); ?>,  <span class="nxs_hili">%ANNOUNCE%</span> - <?php _e('Inserts the text till the &lt;!--more--&gt; tag or first N words of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%FULLTEXT%</span> - <?php _e('Inserts the processed body(text) of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWTEXT%</span> - <?php _e('Inserts the body(text) of the post as typed', 'nxs_snap'); ?>, <span class="nxs_hili">%TAGS%</span> - <?php _e('Inserts post tags', 'nxs_snap'); ?>, <span class="nxs_hili">%CATS%</span> - <?php _e('Inserts post categories', 'nxs_snap'); ?>, <span class="nxs_hili">%HTAGS%</span> - <?php _e('Inserts post tags as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%HCATS%</span> - <?php _e('Inserts post categories as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%AUTHORNAME%</span> - <?php _e('Inserts the author\'s name', 'nxs_snap'); ?>, <span class="nxs_hili">%SITENAME%</span> - <?php _e('Inserts the the Blog/Site name', 'nxs_snap'); ?>. <?php echo $ex; ?></div>
 <?php }}
 
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>
@@ -384,10 +384,11 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
 if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array(); 
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) { if (strpos($evFunc, 'ns_doPublishTo')!==false)  {
      //   echo key($evData)." | ".$evTime." = ".time()." - ".date("Y-m-d H:i:s", $evTime)." - ".date("Y-m-d H:i:s")."<br/>"; 
-     if ($evTime>'1359495839' && $evTime<time()-180) { //## Missed? Let's post it. We will post just one, so no hold ups.                
+     if ($evTime>'1359495839' && $evTime<time()-180) { //## Missed? Let's post it. We will post just one, so no hold ups.   
+       wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1]));    $args[1]['pType']='sh';        
        $args = array_values($evData); $args = $args[0]['args']; $extInfo = ''; // print_r($sh, true);
        nxs_addToLogN('S', 'Missed Schedule Found ('.$evTime."&lt;".(time()-5).') - Trying to Post', $logNT, $evFunc."|".$args[0]."|".$args[1], $extInfo);
-       wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1]));  do_action($evFunc, $args[0], $args[1]); 
+       do_action($evFunc, $args[0], $args[1]); 
        return true;         
      }
    }}
@@ -487,7 +488,7 @@ class NXS_HtmlFixer { public $dirtyhtml; public $fixedhtml; public $allowed_styl
     }
     private function removeSpacesAndBadTags($s) { $i=0;
       while ($i<10) { $i++; $s = preg_replace (
-        array( '/[\r\n]/i', '/  /i', '/<p([^>])*>(&nbsp;)*\s*<\/p>/i', '/<span([^>])*>(&nbsp;)*\s*<\/span>/i', '/<strong([^>])*>(&nbsp;)*\s*<\/strong>/i', '/<em([^>])*>(&nbsp;)*\s*<\/em>/i',
+        array( '/[\z\x]/i', '/  /i', '/<p([^>])*>(&nbsp;)*\s*<\/p>/i', '/<span([^>])*>(&nbsp;)*\s*<\/span>/i', '/<strong([^>])*>(&nbsp;)*\s*<\/strong>/i', '/<em([^>])*>(&nbsp;)*\s*<\/em>/i',
           '/<font([^>])*>(&nbsp;)*\s*<\/font>/i', '/<small([^>])*>(&nbsp;)*\s*<\/small>/i', '/<\?xml:namespace([^>])*><\/\?xml:namespace>/i', '/<\?xml:namespace([^>])*\/>/i', '/class=\"MsoNormal\"/i',
           '/<o:p><\/o:p>/i', '/<!DOCTYPE([^>])*>/i', '/<!--(.|\s)*?-->/', '/<\?(.|\s)*?\?>/'), 
         array(' ', ' ', '', '', '', '', '', '', '', '', '', ' ', '', '' ) , trim($s));
