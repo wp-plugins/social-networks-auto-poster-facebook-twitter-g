@@ -27,7 +27,7 @@ $nxs_snapAvNts[] = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn');
 
 if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $ntInfo = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn+', 'defNName'=>'ulName', 'tstReq' => true);
+  function showGenNTSettings($ntOpts){ global $nxs_snapThisPageUrl, $nxs_plurl; $ntInfo = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn', 'defNName'=>'ulName', 'tstReq' => true);
     
     if ( isset($_GET['auth']) && $_GET['auth']=='li'){ require_once('apis/liOAuth.php'); $options = $ntOpts[$_GET['acc']];
     
@@ -293,7 +293,9 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
       $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
       if ($options['grpID']!=''){
-        try{ $ret = $linkedin->postToGroup($msg, $title, $options['grpID']); } catch (Exception $o){  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '."Linkedin Status couldn't be updated! - ".print_r($o, true)); $ret="ERROR:".print_r($o, true); }        
+        try{ 
+            if($isAttachLI=='1') $ret = $linkedin->postToGroup($msg, $title, $options['grpID'], get_permalink($postID), $src, $dsc); else $ret = $linkedin->postToGroup($msg, $title, $options['grpID']); 
+        } catch (Exception $o){  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '."Linkedin Status couldn't be updated! - ".print_r($o, true)); $ret="ERROR:".print_r($o, true); }        
       } else {
         try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
         catch (Exception $o){  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '."<br/>Linkedin Status couldn't be updated! - ".print_r($o, true)); $ret="ERROR:".print_r($o, true); }     

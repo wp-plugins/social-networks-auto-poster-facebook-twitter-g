@@ -211,8 +211,7 @@ if (!function_exists("nxs_doPostToVB")) {  function nxs_doPostToVB($url, $subj, 
      $frmTxt = substr($frmTxt, stripos($frmTxt, '<input')+8);
     }  $flds['subject'] = $subj; $flds['message'] = $msg; $flds['message_backup'] = $msg; $flds['wysiwyg'] = '1'; $flds['do'] = 'postthread'; $flds['taglist'] = $tags;  $flds['parseurl'] = '1';  $flds['sbutton'] = 'Submit+New+Thread';  
     $smURL = $baseURL.'newthread.php?do=postthread'.str_replace('&amp;','&',$fid);
-  }
- 
+  } //prr($flds);
   if ($mdd=='p'){ $fid = CutFromTo($contents, 'newreply.php?do=newreply','"');
     $response = wp_remote_get( $baseURL.'newreply.php?do=newreply'.str_replace('&amp;','&',$fid), array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr)); $contents = $response['body'];
     
@@ -257,7 +256,7 @@ if (!function_exists("nxs_doPublishToVB")) { //## Second Function to Post to VB
       }
       $dusername = $options['vbUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
-      if ($options['vbInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
+      if ($options['vbInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(', ',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';
       if (isset($options['vbSvC'])) $nxs_vbCkArray = maybe_unserialize( $options['vbSvC']); $loginError = true;
       if (is_array($nxs_vbCkArray)) $loginError = nxs_doCheckVB( $options['vbURL']); if ($loginError!==false) $loginError = nxs_doConnectToVB($email, $pass, $options['vbURL']); 
       if (serialize($nxs_vbCkArray)!=$options['vbSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options;

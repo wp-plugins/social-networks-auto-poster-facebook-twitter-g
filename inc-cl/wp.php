@@ -197,7 +197,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       } else if ($rwpOpt<3.0)  $ret = 'XMLRPC is too OLD - '.$rwpOpt.' You need at least 3.0'; else {
        
         if ($rwpOpt>3.3){
-          $nxsToWPContent = array('title'=>$msgT, 'description'=>$msg, 'post_status'=>'draft', 'mt_allow_comments'=>1, 'mt_allow_pings'=>1, 'post_type'=>'post', 'mt_keywords'=>$tags, 'categories'=>($cats), 'custom_fields' =>  $customfields);
+          $nxsToWPContent = array('title'=>$msgT, 'description'=>$msg, 'post_status'=>'draft', 'mt_excerpt'=>$post->post_excerpt, 'mt_allow_comments'=>1, 'mt_allow_pings'=>1, 'post_type'=>'post', 'mt_keywords'=>$tags, 'categories'=>($cats), 'custom_fields' =>  $customfields);
           $params = array(0, $options['wpUName'], $pass, $nxsToWPContent, true);
           if (!$nxsToWPclient->query('metaWeblog.newPost', $params)) { $ret = 'Something went wrong - '.$nxsToWPclient->getErrorCode().' : '.$nxsToWPclient->getErrorMessage();} else $ret = 'OK';
           $pid = $nxsToWPclient->getResponse();  

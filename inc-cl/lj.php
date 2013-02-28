@@ -25,7 +25,7 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
     </div> <?php 
   }   
   //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doLJ'=>'1', 'ljUName'=>'', 'ljPageID'=>'', 'ljAttch'=>'', 'ljPass'=>'', 'ljURL'=>''); $this->showNTSettings($mgpo, $gpo, true);}
+  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doLJ'=>'1', 'ljUName'=>'', 'ljPageID'=>'', 'inclTags'=>'1', 'ljAttch'=>'', 'ljPass'=>'', 'ljURL'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $gpo, $isNew=false){ global $nxs_plurl; ?>
             <div id="doLJ<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/lj-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSLJ<?php echo $ii; ?>" value="0" id="apDoSLJ<?php echo $ii; ?>" />
@@ -71,15 +71,14 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
                <textarea cols="150" rows="3" id="lj<?php echo $ii; ?>SNAPformat" name="lj[<?php echo $ii; ?>][apLJMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#lj<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apLJMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%FULLTEXT%"; else _e(apply_filters('format_to_edit', htmlentities($gpo['ljMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
               
               <?php nxs_doShowHint("apLJMsgFrmt".$ii); ?>
-            </div><br/>    
-            
+            </div>
+            <p style="margin-bottom: 20px;margin-top: 5px;"><input value="1"  id="ljInclTags<?php echo $ii; ?>" type="checkbox" name="lj[<?php echo $ii; ?>][inclTags]"  <?php if ((int)$gpo['inclTags'] == 1) echo "checked"; ?> /> 
+              <strong><?php _e('Post with tags.', 'nxs_snap') ?></strong> <?php _e('Tags from the blogpost will be auto posted to LiveJournal', 'nxs_snap') ?>                                            
+            </p><br/>                
             <?php if ($gpo['ljPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToLJ', 'rePostToLJ_wpnonce' ); ?>
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('LJ', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>      
-               
-            <?php } 
-            
-            ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
+            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('LJ', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>           <?php } ?>
+      <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'LJ'; $lcode = 'lj'; 
@@ -92,6 +91,8 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
         if (isset($pval['apLJMsgFrmt'])) $options[$ii]['ljMsgFormat'] = trim($pval['apLJMsgFrmt']);                                                  
         if (isset($pval['apLJMsgTFrmt'])) $options[$ii]['ljMsgTFormat'] = trim($pval['apLJMsgTFrmt']);               
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if (isset($pval['inclTags'])) $options[$ii]['inclTags'] = $pval['inclTags']; else $options[$ii]['inclTags'] = 0;
+        
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
         
         if (isset($pval['commID']))  {          
@@ -181,7 +182,11 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       
       $date = time(); $year = date("Y", $date); $mon = date("m", $date); $day = date("d", $date); $hour = date("G", $date); $min = date("i", $date);
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
-      if ($options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];      
+      if ($options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];    
+      
+      if ($options['inclTags']=='1'){ $t = wp_get_post_tags($postID);  foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); $nxsToLJContent['props'] = array('taglist' => $tags); }        
+      
+        
       if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
       $pid = $nxsToLJclient->getResponse(); if (is_array($pid)) $pid = $pid['url']; else { $ret = 'Something went wrong - NO PID '.print_r($pid, true);}
       

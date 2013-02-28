@@ -63,12 +63,13 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
             <div id="altFormat" style="">
    <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apBGMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apBGMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>) 
    
-   HTML is <?php if(!function_exists('doPostToGooglePlus')) {?> <b>NOT</b> <?php } ?> allowed. <?php if(!function_exists('doPostToGooglePlus')) {?> <i>- Blogger "Free API" limitation. Please get <a href="http://www.nextscripts.com/google-plus-automated-posting/#blogger">NextScripts API</a> to allow HTML</i> <?php } ?>   
+   <!-- 
+   HTML is <?php if(!function_exists('doPostToGooglePlus')) {?> <b>NOT</b> <?php } ?> allowed. <?php if(!function_exists('doPostToGooglePlus')) {?> <i>- Blogger "Free API" limitation. Please get <a href="http://www.nextscripts.com/google-plus-automated-posting/#blogger">NextScripts API</a> to allow HTML</i> <?php } ?>   -->
    </div>  
    
    <textarea cols="150" rows="3" id="bg<?php echo $ii; ?>SNAPformat" name="bg[<?php echo $ii; ?>][apBGMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#bg<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apBGMsgFrmt<?php echo $ii; ?>');"><?php if ($options['bgMsgFormat']!='') _e(apply_filters('format_to_edit',htmlentities($options['bgMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap');  else echo "%FULLTEXT% <br/><a href='%URL%'>%TITLE%</a>"; ?></textarea>
    
-   <?php nxs_doShowHint("apBGMsgFrmt".$ii); ?>
+   <?php nxs_doShowHint("apBGMsgFrmt".$ii, __('HTML is allowed', 'nxs_snap'));  ?>
             </div>
             
              <p style="margin-bottom: 20px;margin-top: 5px;"><input value="1"  id="bgInclTags" type="checkbox" name="bg[<?php echo $ii; ?>][bgInclTags]"  <?php if ((int)$options['bgInclTags'] == 1) echo "checked"; ?> /> 

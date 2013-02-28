@@ -161,6 +161,16 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.7.2 [02/28/2013] =
+
+* Improvement/Bug Fix - New Pinterest interface suppport.
+* Improvement - Post with tags for LiveJournal/Dreamwidth
+* Improvement - Wordpress to Wordpress posts will include "Excerpt" as well.
+* Bug fix - WPMU - Accounts loosing selected mode.
+* Bug fix -  Twitter - "Your Message is too long" problem caused by Twitter increasing URL length from 20 to 22 characters.
+* Bug fix - LinkedIn - Posts were not attaching when posting to LinkedIn Groups.
+* Bug fix - Incorrect skipping of individual categories selection for automated (non-human) posts
+
 = 2.7.1 [02/26/2013] =
 
 * New - New network "FriendFeed"

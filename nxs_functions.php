@@ -384,9 +384,10 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
 if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array(); 
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) { if (strpos($evFunc, 'ns_doPublishTo')!==false)  {
      //   echo key($evData)." | ".$evTime." = ".time()." - ".date("Y-m-d H:i:s", $evTime)." - ".date("Y-m-d H:i:s")."<br/>"; 
-     if ($evTime>'1359495839' && $evTime<time()-180) { //## Missed? Let's post it. We will post just one, so no hold ups.   
-       wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1]));    $args[1]['pType']='sh';        
-       $args = array_values($evData); $args = $args[0]['args']; $extInfo = ''; // print_r($sh, true);
+     if ($evTime>'1359495839' && $evTime<time()-180) {    //## Missed? Let's post it. We will post just one, so no hold ups.                 
+       $args = array_values($evData); $args = $args[0]['args'];        
+       sleep(rand(1, 10)); $timestamp = wp_next_scheduled( $evFunc, array($args[0], $args[1]) );  if ($timestamp!==$evTime) return;        
+       $extInfo = ''; wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1])); $args[1]['pType']='sh';        
        nxs_addToLogN('S', 'Missed Schedule Found ('.$evTime."&lt;".(time()-5).') - Trying to Post', $logNT, $evFunc."|".$args[0]."|".$args[1], $extInfo);
        do_action($evFunc, $args[0], $args[1]); 
        return true;         
