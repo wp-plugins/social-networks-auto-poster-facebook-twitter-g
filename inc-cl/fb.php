@@ -322,8 +322,8 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-      $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { sleep(5);
-         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'); return;
+      $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { 
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$options['pType']); return;
       }
     }      
   
@@ -335,7 +335,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
        'description' => 'test Post', 'actions' => array(array('name' => $blogTitle, 'link' => home_url())) ); 
     } else { $post = get_post($postID); if(!$post) return; $fbMsgFormat = $options['fbMsgFormat']; $msg = nsFormatMessage($fbMsgFormat, $postID, $addParams); $fbMsgAFormat = $options['fbMsgAFrmt'];
       $isAttachFB = $options['fbAttch']; $fbPostType = $options['fbPostType']; $isAttachVidFB = $options['fbAttchAsVid'];
-      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng);
+      nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng).' |'.$options['pType'];
       if (($isAttachFB=='1' || $isAttachFB=='2' || $fbPostType=='A')) $imgURL = nxs_getPostImage($postID, 'thumbnail'); // prr($options); echo "PP - ".$postID; prr($src);      
       if ($fbPostType=='I') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);            
       
@@ -365,7 +365,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
         }}
       } elseif ($fbPostType=='I') { $facebook->setFileUploadSupport(true); $fbWhere = 'photos'; $mssg['url'] = $imgURL; 
         if ($options['imgUpl']!='2') {
-          $aacct = array('access_token'  => $options['fbAppPageAuthToken']);  $albums = $facebook->api("/$page_id/albums", "get", $aacct);
+          $aacct = array('access_token'  => $options['fbAppPageAuthToken']);  $albums = $facebook->api("/$page_id/albums", "get", $aacct);// prr($albums);
           foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
           if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
         }        

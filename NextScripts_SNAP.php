@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.7.2
+Version: 2.7.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.2' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.3' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } do_action('nxs_doSomeMore');
@@ -816,7 +816,7 @@ if (!function_exists("nxs_spinRecursion")) { function nxs_spinRecursion(&$txt, $
 }}
 if (!function_exists("nxs_spinReplace")) { function nxs_spinReplace($txt) { global $nxs_spin_splCh; $txt = explode($nxs_spin_splCh, $txt);  $out = $txt[mt_rand(0,count($txt)-1)]; return $out; }}
 if (!function_exists("nxs_doSpin")) { function nxs_doSpin($msg){  global $nxs_spin_lCh, $nxs_spin_rCh, $nxs_spin_splCh;
-    $nxs_spin_lCh = '{'; $nxs_spin_rCh='}'; $nxs_spin_splCh='|';$msg = nxs_spinRecursion($msg, -1); return $msg;
+    $nxs_spin_lCh = '{'; $nxs_spin_rCh='}'; $nxs_spin_splCh='|'; $msg = nxs_spinRecursion($msg, -1); return $msg;
 }}
 
 //## Format Message
@@ -860,10 +860,10 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ','', str_replace('  ', '', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
     $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
   }  
-  if (preg_match('%HCATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
-    foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ','', str_replace('  ', '', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
-    $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
-  }  
+  if (preg_match('%HTAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
+    $tggs = array(); foreach ($t as $tagA) {$tggs[] = "#".trim(str_replace(' ','',preg_replace('/[^\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));  } 
+    $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
+  }   
   if (preg_match('%CF-[a-zA-Z0-9]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
         if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem =  get_post_meta($postID, $mGr, true); $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
@@ -996,6 +996,12 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     //## Add nxs_snapPublishTo to custom post types
     add_action('wp_loaded', 'ns_custom_types_setup' );       
     foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
+    foreach ($nxs_snapAvNts as $avNt) { add_action('wp_ajax_rePostTo'.$avNt['code'], 'nxs_rePostTo'.$avNt['code'].'_ajax'); }
+    
+    //## Add AJAX Calls for Test and Repost    
+    add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax');
+    add_action('wp_ajax_getWLBoards' , 'nsGetWLBoards_ajax');
+    add_action('wp_ajax_nsDN', 'ns_delNT_ajax');
     
   }  
   if ($isO) {    
@@ -1011,11 +1017,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('save_post', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));
     add_action('edit_page_form', array($plgn_NS_SNAutoPoster, 'NS_SNAP_SavePostMetaTags'));         
     
-    //## Add AJAX Calls for Test and Repost
-    foreach ($nxs_snapAvNts as $avNt) { add_action('wp_ajax_rePostTo'.$avNt['code'], 'nxs_rePostTo'.$avNt['code'].'_ajax'); }
-    add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax');
-    add_action('wp_ajax_getWLBoards' , 'nsGetWLBoards_ajax');
-    add_action('wp_ajax_nsDN', 'ns_delNT_ajax');
+    
     
     add_action('wp_ajax_nsAuthFBSv', 'nsAuthFBSv_ajax');
     //## Custom Post Types and OG tags

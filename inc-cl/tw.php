@@ -196,8 +196,8 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; 
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
-         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { 
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$options['pType']); return;
         }
     }  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $uln = 0;
@@ -205,7 +205,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); if(trim($imgURL)=='') $options['attchImg'] = 0; else {  
       if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; } else $options['attchImg'] = 0; } 
         else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
-    }}  
+      }
+      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it', $extInfo);
+    }  
     if ($options['attchImg']=='1' && $img!='') $twLim = 118; else $twLim = 140;
     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = strlen($msg);}  
@@ -222,7 +224,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $pRawText = $post->post_content;  $pFullText = apply_filters('the_content', $pRawText); 
         if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
           $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
-          $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','', str_replace('  ', ' ', trim(ucwords($tagA->name)))));
+          $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ','',preg_replace('/[^\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));
               if (preg_match('/\b'.$frmTag.'\b/iu', $pTitle)) $pTitle = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pTitle)); 
               if (preg_match('/\b'.$frmTag.'\b/iu', $pFullText)) $pFullText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pFullText)); 
               if (preg_match('/\b'.$frmTag.'\b/iu', $pText)) $pText = trim(preg_replace('/\b'.$frmTag.'\b/iu', '#'.$frmTag, $pText)); 
@@ -282,7 +284,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } 
     
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; 
     require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+strlen($url)); }
     $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));      
     if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'http://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    

@@ -282,8 +282,8 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
       $logNT = '<span style="color:#000080">vKontakte</span> - '.$options['nName'];      
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
-         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { 
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$options['pType']); return;
         }
       }
       $email = $options['uName'];  $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']);      
@@ -291,7 +291,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         $msgFormat = $options['msgFrmt'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['uName'];  $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; 
   
       $msgOpts = array(); $msgOpts['type'] = $postType; $msgOpts['uid'] =  $options['vkPgID']; $imgURL = nxs_getPostImage($postID);// if ($link!='') $msgOpts['link'] = $link;
       if ($postType=='I' && trim($imgURL)=='') $postType='T';

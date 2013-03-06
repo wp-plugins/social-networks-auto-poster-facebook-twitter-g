@@ -89,8 +89,9 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
-  if ($imgURL=='' && $def=='') $imgURL = $options['ogImgDef']; 
-  if ($imgURL=='' && $def!='') $imgURL = $def;   
+  if (trim($imgURL)=='' && trim($def)=='') $imgURL = $options['ogImgDef']; 
+  if (trim($imgURL)=='' && trim($def)!='') $imgURL = $def; 
+
   return $imgURL;
 }}
 if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) {  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
@@ -382,13 +383,13 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
 
 //## NXS Cron
 if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array(); 
-   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) { if (strpos($evFunc, 'ns_doPublishTo')!==false)  {
+   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) { if (strpos($evFunc, 'ns_doPublishTo')!==false)  { $chkTime = rand(180, 360);
      //   echo key($evData)." | ".$evTime." = ".time()." - ".date("Y-m-d H:i:s", $evTime)." - ".date("Y-m-d H:i:s")."<br/>"; 
-     if ($evTime>'1359495839' && $evTime<time()-180) {    //## Missed? Let's post it. We will post just one, so no hold ups.                 
-       $args = array_values($evData); $args = $args[0]['args'];        
-       sleep(rand(1, 10)); $timestamp = wp_next_scheduled( $evFunc, array($args[0], $args[1]) );  if ($timestamp!==$evTime) return;        
+     if ($evTime>'1359495839' && $evTime<time()-$chkTime) {    //## Missed? Let's post it. We will post just one, so no hold ups.                 
+       $args = array_values($evData); $args = $args[0]['args']; $slTime = rand(2, 30);
+       sleep($slTime); $timestamp = wp_next_scheduled( $evFunc, array($args[0], $args[1]) );  if ($timestamp!==$evTime) return;        
        $extInfo = ''; wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1])); $args[1]['pType']='sh';        
-       nxs_addToLogN('S', 'Missed Schedule Found ('.$evTime."&lt;".(time()-5).') - Trying to Post', $logNT, $evFunc."|".$args[0]."|".$args[1], $extInfo);
+       nxs_addToLogN('S', 'Missed Schedule Found ('.$chkTime.')', $logNT, ' - '.$slTime.'s - ('.$evTime."&lt;".(time()-180).') - Trying to Post', $evFunc."|".$args[0]."|".$args[1]);
        do_action($evFunc, $args[0], $args[1]); 
        return true;         
      }
@@ -489,7 +490,7 @@ class NXS_HtmlFixer { public $dirtyhtml; public $fixedhtml; public $allowed_styl
     }
     private function removeSpacesAndBadTags($s) { $i=0;
       while ($i<10) { $i++; $s = preg_replace (
-        array( '/[\z\x]/i', '/  /i', '/<p([^>])*>(&nbsp;)*\s*<\/p>/i', '/<span([^>])*>(&nbsp;)*\s*<\/span>/i', '/<strong([^>])*>(&nbsp;)*\s*<\/strong>/i', '/<em([^>])*>(&nbsp;)*\s*<\/em>/i',
+        array( '/  /i', '/<p([^>])*>(&nbsp;)*\s*<\/p>/i', '/<span([^>])*>(&nbsp;)*\s*<\/span>/i', '/<strong([^>])*>(&nbsp;)*\s*<\/strong>/i', '/<em([^>])*>(&nbsp;)*\s*<\/em>/i',
           '/<font([^>])*>(&nbsp;)*\s*<\/font>/i', '/<small([^>])*>(&nbsp;)*\s*<\/small>/i', '/<\?xml:namespace([^>])*><\/\?xml:namespace>/i', '/<\?xml:namespace([^>])*\/>/i', '/class=\"MsoNormal\"/i',
           '/<o:p><\/o:p>/i', '/<!DOCTYPE([^>])*>/i', '/<!--(.|\s)*?-->/', '/<\?(.|\s)*?\?>/'), 
         array(' ', ' ', '', '', '', '', '', '', '', '', '', ' ', '', '' ) , trim($s));

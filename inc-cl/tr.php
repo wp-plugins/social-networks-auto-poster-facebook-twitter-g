@@ -253,8 +253,8 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     $logNT = '<span style="color:#014A76">Tumblr</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
-         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { 
+         nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$options['pType']); return;
         }
     }  
     //## Format
@@ -266,10 +266,10 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
     $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);
     $trURL = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($trURL,-1)=='/') $trURL = substr($trURL,0,-1);  $tggs = array();   
-    if ($options['trInclTags']=='1'){ $t = wp_get_post_tags($postID);  foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); }        
+    if ($options['trInclTags']=='1'){ $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); }        
     if ($options['trInclCats']=='1'){ $t = wp_get_post_categories($postID); foreach($t as $c){ $cat = get_category($c); $tggs[] = $cat->name; }  $tags = implode(',', $tggs); }    
     $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
+    $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; 
     $postArr = array('tags'=>$tags, 'date'=>$postDate);
     if($options['trPostType']=='V') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytUrl = $vids[0]; if (trim($ytUrl)=='') $options['trPostType']='T'; }
     if($options['trPostType']=='U') { $aud = nsFindAudioInPost($post); if (count($aud)>0) $aUrl = $aud[0]; if (trim($aUrl)=='') $options['trPostType']='T'; }

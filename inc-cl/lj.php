@@ -165,7 +165,7 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       $logNT = '<span style="color:#2097EE">LJ</span> - '.$options['nName'];
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') { 
          nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
         }
       } 
@@ -184,7 +184,7 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
       if ($options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];    
       
-      if ($options['inclTags']=='1'){ $t = wp_get_post_tags($postID);  foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); $nxsToLJContent['props'] = array('taglist' => $tags); }        
+      if ($options['inclTags']=='1'){ $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); $nxsToLJContent['props'] = array('taglist' => $tags); }        
       
         
       if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
