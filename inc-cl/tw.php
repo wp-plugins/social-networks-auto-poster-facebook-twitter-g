@@ -166,7 +166,7 @@ if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments(
     $url = 'http://search.twitter.com/search.json?rpp=100&since_id=' . $lastID . '&q=' . urlencode( get_permalink( $postID ) );
     $data = json_decode( $response = wp_remote_retrieve_body( wp_remote_get( $url ) ), true );    
     if (is_array($data) && is_array($data['results']))
-      foreach ($data['results'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts || $cid==$po['pgID'] )) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
+      foreach ($data['results'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts) || $cid==$po['pgID']) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
         $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['from_user_name'], 'comment_author_email' => $comment['from_user'].'@twitter.com', 
           'comment_author_url' => 'http://twitter.com/'.$comment['from_user'], 'comment_content' => $comment['text'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => 'comment');
         nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;

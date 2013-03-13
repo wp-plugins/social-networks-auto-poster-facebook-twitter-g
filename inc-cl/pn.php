@@ -203,7 +203,8 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
           if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;
-    $ret = doPostToPinterest($msg, $imgURL, $link, $boardID); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
+    if (preg_match ( '/\$(\d+\.\d+)/', $msg, $matches )) $price = $matches[0];
+    $ret = doPostToPinterest($msg, $imgURL, $link, $boardID, 'TITLE WHERE IS IT?', $price, $link."/GTH/" ); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
     if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
     if ($ret['code']=='OK') return 200; else return $ret;
   }

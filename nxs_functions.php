@@ -42,10 +42,11 @@ if (!function_exists('nsFindAudioInPost')){function nsFindAudioInPost($post, $ra
 }}
 if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
-  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;
-  $output = preg_match_all( '@((https?://)?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?(#[a-z_.-][a-z0-9+\$_.-]*)?)*)@', $postCnt, $matches );  if ($output === false){return false;} 
+  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post; 
+  $postCnt = preg_replace('/youtube.com\/vi\/(.*)\/(.*).jpg/isU', "youtube.com/v/$1/", $postCnt);  
+  $output = preg_match_all( '@((https?://)?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?(#[a-z_.-][a-z0-9+\$_.-]*)?)*)@', $postCnt, $matches ); if ($output === false){return false;} 
   foreach ($matches[0] as $match) {  
-     $output2 = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"<>&?/ ]{11})%i', $match, $matches2 );  if ($output2 === false){return false;} 
+     $output2 = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"<>&?/ ]{11})%i', $match, $matches2 ); if ($output2 === false){return false;} 
      foreach ($matches2[1] as $match2) {  $match2 = trim($match2); if (strlen($match2)==11) $postVids[] = $match2;} 
      $output3 = preg_match_all( '/^http:\/\/(www\.)?vimeo\.com\/(clip\:)?(\d+).*$/', $match, $matches3 );  if ($output3 === false){return false;} 
      foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
@@ -75,20 +76,30 @@ if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType=
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
   $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1';
+  //## Featured Image from Specified Location
   if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') {  $afiLoc= get_post_meta($postID, $options['featImgLoc'], true); 
     if (is_array($afiLoc) && $options['featImgLocArrPath']!='') { $cPath = $options['featImgLocArrPath'];
       while (strpos($cPath, '[')!==false){ $arrIt = CutFromTo($cPath, '[', ']'); $arrIt = str_replace("'", "", str_replace('"', '', $arrIt)); $afiLoc = $afiLoc[$arrIt]; $cPath = substr($cPath, strpos($cPath, ']'));}    
     } $imgURL = trim($options['featImgLocPrefix']).trim($afiLoc); if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';  if ($imgURL!='') return $imgURL;
+  //## Featured Image
   if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
+  //## YAPB
+  if (class_exists("YapbImage")) { $imgURLObj = YapbImage::getInstanceFromDb($postID); if (is_object($imgURLObj)) $imgURL = $imgURLObj->uri; 
+    $stURL = site_url(); if (substr($stURL, -1)=='/') $stURL = substr($stURL, 0, -1);  if ($imgURL!='') $imgURL = $stURL.$imgURL; 
+  }
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
+  //## Find Images in Post
+  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
+  //## Attachements
   if ($imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
       if (is_array($attachments) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID, $size); $imgURL = $imgURL[0];      
   }
-  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
-  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
-  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
+  if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;    
+  //## Default
   if (trim($imgURL)=='' && trim($def)=='') $imgURL = $options['ogImgDef']; 
   if (trim($imgURL)=='' && trim($def)!='') $imgURL = $def; 
 
@@ -381,19 +392,19 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
   } return $cmntID;
 }}
 
+
 //## NXS Cron
-if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array(); 
-   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) { if (strpos($evFunc, 'ns_doPublishTo')!==false)  { $chkTime = rand(180, 360);
-     //   echo key($evData)." | ".$evTime." = ".time()." - ".date("Y-m-d H:i:s", $evTime)." - ".date("Y-m-d H:i:s")."<br/>"; 
-     if ($evTime>'1359495839' && $evTime<time()-$chkTime) {    //## Missed? Let's post it. We will post just one, so no hold ups.                 
-       $args = array_values($evData); $args = $args[0]['args']; $slTime = rand(2, 30);
-       sleep($slTime); $timestamp = wp_next_scheduled( $evFunc, array($args[0], $args[1]) );  if ($timestamp!==$evTime) return;        
-       $extInfo = ''; wp_unschedule_event( $evTime, $evFunc,  array($args[0], $args[1])); $args[1]['pType']='sh';        
-       nxs_addToLogN('S', 'Missed Schedule Found ('.$chkTime.')', $logNT, ' - '.$slTime.'s - ('.$evTime."&lt;".(time()-180).') - Trying to Post', $evFunc."|".$args[0]."|".$args[1]);
-       do_action($evFunc, $args[0], $args[1]); 
-       return true;         
-     }
-   }}
+if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array();  $itmsToPush = array();   
+   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
+     if ($evTime>'1359495839' && $evTime<time()-$chkTime) $itmsToPush[] = array('time'=>$evTime);
+   } if (count($itmsToPush)<1) return;  
+   /*
+   $snapIP = get_post_meta($toPush['args'][0], 'snap_mp_'.$toPush['func'], true); 
+   nxs_addToLogN('S', 'Missed Scheduled Autoposts Found', '', ' - ('.$evTime."&lt;".(time()-$chkTime).') - Trying to Post', '');
+   delete_post_meta(); add_post_meta($toPush['args'][0], 'snap_mp_'.$toPush['func'], (time()+300));
+   */
+   $cron_url = site_url( 'wp-cron.php?doing_wp_cron=0'); ?><script type="text/javascript" > jQuery(document).ready(function($) { jQuery.get('<?php echo $cron_url; ?>'); }); </script><?php die();
+   return true;         
 }}
 
 if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;

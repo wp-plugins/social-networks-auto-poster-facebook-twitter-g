@@ -356,7 +356,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
         if ($isAttachFB=='1') $mssg['actions'] = array(array('name' => $blogTitle, 'link' => home_url()));        
         if (trim($imgURL)!='') $mssg['picture'] = $imgURL;
         if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post); if (count($vids)>0) { 
-          if (strlen($vids[0])==11) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }
+          if (strlen($vids[0])==11) { $mssg['source'] = 'http://www.youtube.com/v/'.$vids[0]; $mssg['picture'] = 'http://img.youtube.com/vi/'.$vids[0].'/maxresdefault.jpg'; }
           if (strlen($vids[0])==8) { $mssg['source'] = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';
             //$mssg['source'] = 'http://player.vimeo.com/video/'.$vids[0]; 
             $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);

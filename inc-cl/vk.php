@@ -252,7 +252,7 @@ if (!function_exists("nxs_getVKHeaders")) {  function nxs_getVKHeaders($ref, $po
 }}
 
 if (!function_exists("nxs_uplImgtoVK")) {  function nxs_uplImgtoVK($imgURL, $options){
-    $postUrl = 'https://api.vkontakte.ru/method/photos.getWallUploadServer?gid='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'];
+    $postUrl = 'https://api.vkontakte.ru/method/photos.getWallUploadServer?gid='.(str_replace('-','',$options['pgIntID'])).'&access_token='.$options['vkAppAuthToken'];
     $response = wp_remote_get($postUrl); $thumbUploadUrl = $response['body'];    
     if (!empty($thumbUploadUrl)) { $thumbUploadUrlObj = json_decode($thumbUploadUrl); $VKuploadUrl = $thumbUploadUrlObj->response->upload_url; }    
     if (!empty($VKuploadUrl)) {                               
@@ -262,14 +262,14 @@ if (!function_exists("nxs_uplImgtoVK")) {  function nxs_uplImgtoVK($imgURL, $opt
       file_put_contents($tmp, $imgData); 
       
       $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $VKuploadUrl); curl_setopt($ch, CURLOPT_POST, 1); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, array('photo' => '@' . $tmp)); $response = curl_exec($ch); $errmsg = curl_error($ch); curl_close($ch); 
+      curl_setopt($ch, CURLOPT_POSTFIELDS, array('photo' => '@' . $tmp)); $response = curl_exec($ch); $errmsg = curl_error($ch); curl_close($ch); //prr($response);
         
-      $uploadResultObj = json_decode($response);
+      $uploadResultObj = json_decode($response); //prr($uploadResultObj);
       
       if (!empty($uploadResultObj->server) && !empty($uploadResultObj->photo) && !empty($uploadResultObj->hash)) {
-        $postUrl = 'https://api.vkontakte.ru/method/photos.saveWallPhoto?server='.$uploadResultObj->server.'&photo='.$uploadResultObj->photo.'&hash='.$uploadResultObj->hash.'&gid='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'];
+        $postUrl = 'https://api.vkontakte.ru/method/photos.saveWallPhoto?server='.$uploadResultObj->server.'&photo='.$uploadResultObj->photo.'&hash='.$uploadResultObj->hash.'&gid='.(str_replace('-','',$options['pgIntID'])).'&access_token='.$options['vkAppAuthToken'];
         $response = wp_remote_get($postUrl);            
-        $resultObject = json_decode($response['body']);// prr($resultObject);
+        $resultObject = json_decode($response['body']); //prr($resultObject);
         if (isset($resultObject) && isset($resultObject->response[0]->id)) { return $resultObject->response[0]; } else { return false; }
       }
    }
@@ -291,10 +291,19 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         $msgFormat = $options['msgFrmt'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['uName'];  $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; 
+      $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; $imgURL = nxs_getPostImage($postID);
   
-      $msgOpts = array(); $msgOpts['type'] = $postType; $msgOpts['uid'] =  $options['vkPgID']; $imgURL = nxs_getPostImage($postID);// if ($link!='') $msgOpts['link'] = $link;
-      if ($postType=='I' && trim($imgURL)=='') $postType='T';
+      $vids = nsFindVidsInPost($post); if (count($vids)>0) {        
+          if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/watch?v='.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/maxresdefault.jpg'; } 
+          if (strlen($vids[0])==8) { $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';
+            //$mssg['source'] = 'http://player.vimeo.com/video/'.$vids[0]; 
+            $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);
+            if (!is_wp_error($json)) { $json = $json['body']; $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           
+          }
+       }      
+      $msgOpts = array(); $msgOpts['uid'] =  $options['vkPgID']; // if ($link!='') $msgOpts['link'] = $link;            
+      if ($vidURL!='' && $postType=="I") { $postType='A';  $link=$vidURL; $msgOpts['vID'] = $vids[0]; }  
+      if ($postType=='I' && trim($imgURL)=='') $postType='T';  $msgOpts['type'] = $postType;      
       if ($postType=='A' && $link!='') {  
         //## Login
         if (isset($options['vkSvC'])) $nxs_vkCkArray = maybe_unserialize( $options['vkSvC']); $loginError = true;
@@ -314,14 +323,15 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
           if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
           if ($dsc=='') $dsc = get_bloginfo('description'); 
         }  $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
-          $msgOpts['url'] = $link; $msgOpts['urlTitle'] = nxs_doQTrans($post->post_title, $lng); $msgOpts['urlDesc'] = $dsc; $msgOpts['imgURL'] = $imgURL;   
+          $msgOpts['url'] = $link; $msgOpts['urlTitle'] = nxs_doQTrans($post->post_title, $lng); $msgOpts['urlDesc'] = $dsc; $msgOpts['imgURL'] = $imgURL; 
         $ret = nxs_doPostToVK($msg, $options['url'], $msgOpts); //  prr($ret);
-      }
+      } //prr($postType);
+      
       if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; }}
       if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $link;       
         if (is_array($atts)) $atts = implode(',', $atts);
         $postUrl = 'https://api.vkontakte.ru/method/wall.post?owner_id='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'].'&from_group=1&message='.urlencode($msg).'&attachment='.urlencode($atts); 
-        $response = wp_remote_get($postUrl);
+        $response = wp_remote_get($postUrl); // prr($atts); prr($postUrl);
         if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { 
            $ret = $response['body'];
         } else { $respJ = json_decode($response['body'], true);  $ret = array("code"=>"OK", "post_id"=>$options['pgIntID'].'_'.$respJ['response']['post_id']);   }

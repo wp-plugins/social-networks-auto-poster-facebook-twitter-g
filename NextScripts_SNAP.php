@@ -8,7 +8,7 @@ Version: 2.7.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.3' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.4' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array();  foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } do_action('nxs_doSomeMore');
@@ -253,11 +253,13 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
       </div>
              <div class="nxs_box_inside"> 
               <div class="itemDiv">
-              <input type="radio" name="nxsHTDP" value="S" <?php if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') echo 'checked="checked"'; ?> /> <?php _e('Schedule (Recommended)', 'nxs_snap') ?> - <i><?php _e('Faster Performance - requires working WP Cron', 'nxs_snap') ?></i><br/>
-              </div>
+               <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> <b><?php _e('Publish Immediately', 'nxs_snap') ?></b>  - <i><?php _e('Use if WP Cron is disabled or broken on your website', 'nxs_snap') ?></i><br/>
+              </div>  
+              
               <div class="itemDiv">
-               <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> <?php _e('Publish Immediately', 'nxs_snap') ?>  - <i><?php _e('Use if WP Cron is disabled or broken on your website', 'nxs_snap') ?></i><br/>
-              </div>              
+              <input type="radio" name="nxsHTDP" value="S" <?php if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') echo 'checked="checked"'; ?> /> <b><?php _e('Schedule (Recommended)', 'nxs_snap') ?></b> - <i><?php _e('Faster Performance - requires working WP Cron', 'nxs_snap') ?></i><br/> <?php /* ?>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="runNXSCron" value="1"> <b><?php _e('Try to process missed "Scheduled" posts.', 'nxs_snap') ?></b> <i><?php _e('Usefull when WP Cron is disabled or broken, but can cause some short perfomance issues and duplicates. It is <b>highly</b> recomended to setup a proper cron job of fix WP Cron instead', 'nxs_snap') ?></i>. <?php */ ?>
+              </div>                          
            </div></div>
      <!-- #### Who can see auto-posting options on the "New Post" pages? ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Who can see auto-posting options on the "New Post" pages?', 'nxs_snap') ?></h3></div>
@@ -629,8 +631,8 @@ Please see #4 and #5 for Twitter:<br/>
             foreach ($nxs_snapAvNts as $avNt) { 
               if (count($options[$avNt['lcode']])>0 && isset($_POST[$avNt['lcode']]) && count($_POST[$avNt['lcode']])>0) {  $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); 
               if(is_array($_POST[$avNt['lcode']])) { $ii=0;
-                  foreach ($_POST[$avNt['lcode']] as $pst ) {// prr($pst);
-                    if (is_array($pst) && $pst['do'.$avNt['code']]=='') $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]= 0; $ii++;
+                  foreach ($_POST[$avNt['lcode']] as $pst ) { // echo "#############################################################################";  prr($pst);
+                    if (is_array($pst) && $pst['do'.$avNt['code']]=='' && $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]=='') $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]= 0; $ii++;
                   }
               } $newMeta = $_POST[$avNt['lcode']];  
               if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); // echo "##### ".$id."| snap".$avNt['code']; prr($savedMeta); echo "||"; prr($newMeta);// $newMeta = 'AAA';
@@ -736,7 +738,7 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 }}}
 
 //## Main Function to Post 
-if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU; //  echo " | nxs_doSMAS2 | "; prr($postArr);
+if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
  if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["snapEdIT"]); if ($isPost) $plgn_NS_SNAutoPoster->NS_SNAP_SavePostMetaTags($postID); 
  if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {  
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);      
@@ -973,6 +975,8 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
 
   add_action('admin_init', 'nxs_adminInitFunc');  
   add_action( 'admin_enqueue_scripts', 'nxssnap_enqueue_scripts' ); 
+  
+  add_action('wp_ajax_nxscr', 'nxscr_ajax');
   
   add_action('wp_ajax_nxs_clLgo', 'nxs_clLgo_ajax');
   add_action('wp_ajax_nxs_rfLgo', 'nxs_rfLgo_ajax');
