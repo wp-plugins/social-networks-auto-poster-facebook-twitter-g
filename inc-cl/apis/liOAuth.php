@@ -178,7 +178,7 @@ class nsx_LinkedIn {
     $header = curl_getinfo($curl); curl_close($curl);// prr($header);
 
     if ($this->debug) echo $data . "\n";    
-    if (trim($data)=='' && $header['http_code']=='201') $data = '201';
+        if (trim($data)=='' && ($header['http_code']=='201' || $header['http_code']=='200' || $header['http_code']=='202')) $data = '201';
     return $data; 
   }
 

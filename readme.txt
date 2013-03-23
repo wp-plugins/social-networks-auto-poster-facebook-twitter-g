@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.4
+Stable tag: 2.7.5
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -161,6 +161,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.5 [03/23/2013] =
+
+* Change. - gd.is is blocked by Twitter, goog.gl is a new default.
+* New - Comments imported from Facebook and Twitter will come with applicabale Facebook and Twitter userpics.
+* New - Comments imported from Facebook and Twitter will be imported to Disqus as well.(if Disqus is installed and activated)
+* Improvement - Videos will be found even if coming from shortcodes.
+* Bug Fix - Twitter - Incorrect character count not non-english messages.
 
 = 2.7.4 [03/12/2013] =
 

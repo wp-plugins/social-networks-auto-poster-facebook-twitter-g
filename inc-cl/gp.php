@@ -178,37 +178,38 @@ if (!function_exists("nxs_rePostToGP_ajax")) {
 }  
 if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
   function nxs_doPublishToGP($postID, $options){ $ntCd = 'GP'; $ntCdL = 'gp'; $ntNm = 'Google+';  
-      // $backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
-      //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToGP',  array($postID, $options));
       if(!function_exists('doConnectToGooglePlus2') || !function_exists('doPostToGooglePlus2')) { nxs_addToLogN('E', 'Error', $ntCd, '-=ERROR=- No G+ API Lib Detected', ''); return "No G+ API Lib Detected";}
       $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
       $logNT = '<span style="color:#800000">Google+</span> - '.$options['nName'];      
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
-        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
+        $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  
            nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
         }
       }         
-      if ($postID=='0') echo "Testing ... <br/><br/>";  else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return;}
-      $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];      
-      $msg = nsFormatMessage($gpMsgFormat, $postID);// prr($msg); echo $postID;
-      $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
-      if($gpPostType=='I') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytUrl = $vids[0]; if (trim($ytUrl)=='') $options['trPostType']='T'; } 
       
-      if ($gpPostType=='A') $imgURL = nxs_getPostImage($postID, 'thumbnail');  if ($gpPostType=='I') $imgURL = nxs_getPostImage($postID, 'full');        
-      $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];                   
-      $loginError = doConnectToGooglePlus2($email, $pass);  
-      if ($loginError!==false) {if ($postID=='0') echo $loginError; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return "BAD USER/PASS";} 
-      $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  
-      if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($url);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL;      //prr($lnk);
-      if ($gpPostType=='I' && trim($ytUrl)!='') { $lnk['video'] = $ytUrl; }
-      if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
-        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($msg, $lnk); //prr($ret);
-      if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
-      if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);} 
-        else if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your Google+ Page', 'nxs_snap'); } else 
-          { nxs_metaMarkAsPosted($postID, 'GP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
-      if ($ret['code']=='OK') return 200; else return $ret;
+      $message = array('message'=>'', 'link'=>'', 'imageURL'=>'', 'videoURL'=>''); 
+      
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $message['description'] = 'Test Post, Description';  $message['title'] = 'Test Post - Title';  $message['link'] = home_url();    
+      } else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return; 
+        $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID); // prr($msg); echo $postID;
+        $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
+        if($gpPostType=='I') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytCode = $vids[0]; if (trim($ytCode)=='') $options['trPostType']='T'; }       
+        if ($gpPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium');  if ($gpPostType=='I') $imgURL = nxs_getPostImage($postID, 'full');              
+        $message = array('message'=>$msg, 'link'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
+      }            
+      //## Actual Post
+      $ntToPost = new nxs_class_SNAP_GB(); $ret = $ntToPost->doPostToNT($options, $message);
+      //## Process Results
+      if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
+         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
+      } else {  // ## All Good - log it.
+        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+          else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+      }
+      //## Return Result
+      if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);      
+      
   } 
 }  
 ?>

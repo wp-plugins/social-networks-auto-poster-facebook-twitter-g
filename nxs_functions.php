@@ -40,9 +40,15 @@ if (!function_exists('nsFindAudioInPost')){function nsFindAudioInPost($post, $ra
      
   } $postAu = array_unique($postAu); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postAu;
 }}
-if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+if (!function_exists('nsGetYTThumb')){function nsGetYTThumb($yt) {  
+  $out = 'http://img.youtube.com/vi/'.$yt.'/maxresdefault.jpg'; $response  = wp_remote_get($out); 
+  if (is_wp_error($response) || $response['response']['code']!='200' ) { $out = 'http://img.youtube.com/vi/'.$yt.'/sddefault.jpg';  
+    $response  = wp_remote_get($out); if (is_wp_error($response) || $response['response']['code']!='200' ) $out = 'http://img.youtube.com/vi/'.$yt.'/0.jpg';
+  } return $out;  
+}}
+if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=false) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
-  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post; 
+  if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post; //prr($postCnt);
   $postCnt = preg_replace('/youtube.com\/vi\/(.*)\/(.*).jpg/isU', "youtube.com/v/$1/", $postCnt);  
   $output = preg_match_all( '@((https?://)?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?(#[a-z_.-][a-z0-9+\$_.-]*)?)*)@', $postCnt, $matches ); if ($output === false){return false;} 
   foreach ($matches[0] as $match) {  
@@ -77,25 +83,25 @@ if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType=
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
   $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1';
   //## Featured Image from Specified Location
-  if (isset($options['featImgLoc']) && $options['featImgLoc']!=='') {  $afiLoc= get_post_meta($postID, $options['featImgLoc'], true); 
+  if ((int)$postID>0 && isset($options['featImgLoc']) && $options['featImgLoc']!=='') {  $afiLoc= get_post_meta($postID, $options['featImgLoc'], true); 
     if (is_array($afiLoc) && $options['featImgLocArrPath']!='') { $cPath = $options['featImgLocArrPath'];
       while (strpos($cPath, '[')!==false){ $arrIt = CutFromTo($cPath, '[', ']'); $arrIt = str_replace("'", "", str_replace('"', '', $arrIt)); $afiLoc = $afiLoc[$arrIt]; $cPath = substr($cPath, strpos($cPath, ']'));}    
     } $imgURL = trim($options['featImgLocPrefix']).trim($afiLoc); if ($imgURL!='' && stripos($imgURL, 'http')===false) $imgURL =  home_url().$imgURL;
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';  if ($imgURL!='') return $imgURL;
   //## Featured Image
-  if ($imgURL=='') { if (function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
+  if ($imgURL=='') { if ((int)$postID>0 && function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   //## YAPB
-  if (class_exists("YapbImage")) { $imgURLObj = YapbImage::getInstanceFromDb($postID); if (is_object($imgURLObj)) $imgURL = $imgURLObj->uri; 
+  if ((int)$postID>0 && class_exists("YapbImage")) { $imgURLObj = YapbImage::getInstanceFromDb($postID); if (is_object($imgURLObj)) $imgURL = $imgURLObj->uri; 
     $stURL = site_url(); if (substr($stURL, -1)=='/') $stURL = substr($stURL, 0, -1);  if ($imgURL!='') $imgURL = $stURL.$imgURL; 
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   //## Find Images in Post
-  if ($imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
+  if ((int)$postID>0 && $imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   //## Attachements
-  if ($imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
+  if ((int)$postID>0 && $imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
       if (is_array($attachments) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID, $size); $imgURL = $imgURL[0];      
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;    
@@ -118,7 +124,7 @@ if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) 
 
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>
-    <script type="text/javascript" >
+    <script type="text/javascript" >  
     jQuery(document).ready(function($) {          
     <?php       
       foreach ($nxs_snapAvNts as $avNt) {?>
@@ -371,13 +377,13 @@ if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=
       $rurl = $rtr['shorturl'];
     
     }   
-    if ($options['nxsURLShrtnr']=='O') {   
+    if ($options['nxsURLShrtnr']=='O' || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') {   
       $response  = wp_remote_post('https://www.googleapis.com/urlshortener/v1/url'.($options['gglAPIKey']!=''?'?key='.$options['gglAPIKey']:''), array('headers' => array('Content-Type'=>'application/json'), 'body' => '{"longUrl": "'.$url.'"}')); 
       if (is_wp_error($response)) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return false; } 
       $rtr = json_decode($response['body'],true); if (!is_array($rtr) || isset($rtr['error']) || !isset($rtr['id']) ) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return false; }      
       $rurl = $rtr['id'];
     }    
-    if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
+    //if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
     if ($rurl!='') $url = $rurl;  return $url;
 }}
 //## Comments
@@ -385,11 +391,31 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
   $cmnt['comment_parent'] = isset($cmnt['comment_parent']) ? absint($cmnt['comment_parent']) : 0;
   $parent_status = ( 0 < $cmnt['comment_parent'] ) ? wp_get_comment_status($cmnt['comment_parent']) : '';
   $cmnt['comment_parent'] = ( 'approved' == $parent_status || 'unapproved' == $parent_status ) ? $cmnt['comment_parent'] : 0;
-  $cmnt['comment_author_IP'] = ''; $cmnt['comment_agent'] = 'SNAP'; $cmnt['comment_date'] =  get_date_from_gmt( $cmnt['comment_date_gmt'] );
+  $cmnt['comment_author_IP'] = ''; $cmnt['comment_agent'] = 'SNAP'; $cmnt['comment_date'] =  get_date_from_gmt( $cmnt['comment_date_gmt'] );  
+  
   $cmnt = wp_filter_comment($cmnt); if ($aa) $cmnt['comment_approved'] = 1; else $cmnt['comment_approved'] = wp_allow_comment($cmnt); $cmntID = wp_insert_comment($cmnt);
   if ( 'spam' !== $cmnt['comment_approved'] ) { if ( '0' == $cmnt['comment_approved'] ) wp_notify_moderator($cmntID); $post = &get_post($cmnt['comment_post_ID']);
     if ( get_option('comments_notify') && $cmnt['comment_approved'] && ( ! isset( $cmnt['user_id'] ) || $post->post_author != $cmnt['user_id'] ) ) wp_notify_postauthor($cmntID, isset( $cmnt['comment_type'] ) ? $cmnt['comment_type'] : '' );
-  } return $cmntID;
+  } 
+  global $wpdb, $dsq_api;
+  if (isset($dsq_api)) { $plugins_url = str_replace( 'social-networks-auto-poster-facebook-twitter-g/', '', plugin_dir_path( __FILE__ )); require_once( $plugins_url.'disqus-comment-system/export.php'); if (function_exists('dsq_export_wp')) {
+    $comments = $wpdb->get_results( $wpdb->prepare("SELECT * FROM $wpdb->comments WHERE comment_ID = ".$cmntID) ); prr($comments);
+    $wxr = dsq_export_wp($cmnt['comment_post_ID'], $comments); $response = $dsq_api->import_wordpress_comments($wxr, time()); prr($response);                    
+  }}
+  return $cmntID;
+}}
+
+if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_email, $size, $default, $alt) { 
+    if ( is_object($id_or_email) ) { 
+      if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'facebook.com')!==false) { $fbuID = str_ireplace('@facebook.com','',$id_or_email->comment_author_email);
+        $avatar = "<img alt='{$id_or_email->comment_author}' src='https://graph.facebook.com/$fbuID/picture' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
+      }
+      if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'twitter.com')!==false) { $fbuID = str_ireplace('@twitter.com','',$id_or_email->comment_author_email);
+        $avatar = "<img alt='{$id_or_email->comment_author}' src='http://api.twitter.com/1/users/profile_image?screen_name=$fbuID&size=bigger' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
+      }
+      
+    }
+    return $avatar;
 }}
 
 

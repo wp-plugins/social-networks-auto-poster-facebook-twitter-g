@@ -288,7 +288,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
       }
       $email = $options['uName'];  $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']);      
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return;
-        $msgFormat = $options['msgFrmt'];  $msg = nsFormatMessage($msgFormat, $postID); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
+        $msgFormat = $options['msgFrmt'];  $msg = strip_tags(nsFormatMessage($msgFormat, $postID)); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['uName'];  $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; $imgURL = nxs_getPostImage($postID);
