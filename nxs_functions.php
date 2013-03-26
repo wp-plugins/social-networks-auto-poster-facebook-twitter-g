@@ -25,20 +25,18 @@ if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advI
   //$output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $postCnt, $matches ); if ($output === false){return false;} 
   //$postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/src="([^"]*)"/', $postCnt, $matches ); if ($output === false){return false;}
   $postCnt = str_replace("'",'"',$postCnt); $output = preg_match_all( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $postCnt, $matches ); // prr($matches);  
-  if ($output === false || $output == 0){ $vids = nsFindVidsInPost($post); if (count($vids)>0)  $postImgs[] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg';  else return false;} 
+  if ($output === false || $output == 0){ $vids = nsFindVidsInPost($post, $advImgFnd==false); if (count($vids)>0)  $postImgs[] = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg';  else return false;} 
     else { foreach ($matches[1] as $match) { if (!preg_match('/^https?:\/\//', $match ) ) $match = site_url( '/' ) . ltrim( $match, '/' ); $postImgs[] = $match;} if (isset($ShownAds)) $ShownAds = $ShownAdsL; }  
   return $postImgs;
 }}
 
 
-if (!function_exists('nsFindAudioInPost')){function nsFindAudioInPost($post, $raw=true) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+if (!function_exists('nsFindAudioInPost')){function nsFindAudioInPost($post, $raw=true) {  //### !!!   $raw=false Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
   if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post;
   $regex_pattern = "((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*\.(mp3|aac|m4a))";
   $output = preg_match_all( $regex_pattern, $postCnt, $matches );  if ($output === false){return false;}    
-  foreach ($matches[0] as $match) { $postAu[] = $match; 
-     
-  } $postAu = array_unique($postAu); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postAu;
+  foreach ($matches[0] as $match) { $postAu[] = $match; } $postAu = array_unique($postAu); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postAu;
 }}
 if (!function_exists('nsGetYTThumb')){function nsGetYTThumb($yt) {  
   $out = 'http://img.youtube.com/vi/'.$yt.'/maxresdefault.jpg'; $response  = wp_remote_get($out); 
@@ -46,7 +44,7 @@ if (!function_exists('nsGetYTThumb')){function nsGetYTThumb($yt) {
     $response  = wp_remote_get($out); if (is_wp_error($response) || $response['response']['code']!='200' ) $out = 'http://img.youtube.com/vi/'.$yt.'/0.jpg';
   } return $out;  
 }}
-if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=false) {  //## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
+if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=true) {  //### !!!  $raw=false ## Breaks ob_start() [ref.outcontrol]: Cannot use output buffering in output buffering display handlers - Investigate
   global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds; $postVids = array();
   if (is_object($post)) { if ($raw) $postCnt = $post->post_content; else $postCnt = apply_filters('the_content', $post->post_content); } else $postCnt = $post; //prr($postCnt);
   $postCnt = preg_replace('/youtube.com\/vi\/(.*)\/(.*).jpg/isU', "youtube.com/v/$1/", $postCnt);  
@@ -98,7 +96,7 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   //## Find Images in Post
-  if ((int)$postID>0 && $imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
+  if ((int)$postID>0 && $imgURL=='') {$post = get_post($postID); $imgsFromPost = nsFindImgsInPost($post, $options['useUnProc'] == '1'); if (is_array($imgsFromPost) && count($imgsFromPost)>0) $imgURL = $imgsFromPost[0]; } //echo "##".count($imgsFromPost); prr($imgsFromPost);
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   //## Attachements
   if ((int)$postID>0 && $imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
@@ -405,7 +403,7 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
   return $cmntID;
 }}
 
-if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_email, $size, $default, $alt) { 
+if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_email, $size=96, $default='', $alt='') { 
     if ( is_object($id_or_email) ) { 
       if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'facebook.com')!==false) { $fbuID = str_ireplace('@facebook.com','',$id_or_email->comment_author_email);
         $avatar = "<img alt='{$id_or_email->comment_author}' src='https://graph.facebook.com/$fbuID/picture' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
@@ -420,7 +418,8 @@ if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_
 
 
 //## NXS Cron
-if (!function_exists("nxs_psCron")) { function nxs_psCron() { $sh =_get_cron_array();  $itmsToPush = array();   
+if (!function_exists("nxs_psCron")) { function nxs_psCron() {  if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false) return;
+   $sh =_get_cron_array();  $itmsToPush = array();   
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
      if ($evTime>'1359495839' && $evTime<time()-$chkTime) $itmsToPush[] = array('time'=>$evTime);
    } if (count($itmsToPush)<1) return;  

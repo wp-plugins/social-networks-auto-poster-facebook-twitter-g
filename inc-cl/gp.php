@@ -194,7 +194,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       } else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return; 
         $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID); // prr($msg); echo $postID;
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
-        if($gpPostType=='I') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytCode = $vids[0]; if (trim($ytCode)=='') $options['trPostType']='T'; }       
+        if($gpPostType=='I') { $vids = nsFindVidsInPost($post, false); if (count($vids)>0) $ytCode = $vids[0]; if (trim($ytCode)=='') $options['trPostType']='T'; }       
         if ($gpPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium');  if ($gpPostType=='I') $imgURL = nxs_getPostImage($postID, 'full');              
         $message = array('message'=>$msg, 'link'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
       }            
