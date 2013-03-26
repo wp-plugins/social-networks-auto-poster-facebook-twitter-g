@@ -8,7 +8,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
     var $ntLCode = 'fb';
     
     function doPost($options, $message){ if (!is_array($options)) return false; $out = array(); //return false;
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }
     function doPostToNT($options, $message){ require_once ('apis/facebook.php'); $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); // prr($message); prr($options);

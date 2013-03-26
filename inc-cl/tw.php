@@ -188,7 +188,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
 } 
 
 if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW 
-  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $img = ''; $imgURL = '';    
+  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $img = ''; $imgURL = ''; global $nxs_urlLen; $nxs_urlLen = 0;
     //$backtrace = debug_backtrace(); nxs_addToLogN('W', 'Error', $logNT, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToTW',  array($postID, $options));
     
@@ -206,19 +206,19 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
       if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
         if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; } else if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; } else $options['attchImg'] = 0; 
       } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
-    }
-      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it', $extInfo);
+     }
+     if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it', $extInfo);
     }  
     if ($options['attchImg']=='1' && $img!='') $twLim = 118; else $twLim = 140; 
     
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = count($msg);}  
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
     else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));        
         if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 22; 
-        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - count($aun); } 
+        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - nxs_strLen($aun); } 
         
         $noRepl = str_ireplace("%TITLE%", "", $twMsgFormat); $noRepl = str_ireplace("%SITENAME%", "", $noRepl); $noRepl = str_ireplace("%URL%", "", $noRepl);$noRepl = str_ireplace("%RAWEXCERPT%", "", $noRepl); 
         $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);$noRepl = str_ireplace("%EXCERPT%", "", $noRepl);
-        $noRepl = str_ireplace("%ANNOUNCE%", "", $noRepl); $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl);  $twLim = $twLim - count($noRepl); 
+        $noRepl = str_ireplace("%ANNOUNCE%", "", $noRepl); $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl);  $twLim = $twLim - nxs_strLen($noRepl); 
         
         $pTitle = $title = $post->post_title;
         if ($post->post_excerpt!="") $exrText = $post->post_excerpt; else $exrText= $post->post_content;  $pText = apply_filters('the_content', $exrText);        
@@ -238,7 +238,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pFullText)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pRawText)) ) {} else $tggs[] = '#'.$frmTag;
           } $tags = implode(' ',$tggs); while(count($tags)>($twLim-10)) {array_pop($tggs); $tags = implode(' ',$tggs);} $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
-          $twLim = $twLim - count($tags);
+          $twLim = $twLim - nxs_strLen($tags);
         } 
         if (stripos($twMsgFormat, '%CATS%')!==false || stripos($twMsgFormat, '%HCATS%')!==false) {
           $t = wp_get_post_categories($postID); $ctts = array();  foreach($t as $c){ $cat = get_category($c); $frmTag =  trim(str_replace(' ','', str_replace('  ',' ',str_ireplace('&','&amp;',trim(ucwords($cat->name))))));
@@ -254,49 +254,50 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $cat->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $cat->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $ctts[] = '#'.$frmTag; 
           } $cats = implode(' ',$ctts); while(count($cats)>($twLim-10)) {array_pop($ctts); $cats = implode(' ',$ctts);} $twMsgFormat = str_ireplace("%CATS%", $cats, $twMsgFormat);  $twMsgFormat = str_ireplace("%HCATS%", $cats, $twMsgFormat);
-          $twLim = $twLim - count($cats);
+          $twLim = $twLim - nxs_strLen($cats);
         } 
         if (stripos($twMsgFormat, '%TITLE%')!==false) { if (stripos($pTitle, '.co.uk')!==false) $twLim = $twLim - 14;
            if (stripos($pTitle, '.com')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.net')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.org')!==false) $twLim = $twLim - 16;
            $pTitle = html_entity_decode(strip_tags($pTitle), ENT_NOQUOTES, 'UTF-8');
-           $pTitle = nsTrnc($pTitle, $twLim); $twMsgFormat = str_ireplace("%TITLE%", $pTitle, $twMsgFormat); $twLim = $twLim - count($pTitle); 
+           $pTitle = nsTrnc($pTitle, $twLim); $twMsgFormat = str_ireplace("%TITLE%", $pTitle, $twMsgFormat); $twLim = $twLim - nxs_strLen($pTitle); 
         } 
         if (stripos($twMsgFormat, '%SITENAME%')!==false) {
-          $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - count($siteTitle);
+          $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - nxs_strLen($siteTitle);
         }     
         if (stripos($twMsgFormat, '%TEXT%')!==false) {          
           $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 300, " ", "..."); 
-          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%TEXT%", $pText, $twMsgFormat); $twLim = $twLim - count($pText);
+          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%TEXT%", $pText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pText);
         } 
         if (stripos($twMsgFormat, '%EXCERPT%')!==false) {          
           $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 300, " ", "..."); 
-          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%EXCERPT%", $pText, $twMsgFormat); $twLim = $twLim - count($pText);
+          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%EXCERPT%", $pText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pText);
         } 
         if (stripos($twMsgFormat, '%RAWEXCERPT%')!==false) {          
           $exrText = nsTrnc(strip_tags(strip_shortcodes($exrText)), 300, " ", "..."); 
-          $exrText = nsTrnc($exrText, $twLim); $twMsgFormat = str_ireplace("%RAWEXCERPT%", $exrText, $twMsgFormat); $twLim = $twLim - count($exrText);
+          $exrText = nsTrnc($exrText, $twLim); $twMsgFormat = str_ireplace("%RAWEXCERPT%", $exrText, $twMsgFormat); $twLim = $twLim - nxs_strLen($exrText);
         } 
         if (stripos($twMsgFormat, '%FULLTEXT%')!==false) {
-           $pFullText = nsTrnc(strip_tags($pFullText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pFullText, $twMsgFormat); $twLim = $twLim - count($pFullText);
+           $pFullText = nsTrnc(strip_tags($pFullText), $twLim); $twMsgFormat = str_ireplace("%FULLTEXT%", $pFullText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pFullText);
         }          
         if (stripos($twMsgFormat, '%RAWTEXT%')!==false) {
-           $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%RAWTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - count($pRawText);
+           $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%RAWTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pRawText);
         }              
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } 
-    $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; 
-    require_once ('apis/tmhOAuth.php'); require_once ('apis/tmhUtilities.php'); if ($uln>0) $msg = nsTrnc($msg, 140+$uln); else { $url = get_permalink($postID); $msg = nsTrnc($msg, 120+count($url)); }
-    $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));      
-    if ($options['attchImg']=='1' && $img!='') $code = $tmhOAuth -> request('POST', 'http://upload.twitter.com/1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
-      else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); //prr($code); echo "YYY";
-    if ($code == 200){if ($postID=='0'){ nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Twitter Page'; /*NXS_tmhUtilities::pr(json_decode($tmhOAuth->response['response'])); */ return 201;}
-      else { $twResp = json_decode($tmhOAuth->response['response'], true); if (is_array($twResp) && isset($twResp['id_str'])) $twNewPostID = $twResp['id_str'];  
-        $args = array('pgID'=>$twNewPostID, 'isPosted'=>1, 'pDate'=>date('Y-m-d H:i:s')); nxs_metaMarkAsPosted($postID, 'TW', $options['ii'], $args); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);
-      } 
-    } else{ if ($postID=='0') { prr($tmhOAuth->response['error']); prr($tmhOAuth->response['response']); prr($msg); } nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($tmhOAuth->response['error'], true)."|".print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true), $extInfo); 
-      $code .= " | ".$tmhOAuth->response['response']." | ".print_r($msg, true);
+    
+    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);      
+    
+    //## Actual Post
+    $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
+    //## Process Results
+    if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
+         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
+    } else {  // ## All Good - log it.
+      if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+        else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     }
-    return $code;
+    //## Return Result
+    if ($ret['isPosted']=='1') return 200; else return print_r($ret, true); 
   }
 }
 
