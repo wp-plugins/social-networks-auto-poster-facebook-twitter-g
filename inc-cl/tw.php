@@ -181,7 +181,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
       $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo);
       if (is_array($twpo) && isset($twpo[$ii]) && is_array($twpo[$ii]) && isset($twpo[$ii]['SNAPformat']) ) { $ntClInst = new nxs_snapClassTW(); $two = $ntClInst->adjMetaOpt($two, $twpo[$ii]);}       
       if ($_POST['ri']=='1') { nxs_getBackTWComments($postID, $two, $twpo[$ii]); die(); } else {
-        $result = nxs_doPublishToTW($postID, $two); if ($result == 201) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
+        $result = nxs_doPublishToTW($postID, $two); if ($result == 200) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
       }
     }
   }
@@ -207,9 +207,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; } else if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; } else $options['attchImg'] = 0; 
       } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
      }
-     if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it', $extInfo);
+     if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it - Error:'.print_r($img), $extInfo);
     }  
-    if ($options['attchImg']=='1' && $img!='') $twLim = 118; else $twLim = 140; 
+    if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140; 
     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
     else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));        
@@ -284,8 +284,11 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }              
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } 
-    
-    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);      
+    $msg = str_replace('&amp;#039', "'", $msg); $msg = str_replace('&#039', "'", $msg); $msg = str_replace('#039', "'", $msg);
+    $msg = str_replace('&amp;#8217', "'", $msg); $msg = str_replace('&#8217', "'", $msg); $msg = str_replace('#8217', "'", $msg);
+    $msg = str_replace('&amp;#8220', '"', $msg); $msg = str_replace('&#8220', '"', $msg); $msg = str_replace('#8220', '"', $msg);
+    $msg = str_replace('&amp;#8221', '"', $msg); $msg = str_replace('&#8221', '"', $msg); $msg = str_replace('#8221', '"', $msg);
+    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);     
     
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
@@ -294,10 +297,11 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-        else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+        else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     }
     //## Return Result
     if ($ret['isPosted']=='1') return 200; else return print_r($ret, true); 
+   
   }
 }
 

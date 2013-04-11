@@ -227,7 +227,10 @@ if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
     //## /Actual POST Code    
     if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret);  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '. strip_tags(print_r($ret, true)), $extInfo); return  $ret; }
       else { if ($postID=='0') { echo 'OK - Message Posted, please see your '.$ntNm.' Page '; nxs_addToLogN('S', 'Test', $logNT,  'OK - TEST Message Posted '); return 201;} 
-        else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN( 'S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} return 200; }
+        else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); 
+          do_action('nxs_actOnBG', array('postID'=>$postID, 'pgID'=>$ret['post_id'], 'ii'=>$ii)); nxs_addToLogN( 'S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);
+        } return 200; 
+      }
   }
 }
 

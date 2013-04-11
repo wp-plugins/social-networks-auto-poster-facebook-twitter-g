@@ -289,7 +289,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 
 if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { require_once ('apis/facebook.php'); $opts = array('access_token'  => $options['fbAppPageAuthToken']);    
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  $ci = 0;
-    $ret = $facebook->api($po['pgID']."/comments", "GET", $opts);  $impCmnts = get_post_meta($postID, 'snapImportedComments', true); // prr($impCmnts); // $impCmnts = array(); 
+    $ret = $facebook->api($po['pgID']."/comments", "GET", $opts);  $impCmnts = get_post_meta($postID, 'snapImportedComments', true); if (!is_array($impCmnts)) $impCmnts = array(); 
     if (is_array($ret) && is_array($ret['data'])) foreach ($ret['data'] as $comment){ $cid = $comment['id']; if (trim($cid)=='' || in_array('fbxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'fbxcw'.$cid;  // prr($impCmnts);
         $authData = $facebook->api($comment['from']['id'], "GET", $opts);  
         $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['from']['name'], 'comment_author_email' => $comment['from']['id'].'@facebook.com', 
@@ -369,7 +369,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-        else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+        else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     }
     //## Return Result
     if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);     

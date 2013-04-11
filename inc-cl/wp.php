@@ -217,7 +217,10 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       } if ($ret!='OK') { if ($postID=='0') echo $ret; 
         nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);
       } else { if ($postID=='0') { echo 'OK - Message Posted, please see your WP Blog'; nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); } else 
-        { nxs_metaMarkAsPosted($postID, 'WP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
+        { nxs_metaMarkAsPosted($postID, 'WP', $options['ii'], array('isPosted'=>'1', 'pgID'=>$pid, 'pDate'=>date('Y-m-d H:i:s'))); 
+          do_action('nxs_actOnWP', array('postID'=>$postID, 'pgID'=>$pid, 'wpURL'=>$options['wpURL'], 'ii'=>$ii)); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);
+        } 
+      }
       if ($ret == 'OK') return 200; else return $ret;
   }
 }  

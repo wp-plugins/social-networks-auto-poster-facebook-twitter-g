@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.7
+Stable tag: 2.7.9
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -162,8 +162,16 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 2.7.7 [03/27/2013] =
+= 2.7.9 [04/11/2013] =
 
+* Bug Fix - Auto-Importing Facebook comments was broken in some cases
+* Bug Fix - Twitter "Attention requred. Unfinished setup" message even if setup is finished
+* Bug Fix - Twitter error "The text of your tweet is too long" - Thanks to Twitter's "minus another character from image post" update
+* Bug Fix - Several small/cosmetic bug fixes
+
+= 2.7.8 [03/27/2013] =
+
+* Bug Fix - [Critical] URLS and images were missing from the Twitter posts
 * Bug Fix - Disqus comments import - missing thread ID.
 
 = 2.7.6 [03/25/2013] =

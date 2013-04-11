@@ -74,9 +74,9 @@ if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref=''
 }}
 if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType='head'){ if( ini_get('allow_url_fopen')=='1' && @getimagesize($url)!==false) return true;
   $hdrsArr = nxs_getNXSHeaders(); $nxsWPRemWhat = 'wp_remote_'.$chType; $rsp  = $nxsWPRemWhat($url, array('headers' => $hdrsArr));  
-  if(is_wp_error($rsp)) { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), ''); return false; }
+  if(is_wp_error($rsp)) { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.print_r($rsp, true), ''); return false; }
   if (is_array($rsp) && ($rsp['response']['code']=='200' || ( $rsp['response']['code']=='403' &&  $rsp['headers']['server']=='cloudflare-nginx') )) return true; 
-    else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLog('IMAGE', 'E', '-=ERROR=- '.print_r($rsp, true), $url); return false; }
+    else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.print_r($rsp, true), $url); return false; }
     } 
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
@@ -204,7 +204,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
   });
 </script>
 
-  <link href='http://fonts.googleapis.com/css?family=News+Cycle' rel='stylesheet' type='text/css'>            
+  <link href='https://fonts.googleapis.com/css?family=News+Cycle' rel='stylesheet' type='text/css'>            
 <style type="text/css">
 .NXSButton { background-color:#89c403;
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
@@ -319,7 +319,7 @@ if (!function_exists('nxs_getnxsLog')){ function nxs_getnxsLog(){ global $nxs_tp
    $log = $wpdb->get_results( "SELECT * FROM ". $wpdb->prefix . "nxs_log ORDER BY id", ARRAY_A ); if (!is_array($log)) return array(); else return $log;
 }}
 
-if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($nt, $type, $msg, $extInfo=''){ nxs_addToLogN ($nt, $type, $msg, $extInfo); }}
+if (!function_exists('nxs_addToLog')){ function nxs_addToLog ($type, $action, $nt, $msg=''){ nxs_addToLogN ($type, $action, $nt, $msg); }}
 if (!function_exists('nxs_addToLogN')){ function nxs_addToLogN ($type, $action, $nt, $msg, $extInfo=''){ global $nxs_tpWMPU, $wpdb; if($nxs_tpWMPU=='S') switch_to_blog(1); 
   $logItem = array('date'=>date('Y-m-d H:i:s'), 'act'=>$action, 'msg'=> strip_tags($msg), 'extInfo'=>$extInfo, 'type'=>$type, 'nt'=>$nt); 
   $nxDB = $wpdb->insert( $wpdb->prefix . "nxs_log", $logItem );  $lid = $wpdb->insert_id; $lid = $lid-150;
@@ -419,7 +419,8 @@ if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_
 
 
 //## NXS Cron
-if (!function_exists("nxs_psCron")) { function nxs_psCron() {  if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false) return;
+if (!function_exists("nxs_psCron")) { function nxs_psCron() {   
+   if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) return;
    $sh =_get_cron_array();  $itmsToPush = array();   
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
      if ($evTime>'1359495839' && $evTime<time()-$chkTime) $itmsToPush[] = array('time'=>$evTime);
@@ -440,7 +441,7 @@ if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $p
 
 function nxs_activation(){ if (!wp_next_scheduled('nxs_hourly_event')){wp_schedule_event(time(), 'hourly', 'nxs_hourly_event');} }
 function nxs_do_this_hourly() { $options = get_option('NS_SNAutoPoster'); $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array(); //## Check for Incoming Comments if nessesary.
-
+  nxs_addToLogN( 'S', 'Comments Import', 'ALL', 'Checking for new comments now...', print_r($riPosts, true));
   //## Facebook
   if (is_array($options['fb'])) foreach ($options['fb'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';
     foreach ($riPosts as $postID) {  
