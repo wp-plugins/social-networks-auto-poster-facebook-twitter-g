@@ -14,6 +14,8 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
+Version 3 is coming soon, you can request to become an early beta-tester here: http://www.nextscripts.com/version-3-beta/
+
 * **Latest version 2.7** - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text.
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
@@ -161,6 +163,15 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.10 [04/11/2013] =
+
+* Improvement - "Include/Exclude Wordpress Pages and Custom Post Types" is now a list of checboxes.
+* New - Support for Facebook Secret Groups
+* Bug Fix - Google+ Community Postings
+* Bug Fix - Unselected user types were still be able to autopost from front end.
+* Bug Fix - Facebook "Warning: session_start() [function.session-start]: Cannot send session cookie - headers already sent by ...".
+* Bug Fix - Facebook sometimes dies silently without reporting an error.
 
 = 2.7.9 [04/11/2013] =
 
