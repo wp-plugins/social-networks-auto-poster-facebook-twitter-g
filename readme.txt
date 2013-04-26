@@ -164,10 +164,6 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 3.0.0 Beta [05/??/2013] =
-
-* New - New network - Reddit
-
 = 2.7.10 [04/25/2013] =
 
 * New - Support for Facebook Secret Groups
