@@ -17,7 +17,7 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       if (!isset($options['twAccToken']) || trim($options['twAccToken'])=='') { $badOut['Error'] = 'No Auth Token Found'; return $badOut; }
       //## Old Settings Fix
       if ($options['attchImg']=='1') $options['attchImg'] = 'large'; if ($options['attchImg']=='0') $options['attchImg'] = false;
-      if (isset($message['img'])) $img = trim($message['img']); else $img = '';
+      if (isset($message['img'])) $img = trim($message['img']); else $img = '';     // prr($message);
       //## Format Post
       $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  if ($options['attchImg']!=false) { $imgURL = trim($message['imgURL'][$options['attchImg']]);
           if ($imgURL=='') $imgURL = trim($message['imgURL']['large']); if ($imgURL=='') $imgURL = trim($message['imgURL']['medium']); 

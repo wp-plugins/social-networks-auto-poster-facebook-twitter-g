@@ -288,7 +288,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $msg = str_replace('&amp;#8217;', "'", $msg); $msg = str_replace('&#8217;', "'", $msg); $msg = str_replace('#8217;', "'", $msg); $msg = str_replace('#8217', "'", $msg);
     $msg = str_replace('&amp;#8220;', '"', $msg); $msg = str_replace('&#8220;', '"', $msg); $msg = str_replace('#8220;', '"', $msg); $msg = str_replace('#8220', "'", $msg);
     $msg = str_replace('&amp;#8221;', '"', $msg); $msg = str_replace('&#8221;', '"', $msg); $msg = str_replace('#8221;', '"', $msg); $msg = str_replace('#8221', "'", $msg);
-    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);     
+    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
     
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
