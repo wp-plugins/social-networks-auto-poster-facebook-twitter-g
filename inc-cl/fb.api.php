@@ -37,13 +37,15 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
         if (trim($imgURL)!='') $mssg['picture'] = $imgURL;  if (trim($message['videoURL'])!='') $mssg['source'] = $message['videoURL'];        
       } elseif ($fbPostType=='I') { $facebook->setFileUploadSupport(true); $fbWhere = 'photos'; $mssg['url'] = $imgURL; 
         if ($options['imgUpl']=='T') { //## Try to Post to TImeline
-          $aacct = array('access_token'  => $options['fbAppPageAuthToken']);  $albums = $facebook->api("/$page_id/albums", "get", $aacct);
-          foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
+          $aacct = array('access_token'  => $options['fbAppPageAuthToken']);  
+          try { $albums = $facebook->api("/$page_id/albums", "get", $aacct); } catch (NXS_FacebookApiException $e) { $badOut['Error'] = ' [ERROR] '.$e->getMessage()."<br/>\n"; }
+          
+          if (isset($albums) && isset($albums["data"]) && is_array($albums["data"])) foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
           if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
         }        
       }
       //prr($message); prr($mssg); prr($options); //die();
-      try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { $badOut['Error'] = ' [ERROR]'.$e->getMessage()."<br/>\n";
+      try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { $badOut['Error'] = ' [ERROR] '.$e->getMessage()."<br/>\n";
         if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { 
           if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) $badOut['Error'] .= ' [ERROR] Unrecognized Facebook Group ID. Please use numeric ID.'; 
             else $badOut['Error'] .= " [ERROR] (invalid app_id) Authorization Error. <br/>\r\n<br/>\r\n Possible Reasons: <br/>\r\n 1. Your app is not authorized. Please go to the Plugin Settings - Facebook and authorize it.<br/>\r\n 2. The current authorized user have no rights to post to the specified page. Please login to Facebook as the correct user and Re-Authorize the Plugin.<br/>\r\n 3. You clicked 'Skip' or unchecked the 'Manage Pages' or 'Post on your behalf' permissions when Authorization wizard asked you. Please Re-Authorize the Plugin<br/>\r\n"; 

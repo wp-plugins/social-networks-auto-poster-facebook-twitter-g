@@ -2,7 +2,7 @@
 //## NextScripts Facebook Connection Class
 $nxs_snapAPINts[] = array('code'=>'GP', 'lcode'=>'gp', 'name'=>'Google+');
 
-if (!class_exists("nxs_class_SNAP_GB")) { class nxs_class_SNAP_GB {
+if (!class_exists("nxs_class_SNAP_GP")) { class nxs_class_SNAP_GP {
     
     var $ntCode = 'GP';
     var $ntLCode = 'gp';     
@@ -25,7 +25,7 @@ if (!class_exists("nxs_class_SNAP_GB")) { class nxs_class_SNAP_GB {
       if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($message['link']);  if (is_array($lnk) && $message['imageURL']!='') $lnk['img'] = $message['imageURL']; 
       if ($gpPostType=='I' && trim($message['videoURL'])!='') { $lnk['video'] = $message['videoURL']; }
       if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($message['message'], $lnk, $to);} 
-        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($message['message'], $lnk); 
+        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($message['message'], $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($message['message'], $lnk); 
       if ( (!is_array($ret)) && $ret!='OK') { $badOut['Error'] = print_r($ret, true); } else { return array('isPosted'=>'1',  'postID'=>$ret['post_id'], 'postURL'=>'https://plus.google.com/'.$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')); }
       return $badOut;
     }

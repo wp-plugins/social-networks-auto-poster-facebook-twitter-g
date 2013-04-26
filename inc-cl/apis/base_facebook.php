@@ -50,6 +50,7 @@ class NXS_FacebookApiException extends Exception
     } else if (isset($result['error']) && is_array($result['error'])) {
       // OAuth 2.0 Draft 00 style
       $msg = $result['error']['message'];
+      if ($code==0 && isset($result['error']['code'])) $code = $result['error']['code'];
     } else if (isset($result['error_msg'])) {
       // Rest server style
       $msg = $result['error_msg'];

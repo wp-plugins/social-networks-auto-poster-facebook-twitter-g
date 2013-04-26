@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.7.9
+Version: 2.7.10
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.9' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.10' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -230,7 +230,9 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName();
               if ( isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { $ntClInst->showGenNTSettings($options[$avNt['lcode']]); } // else $ntClInst->showNewNTSettings(0);
            }
-           if ($isNoNts) { ?><br/><br/><br/>You don't have any configured social networks yet. Please click "Add new account" button.<?php } else {?>   
+           if ($isNoNts) { ?><br/><br/><br/>You don't have any configured social networks yet. Please click "Add new account" button.<br/><br/>
+           <input onclick="jQuery('#impFileSettings_button').click(); return false;" type="button" class="button" name="impSettings_repostButton" id="impSettings_button"  value="<?php _e('Import Settings', 'nxs_snap') ?>" />     
+         <?php } else {?>   
              
            <div style="float: right; padding: 1.5em;">
            
@@ -282,28 +284,24 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               
            </div></div>        
      <!-- #### Include/Exclude Wordpress Pages and Custom Post Types ##### --> 
-            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Include/Exclude Wordpress Pages and Custom Post Types', 'nxs_snap') ?></h3></div>                          
+           <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Include/Exclude Wordpress Pages and Custom Post Types', 'nxs_snap') ?></h3></div>                          
              <div class="nxs_box_inside"> 
-             <div class="itemDiv">
+             <div class="itemDiv"> 
               <input value="set" id="useForPages" name="useForPages"  type="checkbox" <?php if ((int)$options['useForPages'] == 1) echo "checked"; ?> />  <b><?php _e('Use for Wordpress Pages', 'nxs_snap') ?></b>     
              <span style="font-size: 11px; margin-left: 1px;"><?php _e('Show the SNAP metabox and auto-post for pages, not just posts.', 'nxs_snap') ?></span>  
              </div>
               <div class="itemDiv"><b><br/><?php _e('Custom Post Types:', 'nxs_snap') ?></b>              
-              <span style="font-size: 11px; margin-left: 1px;"><?php _e('Please select "Custom Post Types" that you would like to be autoposted to your social networks', 'nxs_snap') ?> </span> <br/>              
+              <span style="font-size: 11px; margin-left: 1px;"><?php _e('Please select "Custom Post Types" that you would like to be autoposted to your social networks', 'nxs_snap') ?> </span> <br/>
               <?php $nxsOne = base64_encode("v=".$nxsOne);
               $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
               if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);
-            ?>
-            <select multiple="multiple" name="nxsCPTSeld[]" id="nxsCPTSeld" class="nxsMultiSelect" size="<?php echo count($post_types)+2; ?>">
-            <option <?php if (count($nxsCPTSeld)==0) echo 'selected="selected"'; ?> value="-----">----------------------- None -----------------------</option>
-            <?php             
-              foreach ($post_types as $cptID=>$cptName){ 
-                ?><option <?php if (in_array($cptID,$nxsCPTSeld)) echo 'selected="selected"'; ?> value="<?php echo $cptID; ?>"><?php echo $cptName; ?></option><?php
-              }
-            ?>
-            </select>  
-              </div>
               
+             ?> <div class="taxonomydiv"><div class="tabs-panel" style="padding: 10px;"><input type="hidden" name="nxsCPTSeld[]" value="0" /> <?php //prr($nxsCPTSeld); prr($post_types); prr($_POST['nxsCPTSeld']);              
+             foreach ($post_types as $cptID=>$cptName){ if (in_array($cptID, $nxsCPTSeld)) $dCh = ' checked="checked" '; else $dCh = "";
+              ?><input type="checkbox" name="nxsCPTSeld[]" value="<?php echo esc_attr($cptID); ?>"<?php echo $dCh ?>>&nbsp;<?php echo $cptName ?><br/> <?php
+             }
+            ?></div></div>        
+              </div>               
            </div></div>            
      <!-- #### Categories to Include/Exclude: ##### --> 
             <script type="text/javascript"> function nxs_chAllCats(ch){ jQuery("form input:checkbox[name='post_category[]']").attr('checked', ch==1);}
@@ -754,6 +752,7 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 
 //## Main Function to Post 
 if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
+ if (!current_user_can("see_snap_box") || !current_user_can("manage_options")) return;
  if(is_object($postArr)) $postID = $postArr->ID; else $postID = $postArr;  $isPost = isset($_POST["snapEdIT"]); if ($isPost) $plgn_NS_SNAutoPoster->NS_SNAP_SavePostMetaTags($postID); 
  if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);
@@ -1006,7 +1005,8 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   add_action('nxs_hourly_event', 'nxs_do_this_hourly');
   add_action('wp', 'nxs_activation');
   add_action('shutdown', 'nxs_psCron');
-    
+  
+  
   if ($isO || $isS) {    
   //## Whenever you publish a post, post to Social Networks
     add_action('future_to_publish', 'nxs_snapPublishTo');
@@ -1023,9 +1023,9 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     //## Add AJAX Calls for Test and Repost    
     add_action('wp_ajax_getBoards' , 'nsGetBoards_ajax');
     add_action('wp_ajax_getWLBoards' , 'nsGetWLBoards_ajax');
-    add_action('wp_ajax_nsDN', 'ns_delNT_ajax');
-    
-  }  
+    add_action('wp_ajax_nsDN', 'ns_delNT_ajax');    
+  }
+  
   if ($isO) {    
     add_action('admin_menu', 'NS_SNAutoPoster_ap');    
     add_action('admin_init', 'nxs_adminInitFunc2');    

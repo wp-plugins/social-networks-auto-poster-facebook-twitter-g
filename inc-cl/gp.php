@@ -135,11 +135,11 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
                 <?php if (!$isAvailGP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Google+ Account to AutoPost to Google+</b>
                 <?php } elseif ($post->post_status != "puZblish") { ?> 
                 
-                <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Repost to Google+', 'nxs_snap') ?>Post Type: <br/>
+                <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Post Type:', 'nxs_snap') ?> <br/>
                 (<a id="showShAtt" style="font-weight: normal" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)
                 </th><td>     
         
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($gpPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Repost to Google+', 'nxs_snap') ?>Text Post  - <i><?php _e('just text message', 'nxs_snap') ?></i><br/>       
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($gpPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap') ?>  - <i><?php _e('just text message', 'nxs_snap') ?></i><br/>       
         <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($gpPostType == 'I') echo 'checked="checked"'; ?> /> <?php _e('Post to Google+ as "Image post"', 'nxs_snap') ?> - <i><?php _e('big image with text message', 'nxs_snap') ?></i><br/>             
         <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($gpPostType) || $gpPostType == '' || $gpPostType == 'A') echo 'checked="checked"'; ?> /><?php _e('Text Post with "attached" blogpost', 'nxs_snap') ?>
         <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap') ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap') ?>"/></div>
@@ -199,7 +199,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
         $message = array('message'=>$msg, 'link'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
       }            
       //## Actual Post
-      $ntToPost = new nxs_class_SNAP_GB(); $ret = $ntToPost->doPostToNT($options, $message);
+      $ntToPost = new nxs_class_SNAP_GP(); $ret = $ntToPost->doPostToNT($options, $message);
       //## Process Results
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 

@@ -284,10 +284,10 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }              
         $msg = nsFormatMessage($twMsgFormat, $postID);         
     } 
-    $msg = str_replace('&amp;#039', "'", $msg); $msg = str_replace('&#039', "'", $msg); $msg = str_replace('#039', "'", $msg);
-    $msg = str_replace('&amp;#8217', "'", $msg); $msg = str_replace('&#8217', "'", $msg); $msg = str_replace('#8217', "'", $msg);
-    $msg = str_replace('&amp;#8220', '"', $msg); $msg = str_replace('&#8220', '"', $msg); $msg = str_replace('#8220', '"', $msg);
-    $msg = str_replace('&amp;#8221', '"', $msg); $msg = str_replace('&#8221', '"', $msg); $msg = str_replace('#8221', '"', $msg);
+    $msg = str_replace('&amp;#039;', "'", $msg);  $msg = str_replace('&#039;', "'", $msg);  $msg = str_replace('#039;', "'", $msg);  $msg = str_replace('#039', "'", $msg);
+    $msg = str_replace('&amp;#8217;', "'", $msg); $msg = str_replace('&#8217;', "'", $msg); $msg = str_replace('#8217;', "'", $msg); $msg = str_replace('#8217', "'", $msg);
+    $msg = str_replace('&amp;#8220;', '"', $msg); $msg = str_replace('&#8220;', '"', $msg); $msg = str_replace('#8220;', '"', $msg); $msg = str_replace('#8220', "'", $msg);
+    $msg = str_replace('&amp;#8221;', '"', $msg); $msg = str_replace('&#8221;', '"', $msg); $msg = str_replace('#8221;', '"', $msg); $msg = str_replace('#8221', "'", $msg);
     $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);     
     
     //## Actual Post

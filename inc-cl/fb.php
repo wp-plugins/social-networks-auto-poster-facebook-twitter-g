@@ -157,7 +157,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($fbo['fbAppAuthUser']) && $fbo['fbAppAuthUser']>0) { ?>
             <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($fbo['fbAppAuthUser'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($fbo['fbAppID']);?>&client_secret=<?php echo trim($fbo['fbAppSec']);?>&scope=publish_stream,user_photos,photo_upload,friends_photos,offline_access,read_stream,manage_pages&redirect_uri=<?php echo trim(urlencode($nxs_snapThisPageUrl.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($fbo['fbAppID']);?>&client_secret=<?php echo trim($fbo['fbAppSec']);?>&scope=publish_stream,user_photos,photo_upload,friends_photos,offline_access,read_stream,manage_pages,user_groups,friends_groups&redirect_uri=<?php echo trim(urlencode($nxs_snapThisPageUrl.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($fbo['fbAppAuthUser']) || $fbo['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
             <?php } ?>
@@ -263,7 +263,11 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 <div class="popShAtt" id="popShAtt<?php echo $ii; ?>"><h3><?php _e('Two ways of attaching post on Facebook', 'nxs_snap'); ?></h3> <img src="<?php echo $nxs_plurl; ?>img/fb2wops.jpg" width="600" height="271" alt="<?php _e('Two ways of attaching post on Facebook', 'nxs_snap'); ?>"/></div>
 <div class="popShAtt" id="popShAtt<?php echo $ii; ?>X"><h3><?php _e('Facebook Post Types', 'nxs_snap'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/fbPostTypesDiff6.png" width="600" height="398" alt="<?php _e('Facebook Post Types', 'nxs_snap'); ?>"/></div>
      </td></tr>
-                
+                <!--
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Image(s) to use:', 'nxs_snap') ?></th>
+                <td><input type="checkbox" class="isAutoImg" checked="checked"  id="isAutoImg-fb<?php echo $ii; ?>" name="fb[<?php echo $ii; ?>][isAutoImg]" value="A"/> <?php _e('Auto', 'nxs_snap'); ?><br/>
+                <div id="imgPrevList-fb<?php echo $ii; ?>" class="nxs_imgPrevList"></div></td></tr>                
+                    -->
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
                 <td>
                 <?php if (1==1) { ?>
@@ -272,6 +276,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <input value="<?php echo $fbMsgFormat ?>" type="text" name="fb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apFBTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBTMsgFrmt".$ii, '', '58'); ?>
                 <?php } ?>
                 </td></tr>
+                
                 <?php } 
     }
       
@@ -332,22 +337,25 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     //## Initiate Posting Array
     $message = array('message'=>'', 'link'=>'', 'title'=>'', 'description'=>'', 'imageURL'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle);    
     
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $message['message'] = 'Test Post, Please Ignore'; 
+    if ($postID=='0') { $message['message'] = 'Test Post, Please Ignore'; 
       $message['description'] = 'Test Post, Description';  $message['title'] = 'Test Post - Title';  $message['link'] = home_url();    
     } else { $post = get_post($postID); if(!$post) return; $msg = nsFormatMessage($options['fbMsgFormat'], $postID, $addParams); 
       $isAttachFB = $options['fbAttch']; $fbPostType = $options['fbPostType']; $isAttachVidFB = $options['fbAttchAsVid'];
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $extInfo = ' | PostID: '.$postID." - ".nxs_doQTrans($post->post_title, $lng).' |'.$options['pType'];
       if (($isAttachFB=='1' || $isAttachFB=='2' || $fbPostType=='A')) $imgURL = nxs_getPostImage($postID, 'medium'); // prr($options); echo "PP - ".$postID; prr($src);      
-      if ($fbPostType=='I') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);            
-      //## AUTO - Get Post Descr from SEO Plugins or make it.
-      if (trim($options['fbMsgAFrmt'])!='') {$dsc = nsFormatMessage($options['fbMsgAFrmt'], $postID, $addParams);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
-        if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
-        if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
-        if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
-        if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
-        if ($dsc=='') $dsc = get_bloginfo('description'); 
-      }      
-      $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
+      if ($fbPostType=='I') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);                  
+      if (($isAttachFB=='1' || $fbPostType=='A' || $fbPostType=='S')){
+        //## AUTO - Get Post Descr from SEO Plugins or make it.      
+        if (trim($options['fbMsgAFrmt'])!='') {$dsc = nsFormatMessage($options['fbMsgAFrmt'], $postID, $addParams);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
+          if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
+          if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
+          if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
+          if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
+          if ($dsc=='') $dsc = get_bloginfo('description'); 
+        }      
+        $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
+      }
+      
       $postSubtitle = home_url();  $msg = str_replace('<br>', "\n", $msg); $msg = str_replace('<br/>', "\n", $msg); $msg = str_replace('<br />', "\n", $msg);  
       $msg = strip_tags($msg);  $msg = nxs_decodeEntitiesFull($msg);  
       

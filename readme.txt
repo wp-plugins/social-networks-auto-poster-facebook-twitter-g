@@ -2,10 +2,10 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.9
+Stable tag: 2.7.10
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -164,10 +164,15 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 2.7.10 [04/11/2013] =
+= 3.0.0 Beta [05/??/2013] =
 
-* Improvement - "Include/Exclude Wordpress Pages and Custom Post Types" is now a list of checboxes.
+* New - New network - Reddit
+
+= 2.7.10 [04/25/2013] =
+
 * New - Support for Facebook Secret Groups
+* Improvement - Import Button is availabe even if no networks configured.
+* Improvement - "Include/Exclude Wordpress Pages and Custom Post Types" is now a list of checboxes.
 * Bug Fix - Google+ Community Postings
 * Bug Fix - Unselected user types were still be able to autopost from front end.
 * Bug Fix - Facebook "Warning: session_start() [function.session-start]: Cannot send session cookie - headers already sent by ...".

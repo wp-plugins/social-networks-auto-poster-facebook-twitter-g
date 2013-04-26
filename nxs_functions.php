@@ -121,9 +121,71 @@ if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) 
     return $templ;
 }}
 
+function nxs_tiny_mce_before_init( $init ) {
+    $init['setup'] = "function( ed ) { ed.onChange.add( function( ed, e ) { 
+      nxs_updateGetImgsX( e ); 
+    }); }";
+    return $init;
+}
+add_filter( 'tiny_mce_before_init', 'nxs_tiny_mce_before_init' );
+
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>
     <script type="text/javascript" >  
+    function nxs_updateGetImgsX(e){ }
+    jQuery(document).on('change', '#content', function( e ) {   
+        nxs_updateGetImgsX( e );
+    });
+    function nxs_updateGetImgsXX(e){ 
+      var targetId = e.target.id; 
+      var text = 'Kortinko';
+
+      switch ( targetId ) {
+
+         case 'content':
+             text = jQuery('#content').val(); 
+             break;
+
+         case 'tinymce':
+             if ( tinymce.activeEditor )
+                 text = tinymce.activeEditor.getContent();
+             break;
+      }
+
+      jQuery('.nxs_imgPrevList').html( text );
+    }
+    
+    function nxs_clPrvImg(id){
+        alert('aa');
+    }
+    
+    
+    function nxs_updateGetImgs(e){ 
+        var textOut='';
+        var tId = e.target.id; 
+        var tIdN = tId.replace("isAutoImg-", "");
+        if ( tinymce.activeEditor ) text = tinymce.activeEditor.getContent(); else text = jQuery('#content').val();                
+        $('#NS_SNAP_AddPostMetaTags').append('<div id="nxs_tempDivImgs" style="display: none;"></div>'); $('#nxs_tempDivImgs').append(text);
+        var textOutA = new Array();
+        $('#nxs_tempDivImgs img').each(function(){ textOutA.push(jQuery(this).attr('src')); });                
+        $('#nxs_tempDivImgs').remove();
+        var index;  for (index = 0; index < textOutA.length; ++index) { textOut = textOut + '<div id="nxs_idiv'+index+'" onclick="nxs_clPrvImg(\'nxs_idiv'+index+'\');" style="width:110px; height:110px; float:left;"><img style="padding:5px; max-height:100px; max-width:100px;" src="'+textOutA[index]+'"></div>'; }
+        jQuery('#imgPrevList-'+tIdN).html( textOut );
+        if (jQuery('#'+tId).is(":checked")) jQuery('#imgPrevList-'+tIdN).hide(); else jQuery('#imgPrevList-'+tIdN).show(); 
+        
+    }
+    
+    jQuery(document).on('change', '.isAutoImg', function( e ) {   
+        nxs_updateGetImgs( e );
+    });
+    
+    jQuery(document).on('change', '#wp-content-editor-container #conXXtent', function() {
+        nxs_updateGetImgs();
+    });
+    jQuery(document).on('change', '#tinXXymce', function() {
+        nxs_updateGetImgs();
+    });
+    
     jQuery(document).ready(function($) {          
     <?php       
       foreach ($nxs_snapAvNts as $avNt) {?>
@@ -417,6 +479,54 @@ if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_
     return $avatar;
 }}
 
+if (!function_exists('nxs_doProcessTags')){ function nxs_doProcessTags($tags){ $tagsA = array(); if (!is_array($tags)) { $tags = explode(',', $tags); 
+  foreach ($tags as $tg) $tagsA[] = trim($tg); } else $tagsA = $tags; $tagsA = array_unique($tagsA);  $tags = array(); 
+  foreach ($tagsA as $tg) { $tags['tagsA'][] = $tg; $tags['htagsA'][] = "#".trim(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&', '', str_ireplace('&amp;','',$tg))))))); } 
+  $tags['tags'] =  implode(', ', $tags['tagsA']); $tags['htags'] = implode(', ', $tags['htagsA']);
+  return $tags;
+}}
+if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $message, $addURLParams=''){ global $nxs_urlLen; $msg = nxs_doSpin($format);// prr($msg); prr($message);// Make "message default"
+  if (preg_match('%URL%', $msg)) { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
+  if (preg_match('%SURL%', $msg)) { 
+    if (isset($message['surl']) && $message['surl']!='') $url = $message['surl']; else { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; $url = nxs_mkShortURL($url); } 
+    $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);
+  }
+  if (preg_match('%IMG%', $imgURL)) { $imgURL = trim($message['imgURL']['large']); if ($imgURL=='') $imgURL = trim($message['imgURL']['medium']);   
+     if ($imgURL=='') $imgURL = trim($message['imgURL']['original']); if ($imgURL=='') $imgURL = trim($message['imgURL']['thumb']); $msg = str_ireplace("%IMG%", $imgURL, $msg); 
+  }
+  if (preg_match('%IMGLARGE%', $imgURL)) $msg = str_ireplace("%IMG%", trim($message['imgURL']['large'], $msg));  
+  if (preg_match('%IMGMEDIUM%', $imgURL)) $msg = str_ireplace("%IMGMEDIUM%", trim($message['imgURL']['medium'], $msg));  
+  if (preg_match('%IMGTHUMB%', $imgURL)) $msg = str_ireplace("%IMGTHUMB%", trim($message['imgURL']['thumb'], $msg));  
+  if (preg_match('%IMGORIGINAL%', $imgURL)) $msg = str_ireplace("%IMGORIGINAL%", trim($message['imgURL']['original'], $msg));  
+  
+  if (preg_match('%TITLE%', $msg)) $msg = str_ireplace("%TITLE%", $message['title'], $msg);  
+  if (preg_match('%STITLE%', $msg)) { $title = substr($message['title'], 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
+  if (preg_match('%AUTHORNAME%', $msg)) $msg = str_ireplace("%AUTHORNAME%", $message['authorName'], $msg);
+  if (preg_match('%SITENAME%', $msg)) $msg = str_ireplace("%SITENAME%", $message['siteName'], $msg); 
+  
+  if (preg_match('%ANNOUNCE%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%ANNOUNCE%", $sText, $msg); }
+  if (preg_match('%EXCERPT%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%EXCERPT%", $sText, $msg); }
+  if (preg_match('%RAWEXCERPT%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%RAWEXCERPT%", $sText, $msg); }
+  
+  if (preg_match('%TEXT%', $msg)) $msg = str_ireplace("%TEXT%", $message['description'], $msg);     
+  if (preg_match('%FULLTEXT%', $msg)) $msg = str_ireplace("%FULLTEXT%", $message['description'], $msg);     
+  if (preg_match('%RAWTEXT%', $msg)) $msg = str_ireplace("%RAWTEXT%", $message['description'], $msg);     
+      
+  
+  if (preg_match('%TAGS%', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%TAGS%", $tags['tags'], $msg); }
+  if (preg_match('%HTAGS%', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%HTAGS%", $tags['htags'], $msg); }
+  if (preg_match('%CATS%', $msg)) { $tags = nxs_doProcessTags($message['cats']);  $msg = str_ireplace("%CATS%", $tags['cats'], $msg); }
+  if (preg_match('%HCATS%', $msg)) { $tags = nxs_doProcessTags($message['hcats']);  $msg = str_ireplace("%HCATS%", $tags['hcats'], $msg); }
+    
+  if (preg_match('%CF-[a-zA-Z0-9]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+    foreach ($msgA as $mms) { 
+        if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem = $message[$mGr]; $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
+    } $msg = $mout; 
+  }  
+  return trim($msg);
+}}
+
+
 
 //## NXS Cron
 if (!function_exists("nxs_psCron")) { function nxs_psCron() {   
@@ -441,6 +551,8 @@ if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $p
 
 function nxs_activation(){ if (!wp_next_scheduled('nxs_hourly_event')){wp_schedule_event(time(), 'hourly', 'nxs_hourly_event');} }
 function nxs_do_this_hourly() { $options = get_option('NS_SNAutoPoster'); $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array(); //## Check for Incoming Comments if nessesary.
+  if ($options['riActive'] != 1 || count($riPosts)<1 ) return;
+  
   nxs_addToLogN( 'S', 'Comments Import', 'ALL', 'Checking for new comments now...', print_r($riPosts, true));
   //## Facebook
   if (is_array($options['fb'])) foreach ($options['fb'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';
