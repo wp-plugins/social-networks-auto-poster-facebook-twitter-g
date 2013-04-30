@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.12
+Stable tag: 2.7.13
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -59,17 +59,17 @@ You need to have account with either Facebook, Tumblr, Google+, LinkedIn, Pinter
 
 How to setup each type of Social Network
 
-1. <a href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">Facebook Configuration</a><br/>
-2. <a href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">Twitter Configuration</a><br/>
-3. <a href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/">Google+ Configuration</a><br/>
-4. <a href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">Pinterest Configuration</a><br/>
-5. <a href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">Tumblr Configuration</a><br/>
-6. <a href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">LinkedIn Configuration</a><br/>
-7. <a href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">Blogger Configuration</a><br/>
-8. <a href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/">Delicious Configuration</a><br/>
-9. <a href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/">Blog.com/Wordpress.com Configuration</a><br/>
-10. <a href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Diigo Configuration</a><br/>
-11. <a href="http://www.nextscripts.com/setup-installation-plurk-social-networks-auto-poster-wordpress/">Plurk Configuration</a><br/>
+<a href="http://www.nextscripts.com/setup-installation-facebook-social-networks-auto-poster-wordpress/">Facebook Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/">Twitter Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/">Google+ Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/">Pinterest Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-tumblr-social-networks-auto-poster-wordpress/">Tumblr Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-linkedin-social-networks-auto-poster-wordpress/">LinkedIn Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-blogger-social-networks-auto-poster-wordpress/">Blogger Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/">Delicious Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/">Blog.com/Wordpress.com Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/">Diigo Configuration</a>
+<a href="http://www.nextscripts.com/setup-installation-plurk-social-networks-auto-poster-wordpress/">Plurk Configuration</a>
 
 
 Have problems? Please check out the <a href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a> page.
@@ -118,6 +118,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.13 [04/30/2013] =
+
+* New - Google+ Community Pages - now you can select which category to post.
+* Improvement - Compatibility with Facebook's "July 2013 Breaking Changes". It's now safe to enable them for your apps.
+* Bug Fix - Incorrect "User ID XXXXX can't autopost" error.
 
 = 2.7.12 [04/29/2013] =
 

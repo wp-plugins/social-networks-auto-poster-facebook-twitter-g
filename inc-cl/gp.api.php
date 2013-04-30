@@ -20,12 +20,21 @@ if (!class_exists("nxs_class_SNAP_GP")) { class nxs_class_SNAP_GP {
       if (!isset($options['gpUName']) || trim($options['gpPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }
       //## Make Post      
       $gpPostType = $options['postType'];            
+      
+      $msg = nxs_doFormatMsg($options['gpMsgFormat'], $message); // Make "message default"
+      if ($gpPostType=='I' || $gpPostType=='A') { 
+          if (is_array($message['imageURL'])) { $imgURL = trim($message['imageURL'][$options['attchImg']]);
+            if ($imgURL=='') $imgURL = trim($message['imageURL']['large']); if ($imgURL=='') $imgURL = trim($message['imageURL']['medium']); 
+            if ($imgURL=='') $imgURL = trim($message['imageURL']['original']); if ($imgURL=='') $imgURL = trim($message['imageURL']['thumb']); 
+          } else $imgURL = $message['imageURL'];
+      } 
+      
       $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];                   
       $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {  $badOut['Error'] = print_r($loginError, true)." - BAD USER/PASS"; return $badOut; } 
-      if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($message['link']);  if (is_array($lnk) && $message['imageURL']!='') $lnk['img'] = $message['imageURL']; 
+      if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($message['url']);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL; 
       if ($gpPostType=='I' && trim($message['videoURL'])!='') { $lnk['video'] = $message['videoURL']; }
-      if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($message['message'], $lnk, $to);} 
-        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($message['message'], $lnk, '', $options['gpCommID']); else $ret = doPostToGooglePlus2($message['message'], $lnk); 
+      if (!empty($options['gpPageID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
+        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, '', $options['gpCommID'], $options['gpCCat']); else $ret = doPostToGooglePlus2($msg, $lnk); 
       if ( (!is_array($ret)) && $ret!='OK') { $badOut['Error'] = print_r($ret, true); } else { return array('isPosted'=>'1',  'postID'=>$ret['post_id'], 'postURL'=>'https://plus.google.com/'.$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')); }
       return $badOut;
     }

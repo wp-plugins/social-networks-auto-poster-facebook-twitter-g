@@ -26,9 +26,9 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     </div> <?php 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'gpCommID'=>'', 'postType'=>'A', 'gpPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
+  function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'gpCommID'=>'', 'postType'=>'A', 'gpPass'=>''); $this->showNTSettings($mgpo, $options, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
             <div id="doGP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/gp-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
             <?php if(!function_exists('doPostToGooglePlus')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b><?php _e('Google+ API Library not found', 'nxs_snap'); ?></b>
@@ -36,51 +36,63 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <?php return; }; ?>            
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"><?php $nType="Google+"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
-            <?php echo nxs_addQTranslSel('gp', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('gp', $ii, $gpo['nHrs'], $gpo['nMin']); ?>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <?php echo nxs_addQTranslSel('gp', $ii, $options['qTLng']); ?><?php echo nxs_addPostingDelaySel('gp', $ii, $options['nHrs'], $options['nMin']); ?>
             
             <?php if (!$isNew) { ?>
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
-       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="gp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] != 1) echo "checked"; ?> /> All                                  
-       <input value="1" id="catSelSGP<?php echo $ii; ?>" type="radio" name="gp[<?php echo $ii; ?>][catSel]" <?php if ((int)$gpo['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_GP<?php echo $ii; ?>" onclick="jQuery('#catSelSGP<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('GP<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_GP<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($gpo['catSelEd']!='') echo "[".(substr_count($gpo['catSelEd'], ",")+1)."]"; ?></a>       
-       <input type="hidden" name="gp[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_GP<?php echo $ii; ?>" value="<?php echo $gpo['catSelEd']; ?>" />
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="gp[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelSGP<?php echo $ii; ?>" type="radio" name="gp[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_GP<?php echo $ii; ?>" onclick="jQuery('#catSelSGP<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('GP<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_GP<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="gp[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_GP<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
     <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
     <?php } ?>
             
-            <div style="width:100%;"><strong>Google+ Username:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($gpo['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($gpo['gpPass'], 5)):$gpo['gpPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Google+ Username:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             <p><div style="width:100%;"><strong>Google+ Page ID (Optional - for Google+ Pages Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or community', 'nxs_snap'); ?></b>):</strong> 
             <p style="font-size: 11px; margin: 0px;">For example if URL of your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. <b><?php _e('Leave Empty to publish to your profile or community.', 'nxs_snap'); ?></b></p>
-            </div><input name="gp[<?php echo $ii; ?>][apGPPage]" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            </div><input name="gp[<?php echo $ii; ?>][apGPPage]" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
             <br/>
             <p><div style="width:100%;"><strong>Google+ Community ID (Optional - for Google+ Communities Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or page', 'nxs_snap'); ?></b>):</strong> 
             <p style="font-size: 11px; margin: 0px;">For example if URL of your Community is https://plus.google.com/communities/100396001601096060160 your Page ID is: 100396001601096060160. <b><?php _e('Leave Empty to publish to your profile or page', 'nxs_snap'); ?>.</b></p>
-            </div><input name="gp[<?php echo $ii; ?>][gpCommID]" id="gpCommID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['gpCommID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            </div><input name="gp[<?php echo $ii; ?>][gpCommID]" id="gpCommID<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpCommID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />&nbsp;&nbsp;
+            <a href="#" onclick="getGPCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apGPUName<?php echo $ii; ?>').val(), jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apGPPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>', jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#gpCommID<?php echo $ii; ?>').val()); return false;">
+            <?php _e('Retreive Categories', 'nxs_snap'); ?>
+            </a>
+             <div style="padding-left: 15px; width:100%;"><strong>Community Category:</strong>
+            <?php wp_nonce_field( 'getGPCats', 'getGPCats_wpnonce' ); ?><img id="gpLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
+            <select name="gp[<?php echo $ii; ?>][apGPCCats]" id="apGPCCats<?php echo $ii; ?>">
+            <?php if ($options['gpCCatsList']!=''){ $gGPCats = $options['gpCCatsList']; if ( base64_encode(base64_decode($gGPCats)) === $gGPCats) $gGPCats = base64_decode($gGPCats); 
+              if ($options['gpCCat']!='') $gGPCats = str_replace($options['gpCCat'].'"', $options['gpCCat'].'" selected="selected"', $gGPCats);  echo $gGPCats;} else { ?>
+              <option value="0">None(Click above to retrieve your categories)</option>
+            <?php } ?>
+            </select>      </div>
+            
             <br/><br/>
             
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apGPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
               </div>
               
-              <textarea cols="150" rows="3" id="gp<?php echo $ii; ?>SNAPformat" name="gp[<?php echo $ii; ?>][apGPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#gp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'nxs_snap'); else _e(apply_filters('format_to_edit', htmlentities($gpo['gpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              <textarea cols="150" rows="3" id="gp<?php echo $ii; ?>SNAPformat" name="gp[<?php echo $ii; ?>][apGPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#gp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'nxs_snap'); else _e(apply_filters('format_to_edit', htmlentities($options['gpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
               
               <?php nxs_doShowHint("apGPMsgFrmt".$ii); ?>
             </div><br/>          
             
              <div style="width:100%;"><strong id="altFormatText">Post Type:</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)  </div>                      
 <div style="margin-left: 10px;">
-        <?php if(!isset($gpo['postType']) || $gpo['postType']=='') {
-            if ((int)$gpo['imgPost'] == 1) $gpo['postType'] = 'I';
-            if ((int)$gpo['gpAttch'] == 1 || $isNew) $gpo['postType'] = 'A';
+        <?php if(!isset($options['postType']) || $options['postType']=='') {
+            if ((int)$options['imgPost'] == 1) $options['postType'] = 'I';
+            if ((int)$options['gpAttch'] == 1 || $isNew) $options['postType'] = 'A';
         } ?>
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($gpo['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($gpo['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Google+ Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($gpo['postType']) || $gpo['postType'] == '' || $gpo['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Add blogpost to Google+ message as an attachment', 'nxs_snap'); ?><br/>
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Google+ Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Add blogpost to Google+ message as an attachment', 'nxs_snap'); ?><br/>
 <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap'); ?>"/></div>
    </div><br/>
             <?php if ($isNew) { ?> <input type="hidden" name="gp[<?php echo $ii; ?>][apDoGP]" value="1" id="apDoNewGP<?php echo $ii; ?>" /> <?php } ?>
-            <?php if ($gpo['gpPass']!='') { ?>
+            <?php if ($options['gpPass']!='') { ?>
             <?php wp_nonce_field( 'rePostToGP', 'rePostToGP_wpnonce' ); ?>
             <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('GP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>              <?php } 
             ?><div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
@@ -96,7 +108,8 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
         if (isset($pval['gpCommID']))    $options[$ii]['gpCommID'] = trim($pval['gpCommID']);  
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
-        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';        
+        if (isset($pval['apGPCCats']))   $options[$ii]['gpCCat'] = trim($pval['apGPCCats']);        
                       
         if (isset($pval['postType']))   $options[$ii]['postType'] = $pval['postType'];         
         if (isset($pval['apGPMsgFrmt'])) $options[$ii]['gpMsgFormat'] = trim($pval['apGPMsgFrmt']);                                                  
@@ -144,6 +157,16 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
         <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($gpPostType) || $gpPostType == '' || $gpPostType == 'A') echo 'checked="checked"'; ?> /><?php _e('Text Post with "attached" blogpost', 'nxs_snap') ?>
         <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap') ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap') ?>"/></div>
      </td></tr>
+         <?php if ($ntOpt['gpCommID']!='') { ?>
+     <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Community Category</th>
+                <td><select name="gp[<?php echo $ii; ?>][apGPCCat]" id="apGPCCat">
+            <?php if ($ntOpt['gpCCatsList']!=''){ $gCats = $ntOpt['gpCCatsList']; if ( base64_encode(base64_decode($gCats)) === $gCats) $gCats = base64_decode($gCats); 
+              if ($ntOpt['gpCCat']!='') $gCats = str_replace($ntOpt['gpCCat'].'"', $ntOpt['gpCCat'].'" selected="selected"', $gCats);  echo $gCats;} else { ?>
+              <option value="0">None(Please go to settings and retreive)</option>
+            <?php } ?>
+            </select></td>
+                </tr> 
+                       <?php } ?>
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
                 <td>
                 
@@ -162,6 +185,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   function adjMetaOpt($optMt, $pMeta){ if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = ''; 
     if (isset($pMeta['SNAPformat'])) $optMt['gpMsgFormat'] = $pMeta['SNAPformat'];   
     if (isset($pMeta['postType'])) $optMt['postType'] = $pMeta['postType'];
+    if (isset($pMeta['apGPCCat']) && $pMeta['apGPCCat']!='' && $pMeta['apGPCCat']!='0') $optMt['gpCCat'] = $pMeta['apGPCCat']; 
     if (isset($pMeta['doGP'])) $optMt['doGP'] = $pMeta['doGP'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doGP'] = 0; } 
     if (isset($pMeta['SNAPincludeGP']) && $pMeta['SNAPincludeGP'] == '1' ) $optMt['doGP'] = 1;  
     return $optMt;
@@ -190,13 +214,13 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       
       $message = array('message'=>'', 'link'=>'', 'imageURL'=>'', 'videoURL'=>''); 
       
-      if ($postID=='0') { echo "Testing ... <br/><br/>"; $message['description'] = 'Test Post, Description';  $message['title'] = 'Test Post - Title';  $message['link'] = home_url();    
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $options['gpMsgFormat'] = "Test Post from ". htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES)." - ".home_url();  $message['url'] = home_url();    
       } else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return; 
-        $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID); // prr($msg); echo $postID;
+        $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID); $options['gpMsgFormat'] = $msg; 
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
         if($gpPostType=='I') { $vids = nsFindVidsInPost($post, false); if (count($vids)>0) $ytCode = $vids[0]; if (trim($ytCode)=='') $options['trPostType']='T'; }       
         if ($gpPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium');  if ($gpPostType=='I') $imgURL = nxs_getPostImage($postID, 'full');              
-        $message = array('message'=>$msg, 'link'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
+        $message = array('message'=>$msg, 'url'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
       }            
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_GP(); $ret = $ntToPost->doPostToNT($options, $message);
