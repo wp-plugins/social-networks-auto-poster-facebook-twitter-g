@@ -24,6 +24,11 @@ function getBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
     jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
   }, "html")
 }
+function getGPCats(u,p,ii,c){ jQuery("#gpLoadingImg"+ii).show();
+  jQuery.post(ajaxurl,{u:u,p:p,c:c,ii:ii, nxs_mqTest:"'", action: 'getGPCats', id: 0, _wpnonce: jQuery('input#getGPCats_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+    jQuery("select#apGPCCats"+ii).html(j); jQuery("#gpLoadingImg"+ii).hide();
+  }, "html")
+}
 function getWLBoards(u,p,ii){ jQuery("#wlLoadingImg"+ii).show();
   jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getWLBoards', id: 0, _wpnonce: jQuery('input#getWLBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
     jQuery("select#apWLBoard"+ii).html(j); jQuery("#wlLoadingImg"+ii).hide();

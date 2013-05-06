@@ -159,6 +159,16 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
             <p style="margin: 0px;"><input value="1"  id="apLIAttch" onchange="doShowHideAltFormat();" type="checkbox" name="li[<?php echo $ii; ?>][apLIAttch]"  <?php if ((int)$options['liAttch'] == 1) echo "checked"; ?> /> 
               <strong>Publish Posts to LinkedIn as an Attachment</strong>                                 
             </p>           
+            
+            <div style="margin-left: 10px;">
+            
+            <strong><?php _e('Attachment Text Format', 'nxs_snap'); ?>:</strong><br/> 
+      <input value="1"  id="apLIMsgAFrmtA<?php echo $ii; ?>" <?php if (trim($options['liMsgAFrmt'])=='') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#apLIMsgAFrmtDiv<?php echo $ii; ?>').hide(); jQuery('#apLIMsgAFrmt<?php echo $ii; ?>').val(''); }else jQuery('#apLIMsgAFrmtDiv<?php echo $ii; ?>').show();" type="checkbox" name="li[<?php echo $ii; ?>][apLIMsgAFrmtA]"/> <strong><?php _e('Auto', 'nxs_snap'); ?></strong>
+      <i> - <?php _e('Recommended. Info from SEO Plugins will be used, then post excerpt, then post text', 'nxs_snap'); ?> </i><br/>
+      <div id="apLIMsgAFrmtDiv<?php echo $ii; ?>" style="<?php if ($options['liMsgAFrmt']=='') echo "display:none;"; ?>" >&nbsp;&nbsp;&nbsp; <?php _e('Set your own format', 'nxs_snap'); ?>:<input name="li[<?php echo $ii; ?>][apLIMsgAFrmt]" id="apLIMsgAFrmt<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['liMsgAFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/></div>
+            
+            </div>
+            
             <br/>
             <div id="altFormat">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Message title Format (Groups Only)', 'nxs_snap'); ?>:</strong> </div>
@@ -202,6 +212,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['uPage']))     $options[$ii]['uPage'] = trim($pval['uPage']);                
         if (isset($pval['apLIMsgFrmt'])) $options[$ii]['liMsgFormat'] = trim($pval['apLIMsgFrmt']); 
         if (isset($pval['apLIMsgFrmtT'])) $options[$ii]['liMsgFormatT'] = trim($pval['apLIMsgFrmtT']); 
+        if (isset($pval['apLIMsgAFrmt']))    $options[$ii]['liMsgAFrmt'] = trim($pval['apLIMsgAFrmt']); 
+        
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       } //prr($options);
@@ -286,8 +298,10 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
         $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title;     $msgT = nsTrnc($msgT, 200);  
-    if ($isAttachLI=='1') { $src = nxs_getPostImage($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  
-     $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);  
+    if ($isAttachLI=='1') { 
+      if (trim($options['liMsgAFrmt'])!='') {$dsc = nsFormatMessage($options['liMsgAFrmt'], $postID, $addParams);} else { 
+        $src = nxs_getPostImage($postID); $dsc = trim(apply_filters('the_content', $post->post_excerpt)); if ($dsc=='') $dsc = apply_filters('the_content', $post->post_content);  
+      } $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);        
     }  
     $msg = nxs_html_to_utf8($msg);  $msgT = nxs_html_to_utf8($msgT);
     if (function_exists("doConnectToLinkedIn") && $options['ulName']!='' && $options['uPass']!='') {      

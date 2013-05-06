@@ -258,13 +258,14 @@ if (!function_exists("nxs_uplImgtoVK")) {  function nxs_uplImgtoVK($imgURL, $opt
     if (!empty($VKuploadUrl)) {                               
       $remImgURL = urldecode($imgURL); $urlParced = pathinfo($remImgURL); $remImgURLFilename = $urlParced['basename']; $imgData = wp_remote_get($remImgURL); $imgData = $imgData['body'];        
       $tmp=array_search('uri', @array_flip(stream_get_meta_data($GLOBALS[mt_rand()]=tmpfile())));  
+      if (!is_writable($tmp)) return "Your temporary folder or file (file - ".$tmp.") is not witable. Can't upload image to VK";
       rename($tmp, $tmp.='.png'); register_shutdown_function(create_function('', "unlink('{$tmp}');"));       
       file_put_contents($tmp, $imgData); 
       
       $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $VKuploadUrl); curl_setopt($ch, CURLOPT_POST, 1); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS, array('photo' => '@' . $tmp)); $response = curl_exec($ch); $errmsg = curl_error($ch); curl_close($ch); //prr($response);
         
-      $uploadResultObj = json_decode($response); //prr($uploadResultObj);
+      $uploadResultObj = json_decode($response); // prr($response); //prr($uploadResultObj);
       
       if (!empty($uploadResultObj->server) && !empty($uploadResultObj->photo) && !empty($uploadResultObj->hash)) {
         $postUrl = 'https://api.vkontakte.ru/method/photos.saveWallPhoto?server='.$uploadResultObj->server.'&photo='.$uploadResultObj->photo.'&hash='.$uploadResultObj->hash.'&gid='.(str_replace('-','',$options['pgIntID'])).'&access_token='.$options['vkAppAuthToken'];
@@ -327,11 +328,13 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         $ret = nxs_doPostToVK($msg, $options['url'], $msgOpts); //  prr($ret);
       } //prr($postType);
       
-      if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; }}
+      if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; } else  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($imgUpld, true), $extInfo); }
       if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $link;       
         if (is_array($atts)) $atts = implode(',', $atts);
-        $postUrl = 'https://api.vkontakte.ru/method/wall.post?owner_id='.$options['pgIntID'].'&access_token='.$options['vkAppAuthToken'].'&from_group=1&message='.urlencode($msg).'&attachment='.urlencode($atts); 
-        $response = wp_remote_get($postUrl); // prr($atts); prr($postUrl);
+        
+        $postUrl = 'https://api.vkontakte.ru/method/wall.post';
+        $postArr = array('owner_id'=>$options['pgIntID'], 'access_token'=>$options['vkAppAuthToken'], 'from_group'=>'1', 'message'=>$msg, 'attachment'=>$atts);
+        $response = wp_remote_post($postUrl, array('body' => $postArr)); 
         if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { 
            $ret = $response['body'];
         } else { $respJ = json_decode($response['body'], true);  $ret = array("code"=>"OK", "post_id"=>$options['pgIntID'].'_'.$respJ['response']['post_id']);   }

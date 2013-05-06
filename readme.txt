@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.13
+Stable tag: 2.7.14
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -119,6 +119,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.7.14 [05/06/2013] =
+
+* Improvement - Ability to setup custom text for LinkedIn attachments.
+* Improvement - Ability to skip User Security Settings.
+* Improvement - New User privilege - autopost without seeing options.
+* Bug Fix - Google+ Community Pages category retrieval problems.
+
 = 2.7.13 [04/30/2013] =
 
 * New - Google+ Community Pages - now you can select which category to post.
@@ -127,7 +134,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.7.12 [04/29/2013] =
 
-* Bug Fix - [Critical] Broken shedulled and automated posts
+* Bug Fix - [Critical] Broken scheduled and automated posts
 
 = 2.7.11 [04/26/2013] =
 
@@ -136,7 +143,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.7.10 [04/25/2013] =
 
 * New - Support for Facebook Secret Groups
-* Improvement - Import Button is availabe even if no networks configured.
+* Improvement - Import Button is available even if no networks configured.
 * Improvement - "Include/Exclude Wordpress Pages and Custom Post Types" is now a list of checkboxes.
 * Bug Fix - Google+ Community Postings
 * Bug Fix - Unselected user types were still be able to autopost from front end.
@@ -146,7 +153,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 2.7.9 [04/11/2013] =
 
 * Bug Fix - Auto-Importing Facebook comments was broken in some cases
-* Bug Fix - Twitter "Attention requred. Unfinished setup" message even if setup is finished
+* Bug Fix - Twitter "Attention required. Unfinished setup" message even if setup is finished
 * Bug Fix - Twitter error "The text of your tweet is too long" - Thanks to Twitter's "minus another character from image post" update
 * Bug Fix - Several small/cosmetic bug fixes
 

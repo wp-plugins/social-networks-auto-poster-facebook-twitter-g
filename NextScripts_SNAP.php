@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.7.13
+Version: 2.7.14
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.13' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.14' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -168,9 +168,16 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             }  //prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
             if (isset($_POST['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = $_POST['whoCanSeeSNAPBox']; 
+            if (!isset($_POST['whoCanMakePosts'])) $_POST['whoCanMakePosts'] = array(); $_POST['whoCanMakePosts'][] = 'administrator';            
+            if (isset($_POST['whoCanMakePosts'])) $options['whoCanMakePosts'] = $_POST['whoCanMakePosts']; 
+            
+            if (isset($_POST['skipSecurity'])) $options['skipSecurity'] = 1;  else $options['skipSecurity'] = 0;            
+            
             if ($nxs_isWPMU && (!isset($options['suaMode'])||$options['suaMode'] == '')) $options['suaMode'] = $nxs_tpWMPU; 
-            $editable_roles = get_editable_roles(); foreach ( $editable_roles as $roleX => $details ) {$role = get_role($roleX); $role->remove_cap('see_snap_box');  }
+            $editable_roles = get_editable_roles(); foreach ( $editable_roles as $roleX => $details ) {$role = get_role($roleX); $role->remove_cap('see_snap_box');  $role->remove_cap('make_snap_posts');  }
+            
             foreach ($options['whoCanSeeSNAPBox'] as $uRole) { $role = get_role($uRole); $role->add_cap('see_snap_box'); }            
+            foreach ($options['whoCanMakePosts'] as $uRole) { $role = get_role($uRole); $role->add_cap('make_snap_posts'); }            
             
             update_option($this->dbOptionsName, $options); // prr($options);
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", 'nxs_snap');?></strong></p></div><?php        
@@ -265,9 +272,30 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               </div>                          
            </div></div>
      <!-- #### Who can see auto-posting options on the "New Post" pages? ##### --> 
-            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Who can see auto-posting options on the "New Post" pages?', 'nxs_snap') ?></h3></div>
+            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('User Privileges/Security', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> 
               <div class="itemDiv">
+              
+             <input value="set" id="skipSecurity" name="skipSecurity"  type="checkbox" <?php if ((int)$options['skipSecurity'] == 1) echo "checked"; ?> />  <b><?php _e('Skip User Security Check', 'nxs_snap') ?></b>     
+             <span style="font-size: 11px; margin-left: 1px;"><?php _e('NOT Recommended, but usefull in some situations. This will allow autoposting for everyone even for the non-existent users.', 'nxs_snap') ?></span>  
+              
+              <h4><?php _e('Who can make autoposts without seeing any auto-posting options?', 'nxs_snap') ?></h4>
+              
+              <?php $editable_roles = get_editable_roles(); if (!isset($options['whoCanMakePosts']) || !is_array($options['whoCanMakePosts'])) $options['whoCanMakePosts'] = array(); 
+
+    foreach ( $editable_roles as $role => $details ) { $name = translate_user_role($details['name'] ); echo '<input type="checkbox" '; 
+        if (in_array($role, $options['whoCanMakePosts']) || $role=='administrator') echo ' checked="checked" '; if ($role=='administrator') echo '  disabled="disabled" ';
+        echo 'name="whoCanMakePosts[]" value="'.esc_attr($role).'"> '.$name; 
+        if ($role=='administrator') echo ' - Somebody who has access to all the administration features';
+        if ($role=='editor') echo " - Somebody who can publish and manage posts and pages as well as manage other users' posts, etc. ";
+        if ($role=='author') echo ' - Somebody who can publish and manage their own posts ';
+        if ($role=='contributor') echo ' - Somebody who can write and manage their posts but not publish them';
+        if ($role=='subscriber') echo ' - Somebody who can only manage their profile';        
+        echo '<br/>';    
+    } ?>
+    
+     <h4><?php _e('Who can see auto-posting options on the "New Post" and "Edit Post" pages and make autoposts?', 'nxs_snap') ?></h4>
+              
               <?php $editable_roles = get_editable_roles(); if (!isset($options['whoCanSeeSNAPBox']) || !is_array($options['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = array(); 
 
     foreach ( $editable_roles as $role => $details ) { $name = translate_user_role($details['name'] ); echo '<input type="checkbox" '; 
@@ -280,6 +308,10 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
         if ($role=='subscriber') echo ' - Somebody who can only manage their profile';        
         echo '<br/>';    
     } ?>
+    
+    
+    
+    
               </div>
               
            </div></div>        
@@ -761,12 +793,14 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 
 //## Main Function to Post 
 if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
+ if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
  if(is_object($postArr)) $postID = $postArr->ID; else { $postID = $postArr; $postArr = get_post($postID);  } $isPost = isset($_POST["snapEdIT"]);
- if ($isPost && (!current_user_can("see_snap_box") && !current_user_can("manage_options"))) { nxs_addToLogN('I', 'Skipped', '', 'Current user can\'t autopost - Post ID:('.$postID.')' ); return; }
- $postUser = $postArr->post_author; if (!user_can( $postUser, "see_snap_box" ) && !user_can( $postUser, "manage_options")){ nxs_addToLogN('I', 'Skipped', '', 'User ID '.$postUser.' can\'t autopost  - Post ID:('.$postID.')' ); return; } 
+ if ($isPost && $options['skipSecurity']!='1' && !current_user_can("make_snap_posts") && !current_user_can("manage_options")) { nxs_addToLogN('I', 'Skipped', '', 'Current user can\'t autopost - Post ID:('.$postID.')' ); return; }
+ $postUser = $postArr->post_author; 
+ if ($options['skipSecurity']!='1' && !user_can( $postUser, "make_snap_posts" ) && !user_can( $postUser, "manage_options")){ nxs_addToLogN('I', 'Skipped', '', 'User ID '.$postUser.' can\'t autopost  - Post ID:('.$postID.')' ); return; } 
  if ($isPost) $plgn_NS_SNAutoPoster->NS_SNAP_SavePostMetaTags($postID); 
  if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {
-  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);
+  $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);
   if ($nxs_tpWMPU=='S') { switch_to_blog(1); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); $options = $plgn_NS_SNAutoPoster->nxs_options; restore_current_blog(); }
   if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') { if(isset($_POST["snapEdIT"]) && $_POST["snapEdIT"]=='1') { $publtype='S'; $delay = rand(2,10); } else $publtype='A'; } else $publtype = 'I';
   nxs_addToLogN('BG', 'Start =- ', '', '------=========#### NEW AUTO-POST REQUEST '.($blog_id>1?'BlogID:'.$blog_id:'').' PostID:('.$postID.') '.($publtype=='S'?'Scheduled +'.$delay:($publtype=='A'?'Non Human':'Immediate')).' ####=========------');

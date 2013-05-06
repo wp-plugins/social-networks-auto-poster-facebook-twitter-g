@@ -155,37 +155,46 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
       jQuery('.nxs_imgPrevList').html( text );
     }
     
-    function nxs_clPrvImg(id){
-        alert('aa');
+    function nxs_clPrvImgShow(tIdN){ jQuery("#isAutoImg-"+tIdN).trigger('click'); jQuery("#isAutoImg-"+tIdN).trigger('click');  }
+    
+    function nxs_clPrvImg(id, ii){ jQuery("#imgToUse-"+ii).val(jQuery("#"+id+" img").attr('src')); jQuery(".nxs_prevIDiv"+ii+" .nxs_checkIcon").hide();
+      jQuery(".nxs_prevIDiv"+ii).removeClass("nxs_chImg_selDiv"); jQuery(".nxs_prevIDiv"+ii+" img").removeClass("nxs_chImg_selImg"); 
+      jQuery("#"+id+" img").addClass("nxs_chImg_selImg"); jQuery("#"+id).addClass("nxs_chImg_selDiv"); jQuery("#"+id+" .nxs_checkIcon").show();
     }
     
+    function nxs_getOriginalWidthOfImg(img_element) { var t = new Image();  t.src = (img_element.getAttribute ? img_element.getAttribute("src") : false) || img_element.src; /* alert(t.src+" | "+t.width); */ return t.width; }    
     
     function nxs_updateGetImgs(e){ 
         var textOut='';
         var tId = e.target.id; 
         var tIdN = tId.replace("isAutoImg-", "");
         if ( tinymce.activeEditor ) text = tinymce.activeEditor.getContent(); else text = jQuery('#content').val();                
-        $('#NS_SNAP_AddPostMetaTags').append('<div id="nxs_tempDivImgs" style="display: none;"></div>'); $('#nxs_tempDivImgs').append(text);
-        var textOutA = new Array();
-        $('#nxs_tempDivImgs img').each(function(){ textOutA.push(jQuery(this).attr('src')); });                
-        $('#nxs_tempDivImgs').remove();
-        var index;  for (index = 0; index < textOutA.length; ++index) { textOut = textOut + '<div id="nxs_idiv'+index+'" onclick="nxs_clPrvImg(\'nxs_idiv'+index+'\');" style="width:110px; height:110px; float:left;"><img style="padding:5px; max-height:100px; max-width:100px;" src="'+textOutA[index]+'"></div>'; }
+        jQuery('#NS_SNAP_AddPostMetaTags').append('<div id="nxs_tempDivImgs" style="display: none;"></div>'); jQuery('#nxs_tempDivImgs').append(text);
+        var textOutA = new Array(); var currSelImg =  jQuery("#imgToUse-"+tIdN).val();
+                
+        textOutA.push('http://cdn.gtln.us/img/nxs/noImgC.png');  
+        var fImg = jQuery('.attachment-post-thumbnail').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }
+        var fImg = jQuery('#yapbdiv img').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }
+        
+        jQuery('#nxs_tempDivImgs img').each(function(){ var prWidth; prWidth = nxs_getOriginalWidthOfImg(this); if (prWidth!=1) textOutA.push(jQuery(this).attr('src'));  });                
+        jQuery('#nxs_tempDivImgs').remove();
+        var index;  for (index = 0; index < textOutA.length; ++index) { var isSel = currSelImg == textOutA[index] ? 'nxs_chImg_selImg' : ''; var isSelDisp = currSelImg == textOutA[index] ? 'style="display:block;"' : ''; 
+          textOut = textOut + '<div class="nxs_prevIDiv'+tIdN+' nxs_prevImagesDiv" id="nxs_idiv'+tIdN+index+'" onclick="nxs_clPrvImg(\'nxs_idiv'+tIdN+index+'\', \''+tIdN+'\');"><img class="nxs_prevImages '+isSel+'" src="'+textOutA[index]+'"><div '+isSelDisp+' class="nxs_checkIcon"><div class="media-modal-icon"></div></div></div>'; 
+        }
         jQuery('#imgPrevList-'+tIdN).html( textOut );
-        if (jQuery('#'+tId).is(":checked")) jQuery('#imgPrevList-'+tIdN).hide(); else jQuery('#imgPrevList-'+tIdN).show(); 
+        if (jQuery('#'+tId).is(":checked")) jQuery('#imgPrevList-'+tIdN).hide(); else {  jQuery('#nxs_'+tIdN+'_idivD').hide(); jQuery('#imgPrevList-'+tIdN).show();  }
         
     }
     
     jQuery(document).on('change', '.isAutoImg', function( e ) {   
         nxs_updateGetImgs( e );
-    });
-    
+    });    
     jQuery(document).on('change', '#wp-content-editor-container #conXXtent', function() {
         nxs_updateGetImgs();
     });
     jQuery(document).on('change', '#tinXXymce', function() {
         nxs_updateGetImgs();
-    });
-    
+    });       
     jQuery(document).ready(function($) {          
     <?php       
       foreach ($nxs_snapAvNts as $avNt) {?>
@@ -322,6 +331,16 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
 .nxs_box_header h3 {font-size: 14px; margin-bottom: 2px; margin-top: 2px;}
 .nxs_newLabel {font-size: 11px; color:red; padding-left: 5px; padding-right: 5px;}
 
+.nxs_prevImagesDiv {border:1px solid #0f3c6d;  width:110px; height:110px; margin:3px; padding:3px; text-align:center; float:left; position: relative;}
+.nxs_prevImages {padding:1px; max-height:100px; max-width:100px;}
+.nxs_chImg_selDiv {border:1px solid #800000;}
+.nxs_chImg_selImg {border:4px solid #800000;}
+.nxs_checkIcon{position: absolute;}
+
+.nxs_checkIcon{display:none; height:24px;width:24px;position:absolute;top:-7px;right:-7px;outline:0;border:1px solid #fff;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,0.4);background:#800000;background-image:-webkit-gradient(linear,left top,left bottom,from(#800000),to(#570000));background-image:-webkit-linear-gradient(top,#800000,#570000);background-image:-moz-linear-gradient(top,#800000,#570000);background-image:-o-linear-gradient(top,#800000,#570000);background-image:linear-gradient(to bottom,#800000,#570000)}
+.nxs_checkIcon{ top:-5px; right: -3px; width: 15px; height: 15px; box-shadow:0 0 0 1px #800000;background:#800000;background-image:-webkit-gradient(linear,left top,left bottom,from(#800000),to(#570000));background-image:-webkit-linear-gradient(top,#800000,#570000);background-image:-moz-linear-gradient(top,#800000,#570000);background-image:-o-linear-gradient(top,#800000,#570000);background-image:linear-gradient(to bottom,#800000,#570000)}
+.nxs_checkIcon div{background-position:-21px 0; width: 15px; height: 15px;}
+  
 </style>
 <?php }}
 
@@ -357,6 +376,7 @@ if (!function_exists("nxs_metaMarkAsPosted")) { function nxs_metaMarkAsPosted($p
   if ($args=='' || $args['isPosted']=='1') $mpo[$did]['isPosted'] = '1';  
   if (is_array($args) && isset($args['isPrePosted']) && $args['isPrePosted']==1) $mpo[$did]['isPrePosted'] = '1';  
   if (is_array($args) && isset($args['pgID'])) $mpo[$did]['pgID'] = $args['pgID'];  
+  if (is_array($args) && isset($args['postURL'])) $mpo[$did]['postURL'] = $args['postURL'];  
   if (is_array($args) && isset($args['pDate'])) $mpo[$did]['pDate'] = $args['pDate'];  
   /*$mpo = mysql_real_escape_string(serialize($mpo)); */ delete_post_meta($postID, 'snap'.$nt); add_post_meta($postID, 'snap'.$nt, serialize($mpo));
 }}
@@ -484,7 +504,7 @@ if (!function_exists('nxs_doProcessTags')){ function nxs_doProcessTags($tags){ $
   foreach ($tagsA as $tg) { $tags['tagsA'][] = $tg; $tags['htagsA'][] = "#".trim(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&', '', str_ireplace('&amp;','',$tg))))))); } 
   $tags['tags'] =  implode(', ', $tags['tagsA']); $tags['htags'] = implode(', ', $tags['htagsA']);
   return $tags;
-}}
+}}            
 if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $message, $addURLParams=''){ global $nxs_urlLen; $msg = nxs_doSpin($format);// prr($msg); prr($message);// Make "message default"
   if (preg_match('%URL%', $msg)) { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
   if (preg_match('%SURL%', $msg)) { 
