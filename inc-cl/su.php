@@ -149,7 +149,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
   }
   //#### Save Meta Tags to the Post
   function adjMetaOpt($optMt, $pMeta){  if (isset($pMeta['isPosted'])) $optMt['isPosted'] = $pMeta['isPosted']; else  $optMt['isPosted'] = '';  
-    if (isset($pMeta['nsfw'])) $optMt['nsfw'] = $pMeta['nsfw'];
+    if (isset($pMeta['nsfw'])) $optMt['nsfw'] = $pMeta['nsfw']; else $optMt['nsfw'] = 0;
     if (isset($pMeta['SNAPformat'])) $optMt['suMsgFormat'] = $pMeta['SNAPformat']; 
     if (isset($pMeta['apSUCat'])) $optMt['suCat'] = $pMeta['apSUCat'];     
     if (isset($pMeta['doSU'])) $optMt['doSU'] = $pMeta['doSU'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doSU'] = 0; } 
@@ -187,18 +187,19 @@ if (!function_exists("nxs_doCheckSU")) {function nxs_doCheckSU(){ global $nxs_su
   } else return 'No Saved Login';
   return false;  
 }}
-if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true); //   echo "LOGGIN";
-    $response = wp_remote_get('https://www.stumbleupon.com/login'); if (is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
+if (!function_exists("nxs_doConnectToSU")) {  function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/'); //   echo "LOGGIN";
+    $response = wp_remote_get('https://www.stumbleupon.com/login', array('headers' => $hdrsArr)); 
+    if (is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
     $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
     $ckArr = $response['cookies']; 
     $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array();// prr($frmTxt); 
     while (stripos($frmTxt, '<input')!==false){ $inpField = trim(CutFromTo($frmTxt,'<input', '>')); $name = trim(CutFromTo($inpField,'name="', '"'));
      if ( stripos($inpField, '"hidden"')!==false && $name!='' && !in_array($name, $md)) { $md[] = $name; $val = trim(CutFromTo($inpField,'value="', '"')); $flds[$name]= $val; $mids .= "&".$name."=".$val;}
      $frmTxt = substr($frmTxt, stripos($frmTxt, '<input')+8);
-    } $flds['user'] = $u; $flds['pass'] = $p; $flds['remember'] = 'true'; $flds['nativeSubmit'] = '0'; $flds['_method'] = 'create';   
-    
+    } $flds['user'] = $u; $flds['pass'] = $p; $flds['remember'] = 'true'; $flds['nativeSubmit'] = '0'; $flds['_method'] = 'create'; $flds['_output'] = 'Json';    
+    $hdrsArr = nxs_getSUHeaders('https://www.stumbleupon.com/login', true, true);
     $r2 = wp_remote_post( 'https://www.stumbleupon.com/login', array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));
-    //prr($flds); prr($ckArr); prr($r2);
+    // prr($flds); prr($ckArr); prr($r2);
     $resp = json_decode($r2['body'], true);  
     if ($resp['_success']=='1') { $ckArr = nxsMergeArraysOV($ckArr, $r2['cookies']); $nxs_suCkArray = $ckArr; return false; } elseif (isset($resp['_reason'])) { return $resp['_reason']; } else return "ERROR";   
 }}
