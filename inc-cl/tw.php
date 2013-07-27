@@ -35,7 +35,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
      <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/"><?php $nType="Twitter"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
     
     <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="tw[<?php echo $ii; ?>][nName]" id="twnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($two['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
-    <?php echo nxs_addQTranslSel('tw', $ii, $two['qTLng']); ?><?php echo nxs_addPostingDelaySel('tw', $ii, $two['nHrs'], $two['nMin']); ?>
+    <?php echo nxs_addQTranslSel('tw', $ii, $two['qTLng']); ?><?php echo nxs_addPostingDelaySel('tw', $ii, $two['nHrs'], $two['nMin'], $two['nDays']); ?>
     
      <?php if (!$isNew) { ?>
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
@@ -104,7 +104,8 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
         
         if (isset($pval['apTWAccTokenSec']))$options[$ii]['twAccTokenSec'] = trim($pval['apTWAccTokenSec']);                                
         if (isset($pval['apTWMsgFrmt']))    $options[$ii]['twMsgFormat'] = trim($pval['apTWMsgFrmt']);
-        if (isset($pval['attchImg'])) $options[$ii]['attchImg'] = $pval['attchImg']; else $options[$ii]['attchImg'] = 0;                
+        if (isset($pval['attchImg'])) $options[$ii]['attchImg'] = $pval['attchImg']; else $options[$ii]['attchImg'] = 0;  
+        if (isset($pval['delayDays'])) $options[$ii]['nDays'] = trim($pval['delayDays']);               
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
       }
@@ -154,23 +155,36 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   }
 }}
 
-if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments($postID, $options, $po) { $impCmnts = get_post_meta($postID, 'snapImportedComments', true);  if(!is_array($impCmnts)) $impCmnts = array();
-    $url = 'https://api.twitter.com/1/related_results/show/'.$po['pgID'].'.json?include_entities=1'; //echo $url;
-    $data = json_decode( $response = wp_remote_retrieve_body( wp_remote_get( $url ) ), true ); // prr($data[0]['results']);    
-    if (is_array($data) && is_array($data[0]) && is_array($data[0]['results']))
-      foreach ($data[0]['results'] as $comment){ $comment = $comment['value']; $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
-        $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['user']['name'], 'comment_author_email' => $comment['user']['screen_name'].'@twitter.com', 
+if (!function_exists("nxs_getBackTWCommentsList")) { function nxs_getBackTWCommentsList($options) { 
+  require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
+  $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/statuses/mentions_timeline')); 
+  if ($code=='200' && isset($tmhOAuth->response['response']) ) { $tweets = json_decode($tmhOAuth->response['response'], true); if (is_array($tweets)) return $tweets; } return false; 
+}}
+
+if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments($postID, $options, $po, $twList) { $impCmnts = get_post_meta($postID, 'snapImportedComments', true);  
+    if(!is_array($impCmnts)) $impCmnts = array(); $twsToImp = array();
+    //## Do Replies
+    foreach ($twList as $tw) if ($tw['in_reply_to_status_id_str'] == $po['pgID']) $twsToImp[] = $tw;
+    if (is_array($twsToImp) && count($twsToImp)>0)
+      foreach ($twsToImp as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
+        $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['user']['name'], 'comment_agent' => "SNAP||".str_ireplace('_normal.','_bigger.',$comment['user']['profile_image_url_https']), 
+          'comment_author_email' => $comment['user']['screen_name'].'@twitter.com', 'comment_author_url' => 'http://twitter.com/'.$comment['user']['screen_name'], 
+          'comment_content' => str_ireplace('@'.$comment['in_reply_to_screen_name'],'', $comment['text']), 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => '');
+        nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
+      }           
+    //## Do mentions.
+    require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));    
+    if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') $urlToSrch = $options['urlToUse']; else $urlToSrch = get_permalink($postID);     
+    $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/search/tweets'), array('rpp'=>'100', 'since_id'=>$lastID, 'q'=> urlencode($urlToSrch)));       
+    if ($code=='200' && isset($tmhOAuth->response['response']) ) { $tweets = json_decode($tmhOAuth->response['response'], true); //prr($tweets);
+     if (is_array($tweets) && is_array($tweets['statuses'])) {    
+      foreach ($tweets['statuses'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts) || $cid==$po['pgID']) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
+        $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['user']['name'], 'comment_author_email' =>  $comment['user']['screen_name'].'@twitter.com', 
+          'comment_agent' => "SNAP||".str_ireplace('_normal.','_bigger.',$comment['user']['profile_image_url_https']), 
           'comment_author_url' => 'http://twitter.com/'.$comment['user']['screen_name'], 'comment_content' => $comment['text'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => '');
         nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
       }
-    $url = 'http://search.twitter.com/search.json?rpp=100&since_id=' . $lastID . '&q=' . urlencode( get_permalink( $postID ) );
-    $data = json_decode( $response = wp_remote_retrieve_body( wp_remote_get( $url ) ), true );    
-    if (is_array($data) && is_array($data['results']))
-      foreach ($data['results'] as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts) || $cid==$po['pgID']) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
-        $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['from_user_name'], 'comment_author_email' => $comment['from_user'].'@twitter.com', 
-          'comment_author_url' => 'http://twitter.com/'.$comment['from_user'], 'comment_content' => $comment['text'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => '');
-        nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
-      }
+    }}
     delete_post_meta($postID, 'snapImportedComments'); add_post_meta($postID, 'snapImportedComments', $impCmnts ); 
     if ($_POST['id']!='') printf( _n( '%d comment has been imported.', '%d comments has been imported.', $ci, 'nxs_snap'), $ci );
 }}

@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.16
+Stable tag: 2.7.17
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -118,6 +118,17 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.17 [07/27/2013] =
+
+* Improvement - If Facebook page has activated "Comments Reply" - replies will be imported to WP as actual replies
+* Bug Fix - Facebook comments import wasn't working automatically.
+* Bug Fix - Facebook and Twitter comments imports weren't working if the comments are duplicates
+* Bug Fix - Twitter comments import wasn't working because of API V1 retirement.
+* Bug Fix - Twitter user image/avatar wasn't working because of API V1 retirement.
+* Bug Fix - Delay for Days wasn't saving it's status "Edit post" page. 
+* Bug Fix - Delay for Days wasn't saving it's status "Edit post" page. 
+* Bug Fix - StumbleUpon NSFW checkbox wasn't saving it's status "Edit post" page. 
 
 = 2.7.16 [07/19/2013] =
 

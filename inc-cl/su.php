@@ -136,7 +136,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
             <?php  $suCats = $this->suCats();               
               if (isset($ntOpt['suCat']) && $ntOpt['suCat']!='') $suCats = str_replace('"'.$ntOpt['suCat'].'"', '"'.$ntOpt['suCat'].'" selected="selected"', $suCats);  echo $suCats;             
              ?>
-            </select> <input value="1"  id="sunsfw<?php echo $ii; ?>" type="checkbox" name="su[<?php echo $ii; ?>][nsfw]"  <?php if ((int)$options['nsfw'] == 1) echo "checked"; ?> /> <strong>NSFW</strong>
+            </select> <input value="1"  id="sunsfw<?php echo $ii; ?>" type="checkbox" name="su[<?php echo $ii; ?>][nsfw]"  <?php if ((int)$ntOpt['nsfw'] == 1) echo "checked"; ?> /> <strong>NSFW</strong>
             
             </div> </td></tr>
                 

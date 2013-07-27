@@ -423,8 +423,8 @@ if (!function_exists('nxs_MergeCookieArr')){function nxs_MergeCookieArr($ArrO, $
   foreach($ArrN as $key => $value) { if (is_object($value) && $value->value!='deleted') { $isEx = array_search($value->name, $namesArr); if ($isEx===false) $ArrO[] = $value; else $ArrO[$isEx] = $value;}} return $ArrO;
 }}
 
-if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel($nt, $ii, $hrs=0, $min=0){  
-  if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs, $min); else return '<br/>';
+if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel($nt, $ii, $hrs=0, $min=0, $days=0){ 
+  if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs, $min, $days); else return '<br/>';
 }}
 
 if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){
@@ -468,13 +468,16 @@ if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=
     if ($rurl!='') $url = $rurl;  return $url;
 }}
 //## Comments
-if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt, $aa = false) { $cmnt['comment_post_ID'] = (int) $cmnt['comment_post_ID']; 
+if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt, $aa = false) { $cmnt['comment_post_ID'] = (int) $cmnt['comment_post_ID'];
   $cmnt['comment_parent'] = isset($cmnt['comment_parent']) ? absint($cmnt['comment_parent']) : 0;
-  $parent_status = ( 0 < $cmnt['comment_parent'] ) ? wp_get_comment_status($cmnt['comment_parent']) : '';
+  $u = get_user_by( 'email', get_option('admin_email') );  $cmnt['user_id'] = $u->ID;
+
+  $parent_status = ( 0 < $cmnt['comment_parent'] ) ? wp_get_comment_status($cmnt['comment_parent']) : ''; 
   $cmnt['comment_parent'] = ( 'approved' == $parent_status || 'unapproved' == $parent_status ) ? $cmnt['comment_parent'] : 0;
-  $cmnt['comment_author_IP'] = ''; $cmnt['comment_agent'] = 'SNAP'; $cmnt['comment_date'] =  get_date_from_gmt( $cmnt['comment_date_gmt'] );  
+  $cmnt['comment_author_IP'] = ''; if ($cmnt['comment_agent']=='') $cmnt['comment_agent'] = 'SNAP'; $cmnt['comment_date'] =  get_date_from_gmt( $cmnt['comment_date_gmt'] );    
+  $cmnt = wp_filter_comment($cmnt); if ($aa) $cmnt['comment_approved'] = 1; else $cmnt['comment_approved'] = nxs_wp_allow_comment($cmnt);// echo "INSERT"; // prr($cmnt);
+  if ( $cmnt['comment_approved'] != 'spam' && $cmnt['comment_approved']>1 ) return $cmnt['comment_approved'];  else  $cmntID = wp_insert_comment($cmnt); 
   
-  $cmnt = wp_filter_comment($cmnt); if ($aa) $cmnt['comment_approved'] = 1; else $cmnt['comment_approved'] = wp_allow_comment($cmnt); $cmntID = wp_insert_comment($cmnt);
   if ( 'spam' !== $cmnt['comment_approved'] ) { if ( '0' == $cmnt['comment_approved'] ) wp_notify_moderator($cmntID); $post = &get_post($cmnt['comment_post_ID']);
     if ( get_option('comments_notify') && $cmnt['comment_approved'] && ( ! isset( $cmnt['user_id'] ) || $post->post_author != $cmnt['user_id'] ) ) wp_notify_postauthor($cmntID, isset( $cmnt['comment_type'] ) ? $cmnt['comment_type'] : '' );  
     global $wpdb, $dsq_api;
@@ -491,13 +494,14 @@ if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_
       if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'facebook.com')!==false) { $fbuID = str_ireplace('@facebook.com','',$id_or_email->comment_author_email);
         $avatar = "<img alt='{$id_or_email->comment_author}' src='https://graph.facebook.com/$fbuID/picture' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
       }
-      if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'twitter.com')!==false) { $fbuID = str_ireplace('@twitter.com','',$id_or_email->comment_author_email);
-        $avatar = "<img alt='{$id_or_email->comment_author}' src='http://api.twitter.com/1/users/profile_image?screen_name=$fbuID&size=bigger' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
+      if (stripos($id_or_email->comment_agent, 'SNAP||')!==false && stripos($id_or_email->comment_author_url, 'twitter.com')!==false) { $fbuID = str_ireplace('SNAP||','',$id_or_email->comment_agent);
+        $avatar = "<img alt='{$id_or_email->comment_author}' src='{$fbuID}' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
       }
       
     }
     return $avatar;
 }}
+
 
 if (!function_exists('nxs_doProcessTags')){ function nxs_doProcessTags($tags){ $tagsA = array(); if (!is_array($tags)) { $tags = explode(',', $tags); 
   foreach ($tags as $tg) $tagsA[] = trim($tg); } else $tagsA = $tags; $tagsA = array_unique($tagsA);  $tags = array(); 
@@ -570,24 +574,24 @@ if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $p
 }}
 
 function nxs_activation(){ if (!wp_next_scheduled('nxs_hourly_event')){wp_schedule_event(time(), 'hourly', 'nxs_hourly_event');} }
-function nxs_do_this_hourly() { $options = get_option('NS_SNAutoPoster'); $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array(); //## Check for Incoming Comments if nessesary.
-  if ($options['riActive'] != 1 || count($riPosts)<1 ) return;
-  
-  nxs_addToLogN( 'S', 'Comments Import', 'ALL', 'Checking for new comments now...', print_r($riPosts, true));
+function nxs_do_this_hourly() {  $options = get_option('NS_SNAutoPoster'); $riPosts = get_option('NS_SNriPosts'); if (!is_array($riPosts)) $riPosts = array(); //## Check for Incoming Comments if nessesary.
+  if ($options['riActive'] != 1 || count($riPosts)<1 ) return;  nxs_addToLogN( 'S', 'Comments Import', 'ALL', 'Checking for new comments now...', print_r($riPosts, true));
   //## Facebook
   if (is_array($options['fb'])) foreach ($options['fb'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';
     foreach ($riPosts as $postID) {  
       $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); 
-      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); }          
-      nxs_getBackFBComments($postID, $fbo, $fbpo[$ii]);
+      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) && isset($fbpo[$ii]['pgID']) && trim($fbpo[$ii]['pgID'])!=''){ 
+          $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]);  nxs_getBackFBComments($postID, $fbo, $fbpo[$ii]);
+      }
     }      
-  } 
+  }   
   //## Twitter
-  if (is_array($options['tw'])) foreach ($options['tw'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';
+  if (is_array($options['tw'])) foreach ($options['tw'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj'; $twList = nxs_getBackTWCommentsList($fbo); 
     foreach ($riPosts as $postID) {  
       $fbpo =  get_post_meta($postID, 'snapTW', true); $fbpo =  maybe_unserialize($fbpo); 
-      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassTW(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); }          
-      nxs_getBackTWComments($postID, $fbo, $fbpo[$ii]);
+      if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii])  && isset($fbpo[$ii]['pgID']) && trim($fbpo[$ii]['pgID'])!=''){ 
+         $ntClInst = new nxs_snapClassTW(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); nxs_getBackTWComments($postID, $fbo, $fbpo[$ii], $twList);
+      }
     }      
   } 
 }

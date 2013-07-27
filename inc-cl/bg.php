@@ -37,7 +37,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
             
             <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="bg[<?php echo $ii; ?>][nName]" id="bgnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
             <?php echo nxs_addQTranslSel('bg', $ii, $options['qTLng']); ?>
-            <?php echo nxs_addPostingDelaySel('bg', $ii, $options['nHrs'], $options['nMin']); ?>
+            <?php echo nxs_addPostingDelaySel('bg', $ii, $options['nHrs'], $options['nMin'], $options['nDays']); ?>
             
              <?php if (!$isNew) { ?>
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
@@ -106,6 +106,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
                 if (isset($pval['apBGMsgTFrmt']))    $options[$ii]['bgMsgTFormat'] = trim($pval['apBGMsgTFrmt']);         
                 if (isset($pval['bgInclTags']))    $options[$ii]['bgInclTags'] = $pval['bgInclTags'];  else $options[$ii]['bgInclTags'] = 0;        
                 
+                if (isset($pval['delayDays'])) $options[$ii]['nDays'] = trim($pval['delayDays']); 
                 if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
                 if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
                 
