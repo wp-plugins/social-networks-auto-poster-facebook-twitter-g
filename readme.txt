@@ -204,7 +204,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - VK - video attachments. (Pro Only)
 * Improvement/Bug Fix - Changed/Improved the way of finding images in posts 
 * Improvement/Bug Fix - Title template for LinkedIn Groups 
-* Improvement/Bug Fix - Perfomance and Duplicate handling improvements
+* Improvement/Bug Fix - Performance and Duplicate handling improvements
 * Bug Fix - Duplicate posts issue.
 * Bug Fix - Sometimes "Individual Category Selection" checkboxes were ignored
 * Bug Fix - Broken VK Image posts.
@@ -220,7 +220,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 2.7.2 [02/28/2013] =
 
-* Improvement/Bug Fix - New Pinterest interface suppport.
+* Improvement/Bug Fix - New Pinterest interface support.
 * Improvement - Post with tags for LiveJournal/Dreamwidth
 * Improvement - Wordpress to Wordpress posts will include "Excerpt" as well.
 * Bug fix - WPMU - Accounts loosing selected mode.
@@ -255,7 +255,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Improvement - Tumblr include categories as tags
 * Improvement - More clear and understandable log
 * Improvement - All "Message Format" fields are now multirow fields.
-* Improvement - no _ in hashtags anymore
+* Improvement - no _ in hashtags any more
 * Improvement - Featured image custom field could be an array
 * Improvement/Bug Fix - additional protection against magic quotes.
 * Bug fix - Stumbleupon category selection.
@@ -409,14 +409,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * New - Twitter - ability to post tags and categories as #hashtags
 * Improvement - Facebook settings screen shows what URL and Domain use for App Configuration.
 * Improvement - Facebook - <br/> will add a line break for "Facebook Message text Format"
-* Bug fix - SSL connections fix and SSL cerificate update
-* Bug fix - Broken URL Shorthener selection
+* Bug fix - SSL connections fix and SSL certificate update
+* Bug fix - Broken URL Shortener selection
 
 = 2.4.1 [11/22/2012] =
 
-* Bug fix - Twitter error if  attachmet image is missing
+* Bug fix - Twitter error if  attachment image is missing
 * Bug fix - Issue with apostrophes and quotes
-* Improvement - "Click-through URL" for the Tumblr "Photo" posts can use shorthened URLs.
+* Improvement - "Click-through URL" for the Tumblr "Photo" posts can use shortened URLs.
 * Improvement - Ability to select custom field instead of the featured image.
 
 = 2.4.0 [11/13/2012] =
@@ -834,7 +834,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Upgrade Notice ==
 
-Just repllace plugin files, the rest will be updated automatically.
+Just replace plugin files, the rest will be updated automatically.
 
 == Other/Copyrights ==
 
