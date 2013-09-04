@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 2.7.17
+Stable tag: 2.7.18
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -118,6 +118,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.18 [09/04/2013] =
+
+* Improvement/Bug Fix - Post to YouTube as Google+ page.
+* Improvement/Bug Fix - Smiles are now posted to Facebook correctly.
+* Improvement/Bug Fix - Support for VK.com phone verification.
+* Improvement/Bug Fix - Additional URL parameters will be working for attached links as well.
+* Bug Fix - Twitter Error - "Cannot use object of type WP_Error as array"
+* Bug Fix - Facebook and Twitter comments with "Auto Approve" unchecked.
+* Bug Fix - "Call to undefined function nxs_wp_allow_comment" error.
+* Bug Fix - Facebook "[ERROR] couldn't open file"
+* Bug Fix - invalid shortcodes with %ANNOUNCE% tag
+* Bug Fix - Incorrect international character count for Twitter. 
 
 = 2.7.17 [07/27/2013] =
 

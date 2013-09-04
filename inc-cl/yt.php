@@ -55,6 +55,11 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
             </div><input name="yt[<?php echo $ii; ?>][apYTPage]" id="apYTPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($yto['ytPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
             <br/><br/>
             
+            <p><div style="width:100%;"><i style="color: gray;"><strong >Google+ Page ID:</strong>&nbsp;Fill this only if you are posting to youTube as your Google+ page. Please leave this empty otherwise.</i>
+            
+            </div><input name="yt[<?php echo $ii; ?>][ytGPPageID]" id="ytGPPageID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($yto['ytGPPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            <br/><br/>
+            
             <div id="altFormat" style="">
               <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apYTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apYTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
               </div>
@@ -78,6 +83,8 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apYTPass']))    $options[$ii]['ytPass'] = 'n5g9a'.nsx_doEncode($pval['apYTPass']); else $options[$ii]['ytPass'] = '';  
         if (isset($pval['apYTPage']))    $options[$ii]['ytPageID'] = trim($pval['apYTPage']);  
+        if (isset($pval['ytGPPageID']))    $options[$ii]['ytGPPageID'] = trim($pval['ytGPPageID']);  
+        
         if (isset($pval['ytCommID']))    $options[$ii]['ytCommID'] = trim($pval['ytCommID']);  
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
@@ -175,7 +182,7 @@ if (!function_exists("nxs_doPublishToYT")) { //## Second Function to Post to G+
       $loginError = doConnectToGooglePlus2($email, $pass, 'YT');  
       if ($loginError!==false) {if ($postID=='0') echo $loginError; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return "BAD USER/PASS";} 
       $url =  get_permalink($postID); if(trim($url)=='') $url = home_url();  $vids = nsFindVidsInPost($post); if (count($vids)>0) $vUrl = $vids[0];
-      $ret = doPostToYouTube($msg, $options['ytPageID'], $vUrl); //prr($ret);
+      $ret = doPostToYouTube($msg, $options['ytPageID'], $vUrl, $options['ytGPPageID']); //prr($ret);
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
       if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo);} 
         else if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your YouTube Page', 'nxs_snap'); } else 

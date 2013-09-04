@@ -27,7 +27,8 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       $msg = $message['message']; $imgURL = $message['imageURL']; $fbPostType = $options['postType'];  $fbWhere = 'feed'; 
       $attachType = $options['attachType']; if ($attachType=='1') $attachType = 'A'; else $attachType = 'S';
       if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; $page_id = $options['pgID'];  
-      
+      $msg = strip_tags($msg); $msg = str_ireplace('&lt;(")','<(")', $msg); //## FB Smiles FIX 3
+	  if (substr($msg, 0, 1)=='@') $msg = ' '.$msg;
       $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg);
       
       if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';

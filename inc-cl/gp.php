@@ -202,8 +202,9 @@ if (!function_exists("nxs_rePostToGP_ajax")) {
   }
 }  
 if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
-  function nxs_doPublishToGP($postID, $options){ $ntCd = 'GP'; $ntCdL = 'gp'; $ntNm = 'Google+';  
+  function nxs_doPublishToGP($postID, $options){ $ntCd = 'GP'; $ntCdL = 'gp'; $ntNm = 'Google+';     global $plgn_NS_SNAutoPoster;
       if(!function_exists('doConnectToGooglePlus2') || !function_exists('doPostToGooglePlus2')) { nxs_addToLogN('E', 'Error', $ntCd, '-=ERROR=- No G+ API Lib Detected', ''); return "No G+ API Lib Detected";}
+      $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
       $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
       $logNT = '<span style="color:#800000">Google+</span> - '.$options['nName'];      
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -211,17 +212,20 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
         $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  
            nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
         }
-      }         
-      
+      }
       $message = array('message'=>'', 'link'=>'', 'imageURL'=>'', 'videoURL'=>''); 
       
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $options['gpMsgFormat'] = "Test Post from ". htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES)." - ".home_url();  $message['url'] = home_url();    
       } else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return; 
-        $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID); $options['gpMsgFormat'] = $msg; 
+        $gpMsgFormat = $options['gpMsgFormat']; $gpPostType = $options['postType'];  $msg = nsFormatMessage($gpMsgFormat, $postID, $addParams); $options['gpMsgFormat'] = $msg; 
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
         if($gpPostType=='I') { $vids = nsFindVidsInPost($post, false); if (count($vids)>0) $ytCode = $vids[0]; if (trim($ytCode)=='') $options['trPostType']='T'; }       
         if ($gpPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium');  if ($gpPostType=='I') $imgURL = nxs_getPostImage($postID, 'full');              
-        $message = array('message'=>$msg, 'url'=>get_permalink($postID), 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
+        //## MyURL - URLToGo code
+        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl = trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
+        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
+        if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
+        $message = array('message'=>$msg, 'url'=>$urlToGo, 'imageURL'=>$imgURL, 'videoCode'=>$ytCode);
       }            
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_GP(); $ret = $ntToPost->doPostToNT($options, $message);

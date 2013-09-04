@@ -205,7 +205,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
   function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $img = ''; $imgURL = ''; global $nxs_urlLen; $nxs_urlLen = 0;
     //$backtrace = debug_backtrace(); nxs_addToLogN('W', 'Error', $logNT, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToTW',  array($postID, $options));
-    
+    $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
     $logNT = '<span style="color:#00FFFF">Twitter</span> - '.$options['nName']; 
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -218,7 +218,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     
     if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); if(trim($imgURL)=='') $options['attchImg'] = 0; else {  
       if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
-        if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; } else if(is_wp_error($img)) $options['attchImg'] = 0; else $img = $img['body']; } else $options['attchImg'] = 0; 
+        if(is_wp_error($img)) $options['attchImg'] = 0; else if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; }  else $img = $img['body']; } else $options['attchImg'] = 0; 
       } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
      }
      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it - Error:'.print_r($img), $extInfo);
@@ -296,7 +296,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         if (stripos($twMsgFormat, '%RAWTEXT%')!==false) {
            $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%RAWTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pRawText);
         }              
-        $msg = nsFormatMessage($twMsgFormat, $postID);         
+        $msg = nsFormatMessage($twMsgFormat, $postID, $addParams);         
     } 
     $msg = str_replace('&amp;#039;', "'", $msg);  $msg = str_replace('&#039;', "'", $msg);  $msg = str_replace('#039;', "'", $msg);  $msg = str_replace('#039', "'", $msg);
     $msg = str_replace('&amp;#8217;', "'", $msg); $msg = str_replace('&#8217;', "'", $msg); $msg = str_replace('#8217;', "'", $msg); $msg = str_replace('#8217', "'", $msg);

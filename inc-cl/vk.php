@@ -82,6 +82,9 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
       <?php if( function_exists("nxs_doPostToVK")) { ?>    
          <div style="width:100%;"><strong>vKontakte(VK) Email:</strong> </div><input name="vk[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
          <div style="width:100%;"><strong>vKontakte(VK) Password:</strong> </div><input name="vk[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />    
+         <?php if( isset($options['vkPhReq'])) { ?>     
+           <div style="width:100%;"><strong>vKontakte(VK) Phone Number (<?php _e(apply_filters('format_to_edit', htmlentities($options['vkPhReq'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>) :</strong> </div><input name="vk[<?php echo $ii; ?>][vkPh]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vkPh'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+         <?php } ?>
       <?php } else { ?> **** <?php _e('Please upgrade the plugin to "PRO" get NextScripts VK API', 'nxs_snap'); ?> <?php } ?>
     </div>
     <br/>      
@@ -133,7 +136,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
   } 
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'VK'; $lcode = 'vk'; 
-    foreach ($post as $ii => $pval){ 
+    foreach ($post as $ii => $pval){
       if (isset($pval['apVKAppID']) && $pval['apVKAppID']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDoVK']))         $options[$ii]['doVK'] = $pval['apDoVK']; else $options[$ii]['doVK'] = 0;
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
@@ -141,7 +144,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
         
         if (isset($pval['uName']))      $options[$ii]['uName'] = trim($pval['uName']);                                
         if (isset($pval['uPass']))    $options[$ii]['uPass'] = 'n5g9a'.nsx_doEncode($pval['uPass']); else $options[$ii]['uPass'] = '';                 
-        
+        if (isset($pval['vkPh']))      $options[$ii]['vkPh'] = trim($pval['vkPh']);                                        
         
         if (isset($pval['apVKAuthResp']))  {   $options[$ii]['apVKAuthResp'] = trim($pval['apVKAuthResp']); 
           $options[$ii]['vkAppAuthToken'] = trim( CutFromTo($pval['apVKAuthResp'].'&', 'access_token=','&')); 
@@ -280,6 +283,7 @@ if (!function_exists("nxs_uplImgtoVK")) {  function nxs_uplImgtoVK($imgURL, $opt
 if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
   function nxs_doPublishToVK($postID, $options){ global $ShownAds, $nxs_vkCkArray; $ntCd = 'VK'; $ntCdL = 'vk'; $ntNm = 'vKontakte(VK)';
       //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToVK',  array($postID, $options));
+      $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
       $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
       $logNT = '<span style="color:#000080">vKontakte</span> - '.$options['nName'];      
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -289,8 +293,13 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         }
       }
       $email = $options['uName'];  $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']);      
-      if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url(); $msg = 'Test Link from '.$link; } else { $post = get_post($postID); if(!$post) return;
-        $msgFormat = $options['msgFrmt'];  $msg = strip_tags(nsFormatMessage($msgFormat, $postID)); $link = get_permalink($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $urlToGo = home_url(); $msg = 'Test Link from '.$urlToGo; } else { $post = get_post($postID); if(!$post) return;
+        $msgFormat = $options['msgFrmt'];  $msg = strip_tags(nsFormatMessage($msgFormat, $postID, $addParams)); 
+        //## MyURL - URLToGo code
+        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl = trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
+        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
+        if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
+        nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       } 
       $dusername = $options['uName'];  $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType']; $imgURL = nxs_getPostImage($postID);
@@ -304,33 +313,40 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
           }
        }      
       $msgOpts = array(); $msgOpts['uid'] =  $options['vkPgID']; // if ($link!='') $msgOpts['link'] = $link;            
-      if ($vidURL!='' && $postType=="I") { $postType='A';  $link=$vidURL; $msgOpts['vID'] = $vids[0]; }  
+      if ($vidURL!='' && $postType=="I") { $postType='A';  $urlToGo=$vidURL; $msgOpts['vID'] = $vids[0]; }  
       if ($postType=='I' && trim($imgURL)=='') $postType='T';  $msgOpts['type'] = $postType;      
-      if ($postType=='A' && $link!='') {  
+      if ($postType=='A' && $urlToGo!='') {  
         //## Login
         if (isset($options['vkSvC'])) $nxs_vkCkArray = maybe_unserialize( $options['vkSvC']); $loginError = true;
-        if (is_array($nxs_vkCkArray)) $loginError = nxs_doCheckVK(); if ($loginError!=false) $loginError = nxs_doConnectToVK($email, $pass); 
+        if (is_array($nxs_vkCkArray)) $loginError = nxs_doCheckVK(); if ($loginError!=false) { 
+           if ($options['vkPh']!='') { $ph = str_replace('+','',$options['vkPh']); $ph = substr($ph,2,-2);} else $ph = '';  $loginError = nxs_doConnectToVK($email, $pass, $ph); 
+        }
         if (serialize($nxs_vkCkArray)!=$options['vkSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options;
           if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['vk'][$options['ii']]['vkSvC'] = serialize($nxs_vkCkArray); update_option('NS_SNAutoPoster', $gOptions);  }
           else foreach ($gOptions['vk'] as $ii=>$gpn) { $result = array_diff($options, $gpn); 
             if (!is_array($result) || count($result)<1) { $gOptions['vk'][$ii]['vkSvC'] = serialize($nxs_vkCkArray); update_option('NS_SNAutoPoster', $gOptions); break; }
           }        
         }  
-        if ($loginError!==false) {if ($postID=='0') prr($loginError); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";}      
+        if ($loginError!==false) { 
+          if (stripos($loginError, 'Phone verification required:')!==false) { 
+            $phtext = str_ireplace('Phone verification required: ','',$loginError); $loginError .= ". Please refresh/reload the SNAP settings page and enter your phone.";
+            $gOptions['vk'][$ii]['vkPhReq'] = $phtext; update_option('NS_SNAutoPoster', $gOptions);            
+          } if ($postID=='0') prr($loginError); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return " -= BAD USER/PASS =- ";
+        } 
         //## Post
-        if (trim($fbMsgAFormat)!='') {$dsc = nsFormatMessage($fbMsgAFormat, $postID);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
+        if (trim($fbMsgAFormat)!='') {$dsc = nsFormatMessage($fbMsgAFormat, $postID, $addParams);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
           if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
           if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
           if ($dsc=='') $dsc = get_bloginfo('description'); 
         }  $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
-          $msgOpts['url'] = $link; $msgOpts['urlTitle'] = nxs_doQTrans($post->post_title, $lng); $msgOpts['urlDesc'] = $dsc; $msgOpts['imgURL'] = $imgURL; 
+          $msgOpts['url'] = $urlToGo; $msgOpts['urlTitle'] = nxs_doQTrans($post->post_title, $lng); $msgOpts['urlDesc'] = $dsc; $msgOpts['imgURL'] = $imgURL; 
         $ret = nxs_doPostToVK($msg, $options['url'], $msgOpts); //  prr($ret);
       } //prr($postType);
       
       if ($postType=='I') { $imgUpld = nxs_uplImgtoVK($imgURL, $options); if (is_object($imgUpld)) { $imgID = $imgUpld->id; $atts[] = $imgID; } else  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($imgUpld, true), $extInfo); }
-      if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $link;       
+      if ($postType!='A') { if( $options['addBackLink']=='1') $atts[] = $urlToGo;       
         if (is_array($atts)) $atts = implode(',', $atts);
         
         $postUrl = 'https://api.vkontakte.ru/method/wall.post';

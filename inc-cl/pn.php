@@ -173,9 +173,10 @@ if (!function_exists("nxs_rePostToPN_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
-  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest';    
+  function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr, $plgn_NS_SNAutoPoster; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest';    
     // $backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToPN',  array($postID, $options));  
+    $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10));
     $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -187,10 +188,14 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     }  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); 
     
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $link = home_url(); 
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $urlToGo = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NextScriptsLogoT.png"; 
     }
-    else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID); $link = get_permalink($postID); 
+    else { $post = get_post($postID); if(!$post) return; $pnMsgFormat = $options['pnMsgFormat'];  $msg = nsFormatMessage($pnMsgFormat, $postID, $addParams); 
+      //## MyURL - URLToGo code
+      if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl = trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
+      if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
+      if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); $imgURL = nxs_getPostImage($postID, 'large',  $options['pnDefImg']); //prr($options); echo $imgURL."######"; // echo "WW".$postID."|";
       if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}      
     }
@@ -205,10 +210,10 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
           if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
     } // echo "PN SET:".$msg."|".$imgURL."|".$link."|".$boardID;
-    if (preg_match ( '/\$(\d+\.\d+)/', $msg, $matches )) $price = $matches[0];
-    $ret = doPostToPinterest($msg, $imgURL, $link, $boardID, 'TITLE WHERE IS IT?', $price, $link."/GTH/" ); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
+    if (preg_match ( '/\$(\d+\.\d+)/', $msg, $matches )) $price = $matches[0];  $urlToGo = apply_filters( 'nxs_adjust_ex_url', $urlToGo, $post->post_content );  
+    $ret = doPostToPinterest($msg, $imgURL, $urlToGo, $boardID, 'TITLE WHERE IS IT?', $price, $urlToGo."/GTH/" ); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
     if ( (!is_array($ret)) && $ret!='OK') { if ($postID=='0') echo $ret; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); } else { if ($postID=='0') {  nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo 'OK - Message Posted, please see your Pinterest Page'; } else { nxs_metaMarkAsPosted($postID, 'PN', $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo);} }
-    if ($ret['code']=='OK') return 200; else return $ret;
+    if (is_array($ret) && isset($ret['code']) && $ret['code']=='OK') return 200; else return $ret;
   }
 }  
 ?>

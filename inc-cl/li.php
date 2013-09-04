@@ -284,6 +284,7 @@ if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() { 
 if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
   function nxs_doPublishToLI($postID, $options){ global $nxs_gCookiesArr; $ntCd = 'LI'; $ntCdL = 'li'; $ntNm = 'LinkedIn';   
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToLI',  array($postID, $options));  
+    $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
     $logNT = '<span style="color:#000058">LinkedIn</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -294,9 +295,13 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
     }
   
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); // prr($options);
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $link = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$link; $isAttachLI = ''; $title = $blogTitle; }
-      else { $post = get_post($postID); if(!$post) return; $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID);  $msgT = nsFormatMessage($options['liMsgFormatT'], $postID); 
-        $link = get_permalink($postID); $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msgT = 'Test Post from '.$blogTitle;  $urlToGo = home_url(); $msg = 'Test Post from '.$blogTitle. " ".$urlToGo; $isAttachLI = ''; $title = $blogTitle; }
+      else { $post = get_post($postID); if(!$post) return; $liMsgFormat = $options['liMsgFormat'];  $msg = nsFormatMessage($liMsgFormat, $postID, $addParams);  $msgT = nsFormatMessage($options['liMsgFormatT'], $postID, $addParams); 
+        //## MyURL - URLToGo code
+        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
+        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
+        if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
+        $isAttachLI = $options['liAttch']; $title = nsTrnc($post->post_title, 200); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     }
     $extInfo = ' | PostID: '.$postID." - ".$post->post_title;     $msgT = nsTrnc($msgT, 200);  
     if ($isAttachLI=='1') { 
@@ -309,18 +314,18 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
       $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!==false) die($auth);
       $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
        if ($postID=='0') { $lnk['title'] = get_bloginfo('name'); $lnk['desc'] = get_bloginfo('description'); $lnk['url'] = home_url();  
-         } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc( strip_tags($post->post_title), 200); $lnk['postTitle'] = $msgT; $lnk['desc'] = $dsc; $lnk['url'] = get_permalink($postID); $lnk['img'] = $src; }} //prr($msg);
+         } else { if ($isAttachLI=='1') { $lnk['title'] = nsTrnc( strip_tags($post->post_title), 200); $lnk['postTitle'] = $msgT; $lnk['desc'] = $dsc; $lnk['url'] = $urlToGo; $lnk['img'] = $src; }} //prr($msg);
       $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];
     } else { require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
       $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
       $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); 
       if ($options['grpID']!=''){
-        try{ //  prr($msgT); prr($msg); prr($options['grpID']); prr($src);  prr($dsc); $purl = get_permalink($postID); prr($purl);
-            if($isAttachLI=='1') $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID'], get_permalink($postID), $src, $dsc); else $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID']); 
+        try{ 
+            if($isAttachLI=='1') $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID'], $urlToGo, $src, $dsc); else $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID']); 
             $liPostID= 'http://www.linkedin.com/groups?gid='.$options['grpID'];
         } catch (Exception $o){  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '."Linkedin Status couldn't be updated! - ".print_r($o, true)); $ret="ERROR:".print_r($o, true); }        
       } else {
-        try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), get_permalink($postID), $src, $dsc); else $ret = $linkedin->postShare($msg); }
+        try{ if($isAttachLI=='1') $ret = $linkedin->postShare($msg, nsTrnc($post->post_title, 200), $urlToGo, $src, $dsc); else $ret = $linkedin->postShare($msg); }
         catch (Exception $o){  nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '."<br/>Linkedin Status couldn't be updated! - ".print_r($o, true)); $ret="ERROR:".print_r($o, true); }     
       }    
       //$liPostID = $linkedin->getCurrentShare(); prr($liPostID);

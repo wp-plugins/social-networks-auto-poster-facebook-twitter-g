@@ -43,7 +43,7 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
          $twResp = json_decode($tmhOAuth->response['response'], true);  if (is_array($twResp) && isset($twResp['id_str'])) $twNewPostID = $twResp['id_str'];  
          if (is_array($twResp) && isset($twResp['user'])) $twPageID = $twResp['user']['screen_name'];
          return array('postID'=>$twNewPostID, 'isPosted'=>1, 'postURL'=>'https://twitter.com/'.$twPageID.'/status/'.$twNewPostID, 'pDate'=>date('Y-m-d H:i:s'));          
-      } else { $badOut['Error'] .= print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true); 
+      } else { $badOut['Error'] .= "Resp: ".print_r($tmhOAuth->response['response'], true)."| Error: ".print_r($tmhOAuth->response['error'], true)."| MSG: ".print_r($msg, true); 
         return $badOut;
       }
       return $badOut;
