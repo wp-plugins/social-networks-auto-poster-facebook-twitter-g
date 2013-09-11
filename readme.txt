@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
-Tested up to: 3.5.1
-Stable tag: 2.7.18
+Tested up to: 3.6
+Stable tag: 2.7.19
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -119,6 +119,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.7.19 [09/11/2013] =
+
+* Improvement - <!--more--> will be turned into <lj-cut> for LiveJournal postings.
+* Bug Fix - %ANNOUNCE% format tag has been fixed.
+* Bug Fix - Custom Post Types were not autoposted.
+
 = 2.7.18 [09/04/2013] =
 
 * Improvement/Bug Fix - Post to YouTube as Google+ page.
@@ -139,7 +145,6 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug Fix - Facebook and Twitter comments imports weren't working if the comments are duplicates
 * Bug Fix - Twitter comments import wasn't working because of API V1 retirement.
 * Bug Fix - Twitter user image/avatar wasn't working because of API V1 retirement.
-* Bug Fix - Delay for Days wasn't saving it's status "Edit post" page. 
 * Bug Fix - Delay for Days wasn't saving it's status "Edit post" page. 
 * Bug Fix - StumbleUpon NSFW checkbox wasn't saving it's status "Edit post" page. 
 

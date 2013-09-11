@@ -175,6 +175,7 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
         $msgFormat = $options['ljMsgFormat']; $msg = nsFormatMessage($msgFormat, $postID); $msgTFormat = $options['ljMsgTFormat']; $msgT = nsFormatMessage($msgTFormat, $postID);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       } //prr($msg); prr($msgFormat);
+      $msg =  str_ireplace("&lt;!--more--&gt;", '<!--more-->', $msg);  if (stripos($msg, '<!--more-->')!==false) $msg = str_ireplace('<!--more-->', '<lj-cut>', $msg).'</lj-cut>';
       $extInfo = ' | PostID: '.$postID." - ".$post->post_title; 
       //## Post   
       require_once ('apis/xmlrpc-client.php'); if ($options['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
