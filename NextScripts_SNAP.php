@@ -974,7 +974,7 @@ function nxs_start_ob(){ob_start( 'nxs_ogtgCallback' );}
 function nxs_end_flush_ob(){ob_end_flush();}
 
 function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    $ogimgs = array();  
-  if (!is_object($post) && int($post)>0) $post = get_post($post);  if (empty($options['advFindOGImg'])) $options['advFindOGImg'] = 0;
+  if (!is_object($post) && (int)$post > 0) $post = get_post($post);  if (empty($options['advFindOGImg'])) $options['advFindOGImg'] = 0;
   if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {    
     $title = preg_match( '/<title>(.*)<\/title>/', $content, $title_matches );  
     if ($title !== false && count( $title_matches) == 2 ) $ogT ='<meta property="og:title" content="' . $title_matches[1] . '" />'."\r\n"; else {
