@@ -28,7 +28,9 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doGP'=>'1', 'gpUName'=>'', 'gpPageID'=>'', 'gpCommID'=>'', 'postType'=>'A', 'gpPass'=>''); $this->showNTSettings($mgpo, $options, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; 
+    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
             <div id="doGP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/gp-bg.png);  background-position:90% 10%;">     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
             <?php if(!function_exists('doPostToGooglePlus')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b><?php _e('Google+ API Library not found', 'nxs_snap'); ?></b>

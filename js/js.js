@@ -50,10 +50,10 @@ function nxs_hidePopUpInfo(pid){ jQuery('div#'+pid).hide(); }
 
 function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
 function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
+   
 function doSwitchShAtt(att, idNum){
-  //if (att==1) { jQuery('#apFBAttch'+idNum).attr('checked', true); jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else {jQuery('#apFBAttch'+idNum).attr('checked', false); jQuery('#apFBAttchShare'+idNum).attr('checked', true);}
-  if (att==1) { if (jQuery('#apFBAttch'+idNum).is(":checked")) jQuery('#apFBAttchShare'+idNum).attr('checked', false); } else { if( jQuery('#apFBAttchShare'+idNum).is(":checked")) jQuery('#apFBAttch'+idNum).attr('checked', false);}
-}
+  if (att==1) { if (jQuery('#apFBAttch'+idNum).is(":checked")) {jQuery('#apFBAttchShare'+idNum).prop('checked', false);}} else {if( jQuery('#apFBAttchShare'+idNum).is(":checked")) jQuery('#apFBAttch'+idNum).prop('checked', false);}
+}      
       
 function doShowHideAltFormat(){ if (jQuery('#NS_SNAutoPosterAttachPost').is(':checked')) { 
   jQuery('#altFormat').css('margin-left', '20px'); jQuery('#altFormatText').html('Post Announce Text:'); } else {jQuery('#altFormat').css('margin-left', '0px'); jQuery('#altFormatText').html('Post Text Format:');}

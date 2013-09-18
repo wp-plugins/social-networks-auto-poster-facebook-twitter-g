@@ -67,7 +67,10 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Unit  Settings
   function showNTSettings($ii, $fbo, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; if ((int)$fbo['fbAttch']==0 && (!isset($fbo['trPostType']) || $fbo['trPostType']=='')) $fbo['trPostType'] = 'T';  
     if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
-    if (!isset($fbo['nHrs'])) $fbo['nHrs'] = 0; if (!isset($fbo['nMin'])) $fbo['nMin'] = 0;  if (!isset($fbo['catSel'])) $fbo['catSel'] = 0;  if (!isset($fbo['catSelEd'])) $fbo['catSelEd'] = ''; ?> 
+    if (!isset($fbo['nHrs'])) $fbo['nHrs'] = 0; if (!isset($fbo['nMin'])) $fbo['nMin'] = 0;  if (!isset($fbo['catSel'])) $fbo['catSel'] = 0;  if (!isset($fbo['catSelEd'])) $fbo['catSelEd'] = ''; 
+    if (!isset($fbo['nDays'])) $fbo['nDays'] = 0; if (!isset($fbo['qTLng'])) $fbo['qTLng'] = ''; if (!isset($fbo['fbMsgAFrmt'])) $fbo['fbMsgAFrmt'] = ''; 
+    if (!isset($fbo['riComments'])) $fbo['riComments'] = '';  if (!isset($fbo['riCommentsAA'])) $fbo['riCommentsAA'] = ''; 
+    ?> 
     <div id="doFB<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/fb-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
     

@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 2.7.19
+Tested up to: 3.6.1
+Stable tag: 2.7.20
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -118,6 +118,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 2.7.20 [09/18/2013] =
+
+* Improvement - Pinterest - ability to pin videos and new setting - "If post has a video use it instead of image"
+* Bug Fix - published_to_published should not trigger any events.
+* Bug Fix - Some minor bug fixes.
 
 = 2.7.19 [09/11/2013] =
 
@@ -333,7 +339,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * New - New network: VKontakte(vk.com). Repost your blogposts to your VK account.
 * Bug fix - Facebook settings saving problem on some configurations
 * Bug fix - Google+ debug text removed
-* Bug fix - WPMU Edition only. - Lost settings opages on users websites.
+* Bug fix - WPMU Edition only. - Lost settings on pages on users websites.
 
 = 2.5.3 [01/15/2013] =
 

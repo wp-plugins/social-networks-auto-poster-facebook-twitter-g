@@ -69,7 +69,10 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
             <?php } ?>
             </select>
             
-            <br/><br/>            
+            <br/><br/>      
+            
+            <div style="margin-bottom: 5px; margin-left: 0px; "><input value="1"  id="isAttachVid" type="checkbox" name="pn[<?php echo $ii; ?>][isAttachVid]"  <?php if (isset($options['isAttachVid']) && (int)$options['isAttachVid'] == 1) echo "checked"; ?> />    <strong><?php _e('If post has a video use it instead of image', 'nxs_snap'); ?></strong> <i><?php _e('Video will be pinned instead of featured image. Only Youtube is supported at this time.', 'nxs_snap'); ?></i>
+    <br/></div>      
             
             
             <div id="altFormat" style="">
@@ -101,6 +104,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
         if (isset($pval['apPNPass']))    $options[$ii]['pnPass'] = 'g9c1a'.nsx_doEncode($pval['apPNPass']); else $options[$ii]['pnPass'] = '';
         if (isset($pval['apPNBoard']))   $options[$ii]['pnBoard'] = trim($pval['apPNBoard']);                
         if (isset($pval['apPNDefImg']))  $options[$ii]['pnDefImg'] = trim($pval['apPNDefImg']);
+        if (isset($pval['isAttachVid']))   $options[$ii]['isAttachVid'] = $pval['isAttachVid']; else $options[$ii]['isAttachVid'] = 0;
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
@@ -180,7 +184,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10));
     $logNT = '<span style="color:#FA5069">Pinterest</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
-    $isAttachVid = $options['isAttachVid']; $isAttachVid = '1';
+    $isAttachVid = $options['isAttachVid']; 
     if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
         $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  sleep(5);
          nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;

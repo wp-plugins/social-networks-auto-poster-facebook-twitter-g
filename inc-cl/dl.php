@@ -27,7 +27,9 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   //#### Show NEW Settings Page
   function showNewNTSettings($mgpo){ $gpo = array('nName'=>'', 'doDL'=>'1', 'dlUName'=>'', 'dlPageID'=>'', 'dlAttch'=>'', 'dlPass'=>''); $this->showNTSettings($mgpo, $gpo, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $gpo, $isNew=false){  global $nxs_plurl; 
+    if (!isset($gpo['nHrs'])) $gpo['nHrs'] = 0; if (!isset($gpo['nMin'])) $gpo['nMin'] = 0;  if (!isset($gpo['catSel'])) $gpo['catSel'] = 0;  if (!isset($gpo['catSelEd'])) $gpo['catSelEd'] = ''; 
+    if (!isset($gpo['nDays'])) $gpo['nDays'] = 0; if (!isset($gpo['qTLng'])) $gpo['qTLng'] = '';  ?>
             <div id="doDL<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="max-width: 1000px; background-color: #EBF4FB; background-image: url(<?php echo $nxs_plurl; ?>img/dl-bg.png);  background-position:90% 10%; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;">     <input type="hidden" name="apDoSDL<?php echo $ii; ?>" value="0" id="apDoSDL<?php echo $ii; ?>" />          
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/dl16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-delicious-social-networks-auto-poster-wordpress/"><?php $nType="Delicious"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>

@@ -8,7 +8,7 @@ Version: 2.7.19
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.19' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.20' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -622,7 +622,7 @@ Please see #4 and #5 for Twitter:<br/>
             <br/><br/><br/>This version of the plugin is not compatible with <b>Wordpress Multisite Edition</b>. Please contact your Network Admin for the upgrade. <?php }
         
         function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
-            if ($_GET['page']=='NextScripts_SNAP.php' && $_GET['do']=='h'){ nxs_do_this_hourly(); die(); }
+            if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='h'){ nxs_do_this_hourly(); die(); }
             $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (<span id='nxsAPIUpd'>API</span> Version: ".NXSAPIVER.")"; ?>           
            
            <div style="float:right; padding-top: 10px; padding-right: 10px;">
@@ -668,24 +668,24 @@ Please see #4 and #5 for Twitter:<br/>
 <?php }  
         }
         
-        function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; //  echo "| NS_SNAP_SavePostMetaTags - ".$id." |";
-          $post = get_post($id); if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return;
-          if (isset($_POST["snapEdIT"])) $nspost_edit = $_POST["snapEdIT"]; //echo "| snapEdIT |";  // prr($nspost_edit); 
-          if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'"){ array_walk_recursive($_POST, 'nsx_stripSlashes'); }
-          $snap_isAutoPosted = get_post_meta($id, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1' &&  $post->post_status=='future') { delete_post_meta($id, 'snap_isAutoPosted'); add_post_meta($id, 'snap_isAutoPosted', '2'); }
-          if (isset($nspost_edit) && !empty($nspost_edit)) { delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            
-            foreach ($nxs_snapAvNts as $avNt) { 
+        function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster; if (count($_POST)<1 || !isset($_POST["snapEdIT"]) || empty($_POST["snapEdIT"])) return;
+          if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; //  echo "| NS_SNAP_SavePostMetaTags - ".$id." |";
+          $post = get_post($id); if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return;          
+          if (get_magic_quotes_gpc() || ( isset($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")){ array_walk_recursive($_POST, 'nsx_stripSlashes'); } 
+          $snap_isAutoPosted = get_post_meta($id, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1' &&  $post->post_status=='future') { delete_post_meta($id, 'snap_isAutoPosted'); add_post_meta($id, 'snap_isAutoPosted', '2'); }          
+          delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            
+          foreach ($nxs_snapAvNts as $avNt) { 
               if (count($options[$avNt['lcode']])>0 && isset($_POST[$avNt['lcode']]) && count($_POST[$avNt['lcode']])>0) {  $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); 
               if(is_array($_POST[$avNt['lcode']])) { $ii=0;
-                  foreach ($_POST[$avNt['lcode']] as $pst ) { // echo "#############################################################################";  prr($pst);
-                    if (is_array($pst) && $pst['do'.$avNt['code']]=='' && $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]=='') $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]= 0; $ii++;
+                  foreach ($_POST[$avNt['lcode']] as $pst ) {  //echo "#############################################################################";  prr($pst);
+                    if (is_array($pst) && empty( $pst['do'.$avNt['code']]) && empty($_POST[$avNt['lcode']][$ii]['do'.$avNt['code']])) $_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]= 0; $ii++;
                   }
               } $newMeta = $_POST[$avNt['lcode']];  
               if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); // echo "##### ".$id."| snap".$avNt['code']; prr($savedMeta); echo "||"; prr($newMeta);// $newMeta = 'AAA';
               delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], serialize($newMeta));
               }
             }            
-          } // prr($_POST);
+           //prr($_POST);
         }
         
         function NS_SNAP_AddPostMetaTags() { global $post, $nxs_snapAvNts, $plgn_NS_SNAutoPoster; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; if (!is_object($post)) $post = get_post($post_id);
@@ -706,7 +706,7 @@ Please see #4 and #5 for Twitter:<br/>
           <?php } ?>
           <table style="margin-bottom:40px; clear:both;" width="100%" border="0"><?php
           foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; 
-             if (count($options[$avNt['lcode']])>0) { $ntClInst = new $clName(); $ntClInst->showEdPostNTSettings($options[$avNt['lcode']], $post); }
+             if ( isset($avNt['lcode']) && isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { $ntClInst = new $clName(); $ntClInst->showEdPostNTSettings($options[$avNt['lcode']], $post); }
           }
          ?></table></div></div></div> <?php 
         }
@@ -723,6 +723,18 @@ Please see #4 and #5 for Twitter:<br/>
           }    
         }
     }
+}
+
+if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='test'){ echo "Testting... cURL<br/>";
+  nxs_cURLTest("http://www.google.com/intl/en/contact/", "HTTP to Google", "Mountain View, CA");
+  nxs_cURLTest("https://www.google.com/intl/en/contact/", "HTTPS to Google", "Mountain View, CA");
+  nxs_cURLTest("https://www.facebook.com/", "HTTPS to Facebook", 'id="facebook"');
+  nxs_cURLTest("https://graph.facebook.com/nextscripts", "HTTPS to API (Graph) Facebook", '270851199672443');  
+  nxs_cURLTest("https://www.linkedin.com/", "HTTPS to LinkedIn", 'rel="canonical" href="https://www.linkedin.com/"');
+  nxs_cURLTest("https://twitter.com/", "HTTPS to Twitter", '<link rel="canonical" href="https://twitter.com/">');
+  nxs_cURLTest("http://pinterest.com/", "HTTPS to Pinterest", 'content="Pinterest"');
+  nxs_cURLTest("http://www.livejournal.com/", "HTTP to LiveJournal", '1999 LiveJournal');  
+  die('Done');
 }
 
 if (class_exists("NS_SNAutoPoster")) { nxs_checkAddLogTable(); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster();  }
@@ -794,7 +806,7 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 
 //## Main Function to Post 
 if (!function_exists("nxs_snapLogPublishTo")) { function nxs_snapLogPublishTo( $new_status, $old_status, $post ) {
-  if ( $new_status == 'publish' ) nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
+  if ( $old_status!='publish' && $new_status == 'publish' ) nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
 }}
 if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;

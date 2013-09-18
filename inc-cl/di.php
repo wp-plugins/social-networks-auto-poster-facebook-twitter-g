@@ -30,7 +30,9 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   function showNewNTSettings($mgpo){ $options = array('nName'=>'', 'doDI'=>'1', 'diUName'=>'', 'diInclTags'=>'1', 'diAttch'=>'', 'diAPIKey'=>'', 'diPass'=>''); $this->showNTSettings($mgpo, $options, true);}  
   
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; 
+    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
             <div id="doDI<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew){ ?> clNewNTSets<?php } ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/di-bg.png);background-position:90% 10%;"> <input type="hidden" name="apDoSDI<?php echo $ii; ?>" value="0" id="apDoSDI<?php echo $ii; ?>" />          
             
              <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/di16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-diigo-social-networks-auto-poster-wordpress/"><?php $nType="Diigo"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>

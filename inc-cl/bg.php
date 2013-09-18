@@ -27,7 +27,9 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   //#### Show NEW Settings Page
   function showNewNTSettings($bo){ $po = array('nName'=>'', 'doBG'=>'1', 'bgUName'=>'', 'bgPass'=>'', 'bgBlogID'=>'', 'bgInclTags'=>'1', 'bgMsgFormat'=>'%FULLTEXT% <br/><a href=\'%URL%\'>%TITLE%</a>', 'bgMsgTFormat'=>'%TITLE%' ); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; ?>
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; 
+    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
     <div id="doBG<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew){ ?> clNewNTSets<?php } ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/bg-bg.png);background-position:90% 10%;"> <input type="hidden" name="apDoSBG<?php echo $ii; ?>" value="0" id="apDoSBG<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="bg[<?php echo $ii; ?>][apDoBG]" value="1" id="apDoNewBG<?php echo $ii; ?>" /> <?php } ?>
     

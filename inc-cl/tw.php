@@ -29,7 +29,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   //#### Show Unit  Settings
   function showNTSettings($ii, $two, $isNew=false){ global $nxs_plurl, $plgn_NS_SNAutoPoster; 
     if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
-  ?>
+  if (!isset($two['nHrs'])) $two['nHrs'] = 0; if (!isset($two['nMin'])) $two['nMin'] = 0;  if (!isset($two['catSel'])) $two['catSel'] = 0;  if (!isset($two['catSelEd'])) $two['catSelEd'] = ''; 
+    if (!isset($two['nDays'])) $two['nDays'] = 0; if (!isset($two['qTLng'])) $two['qTLng'] = '';  ?>
+    
     <div id="doTW<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/tw-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSTW<?php echo $ii; ?>" value="0" id="apDoSTW<?php echo $ii; ?>" />      
     
      <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/"><?php $nType="Twitter"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>

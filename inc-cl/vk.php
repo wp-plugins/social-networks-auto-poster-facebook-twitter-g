@@ -28,7 +28,9 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
   function showNewNTSettings($mNTo){ $nto = array('nName'=>'', 'doVK'=>'1', 'url'=>'', 'vkAppID'=>'', 'imgUpl'=>'1', 'addBackLink'=>'1', 'vkPostType'=>'T', 'msgAFormat'=>'', 'attch'=>'1', 'vkPgID'=>'', 'vkAppAuthUser'=>'', 'msgFrmt'=>'New post has been published on %SITENAME%' ); $this->showNTSettings($mNTo, $nto, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl; if ((int)$options['attch']==0 && (!isset($options['trPostType']) || $options['trPostType']=='')) $options['trPostType'] = 'T';  
-    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; ?> 
+    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
+    if (!isset($options['uName '])) $options['uName '] = ''; if (!isset($options['uPass'])) $options['uPass'] = ''; 
+    ?> 
     <div id="doVK<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/vk-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSVK<?php echo $ii; ?>" value="0" id="apDoSVK<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="vk[<?php echo $ii; ?>][apDoVK]" value="1" id="apDoNewVK<?php echo $ii; ?>" /> <?php } ?>
     

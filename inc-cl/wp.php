@@ -35,7 +35,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
             <?php if ($isNew){ ?> <br/>You can setup any Wordpress based blog with activated XML-RPC support (WP Admin->Settimgs->Writing->Remote Publishing->Check XML-RPC). Wordpress.com and Blog.com supported as well.<br/><br/> <?php } ?> 
             
             <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easely identify it', 'nxs_snap'); ?></i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($gpo['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
-            <?php echo nxs_addQTranslSel('wp', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin'], $options['nDays']); ?>
+            <?php echo nxs_addQTranslSel('wp', $ii, $gpo['qTLng']); ?><?php echo nxs_addPostingDelaySel('wp', $ii, $gpo['nHrs'], $gpo['nMin'], $gpo['nDays']); ?>
             
              <?php if (!$isNew) { ?>
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>

@@ -418,6 +418,17 @@ if (!function_exists('nxs_addToLogN')){ function nxs_addToLogN ($type, $action, 
 }}
 
 
+//## Tests
+function nxs_cURLTestCode($url){  
+  $out = 'There is a problem with cURL. You need to contact your server admin or hosting provider. Here is the PHP code to reproduce the problem:<br/><pre style="color:#005800">&lt;?php '."\r\n".' $ch = curl_init(); '."\r\n".' curl_setopt($ch, CURLOPT_URL, "'.$url.'"); '."\r\n".' curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); '."\r\n".' curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); '."\r\n".' curl_setopt($ch, CURLOPT_TIMEOUT, 10); '."\r\n".' curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); '."\r\n".' $response = curl_exec($ch); '."\r\n".' $errmsg = curl_error($ch); '."\r\n".' $cInfo = curl_getinfo($ch); '."\r\n".' curl_close($ch); '."\r\n".' print_r($errmsg); '."\r\n".' print_r($cInfo); '."\r\n".' print_r($response); '."\r\n".'?&gt;</pre>'; return $out; 
+}
+function nxs_cURLTest($url, $msg, $testText){  $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); 
+  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); curl_setopt($ch, CURLOPT_TIMEOUT, 10); curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+  $response = curl_exec($ch); $errmsg = curl_error($ch); $cInfo = curl_getinfo($ch); curl_close($ch); echo "Testing ... ".$url." - ".$cInfo['url']."<br/>";
+  if (stripos($response, $testText)!==false) echo "....".$msg." - OK<br/>"; else { echo "....<b style='color:red;'>".$msg." - Problem</b><br/>"; prr($response); prr($errmsg); prr($cInfo); echo nxs_cURLTestCode($url);  }
+}
+
 
 if (!function_exists('nxsMergeArraysOV')){function nxsMergeArraysOV($Arr1, $Arr2){
   foreach($Arr2 as $key => $value) { if(array_key_exists($key, $Arr1) && is_array($value)) $Arr1[$key] = nxsMergeArraysOV($Arr1[$key], $Arr2[$key]); else $Arr1[$key] = $value;} return $Arr1;
