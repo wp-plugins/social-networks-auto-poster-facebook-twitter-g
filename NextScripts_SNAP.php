@@ -227,11 +227,12 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                     <div id="fbSelCats<?php echo $ii; ?>" class="categorydivInd" style="padding-left: 15px; background-color: #fff;"> 
        <a href="#" onclick="nxs_chAllCatsL(1, 'fbSelCats<?php echo $ii; ?>'); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCatsL(0, 'fbSelCats<?php echo $ii; ?>'); return false;">UnCheck all</a>
           <div id="category-all" class="tabs-panel"> <input type="hidden" id="tmpCatSelNT" name="tmpCatSelNT" value="" />
-            <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-                <?php  if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); ?>
+            <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">            
+                <?php $args = array( 'descendants_and_self' => 0, 'selected_cats' => '', 'taxonomy' => 'category', 'checked_ontop' => false);    
+                 if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); ?>
             </ul>
           </div>  
-       </div>    <div class="submit"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); $('#showCatSel').bPopup().close();" value="Select Categories" /></div>
+       </div>    <div class="submit"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); jQuery('#showCatSel').bPopup().close();" value="Select Categories" /></div>
            </div>
            
             <?php wp_nonce_field( 'nsDN', 'nsDN_wpnonce' ); 

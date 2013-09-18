@@ -123,6 +123,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 * Improvement - Pinterest - ability to pin videos and new setting - "If post has a video use it instead of image"
 * Bug Fix - published_to_published should not trigger any events.
+* Bug Fix - can't save categories selection.
 * Bug Fix - Some minor bug fixes.
 
 = 2.7.19 [09/11/2013] =
