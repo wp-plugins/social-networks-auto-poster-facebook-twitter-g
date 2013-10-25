@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
-Tested up to: 3.6.1
-Stable tag: 2.7.20
+Tested up to: 3.7.0
+Stable tag: 2.7.21
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,7 +14,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-Version 3 is coming soon. Version 3 Beta (Release Candidate 2) is available for download: http://www.nextscripts.com/v3-beta/
+Version 3 is coming soon. Version 3 Beta (Release Candidate 4) is available for download: http://www.nextscripts.com/v3-beta/
 
 * **Latest version 2.7** - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text.
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
@@ -119,9 +119,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 2.7.21 [09/18/2013] =
+= 2.7.21 [10/25/2013] =
 
+* Improvement - Wordpress 3.7 compatibility
 * Bug Fix - additional URL parameters were broken for Tumblr.
+* Bug Fix - Stumbleupon incorrect bad user/pass problem for some accounts.
 * Bug Fix - Stumbleupon unnecessary debug info removed.
 
 = 2.7.20 [09/18/2013] =
