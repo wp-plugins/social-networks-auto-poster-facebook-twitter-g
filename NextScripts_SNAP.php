@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 2.7.21
+Version: 2.7.22
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '2.7.21' ); require_once "nxs_functions.php";   
+define( 'NextScripts_SNAP_Version' , '2.7.22' ); require_once "nxs_functions.php";   
 //## Include All Available Networks
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -671,7 +671,8 @@ Please see #4 and #5 for Twitter:<br/>
         
         function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster; if (count($_POST)<1 || !isset($_POST["snapEdIT"]) || empty($_POST["snapEdIT"])) return;
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; //  echo "| NS_SNAP_SavePostMetaTags - ".$id." |";
-          $post = get_post($id); prr($post); die(); if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return;          
+          $post = get_post($id); //prr($post); die(); 
+          if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return;          
           if (get_magic_quotes_gpc() || ( isset($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")){ array_walk_recursive($_POST, 'nsx_stripSlashes'); } 
           $snap_isAutoPosted = get_post_meta($id, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1' &&  $post->post_status=='future') { delete_post_meta($id, 'snap_isAutoPosted'); add_post_meta($id, 'snap_isAutoPosted', '2'); }          
           delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            

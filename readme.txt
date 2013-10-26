@@ -119,6 +119,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 2.7.22 [10/26/2013] =
+
+* Critical Bug Fix - Showing post contents instead of saving it..
+
 = 2.7.21 [10/25/2013] =
 
 * Improvement - Wordpress 3.7 compatibility
