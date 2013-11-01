@@ -17,13 +17,10 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       if (!isset($options['twAccToken']) || trim($options['twAccToken'])=='') { $badOut['Error'] = 'No Auth Token Found'; return $badOut; }
       //## Old Settings Fix
       if ($options['attchImg']=='1') $options['attchImg'] = 'large'; if ($options['attchImg']=='0') $options['attchImg'] = false;
-      if (isset($message['img'])) $img = trim($message['img']); else $img = '';     // prr($message);
+      if (isset($message['img']) && !is_array($message['img']) ) $img = trim($message['img']); else $img = '';
       //## Format Post
-      $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  if ($options['attchImg']!=false) { $imgURL = trim($message['imgURL'][$options['attchImg']]);
-          if ($imgURL=='') $imgURL = trim($message['imgURL']['large']); if ($imgURL=='') $imgURL = trim($message['imgURL']['medium']); 
-          if ($imgURL=='') $imgURL = trim($message['imgURL']['original']); if ($imgURL=='') $imgURL = trim($message['imgURL']['thumb']); 
-      }
-      if ($imgURL=='' && $img=='') $options['attchImg'] = false;   
+      $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  if ($options['attchImg']!=false) { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; }
+      if (empty($imgURL) && $img=='') $options['attchImg'] = false;   
       //## Make Post
       //$msg = $message['message']; $imgURL = trim($message['imageURL']); $img = trim($message['img']); $nxs_urlLen = $message['urlLength'];           
       if ($options['attchImg']!=false && $img=='' && $imgURL!='' ) {
@@ -32,10 +29,10 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       }  
       if ($options['attchImg']!=false && $img!='') $twLim = 118; else $twLim = 140;
       
-      require_once ('apis/tmhOAuth.php'); if ($nxs_urlLen>0) { $msg = nsTrnc($msg, $twLim-22+$nxs_urlLen); } else $msg = nsTrnc($msg, $twLim);
+      require_once ('apis/tmhOAuth.php'); if ($nxs_urlLen>0) { $msg = nsTrnc($msg, $twLim-22+$nxs_urlLen); } else $msg = nsTrnc($msg, $twLim); if (substr($msg, 0, 1)=='@') $msg = ' '.$msg;
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));      
       if ($options['attchImg']!=false && $img!='') $code = $tmhOAuth -> request('POST', 'http://api.twitter.com/1.1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
-        else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg));         
+        else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); 
       if ( $code=='403' && stripos($tmhOAuth->response['response'], 'User is over daily photo limit')!==false && $options['attchImg']!=false && $img!='') { 
          $badOut['Error'] .= "User is over daily photo limit. Will post without image\r\n"; $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg));
       }        

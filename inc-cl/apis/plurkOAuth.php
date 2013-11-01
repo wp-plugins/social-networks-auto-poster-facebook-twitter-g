@@ -192,7 +192,7 @@ class wpPlurkOAuth{
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $this->access_secret); 
       if (is_array($params)) { $params = nxspk_SigMethod_HMAC_SHA1::urlencode_rfc3986($params);   $args = array_merge($args, $params);} //prr($args);
       $argsStr = ''; $argsT = array(); foreach ($args as $arN=>$arV){$argsT[] = $arN.'='.$arV;} $argsStr = implode('&', $argsT); $url .= '?'.$argsStr;
-      $hdrsArr = $this->makeHTTPHeaders($url); $ckArr = $nxs_vbCkArray;  
+      $hdrsArr = $this->makeHTTPHeaders($url);  $ckArr = '';  
       $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr)); //  prr($response);
       if ( is_wp_error($response) ) return $response;
       $this->http_code = $response['response']['code']; 

@@ -32,7 +32,7 @@ class NXS_tmhOAuth {
         // something that clearly identifies your app
         'user_agent'                 => '',
 
-        'use_ssl'                    => false,
+        'use_ssl'                    => true,
         'host'                       => 'api.twitter.com',
 
         'consumer_key'               => '',

@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
-Tested up to: 3.7.0
-Stable tag: 2.7.21
+Tested up to: 3.7.1
+Stable tag: 3.0.1
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,9 +14,9 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, LiveJournal, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-Version 3 is coming soon. Version 3 Beta (Release Candidate 4) is available for download: http://www.nextscripts.com/v3-beta/
+* **Latest version 3.0** - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
 
-* **Latest version 2.7** - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text.
+* *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text.
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
@@ -24,22 +24,25 @@ Version 3 is coming soon. Version 3 Beta (Release Candidate 4) is available for 
 
 = Supported Networks =
 
+* **App.net** - Autopost to your account.
 * **Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
 * **Delicious** - Auto-submit bookmark to your account. 
+* **Deviantart.com** - Autopost to your Blog. HTML is supported.
 * **Diigo** - Auto-submit bookmark to your account. 
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **FriendFeed** - Autopost to your account. Ability to attach Image to posts.
 * **Instapaper** - Auto-submit bookmark to your account. 
-* **Google+** (*with third party API library*) - Autopost to your profile or business page. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
+* **Google+** (*with third party API library*) - Autopost to your profile, business page or community. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
 * **LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
 * **LiveJournal** - Auto-submit your blogpost to LiveJournal blog or community. "LiveJournal Engine" based website DreamWidth.org is also supported. 
 * **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
+* **Reddit** (*with third party API library*) - post to your subreddits.
 * **Stumbleupon** - Auto-submit bookmark to your account. 
 * **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
 * **Twitter** - Autopost to your account. Ability to attach Image to tweets.
 * **Plurk**  - Autopost to your account. Ability to attach Image to messages.
 * **vBulletin** - Auto-submit your blogpost to vBulletin forums. Could create new threads or new posts.
-* **vKontakte(VK.com)** - Autopost to your profile or group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
+* **vKontakte(VK.com)** - Autopost to your profile or group page. Ability to attach your blogpost to vk.com post. Ability to make "Image" posts.
 * **Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 * **YouTube** (*with third party API library*) - Post messages to your YouTube channel feed. If blogpost has youtube reference it will be attached.
 
@@ -48,6 +51,35 @@ Version 3 is coming soon. Version 3 Beta (Release Candidate 4) is available for 
 **Plugin makes 100% White Labeled Posts** The main idea behind the plugin is to give you the ability to promote only yourself. Plugin uses your own apps and all posts to all networks come only from you. No "Shared via NextScripts.com" or "Posted by SNAP for Wordpress" messages.
 
 Please see <a href="http://www.nextscripts.com/installation-of-social-networks-auto-poster-for-wordpress/">complete installation instructions with screenshots</a>
+
+**Free and Pro Plugin Features** <a href="http://www.nextscripts.com/snap-features/">Please see more detailed features list</a>
+
+* Message Formatting Tags
+* Assign categories to each Social Network
+* Tags/Categories posted as Hashtags
+* Auto-import comments from Facebook as WordPress Comments
+* Auto-import replies and mentions from and Twitter as WordPress Comments
+* URL Shorteners: bit.ly, goo.gl, YOURLS and built in WordPress URL Shortener
+* Additional URL Parameters 
+* Custom URLs for AutoPosts 
+* Export/Import Plugin settings
+* See direct links to the published posts from the "Edit" page
+* "Image" posts for Facebook, Google+, Vkontakte and Twitter
+* Ability to "Spin" message post templates
+* Auto re-posting of the old posts
+
+** Also included exclusively in the "Pro" version **
+
+* Ability to make Scheduled and Delayed postings
+* Auto-repost existing random posts from from specific dates or “older then N days and younger then X days”.
+* Limit random or one-by-one auto-reposting for specific days of the week and times. (like Monday-Friday from 8AM to 7PM Only)
+* Reddit Autoposting Support
+* LinkedIn Company Pages Autoposting support
+* Advanced Autoposting to Blogger
+* [Limited Time Only - included to "Pro" for free] Google+ Autoposting Support ($49.95 value)
+* [Limited Time Only - included to "Pro" for free] Pinterest Autoposting Support ($49.95 value)
+
+** Get Support **
 
 <a href="http://www.nextscripts.com/support/">Contact support/Open Support Ticket</a>
 
@@ -119,9 +151,26 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.0.1 [11/01/2013] =
+
+* New - Major release with a lot of new and improved features. 
+* New - Auto-repost existing and already posted posts based on some rules – one-by-one from old to new, one-by-one from new to old, from specific dates, "older then N days and younger then X days".
+* New - Add auto-posts to the query that will be posted according to some specified rules (like "two posts per hour")
+* New - Select what image to use for "Image" and "Attachment" post types if post has several images
+* New - Custom URL for posts
+* New - App.net Support
+* New - Reddit Support
+* New - Deviantart Support
+* New - Reset all Settings for existing posts.
+* New - Extended debug info.
+* New - Ability to send errors by email.
+* New - New Option – How to handle spaces in hashtags.
+* Improvement - Comments import has been completely redone. Disqus and usernames should be correct now.
+* Improvement - Code was optimized for lighter footprint
+
 = 2.7.22 [10/26/2013] =
 
-* Critical Bug Fix - Showing post contents instead of saving it..
+* Critical Bug Fix - Showing post contents instead of saving it.
 
 = 2.7.21 [10/25/2013] =
 

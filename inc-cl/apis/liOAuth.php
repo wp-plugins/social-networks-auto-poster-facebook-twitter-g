@@ -92,7 +92,7 @@ class nsx_LinkedIn {
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) echo $auth_header . "\n"; 
+    //if ($debug) echo $auth_header . "\n"; 
     $response = $this->httpRequest($status_url, $auth_header, "POST", $xml); 
     return $response;
   }
@@ -105,7 +105,7 @@ class nsx_LinkedIn {
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) echo $auth_header . "\n"; 
+    //if ($debug) echo $auth_header . "\n"; 
     $response = $this->httpRequest($status_url, $auth_header, "POST", $xml);//prr($response);
     return $response;
   }

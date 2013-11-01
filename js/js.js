@@ -15,24 +15,70 @@
     };
 })(jQuery);
 
+jQuery(document).ready(function() { // Submit Serialized Form - avoid Max.Vars limit.
+
+if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
+    jQuery(window).load(function(){
+        jQuery('input:-webkit-autofill').each(function(){
+            var text =jQuery(this).val();
+            var name = jQuery(this).attr('name');
+            jQuery(this).after(this.outerHTML).remove();
+            jQuery('input[name=' + name + ']').val(text);
+        });
+    });
+}
+
+
+  jQuery('#nsStFormMisc').submit(function() { var dataA = jQuery('#nsStForm').serialize(); jQuery('#nxsMainFromElementAccts').val(dataA); });
+  jQuery('#nsStForm').submit(function() { jQuery('#nsStFormMisc').submit(); return false; });
+  
+  jQuery('#post').submit(function() { jQuery('body').append('<form id="nxs_tempForm"></form>'); jQuery("#NXS_MetaFieldsIN").appendTo("#nxs_tempForm");  
+      var nxsmf = jQuery('#nxs_tempForm').serialize(); jQuery( "#NXS_MetaFieldsIN" ).remove(); jQuery('#nxs_snapPostOptions').val(nxsmf); //alert(nxsmf);  alert(jQuery('#nxs_snapPostOptions').val()); return false; 
+  });
+      
+      
+      
+      //console.log(jQuery('#post'));  console.log(jQuery('#NXS_MetaFieldsForm'));  
+      //var nxsmf = jQuery('#NXS_MetaFieldsForm').serialize(); alert(nxsmf); return false; });
+});
+
+function nxs_doResetPostSettings(pid){
+    
+  jQuery.post(ajaxurl,{action: 'nxs_delPostSettings', pid: pid, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ 
+     location.reload();
+  }, "html")
+     
+}
+
 function nxs_expSettings(){
-  jQuery.generateFile({ filename: 'nx-snap-settings.txt', content: jQuery('input#nsDN_wpnonce').val(), script: 'admin-ajax.php'});
+  jQuery.generateFile({ filename: 'nx-snap-settings.txt', content: jQuery('input#nxsSsPageWPN_wpnonce').val(), script: 'admin-ajax.php'});
 }
 // AJAX Functions
 function getBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
-  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getBoards', id: 0, _wpnonce: jQuery('input#getBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getBoards', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
     jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
   }, "html")
 }
 function getGPCats(u,p,ii,c){ jQuery("#gpLoadingImg"+ii).show();
-  jQuery.post(ajaxurl,{u:u,p:p,c:c,ii:ii, nxs_mqTest:"'", action: 'getGPCats', id: 0, _wpnonce: jQuery('input#getGPCats_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+  jQuery.post(ajaxurl,{u:u,p:p,c:c,ii:ii, nxs_mqTest:"'", action: 'getGPCats', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
     jQuery("select#apGPCCats"+ii).html(j); jQuery("#gpLoadingImg"+ii).hide();
   }, "html")
 }
 function getWLBoards(u,p,ii){ jQuery("#wlLoadingImg"+ii).show();
-  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getWLBoards', id: 0, _wpnonce: jQuery('input#getWLBoards_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getWLBoards', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
     jQuery("select#apWLBoard"+ii).html(j); jQuery("#wlLoadingImg"+ii).hide();
   }, "html")
+}
+
+function nxs_setRpstAll(t,ed,ii){ jQuery("#nxsLoadingImg"+ii).show(); var lpid = jQuery('#'+t+ii+'SetLPID').val();
+  jQuery.post(ajaxurl,{t:t,ed:ed,ii:ii, nxs_mqTest:"'", action: 'SetRpstAll', id: 0, lpid:lpid, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+    alert('OK. Done.'); jQuery("#nxsLoadingImg"+ii).hide();
+  }, "html")
+}
+
+function nxs_fillTime(dd){ var d=new Date(dd); jQuery('#nxs_aa').val(d.getFullYear()); jQuery('#nxs_mm').val(d.getMonth()+1); jQuery('#nxs_jj').val(d.getDate()); jQuery('#nxs_hh').val(d.getHours()); jQuery('#nxs_mn').val(d.getMinutes()); }
+function nxs_makeTimeTxt(){ var m=new Array();m[0]="January";m[1]="February";m[2]="March";m[3]="April";m[4]="May";m[5]="June";m[6]="July";m[7]="August";m[8]="September";m[9]="October";m[10]="November";m[11]="December";  
+    return m[jQuery('#nxs_mm').val()-1]+',  '+jQuery('#nxs_jj').val()+' '+jQuery('#nxs_aa').val()+' @ '+jQuery('#nxs_hh').val()+':'+jQuery('#nxs_mn').val(); 
 }
 
 //## Select/Unselect Categories
@@ -50,7 +96,6 @@ function nxs_hidePopUpInfo(pid){ jQuery('div#'+pid).hide(); }
 
 function showPopShAtt(imid, e){ if (!jQuery('div#popShAtt'+imid).is(":visible")) jQuery('div#popShAtt'+imid).show().css('top', e.pageY+5).css('left', e.pageX+25).appendTo('body'); }
 function hidePopShAtt(imid){ jQuery('div#popShAtt'+imid).hide(); }
-   
 function doSwitchShAtt(att, idNum){
   if (att==1) { if (jQuery('#apFBAttch'+idNum).is(":checked")) {jQuery('#apFBAttchShare'+idNum).prop('checked', false);}} else {if( jQuery('#apFBAttchShare'+idNum).is(":checked")) jQuery('#apFBAttch'+idNum).prop('checked', false);}
 }      
@@ -70,7 +115,7 @@ function doCleanFillBlock(blIDFrm){ jQuery('#do'+blIDFrm+'Div').html('');}
 function doShowFillBlockX(blIDFrm){ jQuery('.clNewNTSets').hide(); jQuery('#do'+blIDFrm+'Div').show(); }
             
 function doDelAcct(nt, blID, blName){  var answer = confirm("Remove "+blName+" account?");
-  if (answer){ var data = { action: 'nsDN', id: 0, nt: nt, id: blID, _wpnonce: jQuery('input#nsDN_wpnonce').val()}; 
+  if (answer){ var data = { action: 'nsDN', id: 0, nt: nt, id: blID, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}; 
     jQuery.post(ajaxurl, data, function(response) { location.reload();  });
   }           
 }      
@@ -132,11 +177,11 @@ function nxs_hideTip(id){
 
 (function($) {
   $(function() {
-     $('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); $('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });
-     $('#showLic').bind('click', function(e) { e.preventDefault(); $('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false]}); });                                 
+     jQuery('#nxs_snapAddNew').bind('click', function(e) { e.preventDefault(); jQuery('#nxs_spPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [65, 50]}); });
+     jQuery('#showLic').bind('click', function(e) { e.preventDefault(); jQuery('#showLicForm').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false]}); });                                 
      /* // Will move it here later for better compatibility
-     $('.button-primary[name="update_NS_SNAutoPoster_settings"]').bind('click', function(e) { var str = $('input[name="post_category[]"]').serialize(); $('div.categorydivInd').replaceWith('<input type="hidden" name="pcInd" value="" />'); 
-       str = str.replace(/post_category/g, "pk"); $('div.categorydiv').replaceWith('<input type="hidden" name="post_category" value="'+str+'" />');  
+     jQuery('.button-primary[name="update_NS_SNAutoPoster_settings"]').bind('click', function(e) { var str = jQuery('input[name="post_category[]"]').serialize(); jQuery('div.categorydivInd').replaceWith('<input type="hidden" name="pcInd" value="" />'); 
+       str = str.replace(/post_category/g, "pk"); jQuery('div.categorydiv').replaceWith('<input type="hidden" name="post_category" value="'+str+'" />');  
      });
      */
   });
