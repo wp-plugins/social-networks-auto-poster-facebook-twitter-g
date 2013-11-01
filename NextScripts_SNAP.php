@@ -217,8 +217,8 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
 }
 
 //## OG:Tags
-function nxs_start_ob(){ob_start( 'nxs_ogtgCallback' );}
-function nxs_end_flush_ob(){ob_end_flush();}
+function nxs_start_ob(){ return; if (!is_admin()) ob_start( 'nxs_ogtgCallback' );}
+function nxs_end_flush_ob(){ if (!is_admin()) @ob_end_flush();}
 function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    $ogimgs = array();  
   if (!empty($post) && !is_object($post) && int($post)>0) $post = get_post($post); if (empty($options['advFindOGImg'])) $options['advFindOGImg'] = 0;
   if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {    
@@ -292,7 +292,9 @@ if ( !empty($dbOptions['nsOpenGraph']) &&  (int)$dbOptions['nsOpenGraph'] == 1) 
   add_action( 'init', 'nxs_start_ob', 0 );
   add_action('shutdown', 'nxs_end_flush_ob', 1000); 
   add_action('wp_head', 'nxs_addOGTagsPreHolder', 150);
-} unset($dbOptions);
+} 
+$nxs_noWMPUPanShow = $nxs_isWPMU && $dbOptions['suaMode']=='S';
+unset($dbOptions);
   
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   //## Add the admin menu    
@@ -368,5 +370,5 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       if (function_exists('nxs_add_style')) add_action( 'admin_footer', 'nxs_add_style' );  
       if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
-} else { if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); add_action('admin_menu', 'NS_SNAutoPoster_ap'); }
+} else { if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); if (!$nxs_noWMPUPanShow) add_action('admin_menu', 'NS_SNAutoPoster_ap'); }
 ?>
