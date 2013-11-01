@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.0.1
+Version: 3.0.2
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.0.1' ); require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
+define( 'NextScripts_SNAP_Version' , '3.0.2' ); require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
 //## Include All Available Networks            
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -217,11 +217,12 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
 }
 
 //## OG:Tags
-function nxs_start_ob(){ return; if (!is_admin()) ob_start( 'nxs_ogtgCallback' );}
+function nxs_start_ob(){ if (!is_admin()) ob_start( 'nxs_ogtgCallback' );}
 function nxs_end_flush_ob(){ if (!is_admin()) @ob_end_flush();}
-function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;    $ogimgs = array();  
-  if (!empty($post) && !is_object($post) && int($post)>0) $post = get_post($post); if (empty($options['advFindOGImg'])) $options['advFindOGImg'] = 0;
-  if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {    
+function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;  
+  if (stripos($content, 'og:title')!==false) $ogOut = "\r\n"; else {
+    if (!isset($plgn_NS_SNAutoPoster)) $options = get_option('NS_SNAutoPoster'); else $options = $plgn_NS_SNAutoPoster->nxs_options;    $ogimgs = array();  
+    if (!empty($post) && !is_object($post) && int($post)>0) $post = get_post($post); if (empty($options['advFindOGImg'])) $options['advFindOGImg'] = 0;       
     $title = preg_match( '/<title>(.*)<\/title>/', $content, $title_matches );  
     if ($title !== false && count( $title_matches) == 2 ) $ogT ='<meta property="og:title" content="' . $title_matches[1] . '" />'."\r\n"; else {
       if (is_home() || is_front_page() )  $ogT = get_bloginfo( 'name' ); else $ogT = get_the_title();
@@ -289,9 +290,9 @@ add_filter('get_avatar','ns_get_avatar', 10, 5 );
 
 $dbOptions = get_option('NS_SNAutoPoster');
 if ( !empty($dbOptions['nsOpenGraph']) &&  (int)$dbOptions['nsOpenGraph'] == 1) {    
-  add_action( 'init', 'nxs_start_ob', 0 );
-  add_action('shutdown', 'nxs_end_flush_ob', 1000); 
   add_action('wp_head', 'nxs_addOGTagsPreHolder', 150);
+  add_action( 'init', 'nxs_start_ob', 0 );
+  add_action('shutdown', 'nxs_end_flush_ob', 1000);   
 } 
 $nxs_noWMPUPanShow = $nxs_isWPMU && $dbOptions['suaMode']=='S';
 unset($dbOptions);
