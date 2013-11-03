@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.0.2
+Version: 3.0.3
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.0.2' ); require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
+define( 'NextScripts_SNAP_Version' , '3.0.3' ); require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
 //## Include All Available Networks            
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
@@ -18,7 +18,7 @@ $nxs_snapThisPageUrl = nxs_get_admin_url().'options-general.php?page=NextScripts
 $nxs_plurl = plugin_dir_url(__FILE__);
 $nxs_isWPMU = defined('MULTISITE') && MULTISITE==true; 
 
-if ( (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php') || $pagenow=='post.php' || $pagenow=='post-new.php' || stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false || stripos($_SERVER["REQUEST_URI"], 'xmlrpc.php')!==false) {
+if ( (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php') || $pagenow=='post.php' || $pagenow=='post-new.php' || stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false || stripos($_SERVER["REQUEST_URI"], 'xmlrpc.php')!==false  || ($nxs_isWPMU && is_admin()) ) {
   if (class_exists("NS_SNAutoPoster")) { nxs_checkAddLogTable(); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster();  }
 }
 //## Tests
@@ -214,6 +214,7 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
    } else { switch_to_blog($_POST['sid']); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); 
      $options = $plgn_NS_SNAutoPoster->nxs_options; $options['suaMode'] = $_POST['sset']; update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); //    prr($plgn_NS_SNAutoPoster->dbOptionsName);  prr($options);
    }
+   echo "OK"; die();
 }
 
 //## OG:Tags
@@ -288,14 +289,12 @@ add_action('nxs_querypost_event', 'nxs_do_post_from_query');
 add_action('wp', 'nxs_activation'); //## Adds Hourly Event  
 add_filter('get_avatar','ns_get_avatar', 10, 5 );
 
-$dbOptions = get_option('NS_SNAutoPoster');
+if (!isset($plgn_NS_SNAutoPoster)) $dbOptions = get_option('NS_SNAutoPoster'); else $dbOptions = $plgn_NS_SNAutoPoster->nxs_options;
 if ( !empty($dbOptions['nsOpenGraph']) &&  (int)$dbOptions['nsOpenGraph'] == 1) {    
   add_action('wp_head', 'nxs_addOGTagsPreHolder', 150);
   add_action( 'init', 'nxs_start_ob', 0 );
   add_action('shutdown', 'nxs_end_flush_ob', 1000);   
-} 
-$nxs_noWMPUPanShow = $nxs_isWPMU && $dbOptions['suaMode']=='S';
-unset($dbOptions);
+} unset($dbOptions);
   
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   //## Add the admin menu    
@@ -307,7 +306,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   if ($nxs_isWPMU) { if ($isO) $nxs_tpWMPU = 'O'; elseif ($isS) $nxs_tpWMPU = 'S';} // prr($nxs_tpWMPU); prr($suOptions);
   
   if (function_exists('nxs_doSMAS3')) nxs_doSMAS3($isS, $isO);
-  if (!$isO && !$isS && !$isPMB) add_action('admin_menu', 'NS_SNAutoPoster_apx');    
+  if (!$isO && !$isS && !$isPMB && !function_exists('showSNAP_WPMU_OptionsPageExt')) add_action('admin_menu', 'NS_SNAutoPoster_apx');    
 
   add_action('admin_init', 'nxs_adminInitFunc');  
   add_action( 'admin_enqueue_scripts', 'nxssnap_enqueue_scripts' ); 
@@ -344,7 +343,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('wp_ajax_nsDN', 'ns_delNT_ajax');    
   }
   
-  if ($isO) {    
+  if ($isO) {  
     add_action('admin_menu', 'NS_SNAutoPoster_ap');    
     add_action('admin_init', 'nxs_adminInitFunc2');    
     //## Initialize options on plugin activation
@@ -371,5 +370,5 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       if (function_exists('nxs_add_style')) add_action( 'admin_footer', 'nxs_add_style' );  
       if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
-} else { if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); if (!$nxs_noWMPUPanShow) add_action('admin_menu', 'NS_SNAutoPoster_ap'); }
+} else { if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); add_action('admin_menu', 'NS_SNAutoPoster_ap'); }
 ?>

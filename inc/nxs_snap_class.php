@@ -103,7 +103,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
               $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['imgNoCheck'])) { $options = $uplOpt;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
             } 
           }
-          if (isset($_POST['nxsMainFromElementAccts'])) { if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
+          if (isset($_POST['nxsMainFromElementAccts']) || isset($_POST['nxsMainFromSupportFld'])) { 
+            if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
             $acctsInfoPost = $_POST['nxsMainFromElementAccts']; unset($_POST['nxsMainFromElementAccts']);  $acctsInfo = array();  
             $acctsInfo = NXS_parseQueryStr(urldecode($acctsInfoPost)); //prr($acctsInfo);
@@ -275,7 +276,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     </div> <!-- END TAB -->
     
     <div id="nsx_tab2" class="nsx_tab_content">
-    <form method="post" id="nsStFormMisc" action="<?php echo $nxs_snapThisPageUrl?>">    <input type="hidden" name="nxsMainFromElementAccts" id="nxsMainFromElementAccts" value="">
+    <form method="post" id="nsStFormMisc" action="<?php echo $nxs_snapThisPageUrl?>">    <input type="hidden" name="nxsMainFromElementAccts" id="nxsMainFromElementAccts" value="" />
+       <input type="hidden" name="nxsMainFromSupportFld" id="nxsMainFromSupportFld" value="1" />
      <!-- ##################### OTHER #####################-->            
             <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>              
      <!-- How to make auto-posts? --> 

@@ -151,6 +151,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.0.3 [11/03/2013] =
+
+* Bug Fix - Broken/Incorrect WPMU Pages and Sites management
+* Bug Fix - Facebook text format issue.
+* Bug Fix - Settings Page layout fixes.
+
 = 3.0.2 [11/01/2013] =
 
 * Bug Fix - Blank pages on some sites after 2.7->3.0 update
