@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
 Tested up to: 3.7.1
-Stable tag: 3.0.2
+Stable tag: 3.0.4
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -150,6 +150,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.0.4 [11/03/2013] =
+
+* Important Notice - 64MB of allowed PHP memory is mandatory.  
+* Bug Fix - plugin was ignoring some externally/automatically created posts.
+* Bug Fix - Import settings button was broken.
+* Bug Fix - Repost only previously unautoposted posts checkbox was not saved.
+* Bug Fix - trash_to_publish event should be excluded from the log. 
+* Bug Fix - Twitter was ignoring selected image.
+* Bug Fix - Blogger - incorrect "Unfinished setup" message.
+* Bug Fix - Twitter - broken qTransalte for Twitter format.
+* Bug Fix - Reddit - title and message format problems. 
+* Bug Fix - LiveJournal - Test button was broken
 
 = 3.0.3 [11/03/2013] =
 

@@ -258,17 +258,18 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $uln = 0; $extInfo = ' | PostID: '.$postID;
     
     
-    if ($options['attchImg']=='1') { $imgURL = nxs_getPostImage($postID); if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  if(trim($imgURL)=='') $options['attchImg'] = 0; else {  
-      if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
-        if (is_wp_error($img)) $options['attchImg'] = 0; else if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; }  else $img = $img['body']; } else $options['attchImg'] = 0; 
-      } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
-     }
-     if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it - Error:'.print_r($img), $extInfo);
+    if ($options['attchImg']=='1') { if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID);  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  
+      if(trim($imgURL)=='') $options['attchImg'] = 0; else {  
+        if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
+          if (is_wp_error($img)) $options['attchImg'] = 0; else if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; }  else $img = $img['body']; } else $options['attchImg'] = 0; 
+        } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
+      }
+      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it - Error:'.print_r($img), $extInfo);
     }  
     if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140; 
     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
-    else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));    
+     else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));    
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType'];        
         if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 22; 
         if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - nxs_strLen($aun); } 
@@ -277,9 +278,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);$noRepl = str_ireplace("%EXCERPT%", "", $noRepl);
         $noRepl = str_ireplace("%ANNOUNCE%", "", $noRepl); $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl);  $twLim = $twLim - nxs_strLen($noRepl); 
         
-        $pTitle = $title = $post->post_title;
-        if ($post->post_excerpt!="") $exrText = $post->post_excerpt; else $exrText= $post->post_content;  $pText = apply_filters('the_content', $exrText);        
-        $pRawText = $post->post_content;  $pFullText = apply_filters('the_content', $pRawText); 
+        $pTitle = nxs_doQTrans($post->post_title);
+        if ($post->post_excerpt!="") $exrText = nxs_doQTrans($post->post_excerpt); else $exrText= nxs_doQTrans($post->post_content);  $pText = apply_filters('the_content', $exrText);        
+        $pRawText = nxs_doQTrans($post->post_content);  $pFullText = apply_filters('the_content', $pRawText); 
         if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
           $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
           $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));

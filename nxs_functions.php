@@ -717,6 +717,8 @@ function nxs_adjRpst($optionsii, $pval){
     if (isset($pval['rpstToTime']))  $optionsii['rpstToTime'] = trim($pval['rpstToTime']);       
     if (isset($pval['rpstOLDays']))  $optionsii['rpstOLDays'] = trim($pval['rpstOLDays']);       
     if (isset($pval['rpstNWDays']))  $optionsii['rpstNWDays'] = trim($pval['rpstNWDays']);       
+    
+    if (isset($pval['rpstOnlyPUP']))  $optionsii['rpstOnlyPUP'] = trim($pval['rpstOnlyPUP']);       
         
     if (isset($pval['rpstBtwHrsType']))  $optionsii['rpstBtwHrsType'] = trim($pval['rpstBtwHrsType']);       
     if (isset($pval['rpstBtwHrsT']))  $optionsii['rpstBtwHrsT'] = trim($pval['rpstBtwHrsT']);  if ((int)$optionsii['rpstBtwHrsT']>23) $optionsii['rpstBtwHrsT'] = 23;         

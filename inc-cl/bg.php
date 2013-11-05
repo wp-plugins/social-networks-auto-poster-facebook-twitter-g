@@ -4,7 +4,7 @@ $nxs_snapAvNts[] = array('code'=>'BG', 'lcode'=>'bg', 'name'=>'Blogger');
 
 if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG {
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_plurl; $ntInfo = array('code'=>'BG', 'lcode'=>'bg', 'name'=>'Blogger', 'defNName'=>'diUName', 'tstReq' => true); ?>    
+  function showGenNTSettings($ntOpts){ global $nxs_plurl; $ntInfo = array('code'=>'BG', 'lcode'=>'bg', 'name'=>'Blogger', 'defNName'=>'bgUName', 'tstReq' => true); ?>    
     <div class="nxs_box">
       <div class="nxs_box_header"> 
         <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
@@ -199,7 +199,7 @@ if (!function_exists("nxs_rePostToBG_ajax")) { function nxs_rePostToBG_ajax() { 
       foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo);       
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassBG(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); } 
-      $result = nxs_doPublishToBG($postID, $po);  if ($result == 201) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
+      $result = nxs_doPublishToBG($postID, $po);  if ($result == 200) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
       
       if ($result == 200) die("Successfully sent your post to Blogger."); else die($result);
     }    

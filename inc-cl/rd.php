@@ -231,10 +231,10 @@ if (!function_exists("nxs_doPublishToRD")) { //## Second Function to Post to RD
       
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $message['description'] = 'Test Post, Description';  $message['title'] = 'Test Post - Title';  $message['url'] = home_url();    
       } else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return; 
-        $rdMsgTFormat = $options['rdTitleFormat']; $rdMsgFormat = $options['rdTextFormat'];  $rdPostType = $options['postType']; 
-        $title = nsFormatMessage($rdMsgTFormat, $postID);  $msg = nsFormatMessage($rdMsgFormat, $postID); // prr($msg); echo $postID;
+        $rdPostType = $options['postType']; 
+        $options['rdTitleFormat'] = nsFormatMessage($options['rdTitleFormat'], $postID);  $options['rdTextFormat'] = nsFormatMessage($options['rdTextFormat'], $postID); // prr($msg); echo $postID;
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
-        $message = array('message'=>$msg, 'url'=>get_permalink($postID), 'title'=>$title);
+        $message = array('message'=>$options['rdTextFormat'], 'url'=>get_permalink($postID), 'title'=>$options['rdTitleFormat']);
       }            
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_RD(); $ret = $ntToPost->doPostToNT($options, $message); // echo "~~~"; prr($ret); echo "+++";

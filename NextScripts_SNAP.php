@@ -4,12 +4,20 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.0.3
+Version: 3.0.4
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.0.3' ); require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
+define( 'NextScripts_SNAP_Version' , '3.0.4' ); 
+
+$nxs_mLimit = (int)ini_get('memory_limit');  if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
+if (!function_exists("ns_add_nomem_link")) { function ns_add_nomem_link($links, $file) { global $nxs_mLimit; static $this_plugin; if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
+  if ($file == $this_plugin){ $settings_link = '<b style="color:red;">Not Enough Memory allowed for PHP.</b> <br/> You have '.$nxs_mLimit.' MB. You need at least 64MB'; array_unshift($links, $settings_link);} return $links;}}
+} else {
+    
+require_once "nxs_functions.php"; require_once "inc/nxs_functions_adv.php"; require_once "inc/nxs_snap_class.php";     
 //## Include All Available Networks            
+//error_reporting(E_ALL); ini_set('display_errors', '1');
 global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU;
 if (!isset($nxs_snapAvNts) || !is_array($nxs_snapAvNts)) $nxs_snapAvNts = array(); $nxs_snapAPINts = array(); foreach (glob(plugin_dir_path( __FILE__ ).'inc-cl/*.php') as $filename){  require_once $filename; } 
 do_action('nxs_doSomeMore');
@@ -18,9 +26,8 @@ $nxs_snapThisPageUrl = nxs_get_admin_url().'options-general.php?page=NextScripts
 $nxs_plurl = plugin_dir_url(__FILE__);
 $nxs_isWPMU = defined('MULTISITE') && MULTISITE==true; 
 
-if ( (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php') || $pagenow=='post.php' || $pagenow=='post-new.php' || stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false || stripos($_SERVER["REQUEST_URI"], 'xmlrpc.php')!==false  || ($nxs_isWPMU && is_admin()) ) {
-  if (class_exists("NS_SNAutoPoster")) { nxs_checkAddLogTable(); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster();  }
-}
+if (class_exists("NS_SNAutoPoster")) { nxs_checkAddLogTable(); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster();  }
+
 //## Tests
 if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='test'){ 
   error_reporting(E_ALL); ini_set('error_reporting', E_ALL); ini_set('display_errors', 1); if (function_exists('gzdeflate')) echo "Y"; else echo "N";  echo "Testting... cURL<br/>";
@@ -124,7 +131,7 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 }}}
 //## Main Function to Post 
 if (!function_exists("nxs_snapLogPublishTo")) { function nxs_snapLogPublishTo( $new_status, $old_status, $post ) {
-  if ( $old_status!='publish' && $new_status == 'publish' ) nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
+  if ( $old_status!='publish' && $old_status!='trash' && $new_status == 'publish' ) nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
 }}
 if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
@@ -371,4 +378,5 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
 } else { if ($nxs_isWPMU) add_action('network_admin_menu', 'nxs_AddSUASettings'); add_action('admin_menu', 'NS_SNAutoPoster_ap'); }
+}
 ?>

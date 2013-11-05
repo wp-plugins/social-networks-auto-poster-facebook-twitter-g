@@ -5,7 +5,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         var $dbOptionsName = "NS_SNAutoPoster";       
         var $nxs_options = ""; var $nxs_ntoptions = "";
         
-        function __construct() { load_plugin_textdomain('nxs_snap', FALSE, dirname(plugin_basename(__FILE__)).'/lang/'); $this->nxs_options = $this->getAPOptions();} 
+        function __construct() { load_plugin_textdomain('nxs_snap', FALSE, dirname(plugin_basename(__FILE__)).'/lang/');  $this->nxs_options = $this->getAPOptions(); } 
         //## Constructor
         function NS_SNAutoPoster() { }
         //## Initialization function
@@ -15,22 +15,20 @@ if (!class_exists("NS_SNAutoPoster")) {
         function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();  
             //## Some Default Values            
             //$options = array('nsOpenGraph'=>1);            
-            $dbOptions = get_option($this->dbOptionsName); if (empty($dbOptions['ver'])) $dbOptions['ver'] = 300.400;
+            $dbOptions = get_option($this->dbOptionsName); if (empty($dbOptions['ver'])) $dbOptions['ver'] = 300.400; 
             $this->nxs_ntoptions = get_site_option($this->dbOptionsName);   $nxs_UPPath = 'nxs-snap-pro-upgrade';
-            $pf = ABSPATH . 'wp-content/plugins/'.$nxs_UPPath.'/'.$nxs_UPPath.'.php'; if (file_exists($pf) && !function_exists('nxs_getInitAdd') ) require_once $pf;               
+            $pf = ABSPATH . 'wp-content/plugins/'.$nxs_UPPath.'/'.$nxs_UPPath.'.php'; if (file_exists($pf) && !function_exists('nxs_getInitAdd') ) require_once $pf;          
             if ($nxs_isWPMU && $blog_id>1) { switch_to_blog(1); $dbMUOptions = get_option($this->dbOptionsName);  
               if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($dbMUOptions); restore_current_blog(); 
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
-            }              
+            }            
             if (!empty($dbOptions) && is_array($dbOptions)) foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option; 
-            if ( (!$nxs_isWPMU || $blog_id==1) && function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);  //$ttt = function_exists('nxs_getInitAdd'); var_dump($ttt);
+            if ( (!$nxs_isWPMU || $blog_id==1) && function_exists('nxs_getInitAdd')) nxs_getInitAdd($options); 
             if (isset($options['uk']) && $options['uk']!='') $options['uk']='API';
-
             if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
-            
             if (!isset($options['isPro']) || $options['isPro']!='1'){ //## Upgrade from non-pro version            
               $optPro = array();foreach ($options as $indx => $opt){                 
                  if (substr($indx, 0, 2)=='fb') $optPro['fb'][0][$indx] = $opt;
@@ -97,7 +95,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
           if (isset($_POST['upload_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Import Settings            
-            $secCheck =  wp_verify_nonce($_POST['nxsSsPageWPN_wpnonce'], 'nxsSsPageWPN');
+            $secCheck =  wp_verify_nonce($_POST['nxsChkUpl_wpnonce'], 'nxsChkUpl');
             if ($secCheck!==false && isset($_FILES['impFileSettings_button']) && is_uploaded_file($_FILES['impFileSettings_button']['tmp_name'])) { $fileData = trim(file_get_contents($_FILES['impFileSettings_button']['tmp_name']));
               while (substr($fileData, 0,1)!=='a') $fileData = substr($fileData, 1);              
               $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['imgNoCheck'])) { $options = $uplOpt;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 

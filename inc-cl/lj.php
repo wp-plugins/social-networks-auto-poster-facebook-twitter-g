@@ -215,7 +215,7 @@ if (!function_exists("nxs_doPublishToLJ")) { //## Second Function to Post to LJ
       } 
       //$imgURL = nxs_getPostImage($postID);
       $email = $options['ljUName'];  $pass = substr($options['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ljPass'], 5)):$options['ljPass'];      
-      if ($postID=='0') { echo "Testing ... <br/><br/>";  $link = home_url(); $msgT = 'Test Link from '.$link; $msg = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; $link = get_permalink($postID); 
+      if ($postID=='0') { echo "Testing ... <br/><br/>"; $options['ljMsgTFormat'] = 'Test Link from '. home_url(); $options['ljMsgFormat'] = 'Test post please ignore'; } else { $post = get_post($postID); if(!$post) return; 
         $options['ljMsgFormat'] = nsFormatMessage($options['ljMsgFormat'], $postID, $addParams); $options['ljMsgTFormat'] = nsFormatMessage($options['ljMsgTFormat'], $postID, $addParams);      
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
       } //prr($msg); prr($msgFormat);
