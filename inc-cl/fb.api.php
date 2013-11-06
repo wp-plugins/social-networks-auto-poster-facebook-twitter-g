@@ -24,8 +24,8 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       if (!isset($options['postType']) && isset($options['fbPostType'])) $options['postType'] = $options['fbPostType'];
       if (!isset($options['pgID']) && isset($options['fbPgID'])) $options['pgID'] = $options['fbPgID'];
       
-      //## Get URL info.
-      if (isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') { $url =  $message['url']; $params = array(); 
+      //## Get URL info.      
+      if ($fbPostType!='I' && $fbPostType!='T' && isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') { $url =  $message['url']; $params = array(); 
         $flds = array('id'=>$url, 'scrape'=>'true');      $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds)); 
         if (is_wp_error($response)) $badOut['Error'] = print_r($response, true)." - ERROR"; else { $response = json_decode($response['body'], true);    //   prr($response);     die();
             if (trim($response['description']!='')) $message['urlDescr'] = $response['description'];  if (trim($response['title']!='')) $message['urlTitle'] =  $response['title'];

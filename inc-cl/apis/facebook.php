@@ -952,6 +952,8 @@ abstract class NXS_BaseFacebook
     } else {
       $opts[CURLOPT_HTTPHEADER] = array('Expect:');
     }
+    
+    if(defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) { curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); } 
 
     curl_setopt_array($ch, $opts);
     $result = curl_exec($ch);

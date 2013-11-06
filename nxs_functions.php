@@ -192,7 +192,8 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
         var textOutA = new Array(); var currSelImg =  jQuery("#imgToUse-"+tIdN).val();
                 
         textOutA.push('http://cdn.gtln.us/img/nxs/noImgC.png');  
-        var fImg = jQuery('.attachment-post-thumbnail').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }
+        //var fImg = jQuery('.attachment-post-thumbnail').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }        
+        var fImg = jQuery('#set-post-thumbnail > img').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }        
         var fImg = jQuery('#yapbdiv img').attr('src'); if (fImg!='' && fImg!=undefined) { textOutA.push(fImg); if (currSelImg=='') currSelImg = fImg; }
         
         jQuery('#nxs_tempDivImgs img').each(function(){ var prWidth; prWidth = nxs_getOriginalWidthOfImg(this); if (prWidth!=1) textOutA.push(jQuery(this).attr('src'));  });                
