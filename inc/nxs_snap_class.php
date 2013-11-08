@@ -105,7 +105,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
             $acctsInfoPost = $_POST['nxsMainFromElementAccts']; unset($_POST['nxsMainFromElementAccts']);  $acctsInfo = array();  
-            $acctsInfo = NXS_parseQueryStr(urldecode($acctsInfoPost)); 
+            $acctsInfo = NXS_parseQueryStr($acctsInfoPost); 
             
             foreach ($nxs_snapAvNts as $avNt) if (isset($acctsInfo[$avNt['lcode']])) { $clName = 'nxs_snapClass'.$avNt['code']; if (!isset($options[$avNt['lcode']])) $options[$avNt['lcode']] = array(); 
               $ntClInst = new $clName(); $ntOpt = $ntClInst->setNTSettings($acctsInfo[$avNt['lcode']], $options[$avNt['lcode']]); $options[$avNt['lcode']] = $ntOpt;

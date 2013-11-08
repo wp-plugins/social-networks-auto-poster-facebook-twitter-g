@@ -71,7 +71,7 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 ** Also included exclusively in the "Pro" version **
 
 * Ability to make Scheduled and Delayed postings
-* Auto-repost existing random posts from from specific dates or “older then N days and younger then X days”.
+* Auto-repost existing random posts from from specific dates or "older then N days and younger then X days".
 * Limit random or one-by-one auto-reposting for specific days of the week and times. (like Monday-Friday from 8AM to 7PM Only)
 * Reddit Autoposting Support
 * LinkedIn Company Pages Autoposting support
