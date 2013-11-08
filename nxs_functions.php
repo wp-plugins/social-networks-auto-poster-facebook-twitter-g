@@ -720,6 +720,8 @@ function nxs_adjRpst($optionsii, $pval){
     if (isset($pval['rpstNWDays']))  $optionsii['rpstNWDays'] = trim($pval['rpstNWDays']);       
     
     if (isset($pval['rpstOnlyPUP']))  $optionsii['rpstOnlyPUP'] = trim($pval['rpstOnlyPUP']);       
+    
+    if (isset($pval['nxsCPTSeld']))      $optionsii['nxsCPTSeld'] = serialize($pval['nxsCPTSeld']);                      
         
     if (isset($pval['rpstBtwHrsType']))  $optionsii['rpstBtwHrsType'] = trim($pval['rpstBtwHrsType']);       
     if (isset($pval['rpstBtwHrsT']))  $optionsii['rpstBtwHrsT'] = trim($pval['rpstBtwHrsT']);  if ((int)$optionsii['rpstBtwHrsT']>23) $optionsii['rpstBtwHrsT'] = 23;         
@@ -751,6 +753,17 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
      <input value="1"  id="riOC<?php echo $ii; ?>" <?php if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOnlyPUP]"/> 
        <b><?php _e('Repost ONLY previously unautoposted posts', 'nxs_snap'); ?></b>
      <br/>
+     <?php $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
+       if (!empty($post_types) && is_array($post_types)) { ?>
+     <b><?php _e('Repost: (Choose Posts, Pages, Custom Post Types)', 'nxs_snap'); ?></b>
+     <?php $post_typesIncl = array('post'=>'post', 'page'=>'page'); $post_types = array_merge($post_typesIncl, $post_types);    if ($options['nxsCPTSeld']=='a:1:{i:0;s:1:"0";}') $options['nxsCPTSeld'] = '';
+       if (!empty($options['nxsCPTSeld'])) $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array('post');  
+             ?> <div class="nxs_box_inside" style="padding: 0px;" > <div class="itemDiv"  style="padding: 0px;"> <div class="taxonomydiv"><div class="tabs-panel" style="padding: 10px;"><input type="hidden" name="nxsCPTSeld[]" value="0" /> <?php //prr($nxsCPTSeld); prr($post_types); prr($_POST['nxsCPTSeld']);              
+             foreach ($post_types as $cptID=>$cptName){ if (in_array($cptID, $nxsCPTSeld)) $dCh = ' checked="checked" '; else $dCh = "";
+              ?><input type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][nxsCPTSeld][]" value="<?php echo esc_attr($cptID); ?>"<?php echo $dCh ?>>&nbsp;<?php echo $cptName ?><br/> <?php
+             }
+      ?></div></div> </div> </div>          
+     <?php } ?>
      <?php if (function_exists('nxs_doSMAS41')) nxs_doSMAS41($nt, $ii, $options); ?>          
      <b><?php _e('Get posts', 'nxs_snap'); ?></b>
        <select name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstType]"><?php if (function_exists('nxs_doSMAS42')) nxs_doSMAS42($options); ?>          
@@ -771,7 +784,7 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
      <strong style="font-size: 12px; margin: 10px; margin-left: 1px;">New posts will be set by default to:</strong>
              <select name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"><option <?php echo $options['rpstPostIncl'] == "1"?'selected="selected"':''; ?> value="1">Enabled for Repost</option>
              <option <?php echo $options['rpstPostIncl'] != "1"?'selected="selected"':''; ?>  value="0">Disabled for Repost</option></select><br/>
-      <div style="padding-left: 15px;"> <img id="nxsLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />       
+      <div style="padding-left: 15px;"> <img id="nxsLoadingImg<?php echo $nt; ?><?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />       
      &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Set All Existing Posts to "Enabled for Repost"]', 'nxs_snap'); ?></a> </span>
      &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Set All Existing Posts to "Disabled for Repost"]', 'nxs_snap'); ?></a> </span>        
               
@@ -788,15 +801,16 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
 }
 function nxs_custom_posts_join($join){ global $wpdb; $join .= " LEFT JOIN $wpdb->postmeta ON $wpdb->posts.ID = $wpdb->postmeta.post_id "; return $join;}
 function nxs_filter_where_only( $where = '' ) { global $wpdb; $where .= " AND ($wpdb->postmeta.meta_key = 'snap_isAutoPosted' AND $wpdb->postmeta.meta_value = '1') "; return $where; }
-function nxs_filter_where( $where = '' ) { global $wpdb, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_typeONLY; 
+function nxs_filter_where( $where = '' ) { global $wpdb, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_typeONLY, $nxs_rpst_code, $nxs_rpst_NT; 
     $where .= " AND post_date >= '" . date_i18n('Y-m-d', strtotime('-'.$nxs_rpst_newer.' days')) . "'" . " AND post_date <= '" . date_i18n('Y-m-d', strtotime('-'.$nxs_rpst_older.' days')) . "'";    
+    $where .= " AND ($wpdb->postmeta.meta_key = 'snap".$nxs_rpst_NT."' AND $wpdb->postmeta.meta_value LIKE '%".$nxs_rpst_code."%') ";
     if ($nxs_rpst_type=='2' && $nxs_rpst_lastID!='') $where .= " AND ( (post_date = '".$nxs_rpst_lastTime."' && ID > ".$nxs_rpst_lastID." ) || post_date > '".$nxs_rpst_lastTime."' )";
     if ($nxs_rpst_type=='3' && $nxs_rpst_lastID!='') $where .= " AND ( (post_date = '".$nxs_rpst_lastTime."' && ID < ".$nxs_rpst_lastID." ) || post_date < '".$nxs_rpst_lastTime."' )";
     if ($nxs_rpst_typeONLY) $where .= " AND ($wpdb->postmeta.meta_key = 'snap_isAutoPosted' AND $wpdb->postmeta.meta_value = '1') ";
     return $where; 
 }
 
-function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type;  
+function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_code, $nxs_rpst_NT;  
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $rpstBtwHrsF = 0; $rpstBtwHrsT = 0;
   $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );  $hasChanged = false;   
   // if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_addToLogN('A', 'NXSPoster - Cron', $logNT, '-=Time=- '.$ret. "ERR: ".$currTime, $extInfo);
@@ -832,17 +846,25 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    $nxs_rpst_lastID = (isset($ntOpts['rpstLastPostID']) && (int)$ntOpts['rpstLastPostID']>0)?$ntOpts['rpstLastPostID']:($ntOpts['rpstType']=='3'?'90000000':'0');
                    $nxs_rpst_lastTime = (isset($ntOpts['rpstLastPostTime']) && $ntOpts['rpstLastPostTime']!='')?$ntOpts['rpstLastPostTime']:($ntOpts['rpstType']=='3'?'2050-12-12':'1975-01-01');
                    
-                   if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false ); 
+                   if (!empty($ntOpts['nxsCPTSeld'])) $tpArray = maybe_unserialize($ntOpts['nxsCPTSeld']); else $tpArray = 'post';
+                   
+                   //nxs_addToLogN('S', 'pTypes', $logNT, print_r($tpArray, true), $extInfo); // $tpArray = array('post', 'location');
+                   
+                   if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false ); 
                  //  if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date ASC, p.ID ASC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );
 //                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date DESC, p.ID DESC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );                   
-                   if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );
-                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );                   
+                   if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );
+                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );                   
                    //## Get Post for Reposting
-                   
+                //   nxs_addToLogN('S', 'pTypes- ARG', $logNT, print_r($args, true), $extInfo);
                    if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - strtotime($ntOpts['rpstToTime'])) / 86400); 
                      $nxs_rpst_newer = ceil(abs($currTime - strtotime($ntOpts['rpstFromTime'])) / 86400);                   
                    } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $nxs_rpst_lastTime."|".$ntOpts['rpstType']."|".$ntOpts['rpstLastPostTime'];
-                   if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
+                   //if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
+                   
+                   $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);
+                   add_filter( 'posts_join' , 'nxs_custom_posts_join');
+                   if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  {  add_filter( 'posts_where', 'nxs_filter_where_only' ); }
                    add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); // $extInfo = print_r($query, true);                   
                    
                    $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1975-01-01':'2050-12-12');
@@ -851,16 +873,14 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
                    $ntOpts['rpstLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec*2 + $rndTime;  
                    if ((int)$rpstLastPostID<1) {  $ntOpts['rpstOn']='0'; 
-                     nxs_addToLogN('S', 'RE-Posted - End of the Query', $logNT, 'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
+                     nxs_addToLogN('S','RE-Posted - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
                    } else { $ntOpts['rpstLastPostID'] = $rpstLastPostID;                                      
-                     //## Actual Post
-                     
-                     $clName = 'nxs_snapClass'.strtoupper($avNt['lcode']); $pFuncName = 'nxs_doPublishTo'.strtoupper($avNt['lcode']);
-                     
-                      $po =  get_post_meta($rpstLastPostID, 'snap'.strtoupper($avNt['lcode']), true); $po =  maybe_unserialize($po); 
-                      $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOpts = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); if ($options['extDebug']=='1') $extInfo .= "<br/><br/>".print_r($ntOpts, true);
-                      $result = $pFuncName($rpstLastPostID, $ntOpts); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result); 
-      
+                     //## Actual Post                     
+                     $clName = 'nxs_snapClass'.strtoupper($avNt['lcode']); $pFuncName = 'nxs_doPublishTo'.strtoupper($avNt['lcode']);                     
+                     $po =  get_post_meta($rpstLastPostID, 'snap'.strtoupper($avNt['lcode']), true); $po =  maybe_unserialize($po); 
+                     $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOpts = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
+                     if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOpts, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
+                     $result = $pFuncName($rpstLastPostID, $ntOpts); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);     
                      
                      nxs_addToLogN('S', 'RE-Posted', $logNT, 'OK  | '.$times.' | Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
                    }
@@ -1068,7 +1088,7 @@ if (!function_exists("NXS_doSetArrRecursive")) { function NXS_doSetArrRecursive(
   if (empty($path)) if (trim($key)=='')  $array[] = $value;  else  $array[$key] = $value; else { if (!isset($array[$key]) || !is_array($array[$key])) $array[$key] = array(); NXS_doSetArrRecursive($array[$key], $path, $value); }
 }}
 if (!function_exists("NXS_parseQueryStr")) { function NXS_parseQueryStr($url){ $tokens = explode("&", $url); $urlVars = array();
-  foreach ($tokens as $token) { $value = NXS_parseEQStr($token, "=", ""); 
+  foreach ($tokens as $token) { $token = urldecode($token); $value = NXS_parseEQStr($token, "=", ""); 
     if (preg_match('/^([^\[]*)(\[.*\])$/', $token, $matches)) { if (preg_match_all('/\[([^\]]*)\]/', $matches[2], $matches2)) $gg = $matches2[1]; array_unshift($gg, $matches[1]); NXS_doSetArrRecursive($urlVars, $gg, $value);} 
       else $urlVars[$token] = $value;
   } return $urlVars;

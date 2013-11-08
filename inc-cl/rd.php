@@ -1,8 +1,8 @@
 <?php    
 //## NextScripts Reddit Connection Class
-$nxs_snapAvNts[] = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit');
+if(function_exists('doConnectToRD')) { $nxs_snapAvNts[] = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit'); }
 
-if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
+if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {  
   //#### Show Common Settings
   function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit', 'defNName'=>'rdUName', 'tstReq' => false); ?>    
     <div class="nxs_box">
@@ -13,7 +13,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
         </div>
       </div>
       <div class="nxs_box_inside">
-        <?php if(!function_exists('doConnectToReddit')) {?> Reddit doesn't have a built-in API for automated posts yet.  <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/reddit-automated-posting">library module</a> to be able to publish your content to Reddit. 
+        <?php if(!function_exists('doConnectToRD')) {?> Reddit doesn't have a built-in API for automated posts yet.  <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/reddit-automated-posting">library module</a> to be able to publish your content to Reddit. 
         <?php } else  foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; ?>
           <p style="margin:0px;margin-left:5px;">
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
@@ -35,7 +35,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['rdSubReddit'])) $options['rdSubReddit'] = ''; ?>
             <div id="doRD<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSRD<?php echo $ii; ?>" value="0" id="apDoSRD<?php echo $ii; ?>" />      
             
-            <?php if(!function_exists('doConnectToReddit')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
+            <?php if(!function_exists('doConnectToRD')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b><?php _e('Reddit API Library not found', 'nxs_snap'); ?></b>
              <br/><br/> <?php _e('Reddit doesn\'t have a built-in API for automated posts yet.', 'nxs_snap'); ?> <br/><?php _e('<br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/reddit-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Reddit.', 'nxs_snap'); ?></span></div>
             <?php return; }; ?>  
@@ -56,11 +56,22 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
       
             
-            <div style="width:100%;"><strong>Reddit Username:</strong> </div><input name="rd[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input name="rd[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
-            <p><div style="width:100%;"><strong>Subreddit ID:</strong>             
-            </div><input name="rd[<?php echo $ii; ?>][rdSubReddit]" id="apRDPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdSubReddit'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />             
-            <br/>
+            <div style="width:100%;"><strong>Reddit Username:</strong> </div><input name="rd[<?php echo $ii; ?>][uName]" id="apRDUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            
+            <div style="width:100%;"><strong>Subreddit ID:</strong>                         
+            Please <a href="#" onclick="nxs_getBrdsOrCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDPass<?php echo $ii; ?>').val(), 'rd' , '<?php echo $ii; ?>', ''); return false;">click here to retrieve your subreddits</a>
+            </div>
+            <img id="rdLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' /> 
+            <select name="rd[<?php echo $ii; ?>][rdSubReddit]" id="rdSubReddit<?php echo $ii; ?>">
+            <?php if ($options['rdSubRedditsList']!=''){ $gBoards = $options['rdSubRedditsList']; if ( base64_encode(base64_decode($gBoards)) === $gBoards) $gBoards = base64_decode($gBoards); 
+              if ($options['rdSubReddit']!='') $gBoards = str_replace($options['rdSubReddit'].'"', $options['rdSubReddit'].'" selected="selected"', $gBoards);  echo $gBoards;} else { ?>
+              <option value="0">None(Click above to retrieve your subreddits)</option>
+            <?php } ?>
+            </select>
+            
+            <br/><br/>              
+            <?php /* <input name="rd[<?php echo $ii; ?>][rdSubReddit]" id="apRDPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdSubReddit'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  */ ?>
             <i style="color: #580000;">Please do not try to post to subredits that you do not own. Reddit is very serious about it's policy that prohibits sharing your own links. You will loose posting privileges and you account will be <b>banned</b> if you post to public subreddits. </i>
             <br/>  <br/>  
             
@@ -126,7 +137,14 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
         if (isset($pval['uName']))   $options[$ii]['rdUName'] = trim($pval['uName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['uPass']))    $options[$ii]['rdPass'] = 'n5g9a'.nsx_doEncode($pval['uPass']); else $options[$ii]['rdPass'] = '';  
-        if (isset($pval['rdSubReddit']))    $options[$ii]['rdSubReddit'] = trim($pval['rdSubReddit']);          
+        
+        if (empty($options[$ii]['rdSubRedditsList'])) { $pass = substr($options[$ii]['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options[$ii]['rdPass'], 5)):$options[$ii]['rdPass'];
+           $loginInfo = doConnectToRD($options[$ii]['rdUName'], $pass); if (is_array($loginInfo))  { 
+               $options[$ii]['rdSubRedditsList'] = doGetSubredditsFromRD();
+           }  
+        }
+        
+        if (isset($pval['rdSubReddit'])) $options[$ii]['rdSubReddit'] = trim($pval['rdSubReddit']);          
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
@@ -174,7 +192,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="1" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ((int)$ntOpt['rpstPostIncl'] == 1) echo "checked"; ?> /> 
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>rd" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>

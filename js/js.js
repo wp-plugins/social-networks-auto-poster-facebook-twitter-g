@@ -69,10 +69,16 @@ function getWLBoards(u,p,ii){ jQuery("#wlLoadingImg"+ii).show();
     jQuery("select#apWLBoard"+ii).html(j); jQuery("#wlLoadingImg"+ii).hide();
   }, "html")
 }
+function nxs_getBrdsOrCats(u,p,ty,ii,fName){ jQuery("#"+ty+"LoadingImg"+ii).show();
+  jQuery.post(ajaxurl,{u:u,p:p,ii:ii,ty:ty, nxs_mqTest:"'", action: 'nxs_getBrdsOrCats', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
+    jQuery("select#"+fName+ii).html(j); jQuery("#"+ty+"LoadingImg"+ii).hide();
+  }, "html")
+}
 
-function nxs_setRpstAll(t,ed,ii){ jQuery("#nxsLoadingImg"+ii).show(); var lpid = jQuery('#'+t+ii+'SetLPID').val();
+
+function nxs_setRpstAll(t,ed,ii){ jQuery("#nxsLoadingImg"+t+ii).show(); var lpid = jQuery('#'+t+ii+'SetLPID').val();
   jQuery.post(ajaxurl,{t:t,ed:ed,ii:ii, nxs_mqTest:"'", action: 'SetRpstAll', id: 0, lpid:lpid, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val(), ajax: 'true'}, function(j){ var options = '';
-    alert('OK. Done.'); jQuery("#nxsLoadingImg"+ii).hide();
+    alert('OK. Done.'); jQuery("#nxsLoadingImg"+t+ii).hide();
   }, "html")
 }
 

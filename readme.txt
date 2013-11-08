@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
 Tested up to: 3.7.1
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -27,7 +27,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **App.net** - Autopost to your account.
 * **Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
 * **Delicious** - Auto-submit bookmark to your account. 
-* **Deviantart.com** - Autopost to your Blog. HTML is supported.
+* **Deviantart.com** - Autopost to your blog. HTML is supported.
 * **Diigo** - Auto-submit bookmark to your account. 
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **FriendFeed** - Autopost to your account. Ability to attach Image to posts.
@@ -150,6 +150,17 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.0.6 [11/08/2013] =
+
+* Important Notice - Reddit support has been removed due to abuse. http://gd.is/trdx 
+* New - Auto-Repost for Custom Post Types.
+* Improvement/Bug Fix - Blogger - Better errors handling for free API
+* Bug Fix - LinkedIn - Incorrect URL encoding for attached links
+* Bug Fix - Tumblr - Test button was incorrectly retuning 404 error.
+* Bug Fix - Deviantart - fix for "Couldn't resolve host 'xxxxxxxxxxx.deviantart.com"
+* Bug Fix - "&" symbol in the settings were causing some issues. 
+* Bug Fix - Post setting "Include/Exclude from reposting" was ignored on some configurations. 
 
 = 3.0.5 [11/05/2013] =
 

@@ -32,7 +32,7 @@ if (!function_exists("doConnectToDeviantART")) { function doConnectToDeviantART(
   if (isset($response['headers']['location']) && stripos($response['headers']['location'], 'wrong-password')!==false  ) {  $badOut = "Wrong Password - ERROR"; return $badOut; }  
   if (isset($response['headers']['location']) && ( $response['headers']['location']=='http://www.deviantart.com' || $response['headers']['location']=='https://www.deviantart.com/users/loggedin')) { 
       $hdrsArr = nxs_getDAHeaders('http://www.deviantart.com'); $rep = wp_remote_get( 'http://www.deviantart.com', array( 'headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck));// die();  prr($rep);     
-      if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; } $mh = CutFromTo($rep['body'], 'Your Account</b><br><a href="', '/journal/"'); 
+      if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; } $mh = CutFromTo($rep['body'], 'Your Account</b><br><a href="', '"'); $mh = str_ireplace('/journal/', '', $mh);
       return array('mh'=>$mh, 'ck'=>$ck);    
   } else  $badOut = print_r($response, true)." - ERROR"; return $badOut; 
 }}

@@ -237,7 +237,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <?php if ($options['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="1" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ((int)$options['rpstPostIncl'] == 1) echo "checked"; ?> /> 
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>tr" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>
@@ -310,7 +310,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
      else{ $post = get_post($postID); if(!$post) return;  $options['trMsgFormat'] = nsFormatMessage($options['trMsgFormat'], $postID, $addParams); 
       $options['trMsgTFormat'] = nsFormatMessage($options['trMsgTFormat'], $postID, $addParams);  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));   
 
-      $options['trURL'] = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($options['trURL'],-1)=='/') $options['trURL'] = substr($options['trURL'], 0, -1);  $tggs = array();   
+      $tggs = array();   
       if ($options['trInclTags']=='1'){ $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); }        
       if ($options['trInclCats']=='1'){ $t = wp_get_post_categories($postID); foreach($t as $c){ $cat = get_category($c); $tggs[] = $cat->name; }  $tags = implode(',', $tggs); }    
       $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
@@ -327,6 +327,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
       
     }    
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'').' |'.$options['pType'];    
+    $options['trURL'] = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($options['trURL'],-1)=='/') $options['trURL'] = substr($options['trURL'], 0, -1);
     //## Post             
     $message = array('siteName'=>$blogTitle, 'imageURL'=>$imgURL, 'tags'=>$tags, 'url'=>$urlToGo, 'postDate'=>$postDate, 'videoURL'=>$ytUrl);// prr($message);
     //## Actual Post

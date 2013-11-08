@@ -20,7 +20,8 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
       curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)");
       curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,10); curl_setopt($ch, CURLOPT_TIMEOUT, 10);
       curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1);
-      $result = curl_exec($ch); $resultArray = curl_getinfo($ch); $errmsg = curl_error($ch); if (trim($errmsg)!=='') return array('result'=>'Error', 'error'=>$errmsg);
+      $result = curl_exec($ch); $resultArray = curl_getinfo($ch); $errmsg = curl_error($ch); 
+      if (trim($errmsg)!=='' || (is_array($resultArray) && $resultArray['http_code']!='200')) return array('result'=>'Error', 'error'=>"Error: ".$resultArray['http_code']." | Invalid Login ".$errmsg);
       curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') return false; else return $token;
     }
     function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); $title = utf8_decode(strip_tags($title)); 
