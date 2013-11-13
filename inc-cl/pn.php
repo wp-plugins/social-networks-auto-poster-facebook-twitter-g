@@ -18,7 +18,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
           <p style="margin:0px;margin-left:5px;">
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
-            <?php if (isset($pbo['catSel']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
+            <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
           &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
           <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
@@ -63,7 +63,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN {
                 <strong>Clickthrough URL:</strong> 
 <p style="margin-bottom: 20px;margin-top: 5px;">
 <input type="radio" name="pn[<?php echo $ii; ?>][cImgURL]" value="R" <?php if ( !isset($options['cImgURL']) || $options['cImgURL'] == '' || $options['cImgURL'] == 'R') echo 'checked="checked"'; ?> /> Regular Post URL&nbsp;&nbsp;
-<input type="radio" name="pn[<?php echo $ii; ?>][cImgURL]" value="S" <?php if ($options['cImgURL'] == 'S') echo 'checked="checked"'; ?> /> Shortened Post URL&nbsp;&nbsp;
+<!-- <input type="radio" name="pn[<?php echo $ii; ?>][cImgURL]" value="S" <?php if ($options['cImgURL'] == 'S') echo 'checked="checked"'; ?> /> Shortened Post URL&nbsp;&nbsp; -->
 <input type="radio" name="pn[<?php echo $ii; ?>][cImgURL]" value="N" <?php if ($options['cImgURL'] == 'N') echo 'checked="checked"'; ?> /> No Clickthrough URL&nbsp;&nbsp;
 
             <div style="width:100%;"><strong>Default Image to Pin:</strong> 
@@ -250,11 +250,12 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
       if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
       if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams;  if (is_object($post)) $urlToGo = apply_filters( 'nxs_adjust_ex_url', $urlToGo, $post->post_content); 
             
-      if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, 'full'); if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = ''; 
+      if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, 'full', $options['pnDefImg']); if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = ''; 
       if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}         
     }    
     $extInfo = ' | PostID: '.$postID." - ".(is_object($post))?$post->post_title:''; 
-    //## Post             
+    if ($options['cImgURL']=='S') $options['cImgURL'] = 'R'; //## Pinterest no longer allows shorthened URLs.
+    //## Post                 
     $message = array('siteName'=>$blogTitle, 'tags'=>'', 'url'=>$urlToGo, 'imageURL'=>$imgURL);// prr($message);
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_PN(); $ret = $ntToPost->doPostToNT($options, $message);

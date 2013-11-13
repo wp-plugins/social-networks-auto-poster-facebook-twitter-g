@@ -859,7 +859,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                 //   nxs_addToLogN('S', 'pTypes- ARG', $logNT, print_r($args, true), $extInfo);
                    if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - strtotime($ntOpts['rpstToTime'])) / 86400); 
                      $nxs_rpst_newer = ceil(abs($currTime - strtotime($ntOpts['rpstFromTime'])) / 86400);                   
-                   } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $nxs_rpst_lastTime."|".$ntOpts['rpstType']."|".$ntOpts['rpstLastPostTime'];
+                   } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':$ntOpts['rpstType']=='2'?'New to Old':'Old to New';
                    //if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
                    
                    $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);
@@ -872,7 +872,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    
                    //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
                    $ntOpts['rpstLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec*2 + $rndTime;  
-                   if ((int)$rpstLastPostID<1) {  $ntOpts['rpstOn']='0'; 
+                   if (($ntOpts['rpstType']=='1') && (int)$rpstLastPostID<1) {  $ntOpts['rpstOn']='0'; 
                      nxs_addToLogN('S','RE-Posted - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
                    } else { $ntOpts['rpstLastPostID'] = $rpstLastPostID;                                      
                      //## Actual Post                     

@@ -4,11 +4,11 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.0.6
+Version: 3.0.7
 Author URI: http://www.nextscripts.com
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.0.6' ); 
+define( 'NextScripts_SNAP_Version' , '3.0.7' ); 
 
 $nxs_mLimit = (int)ini_get('memory_limit');  if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
 if (!function_exists("ns_add_nomem_link")) { function ns_add_nomem_link($links, $file) { global $nxs_mLimit; static $this_plugin; if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
@@ -110,14 +110,14 @@ if (!function_exists("nxs_SetRpstAll_ajax")) {
      }
      if (is_array($options)) update_option('NS_SNAutoPoster', $options); $plgn_NS_SNAutoPoster->nxs_options = $options;  //  echo "|".$_POST['t'].$_POST['ii']."|"; prr($options[$_POST['t']][$_POST['ii']]);
    } else { 
-    if (!empty($options['nxsCPTSeld'])) $tpArray = maybe_unserialize($options['nxsCPTSeld']); if (!is_array($tpArray)) $tpArray = array('post'); else $tpArray[] = 'post'; //prr($tpArray);
-    foreach ($tpArray  as $tp) {
-    $args = array( 'post_type' => $tp, 'post_status' => 'publish', 'numberposts' => 3, 'offset'=> 0, 'fields'=>'ids' ); $posts = get_posts( $args ); 
+    if (!empty($options['nxsCPTSeld'])) $tpArray = maybe_unserialize($options['nxsCPTSeld']); if (!is_array($tpArray)) $tpArray = array('post'); else $tpArray[] = 'post'; 
+    foreach ($tpArray  as $tp) if (!empty($tp)) { 
+    $args = array( 'post_type' => $tp, 'post_status' => 'publish', 'numberposts' => 30, 'offset'=> 0, 'fields'=>'ids' ); $posts = get_posts( $args ); 
     while (count($posts)>0){
       foreach ($posts as $postID){ $pMeta = maybe_unserialize(get_post_meta($postID, 'snap'.strtoupper($_POST['t']), true)); 
         if (!isset($pMeta) || !is_array($pMeta)) $pMeta = array();  if (!isset($pMeta[$_POST['ii']]) || !is_array($pMeta[$_POST['ii']])) $pMeta[$_POST['ii']] = array(); 
-        $pMeta[$_POST['ii']]['rpstPostIncl'] = $_POST['ed']; delete_post_meta($postID, 'snap'.strtoupper($_POST['t'])); add_post_meta($postID, 'snap'.strtoupper($_POST['t']), $pMeta);        
-      } $args['offset'] = $args['offset']+3;  $posts = get_posts( $args );
+        $pMeta[$_POST['ii']]['rpstPostIncl'] = $_POST['ed']=='0'?'0':'nxsi'.$_POST['ii'].$_POST['t'];  delete_post_meta($postID, 'snap'.strtoupper($_POST['t'])); add_post_meta($postID, 'snap'.strtoupper($_POST['t']), serialize($pMeta));        
+      } $args['offset'] = $args['offset']+30;  $posts = get_posts( $args );
     } 
     }
   } echo "OK"; die(); 
@@ -204,7 +204,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
             } else { $fname = 'nxs_doPublishTo'.$avNt['code']; $fname($postID, $optMt); }
           } else { nxs_addToLogN('GR', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '-=[Unchecked Account]=- - PostID:'.$postID.'' ); }
         }                   
-      } } } else { nxs_addToLogN('I', 'Skipped', '', 'Excluded Post Type:(Post ID: '.$postID.')' ); return; }
+      } } } else { nxs_addToLogN('I', 'Skipped', '', 'Excluded Post Type: '.$post->post_type.' (Post ID: '.$postID.')' ); return; }
    if ($isS) restore_current_blog(); 
 }} 
 
