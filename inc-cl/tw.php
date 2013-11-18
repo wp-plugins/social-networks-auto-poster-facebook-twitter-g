@@ -119,7 +119,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
         if (isset($pval['apTWAccToken']))   $options[$ii]['twAccToken'] = trim($pval['apTWAccToken']);                
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
-        if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
+        if (isset($options[$ii]['catSel']) && $options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
         
         if (isset($pval['riComments']))      $options[$ii]['riComments'] = $pval['riComments']; else $options[$ii]['riComments'] = 0;
         if (isset($pval['riCommentsM']))     $options[$ii]['riCommentsM'] = $pval['riCommentsM']; else $options[$ii]['riCommentsM'] = 0;
@@ -264,7 +264,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
           if (is_wp_error($img)) $options['attchImg'] = 0; else if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; }  else $img = $img['body']; } else $options['attchImg'] = 0; 
         } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
       }
-      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image, will post without it - Error:'.print_r($img), $extInfo);
+      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($img), $extInfo);
     }  
     if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140; 
     

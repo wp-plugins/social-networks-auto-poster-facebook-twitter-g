@@ -705,21 +705,27 @@ function nxs_cURLTest($url, $msg, $testText){ echo "<br/>--== Test Requested ...
 
 //## Reposter
 function nxs_adjRpst($optionsii, $pval){  
+    
+    $rpstEvrySecEx = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
+    
     if (isset($pval['rpstOn']))    $optionsii['rpstOn'] = $pval['rpstOn']; else $optionsii['rpstOn'] = 0;
     if (isset($pval['rpstDays']))  $optionsii['rpstDays'] = trim($pval['rpstDays']);       
     if (isset($pval['rpstHrs']))   $optionsii['rpstHrs'] = trim($pval['rpstHrs']);     if ((int)$optionsii['rpstHrs']>23) $optionsii['rpstHrs'] = 23;
     if (isset($pval['rpstMins']))  $optionsii['rpstMins'] = trim($pval['rpstMins']);   if ((int)$optionsii['rpstMins']>59) $optionsii['rpstMins'] = 59;    
     if (isset($pval['rpstRndMins']))  $optionsii['rpstRndMins'] = trim($pval['rpstRndMins']);       
-    if (isset($pval['rpstPostIncl']))  $optionsii['rpstPostIncl'] = trim($pval['rpstPostIncl']);       
-            
+    if (isset($pval['rpstPostIncl']))  $optionsii['rpstPostIncl'] = trim($pval['rpstPostIncl']);      
+    
+    $rpstEvrySecNew = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
+    $rpstRNDSecs = $optionsii['rpstRndMins']*60; if ($rpstRNDSecs>$rpstEvrySecNew) $optionsii['rpstRndMins'] = 0;
+    
+    if ($rpstEvrySecNew!=$rpstEvrySecEx) { $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $optionsii['rpstNxTime'] = $currTime + $rpstEvrySecNew; }
     if (isset($pval['rpstType']))  $optionsii['rpstType'] = trim($pval['rpstType']);       
     if (isset($pval['rpstTimeType']))  $optionsii['rpstTimeType'] = trim($pval['rpstTimeType']);       
     if (isset($pval['rpstFromTime']))  $optionsii['rpstFromTime'] = trim($pval['rpstFromTime']);       
     if (isset($pval['rpstToTime']))  $optionsii['rpstToTime'] = trim($pval['rpstToTime']);       
     if (isset($pval['rpstOLDays']))  $optionsii['rpstOLDays'] = trim($pval['rpstOLDays']);       
     if (isset($pval['rpstNWDays']))  $optionsii['rpstNWDays'] = trim($pval['rpstNWDays']);       
-    
-    if (isset($pval['rpstOnlyPUP']))  $optionsii['rpstOnlyPUP'] = trim($pval['rpstOnlyPUP']);       
+    if (isset($pval['rpstOnlyPUP']))  $optionsii['rpstOnlyPUP'] = trim($pval['rpstOnlyPUP']); else $optionsii['rpstOnlyPUP'] = 0;     
     
     if (isset($pval['nxsCPTSeld']))      $optionsii['nxsCPTSeld'] = serialize($pval['nxsCPTSeld']);                      
         
@@ -844,7 +850,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    $nxs_rpst_type = $ntOpts['rpstType'];
                    
                    $nxs_rpst_lastID = (isset($ntOpts['rpstLastPostID']) && (int)$ntOpts['rpstLastPostID']>0)?$ntOpts['rpstLastPostID']:($ntOpts['rpstType']=='3'?'90000000':'0');
-                   $nxs_rpst_lastTime = (isset($ntOpts['rpstLastPostTime']) && $ntOpts['rpstLastPostTime']!='')?$ntOpts['rpstLastPostTime']:($ntOpts['rpstType']=='3'?'2050-12-12':'1975-01-01');
+                   $nxs_rpst_lastTime = (isset($ntOpts['rpstLastPostTime']) && $ntOpts['rpstLastPostTime']!='' && $ntOpts['rpstLastPostTime']!='2050-12-12' && $ntOpts['rpstLastPostTime']!='1975-01-01')?$ntOpts['rpstLastPostTime']:($ntOpts['rpstType']=='3'?'2050-12-12':'1975-01-01');
                    
                    if (!empty($ntOpts['nxsCPTSeld'])) $tpArray = maybe_unserialize($ntOpts['nxsCPTSeld']); else $tpArray = 'post';
                    
@@ -857,9 +863,11 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );                   
                    //## Get Post for Reposting
                 //   nxs_addToLogN('S', 'pTypes- ARG', $logNT, print_r($args, true), $extInfo);
-                   if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - strtotime($ntOpts['rpstToTime'])) / 86400); 
-                     $nxs_rpst_newer = ceil(abs($currTime - strtotime($ntOpts['rpstFromTime'])) / 86400);                   
-                   } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':$ntOpts['rpstType']=='2'?'New to Old':'Old to New';
+                   $rpstToTime = strtotime($ntOpts['rpstToTime']); if ($currTime < $rpstToTime) $rpstToTime = $currTime;
+                   $rpstFromTime = strtotime($ntOpts['rpstFromTime']); if ($currTime < $rpstFromTime) $rpstFromTime = $currTime;
+                   if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - $rpstToTime) / 86400); 
+                     $nxs_rpst_newer = ceil(abs($currTime - $rpstFromTime) / 86400);                   
+                   } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':($ntOpts['rpstType']=='3'?'New to Old':'Old to New');
                    //if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
                    
                    $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);

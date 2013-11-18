@@ -5,7 +5,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         var $dbOptionsName = "NS_SNAutoPoster";       
         var $nxs_options = ""; var $nxs_ntoptions = "";
         
-        function __construct() { load_plugin_textdomain('nxs_snap', FALSE, dirname(plugin_basename(__FILE__)).'/lang/');  $this->nxs_options = $this->getAPOptions(); } 
+        function __construct() {  load_plugin_textdomain('nxs_snap', FALSE, substr(dirname( plugin_basename( __FILE__ ) ), 0, -4).'/lang/'); $this->nxs_options = $this->getAPOptions(); } 
         //## Constructor
         function NS_SNAutoPoster() { }
         //## Initialization function

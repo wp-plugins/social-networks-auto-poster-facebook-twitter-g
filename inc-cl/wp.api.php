@@ -28,7 +28,7 @@ if (!class_exists("nxs_class_SNAP_WP")) { class nxs_class_SNAP_WP {
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
            
       
-      $link = urlencode($message['url']); $ext = urlencode(substr($msg, 0, 1000));
+      $link = urlencode($message['url']); $ext = substr($msg, 0, 1000);
       
       //## Post   
       require_once ('apis/xmlrpc-client.php'); $nxsToWPclient = new NXS_XMLRPC_Client($options['wpURL']); $nxsToWPclient->debug = false;
