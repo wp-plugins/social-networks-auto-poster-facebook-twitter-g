@@ -36,6 +36,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
               $tum_oauth = new wpPlurkOAuth($consumer_key, $consumer_secret, $options['pkAccessTocken'], $options['pkAccessTockenSec']); 
               $uinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Profile/getOwnProfile', $params); 
               if (is_array($uinfo) && isset($uinfo['user_info'])) $userinfo = $uinfo['user_info']['display_name'];
+              if (empty($userinfo) && is_array($uinfo) && isset($uinfo['user_info'])) $userinfo = $uinfo['user_info']['nick_name'];
               
               $options['pkPgID'] = $userinfo; $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
 
@@ -211,7 +212,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK {
                 <?php if ($options['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>pk" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>pk" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>

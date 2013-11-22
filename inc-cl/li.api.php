@@ -17,7 +17,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if ((!isset($options['ulName']) || trim($options['uPass'])=='') && (empty($options['liOAuthVerifier'])))  { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
       //## Format
-      $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);    
+      $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);   
       
       if ($options['liAttch']=='1') { 
         if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';           
@@ -36,7 +36,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
         $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
         $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  $msg = nsTrnc($msg, 700); //prr($urlToGo);  $urlToGo = urlencode($urlToGo);   prr($urlToGo); die();
         if ($options['grpID']!=''){
-          try{ if ($msgT = '') $msgT = ' '; 
+          try{ if ($msgT == '') $msgT = ' '; 
             if($options['liAttch']=='1') $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); else $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID']); 
             $liPostID= 'http://www.linkedin.com/groups?gid='.$options['grpID'];
           } catch (Exception $o){ $ret="ERROR: ".print_r($o, true); }        

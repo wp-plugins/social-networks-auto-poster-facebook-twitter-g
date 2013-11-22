@@ -285,7 +285,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
                 <?php if ($options['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>li" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>li" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>               
                 </td></tr> <?php } ?>
@@ -366,7 +366,7 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
     }
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:''); 
     //$images = array(nxs_getPostImage($postID, 'thumb'), nxs_getPostImage($postID, 'medium'), nxs_getPostImage($postID, 'full'), nxs_getPostImage($postID, 'original')); 
-    $message = array('url'=>$urlToGo, 'surl'=>$urlToGo, 'urlDescr'=>$urlDescr, 'urlTitle'=>$title, 'imageURL' => $imgURL, 'videoCode'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle, 'cats'=>'', 'authorName'=>'');    
+    $message = array('url'=>$urlToGo, 'surl'=>$urlToGo, 'urlDescr'=>$urlDescr, 'urlTitle'=>$title, 'imageURL' => $imgURL, 'videoCode'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle, 'cats'=>'', 'authorName'=>'');   
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_LI(); $ret = $ntToPost->doPostToNT($options, $message);
     //## Process Results

@@ -28,7 +28,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
     </div> <?php 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($myto){ $options = array('nName'=>'', 'doYT'=>'1', 'ytUName'=>'', 'ytPageID'=>'', 'ytCommID'=>'', 'postType'=>'A', 'ytPass'=>''); $options['ntInfo']= array('lcode'=>'yt'); $this->showNTSettings($myto, $options, true);}
+  function showNewNTSettings($myto){ $options = array('nName'=>'', 'doYT'=>'1', 'ytUName'=>'', 'ytPageID'=>'', 'ytGPPageID'=>'', 'postType'=>'A', 'ytPass'=>''); $options['ntInfo']= array('lcode'=>'yt'); $this->showNTSettings($myto, $options, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); 
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
@@ -107,7 +107,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apYTPass']))    $options[$ii]['ytPass'] = 'n5g9a'.nsx_doEncode($pval['apYTPass']); else $options[$ii]['ytPass'] = '';  
         if (isset($pval['apYTPage']))    $options[$ii]['ytPageID'] = trim($pval['apYTPage']);  
-        if (isset($pval['ytCommID']))    $options[$ii]['ytCommID'] = trim($pval['ytCommID']);  
+        if (isset($pval['ytGPPageID']))    $options[$ii]['ytGPPageID'] = trim($pval['ytGPPageID']);  
         
         if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
         if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
@@ -152,7 +152,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>yt" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>yt" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>

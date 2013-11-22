@@ -165,7 +165,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){global $nxs_plurl; $post_id = $post->ID; $nt = 'rd'; $ntU = 'RD'; 
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapRD', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapRD', true));  if (!empty($pMeta) && is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
         $doRD = $ntOpt['doRD'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailRD =  $ntOpt['rdUName']!='' && $ntOpt['rdPass']!='';   $rdMsgFormat = htmlentities($ntOpt['rdTextFormat'], ENT_COMPAT, "UTF-8");      $rdMsgTFormat = htmlentities($ntOpt['rdTitleFormat'], ENT_COMPAT, "UTF-8");      
         $rdPostType = $ntOpt['postType'];
@@ -192,7 +192,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>rd" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>rd" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>

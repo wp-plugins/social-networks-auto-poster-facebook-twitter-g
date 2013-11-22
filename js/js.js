@@ -27,6 +27,7 @@ if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
         });
     });
 }
+ 
 
 
   jQuery('#nsStFormMisc').submit(function() { var dataA = jQuery('#nsStForm').serialize(); jQuery('#nxsMainFromElementAccts').val(dataA); });
@@ -84,7 +85,7 @@ function nxs_setRpstAll(t,ed,ii){ jQuery("#nxsLoadingImg"+t+ii).show(); var lpid
 
 function nxs_fillTime(dd){ var d=new Date(dd); jQuery('#nxs_aa').val(d.getFullYear()); jQuery('#nxs_mm').val(d.getMonth()+1); jQuery('#nxs_jj').val(d.getDate()); jQuery('#nxs_hh').val(d.getHours()); jQuery('#nxs_mn').val(d.getMinutes()); }
 function nxs_makeTimeTxt(){ var m=new Array();m[0]="January";m[1]="February";m[2]="March";m[3]="April";m[4]="May";m[5]="June";m[6]="July";m[7]="August";m[8]="September";m[9]="October";m[10]="November";m[11]="December";  
-    return m[jQuery('#nxs_mm').val()-1]+',  '+jQuery('#nxs_jj').val()+' '+jQuery('#nxs_aa').val()+' @ '+jQuery('#nxs_hh').val()+':'+jQuery('#nxs_mn').val(); 
+    return m[jQuery('#nxs_mm').val()-1]+', '+jQuery('#nxs_jj').val()+' '+jQuery('#nxs_aa').val()+' '+jQuery('#nxs_hh').val()+':'+jQuery('#nxs_mn').val()+':00'; 
 }
 
 //## Select/Unselect Categories

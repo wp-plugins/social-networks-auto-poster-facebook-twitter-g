@@ -99,14 +99,15 @@ class nsx_LinkedIn {
   
   function postToGroup($msg, $title, $groupID, $url='', $imgURL='', $dsc='') { $status_url = $this->base_url . "/v1/groups/".$groupID."/posts";  //$debug = true;
     $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
-    $xml = '<?xml version="1.0" encoding="UTF-8"?><post><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><summary>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</summary>
-    '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><submitted-url>'.$url.'</submitted-url><submitted-image-url>'.$imgURL.'</submitted-image-url><description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>';
-    
+    $xml = '<?xml version="1.0" encoding="UTF-8"?><post><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<summary>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</summary>'."\n".'
+    '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".'<submitted-image-url>'.$imgURL.'</submitted-image-url>'."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>';
+    // prr($xml);
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com");
-    //if ($debug) echo $auth_header . "\n"; 
-    $response = $this->httpRequest($status_url, $auth_header, "POST", $xml);//prr($response);
+    //if ($debug) 
+    //echo $auth_header . "\n"; 
+    $response = $this->httpRequest($status_url, $auth_header, "POST", $xml); //prr($response);
     return $response;
   }
   

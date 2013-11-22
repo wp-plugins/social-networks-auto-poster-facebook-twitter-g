@@ -309,8 +309,6 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
   });
 </script>
 
-<link href='http://fonts.googleapis.com/css?family=Lato:300,400|News+Cycle' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' rel='stylesheet' type='text/css'>
 <style type="text/css">
 .NXSButton { background-color:#89c403;
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
@@ -485,7 +483,8 @@ if (!function_exists('nxs_addPostingDelaySelV3')){function nxs_addPostingDelaySe
 }}
  
 
-if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){ $txt = str_ireplace('<3','&lt;3', $txt); $txt = str_ireplace('<(','&lt;(', $txt); $txt = preg_replace('/\[caption\s[^\]]*\]/', '', $txt);
+if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){ $txt = str_ireplace('<3','&lt;3', $txt); $txt = str_ireplace('<(','&lt;(', $txt); //$txt = preg_replace('/\[caption\s[^\]]*\]/', '', $txt);
+    $txt = preg_replace('/\[caption[\s]{0,}(.*?)\][\s]{0,}(<a[\s]{0,}.*?<\/a>)[\s]{0,}(.*?)\[\/caption\]/ims', '<p $1> $2 <snap class="wpimgcaption">$3</snap> </p>', $txt); // WP Image with Caption fix
     if (!function_exists("qtrans_split") || strpos($txt, '<!--:')===false ) return $txt; else {
         $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta);
     }

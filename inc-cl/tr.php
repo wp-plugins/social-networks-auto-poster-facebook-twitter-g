@@ -237,7 +237,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR {
                 <?php if ($options['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>tr" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> />
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>tr" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
                 </td></tr> <?php } ?>
@@ -329,7 +329,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'').' |'.$options['pType'];    
     $options['trURL'] = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($options['trURL'],-1)=='/') $options['trURL'] = substr($options['trURL'], 0, -1);
     //## Post             
-    $message = array('siteName'=>$blogTitle, 'imageURL'=>$imgURL, 'tags'=>$tags, 'url'=>$urlToGo, 'postDate'=>$postDate, 'videoURL'=>$ytUrl);// prr($message);
+    $message = array('siteName'=>$blogTitle, 'imageURL'=>$imgURL, 'tags'=>$tags, 'url'=>$urlToGo, 'postDate'=>$postDate, 'videoURL'=>$ytUrl); // prr($message); prr($options); die();
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TR(); $ret = $ntToPost->doPostToNT($options, $message);     
     //## Process Results

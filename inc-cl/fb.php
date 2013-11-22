@@ -126,7 +126,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     <div style="margin-bottom: 5px; margin-left: 10px; "><input value="1"  id="apFBAttchAsVid" type="checkbox" name="fb[<?php echo $ii; ?>][apFBAttchAsVid]"  <?php if (isset($options['fbAttchAsVid']) && (int)$options['fbAttchAsVid'] == 1) echo "checked"; ?> />    <strong><?php _e('If post has video use it as an attachment thumbnail.', 'nxs_snap'); ?></strong> <i><?php _e('Video will be used for an attachment thumbnail instead of featured image. Only Youtube is supported at this time.', 'nxs_snap'); ?></i>
     <br/></div>
     
-     <input value="1" id="useFBGURLInfo<?php echo $ii; ?>" <?php if (trim($options['useFBGURLInfo'])=='' || $options['useFBGURLInfo']=='1') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').hide(); }else jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').show();" type="checkbox" name="fb[<?php echo $ii; ?>][useFBGURLInfo]"/> <strong><?php _e('Let Facebook fill the link info', 'nxs_snap'); ?></strong>
+     <input value="1" id="useFBGURLInfo<?php echo $ii; ?>" <?php if (!empty($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').hide(); }else jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').show();" type="checkbox" name="fb[<?php echo $ii; ?>][useFBGURLInfo]"/> <strong><?php _e('Let Facebook fill the link info', 'nxs_snap'); ?></strong>
      <i> - <?php _e('Recommended. Facebook will automatically take attached/shared link info from OG: tags or other sources.', 'nxs_snap'); ?> </i><br/>
      
      <div id="useFBGURLInfoDiv<?php echo $ii; ?>" style="<?php if (trim($options['useFBGURLInfo'])=='' || $options['useFBGURLInfo']=='1') echo "display:none;"; ?>" >&nbsp;&nbsp;&nbsp;     
@@ -283,7 +283,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
-                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>fb" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if ($ntOpt['rpstPostIncl'] != '0') echo "checked"; ?> /> 
+                <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>fb" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> /> 
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>               
                 </td></tr> <?php } ?>
@@ -320,9 +320,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                 <input value="<?php echo $fbMsgFormat ?>" type="text" name="fb[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apFBTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apFBTMsgFrmt".$ii, '', '58'); ?>
                 <?php } ?>
                 </td></tr>
-                <?php /* ## Select Image & URL ## */ nxs_showImgToUseDlg($nt, $ii, $imgToUse); nxs_showURLToUseDlg($nt, $ii, $urlToUse); ?>
-                
-                <?php } 
+                <?php /* ## Select Image & URL ## */ nxs_showImgToUseDlg($nt, $ii, $imgToUse); nxs_showURLToUseDlg($nt, $ii, $urlToUse);
+     } 
     }
       
   }
