@@ -4,19 +4,19 @@ $nxs_snapAvNts[] = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'App.net');
 
 if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapThisPageUrl; $ntInfo = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'App.Net', 'defNName'=>'', 'tstReq' => true); 
+  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL; $ntInfo = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'App.Net', 'defNName'=>'', 'tstReq' => true); 
     if ( isset($_GET['code']) && $_GET['code']!='' && (isset($_GET['auth']) && $_GET['auth']=='ap') ){  $at = $_GET['code'];  
      echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>";
      $fbo = $ntOpts[$_GET['acc']]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg);
-     echo $nxs_snapThisPageUrl.'&auth=ap&acc='.$_GET['acc']."||"; 
+     echo $nxs_snapSetPgURL.'&auth=ap&acc='.$_GET['acc']."||"; 
      if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
      if (isset($fbo['appID'])){ echo "-="; prr($fbo);
-       $wprg['body'] = array('client_id'=>$fbo['appID'], 'client_secret'=>$fbo['appSec'], 'grant_type'=>'authorization_code', 'redirect_uri'=>$nxs_snapThisPageUrl.'&auth=ap&acc='.$_GET['acc'], 'code'=>$at);        
+       $wprg['body'] = array('client_id'=>$fbo['appID'], 'client_secret'=>$fbo['appSec'], 'grant_type'=>'authorization_code', 'redirect_uri'=>$nxs_snapSetPgURL.'&auth=ap&acc='.$_GET['acc'], 'code'=>$at);        
        $response = wp_remote_post('https://account.app.net/oauth/access_token', $wprg); 
        if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }  
        $params = json_decode($response['body'], true);  $fbo['apAppAuthToken'] = $params['access_token']; if ($params['user_id']>0) { $fbo['appAppUserID'] = $params['user_id']; $fbo['appAppUserName'] = $params['username'];  }
        if ($params['user_id']>0) { $optionsG = get_option('NS_SNAutoPoster'); $optionsG['ap'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
-         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapThisPageUrl; ?>"</script>      
+         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
        <?php } die(); }
     }  
   ?>    
@@ -31,14 +31,15 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
         <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = 'App.Net'; 
           if (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='') $pbo[$ntInfo['lcode'].'OK'] = (isset($pbo['appAppUserID']) && $pbo['appAppUserID']>1)?'1':'';
         ?>
-          <p style="margin:0px;margin-left:5px;">
+          <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
-          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?>
+          <a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;          
           <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
-          </p><?php $pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
+          </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div><?php //$pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
         }?>
       </div>
     </div> <?php 
@@ -46,9 +47,9 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
   //#### Show NEW Settings Page
   function showNewNTSettings($options){ $opts = array('nName'=>'', 'doAP'=>'1', 'apUName'=>'', 'apPageID'=>'', 'apCommID'=>'', 'postType'=>'A', 'apPass'=>''); $opts['ntInfo']= array('lcode'=>'ap'); $this->showNTSettings($options, $opts, true);}
   //#### Show Unit  Settings
-  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapThisPageUrl; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt);  
+  function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapSetPgURL; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); 
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
-    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['attchImg'])) $options['attchImg'] = ''; 
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['attchImg'])) $options['attchImg'] = '';     
     if (!isset($options['appID'])) $options['appID'] = ''; if (!isset($options['appSec'])) $options['appSec'] = '';  ?>    
             <div id="doAP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     
             <input type="hidden" name="apDoSAP<?php echo $ii; ?>" value="0" id="apDoSAP<?php echo $ii; ?>" />                         
@@ -59,7 +60,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
             <br/>
                 <ul class="nsx_tabs">
     <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
@@ -84,7 +85,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
             <?php } else { if(isset($options['appAppUserID']) && $options['appAppUserID']>0) { ?>
             <?php _e('Your App.Net Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['appAppUserID'].' - '.$options['appAppUserName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://account.app.net/oauth/authenticate?client_id=<?php echo trim($options['appID']);?>&response_type=code&redirect_uri=<?php echo trim(urlencode($nxs_snapThisPageUrl.'&auth=ap&acc='.$ii));?>&scope=stream+write_post+follow+messages+update_profile+files">Authorize Your App.Net Account</a> 
+            <a href="https://account.app.net/oauth/authenticate?client_id=<?php echo trim($options['appID']);?>&response_type=code&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=ap&acc='.$ii));?>&scope=stream+write_post+follow+messages+update_profile+files">Authorize Your App.Net Account</a> 
             <?php if (!isset($options['appAppUserID']) || $options['appAppUserID']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get App.Net message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your App.Net App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
             <?php } ?>
@@ -99,20 +100,11 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
     
      </div>
       <?php /* ######################## Tools Tab ####################### */ ?>
-    <div id="nsx<?php echo $nt.$ii ?>_tab2" class="nsx_tab_content">
-    
-    <?php if (!$isNew) { ?> <div class="nxs_tls_cpt"><?php _e('Categories', 'nxs_snap'); ?></div>
-    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
-       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
-       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
-       <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
-    <br/>
-    <?php } ?>      
-    <?php nxs_addPostingDelaySelV3($nt, $ii, $options['nHrs'], $options['nMin'], $options['nDays']); ?>
-    <?php nxs_showRepostSettings($nt, $ii, $options); ?>            
-            
-    </div> <?php /* #### End of Tab #### */ ?>
+    <?php if (!$isNew) { ?><div id="nsx<?php echo $nt.$ii ?>_tab2" class="nsx_tab_content">    
+    <?php nxs_showCatTagsCTFilters($nt, $ii, $options);
+          nxs_addPostingDelaySelV3($nt, $ii, $options['nHrs'], $options['nMin'], $options['nDays']);
+          nxs_showRepostSettings($nt, $ii, $options); ?>      
+    </div> <?php } ?>       <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
     <div class="submit clear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
@@ -121,7 +113,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
             </div><?php
   }
   //#### Set Unit Settings from POST
-  function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'AP'; $lcode = 'ap'; 
+  function setNTSettings($post, $options){ $code = 'AP'; $lcode = 'ap'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['appID']) && $pval['appID']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);  
@@ -150,10 +142,12 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;  $nt = 'ap'; $ntU = 'AP'; 
      foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapAP', true));  
         if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]);  if (empty($ntOpt['imgToUse'])) $ntOpt['imgToUse'] = '';
-        $doAP = $ntOpt['doAP'] && (is_array($pMeta) || $ntOpt['catSel']!='1');    $imgToUse = $ntOpt['imgToUse'];  
+        $doAP = $ntOpt['doAP'] && (is_array($pMeta) || $ntOpt['catSel']!='1');    $imgToUse = $ntOpt['imgToUse']; 
         $isAvailAP =  $ntOpt['appID']!='' && $ntOpt['appSec']!='';   $apMsgFormat = htmlentities($ntOpt['apTextFormat'], ENT_COMPAT, "UTF-8");             
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_AP<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='')  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <?php if (!empty($ntOpt['tagsSelX'])) { ?>  <input type="hidden" class="nxs_TG" id="nxs_TG_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['tagsSelX']; ?>" /> <?php } ?>
       <?php if ($isAvailAP) { ?><input class="nxsGrpDoChb" value="1" id="doAP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="ap[<?php echo $ii; ?>][doAP]" <?php if ((int)$doAP == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="ap[<?php echo $ii; ?>][doAP]" value="<?php echo $doAP;?>"> <?php } ?> <?php } ?>
       
@@ -170,11 +164,11 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP {
                 </td></tr>                
                 
                 <?php if (!$isAvailAP) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your App.Net Account to AutoPost to App.Net</b></td></tr>
-                <?php }  else { if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { nxs_doSMAS5($nt, $ii, $ntOpt); } ?>
+                <?php }  else { if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { $ntOpt['postTime'] = get_post_time('U', false, $post_id); nxs_doSMAS5($nt, $ii, $ntOpt); } ?>
                 
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>ap" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> /> 
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>

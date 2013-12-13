@@ -9,7 +9,7 @@ if (!class_exists("NS_SNAutoPoster")) {
         //## Constructor
         function NS_SNAutoPoster() { }
         //## Initialization function
-        function init() { $this->getAPOptions(); }
+        function init() { $this->nxs_options = $this->getAPOptions(); }
         //## Administrative Functions
         //## Options loader function
         function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();  
@@ -30,6 +30,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
+            if (isset($options['skipSSLSec'])) $nxs_skipSSLCheck = $options['skipSSLSec'];// prr($options);
             if (!isset($options['isPro']) || $options['isPro']!='1'){ //## Upgrade from non-pro version            
               $optPro = array();foreach ($options as $indx => $opt){                 
                  if (substr($indx, 0, 2)=='fb') $optPro['fb'][0][$indx] = $opt;
@@ -94,14 +95,16 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
         }
         function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $nxsOne = ''; $options = $this->nxs_options; //prr($options);
           //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
-          if (isset($_POST['upload_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
-            //## Import Settings            
+          
+          //## Import Settings            
+          if (isset($_POST['upload_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes');             
             $secCheck =  wp_verify_nonce($_POST['nxsChkUpl_wpnonce'], 'nxsChkUpl');
             if ($secCheck!==false && isset($_FILES['impFileSettings_button']) && is_uploaded_file($_FILES['impFileSettings_button']['tmp_name'])) { $fileData = trim(file_get_contents($_FILES['impFileSettings_button']['tmp_name']));
               while (substr($fileData, 0,1)!=='a') $fileData = substr($fileData, 1);              
-              $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['imgNoCheck'])) { $options = $uplOpt;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
+              $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['imgNoCheck'])) { $options = $uplOpt; $this->nxs_options = $options;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
             } 
           }
+          //## Save Settings
           if (isset($_POST['nxsMainFromElementAccts']) || isset($_POST['nxsMainFromSupportFld'])) { 
             if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
@@ -196,9 +199,10 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             foreach ($options['whoCanSeeSNAPBox'] as $uRole) { $role = get_role($uRole); $role->add_cap('see_snap_box'); $role->add_cap('make_snap_posts'); }            
             foreach ($options['whoCanMakePosts'] as $uRole) { $role = get_role($uRole); $role->add_cap('make_snap_posts'); }            
             
-            update_option($this->dbOptionsName, $options); // prr($options);
+            update_option($this->dbOptionsName, $options); $this->nxs_options = $options;
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", 'nxs_snap');?></strong></p></div><?php        
           }  
+          
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           
           $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
@@ -244,12 +248,20 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            <div class="popShAtt" id="popOnlyCat"><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></div>
            <div class="popShAtt" id="popReActive"><?php _e('Reposter is activated for this account', 'nxs_snap'); ?></div>
            
-           <div id="showCatSel" style="display: none;background-color: #fff; width: 300px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span>Select Categories: 
+           <div id="showCatSel" style="display: none;background-color: #fff; width: 300px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span><?php _e('Select Categories', 'nxs_snap'); ?>: 
                     <div id="fbSelCatsGLB" class="categorydivInd" style="padding-left: 15px; background-color: #fff;"> 
        <a href="#" onclick="nxs_chAllCatsL(1, 'fbSelCatsGLB'); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCatsL(0, 'fbSelCatsGLB'); return false;">UnCheck all</a>
           <div id="category-all" class="tabs-panel"> <input type="hidden" id="tmpCatSelNT" name="tmpCatSelNT" value="" />
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-                <?php $args = array( 'descendants_and_self' => 0, 'selected_cats' => '', 'taxonomy' => 'category', 'checked_ontop' => false); if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); ?>
+                <?php                 
+                     $args = array( 'descendants_and_self' => 0, 'selected_cats' => '', 'taxonomy' => 'category', 'checked_ontop' => false); if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); 
+                     /* //## Show Hierarcical custom taxonomies as categories.
+                     $args = array('hierarchical' => true, 'public'   => true, '_builtin' => false );  $output = 'names';  $operator = 'and'; $taxonomies = get_taxonomies( $args, $output, $operator ); 
+                     if ( $taxonomies ) foreach ( $taxonomies  as $taxonomy ) { ?> <b><br/>&nbsp;&nbsp;<?php _e($taxonomy, 'nxs_snap'); ?></b><br/> <?php
+                       $args = array( 'descendants_and_self' => 0, 'selected_cats' => '', 'taxonomy' => $taxonomy, 'checked_ontop' => false); if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args );     
+                     } 
+                     */               
+                ?>
             </ul>
           </div>  
        </div>    <div class="submit"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); jQuery('#showCatSel').bPopup().close();" value="Select Categories" /></div>
@@ -722,7 +734,7 @@ Please see #4 and #5 for Twitter:<br/>
 </div>     
             <div class="popShAtt" id="popShAttRPST1"><div class="nxs_tls_sbInfo2"><?php _e('Set random delays around your interval time, to make your posts appear more human', 'nxs_snap'); ?></div></div>
            <form method="post" enctype="multipart/form-data"  id="nsStFormUpl" action="<?php echo $nxs_snapThisPageUrl?>">
-              <input type="file" accept="text/plain" onchange="jQuery('#nsStFormUpl').submit();" id="impFileSettings_button" name="impFileSettings_button" style="display: block; visibility: hidden; width: 0; height: 0;" size="chars">
+              <input type="file" accept="text/plain" onchange="jQuery('#nsStFormUpl').submit();" id="impFileSettings_button" name="impFileSettings_button" style="display: block; visibility: hidden; width: 1px; height: 0;" size="chars">
               <input type="hidden" value="1" name="upload_NS_SNAutoPoster_settings" /> <input value="'" type="hidden" name="nxs_mqTest" />  <?php wp_nonce_field( 'nxsChkUpl', 'nxsChkUpl_wpnonce' ); ?> 
            </form>
            <br/>&nbsp;<br/> <?php
@@ -730,7 +742,7 @@ Please see #4 and #5 for Twitter:<br/>
         function showSNAutoPosterOptionsPagex() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; ?>            
             <br/><br/><br/>This version of the plugin is not compatible with <b>Wordpress Multisite Edition</b>. Please contact your Network Admin for the upgrade. <?php }
         
-        function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
+        function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_skipSSLCheck; $nxsOne = ''; $options = $this->nxs_options; 
         
         if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='h'){ nxs_do_this_hourly(); die(); }
         if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='q'){ nxs_do_post_from_query(); die(); }
@@ -768,6 +780,11 @@ Please see #4 and #5 for Twitter:<br/>
            if (stripos($disabled_functions, 'curl_exec')!==false) {  
                echo ("<br/><b style='font-size:16px; color:red;'>curl_exec function is disabled in php.ini</b> - <i style='font-size:12px; color:red;'>Social Networks AutoPoster needs the CURL PHP extension. Please enable it or contact your hosting company to enable it.</i><br/><br/>"); 
            }
+           if (empty($options['skipSSLSec'])) { $err = nxsCheckSSLCurl('https://www.google.com'); 
+             if ($err!==false && $err['errNo']=='60') { $nxs_skipSSLCheck = true; $options['skipSSLSec'] = true; } else { $nxs_skipSSLCheck = false; $options['skipSSLSec'] = false; } 
+             update_option($this->dbOptionsName, $options); $this->nxs_options = $options;
+           }
+           
            /*
            if ((defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE==true) || (defined('MULTISITE') &&  MULTISITE==true) ) { 
                echo "<br/><br/><br/><b style=\"font-size:16px; color:red;\">Sorry, we do not support Multiuser Wordpress at this time</b>"; return; 

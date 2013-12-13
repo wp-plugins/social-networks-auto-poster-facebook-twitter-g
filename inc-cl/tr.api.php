@@ -11,7 +11,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
       foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
-    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
+    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); 
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['trConsKey']) || trim($options['trConsSec'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
@@ -35,7 +35,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
         $postArr['embed'] = $embedTxt;           
       } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = $message['url']; $postArr['body'] = $msg; } 
     
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$options['trURL']."/post", $postArr); // prr($postinfo);  prr($postArr);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$options['trURL']."/post", $postArr); //  prr($postinfo);  prr($postArr);
     
     $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     

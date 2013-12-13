@@ -169,7 +169,7 @@ class nsx_LinkedIn {
       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
       curl_setopt($curl, CURLOPT_HTTPHEADER, $auth_header);   
     }
- 
+    global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     $data = curl_exec($curl); $errmsg = curl_error($curl); //prr($data);// die();
     
     //## NextScripts Fix

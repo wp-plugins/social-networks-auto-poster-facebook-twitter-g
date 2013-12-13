@@ -51,6 +51,7 @@ if (!class_exists("nxs_class_SNAP_AP")) { class nxs_class_SNAP_AP {
       $url = "https://alpha-api.app.net/stream/0/files?access_token=".$auth; 
 
       $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_POST, 1); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data); $response = curl_exec($ch); $errmsg = curl_error($ch); curl_close($ch); //prr($response);
       if ($errmsg!='') return $errmsg; else $response = json_decode($response, true);
       if (!is_array($response) || !isset($response['meta']) || $response['meta']['code']!='200' || $response['data']['file_token']=='') return print_r($response, true);

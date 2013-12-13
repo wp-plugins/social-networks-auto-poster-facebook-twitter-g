@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
-Tested up to: 3.7.1
-Stable tag: 3.0.9
+Tested up to: 3.8.0
+Stable tag: 3.1.0
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -151,7 +151,23 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 3.0.9 [11/18/2013] =
+= 3.1.0 [12/12/2013] =
+
+* New - Wordpress 3.8 Compatibility
+* New - New Ajax based settings page - 7 times lighter and faster. 
+* New - Filter autoposting by tags and custom taxonomies. 
+* New - Ability to set all posts "Enabled/Disabled for repost" according to the Categories/Tags/Custom Taxonomies filters
+* Improvement - Performance/compatibility improvement with latest LastPass extension. 
+* Improvement - Better compatibility with SSL.
+* Improvement/Bug Fix - HTML tags and shortcodes are now removed from Facebook attached titles. 
+* Improvement/Bug Fix - Compatibility with new LinkedIn security feature "We just sent you the code". 
+* Bug Fix - Facebook - wrong image was selected for "Image" posts in some configurations.
+* Bug Fix - broken reposting if "Newer then XX Days" value is too big. 
+* Bug Fix - FriendFeed was ignoring message format and posting checkbox. 
+* Bug Fix - Incorrect display of "Time to Post" for scheduled posts. 
+* Bug Fix - incorrect "Autopost Cancelled" messages. 
+
+= 3.0.9 [11/22/2013] =
 
 * New - %FULLTITLE% tag will insert processed title.
 * Bug Fix - YouTube - Google+ page setting were not saved.

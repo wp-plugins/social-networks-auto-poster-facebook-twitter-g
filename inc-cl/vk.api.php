@@ -23,6 +23,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
         file_put_contents($tmp, $imgData); 
       
         $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $VKuploadUrl); curl_setopt($ch, CURLOPT_POST, 1); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, array('photo' => '@' . $tmp)); $response = curl_exec($ch); $errmsg = curl_error($ch); curl_close($ch); //prr($response);
         
         $uploadResultObj = json_decode($response); // prr($response); //prr($uploadResultObj);

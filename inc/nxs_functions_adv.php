@@ -53,10 +53,10 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   if (preg_match('%HTAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
     $tggs = array(); foreach ($t as $tagA) {$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));  } 
     $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
-  }   
-  if (preg_match('%CF-[a-zA-Z0-9]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+  } 
+  if (preg_match('%CF-[a-zA-Z0-9_]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
-        if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem =  get_post_meta($postID, $mGr, true); $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
+        if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem =  get_post_meta($postID, $mGr, true);  $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
     } $msg = $mout; 
   }  
   if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
@@ -100,6 +100,12 @@ if (!function_exists("nxs_memCheck")) { function nxs_memCheck() { global $nxs_sn
       &nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=test">Check HTTPS/SSL</a>
     </div> <?php
 }}
-
+//## Check SSL Sec
+if (!function_exists("nxsCheckSSLCurl")){function nxsCheckSSLCurl($url){
+  $ch = curl_init($url); $headers = array(); $headers[] = 'Accept: text/html, application/xhtml+xml, */*'; $headers[] = 'Cache-Control: no-cache';
+  $headers[] = 'Connection: Keep-Alive'; $headers[] = 'Accept-Language: en-us';  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); 
+  $content = curl_exec($ch); $err = curl_errno($ch); $errmsg = curl_error($ch); if ($err!=0) return array('errNo'=>$err, 'errMsg'=>$errmsg); else return false;
+}}
 
 ?>

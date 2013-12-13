@@ -21,9 +21,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       
       //## Some OLD Format Conversion
       if (!isset($options['attachType']) && isset($options['fbAttch'])) $options['attachType'] = $options['fbAttch'];
-      if (!isset($options['postType']) && isset($options['fbPostType'])) $options['postType'] = $options['fbPostType'];
-      if (!isset($options['pgID']) && isset($options['fbPgID'])) $options['pgID'] = $options['fbPgID'];
-      
+      if (!isset($options['postType']) && isset($options['fbPostType'])) $options['postType'] = $options['fbPostType'];  $fbPostType = $options['postType'];
+      if (!isset($options['pgID']) && isset($options['fbPgID'])) $options['pgID'] = $options['fbPgID'];      
+            
       //## Get URL info.      
       if ($fbPostType!='I' && $fbPostType!='T' && isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') { $url =  $message['url']; $params = array(); 
         $flds = array('id'=>$url, 'scrape'=>'true');      $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds)); 
@@ -33,7 +33,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
             if (!empty($response['image'][0]['url'])) $message['imageURL'] = $response['image'][0]['url'];
         }
       } // prr($message);
-      $msg = nxs_doFormatMsg($options['fbMsgFormat'], $message); $imgURL = $message['imageURL']; $fbPostType = $options['postType'];  $fbWhere = 'feed'; 
+      $msg = nxs_doFormatMsg($options['fbMsgFormat'], $message); $imgURL = $message['imageURL']; $fbWhere = 'feed'; 
       $attachType = $options['attachType']; if ($attachType=='1') $attachType = 'A'; else $attachType = 'S';
       if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; $page_id = $options['pgID'];        
       $msg = strip_tags($msg); $msg = str_ireplace('&lt;(")','<(")', $msg); //## FB Smiles FIX 3

@@ -86,9 +86,9 @@ if (!function_exists("nxs_getNXSHeaders")) {  function nxs_getNXSHeaders($ref=''
 }}
 if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType='head'){ if( ini_get('allow_url_fopen')=='1' && @getimagesize($url)!==false) return true;
   $hdrsArr = nxs_getNXSHeaders(); $nxsWPRemWhat = 'wp_remote_'.$chType; $rsp  = $nxsWPRemWhat($url, array('headers' => $hdrsArr));  
-  if(is_wp_error($rsp)) { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.print_r($rsp, true), ''); return false; }
+  if(is_wp_error($rsp)) { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.serialize($rsp), ''); return false; }
   if (is_array($rsp) && ($rsp['response']['code']=='200' || ( $rsp['response']['code']=='403' &&  $rsp['headers']['server']=='cloudflare-nginx') )) return true; 
-    else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.print_r($rsp, true), $url); return false; }
+    else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. Most probably it\'s a DNS problem. Please contact your hosting provider. '.serialize($rsp), $url); return false; }
     } 
 }}
 if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
@@ -152,37 +152,27 @@ function nxs_tiny_mce_before_init( $init ) {
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>
     <script type="text/javascript" >  
     function nxs_updateGetImgsX(e){ }
-    jQuery(document).on('change', '#content', function( e ) {   
-        nxs_updateGetImgsX( e );
-    });
+    jQuery(document).on('change', '#content', function( e ) { nxs_updateGetImgsX( e ); });
+    
     function nxs_updateGetImgsXX(e){ 
       var targetId = e.target.id; 
       var text = 'Kortinko';
-
       switch ( targetId ) {
-
          case 'content':
              text = jQuery('#content').val(); 
              break;
-
          case 'tinymce':
-             if ( tinymce.activeEditor )
-                 text = tinymce.activeEditor.getContent();
+             if ( tinymce.activeEditor ) text = tinymce.activeEditor.getContent();
              break;
       }
-
       jQuery('.nxs_imgPrevList').html( text );
-    }
-    
-    function nxs_clPrvImgShow(tIdN){ jQuery("#isAutoImg-"+tIdN).trigger('click'); jQuery("#isAutoImg-"+tIdN).trigger('click');  }
-    
+    }    
+    function nxs_clPrvImgShow(tIdN){ jQuery("#isAutoImg-"+tIdN).trigger('click'); jQuery("#isAutoImg-"+tIdN).trigger('click');  }    
     function nxs_clPrvImg(id, ii){ jQuery("#imgToUse-"+ii).val(jQuery("#"+id+" img").attr('src')); jQuery(".nxs_prevIDiv"+ii+" .nxs_checkIcon").hide();
       jQuery(".nxs_prevIDiv"+ii).removeClass("nxs_chImg_selDiv"); jQuery(".nxs_prevIDiv"+ii+" img").removeClass("nxs_chImg_selImg"); 
       jQuery("#"+id+" img").addClass("nxs_chImg_selImg"); jQuery("#"+id).addClass("nxs_chImg_selDiv"); jQuery("#"+id+" .nxs_checkIcon").show();
-    }
-    
-    function nxs_getOriginalWidthOfImg(img_element) { var t = new Image();  t.src = (img_element.getAttribute ? img_element.getAttribute("src") : false) || img_element.src; /* alert(t.src+" | "+t.width); */ return t.width; }    
-    
+    }    
+    function nxs_getOriginalWidthOfImg(img_element) { var t = new Image();  t.src = (img_element.getAttribute ? img_element.getAttribute("src") : false) || img_element.src; /* alert(t.src+" | "+t.width); */ return t.width; }        
     function nxs_updateGetImgs(e){ 
         var textOut='';
         var tId = e.target.id; 
@@ -251,27 +241,23 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
             
 <script type="text/javascript">   
 
-  jQuery(function(){
-    jQuery("form input:checkbox[name='post_category[]']").click ( function(){ var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
-       var thVal = jQuery(this).val();           
+ jQuery(function(){
+    jQuery("form .categorydiv .selectit input:checkbox").click ( function(){ var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return; 
+       var thVal = jQuery(this).val();  if (!jQuery(this).is(":checked")) return;        
+       
+       var arr = [<?php if (!empty($options['exclCats'])) { $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; } ?>];
+       if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
+       
        jQuery(".nxs_SC").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_SC_", "do", "gi");
          if (jQuery.inArray(thVal, catsA)>-1)  jQuery('#'+uqID).attr('checked','checked')
-         //alert( uqID + "|" + catsA +  "|" + thVal);  
-       });         
-       var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
-       if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
-    });
-  });
-  
-  jQuery(function(){
-    jQuery("form .popular-category input:checkbox").click ( function(){ var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
-       var thVal = jQuery(this).val();           
-       jQuery(".nxs_SC").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_SC_", "do", "gi");
+        // alert( uqID + "|" + catsA +  "|" + thVal);  
+       }); 
+       
+       jQuery(".nxs_TG").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_TG_", "do", "gi");
          if (jQuery.inArray(thVal, catsA)>-1)  jQuery('#'+uqID).attr('checked','checked')
-         //alert( uqID + "|" + catsA +  "|" + thVal);  
-       });         
-       var arr = [<?php $xarr = maybe_unserialize($options['exclCats']); if (is_array($xarr)) echo "'".implode("','", $xarr)."'"; ?>];
-       if ( jQuery.inArray(thVal, arr)>-1) jQuery('.nxsGrpDoChb').removeAttr('checked'); else jQuery(".nxsGrpDoChb[title='def']").attr('checked','checked');
+        // alert( uqID + "|" + catsA +  "|" + thVal);  
+       });        
+       
     });
   });
    
@@ -290,7 +276,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
     }<?php } ?>
   }
   
-  jQuery(document).ready(function() {   
+  function nxs_doTabs(){
     jQuery('#nxsAPIUpd').dblclick(function() { doLic(); });
     //When page loads...
     jQuery(".nsx_tab_content").hide(); //Hide all content
@@ -306,6 +292,52 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
       jQuery(activeTab).show(); //Fade in the active ID content
       return false;
     });
+      
+  }
+  
+  function nxs_doTabsInd(iid){    
+    //When page loads...
+    jQuery(iid+" .nsx_tab_content").hide(); //Hide all content
+    jQuery(iid+" ul.nsx_tabs > li:first-child").addClass("active").show(); //Activate first tab
+    jQuery(iid+" .nsx_tab_container > .nsx_tab_content:first-child").show(); //Show first tab content
+
+    //On Click Event
+    jQuery(iid+" ul.nsx_tabs li").click(function() {
+      jQuery(this).parent().children("li").removeClass("active"); //Remove any "active" class
+      jQuery(this).addClass("active"); //Add "active" class to selected tab
+      jQuery(this).parent().parent().children(".nsx_tab_container").children(".nsx_tab_content").hide(); //Hide all tab content    
+      var activeTab = jQuery(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
+      jQuery(activeTab).show(); //Fade in the active ID content
+      return false;
+    });
+      
+  }
+  
+  function nxs_in_array(needle, haystack) { for(var i in haystack) { if(haystack[i] == needle) return true;} return false; }
+  
+  jQuery(document).ready(function() {   
+    nxs_doTabs();
+    //## Check for excluded Tags
+    var nxs_curTagsValue = jQuery('#tax-input-post_tag').val();    
+    // !!FIXIT!!
+    jQuery(function () { setTimeout(nxs_checkTagsChanges, 0.1); });
+    function nxs_checkTagsChanges() { var currentValue = jQuery('#tax-input-post_tag').val(); var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
+    if ((currentValue) && currentValue != nxs_curTagsValue && currentValue != '') {
+        nxs_curTagsValue = jQuery('#tax-input-post_tag').val();        
+        var nxs_curTagsValueX = '';  var tValX = [];        
+        jQuery('.the-tags').each(function() { 
+           var tVals = jQuery( this ).val().split(","); var tID = jQuery( this ).attr('id').replace("tax-input-",""); 
+           for(var ii in tVals) tValX.push(tID+"|"+jQuery.trim(tVals[ii])); 
+        });    //    alert(tValX);
+        jQuery(".nxs_TG").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_TG_", "do", "gi");
+        // console.log( uqID ); console.log( JSON.stringify( catsA ) );
+        for(var ii in catsA) { var tgVal = jQuery.trim(catsA[ii]);
+          if (tgVal.indexOf("|")<1 && tgVal!="") tgVal = "post_tag|"+tgVal;
+          if (tgVal!="" && jQuery.inArray(tgVal, tValX)>-1) {  jQuery('#'+uqID).attr('checked','checked'); }           
+        }        
+        });
+      } setTimeout(nxs_checkTagsChanges, 0.1);
+    }
   });
 </script>
 
@@ -333,12 +365,14 @@ div.popShAtt { display: none; position: absolute; width: 600px; padding: 10px; b
 .underdash {border-bottom: 1px #21759B dashed; text-decoration:none;}
 .underdash a:hover {border-bottom: 1px #21759B dashed}
 
-ul.nsx_tabs {margin: 0;padding: 0;float: left;list-style: none;height: 32px;border-bottom: 1px solid #999;border-left: 1px solid #999;width: 100%;}
+.nxsTHRow {vertical-align:top; padding-top:6px; text-align:right; width:80px; padding-right:10px;}
+
+ul.nsx_tabs {margin: 0;padding: 0; margin-top:5px;float: left;list-style: none;height: 32px;border-bottom: 1px solid #999;border-left: 1px solid #999;width: 99%;}
 ul.nsx_tabs li {float: left;margin: 0;padding: 0;height: 31px;line-height: 31px;border: 1px solid #999;border-left: none;margin-bottom: -1px;overflow: hidden;position: relative;background: #e0e0e0;}
 ul.nsx_tabs li a {text-decoration: none;color: #000; display: block; font-size: 1.2em; padding: 0 20px; border: 1px solid #fff; outline: none;}
 ul.nsx_tabs li a:hover { background: #ccc;}
 html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #fff; border-bottom: 1px solid #fff; }
-.nsx_tab_container {border: 1px solid #999; border-top: none; overflow: hidden; clear: both; float: left; width: 100%; background: #fff;}
+.nsx_tab_container {border: 1px solid #999; border-top: none; overflow: hidden; clear: both; float: left; width: 99%; background: #fff;}
 .nsx_tab_content {padding: 10px;}
 
 .nxs_tls_cpt{width:100%; padding-bottom: 5px; padding-top: 10px;font-size: 16px; font-weight: bold;}
@@ -477,8 +511,9 @@ if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel(
   if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs, $min, $days); else return '<br/>';
 }}
 if (!function_exists('nxs_addPostingDelaySelV3')){function nxs_addPostingDelaySelV3($nt, $ii, $hrs=0, $min=0, $days=0){ 
-  if (function_exists('nxs_doSMAS4')) { ?> <div class="nxs_tls_cpt"><?php _e('Posting Delay', 'nxs_snap'); ?></div>
-    <div class="nxs_tls_bd"><?php echo nxs_doSMAS4($nt, $ii, $hrs, $min, $days); ?></div>      
+  if (function_exists('nxs_doSMAS4')) { ?> <div class="nxs_tls_cpt"><?php _e('Posting Delay', 'nxs_snap'); ?></div>  
+    <div class="nxs_tls_bd"><?php  global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+      if ($options['nxsHTDP']=='I') _e('Not Compatible with "Publish Immediately"'); else  echo nxs_doSMAS4($nt, $ii, $hrs, $min, $days); ?></div>      
   <?php } else echo '<br/>';
 }}
  
@@ -496,7 +531,7 @@ if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, 
 
 if (!function_exists("nxs_hideTip_ajax")) { function nxs_hideTip_ajax() {  check_ajax_referer('nxsSsPageWPN');   
    global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-   $options['hideTopTip'] = '1';    update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options);
+   $options['hideTopTip'] = '1';    update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); $plgn_NS_SNAutoPoster->nxs_options = $options;
 }}
 
 if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=''){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
@@ -703,7 +738,7 @@ function nxs_cURLTest($url, $msg, $testText){ echo "<br/>--== Test Requested ...
 }
 
 //## Reposter
-function nxs_adjRpst($optionsii, $pval){  
+function nxs_adjRpst($optionsii, $pval){  if (empty($optionsii['rpstDays'])) $optionsii['rpstDays'] = 0; if (empty($optionsii['rpstHrs'])) $optionsii['rpstHrs'] = 0; if (empty($optionsii['rpstMins'])) $optionsii['rpstMins'] = 0;
     
     $rpstEvrySecEx = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
     
@@ -715,7 +750,7 @@ function nxs_adjRpst($optionsii, $pval){
     if (isset($pval['rpstPostIncl']))  $optionsii['rpstPostIncl'] = trim($pval['rpstPostIncl']);      
     
     $rpstEvrySecNew = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
-    $rpstRNDSecs = $optionsii['rpstRndMins']*60; if ($rpstRNDSecs>$rpstEvrySecNew) $optionsii['rpstRndMins'] = 0;
+    $rpstRNDSecs = isset($optionsii['rpstRndMins'])?$optionsii['rpstRndMins']*60:0; if ($rpstRNDSecs>$rpstEvrySecNew) $optionsii['rpstRndMins'] = 0;
     
     if ($rpstEvrySecNew!=$rpstEvrySecEx) { $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $optionsii['rpstNxTime'] = $currTime + $rpstEvrySecNew; }
     if (isset($pval['rpstType']))  $optionsii['rpstType'] = trim($pval['rpstType']);       
@@ -726,14 +761,41 @@ function nxs_adjRpst($optionsii, $pval){
     if (isset($pval['rpstNWDays']))  $optionsii['rpstNWDays'] = trim($pval['rpstNWDays']);       
     if (isset($pval['rpstOnlyPUP']))  $optionsii['rpstOnlyPUP'] = trim($pval['rpstOnlyPUP']); else $optionsii['rpstOnlyPUP'] = 0;     
     
-    if (isset($pval['nxsCPTSeld']))      $optionsii['nxsCPTSeld'] = serialize($pval['nxsCPTSeld']);                      
+    if (isset($pval['nxsCPTSeld']))      $optionsii['nxsCPTSeld'] = serialize($pval['nxsCPTSeld']);              
+    
+    if (isset($pval['tagsSel'])) {  $optionsii['tagsSel'] = trim($pval['tagsSel']); $tagsSelX = array(); $tggsSel = explode(',', $optionsii['tagsSel']); 
+      foreach ($tggsSel as $tggg){ $tggg = trim($tggg); $tagsSelX[] = $tggg;  
+        if (stripos($tggg, '|')!==false) { $tgArr =  explode('|', $tggg); $taxonomy = $tgArr[0]; $tgggT = $tgArr[1]; } else { $taxonomy = 'post_tag'; $tgggT = $tggg; } 
+        $tgArr = get_term_by( 'slug', $tgggT, $taxonomy, ARRAY_A); if (is_array($tgArr)) $tagsSelX[] = $tgArr['term_id'];
+      }  $optionsii['tagsSelX'] = implode(',', $tagsSelX); 
+    }
+    if (isset($pval['custTaxSel']))  $optionsii['custTaxSel'] = trim($pval['custTaxSel']);     
         
     if (isset($pval['rpstBtwHrsType']))  $optionsii['rpstBtwHrsType'] = trim($pval['rpstBtwHrsType']);       
-    if (isset($pval['rpstBtwHrsT']))  $optionsii['rpstBtwHrsT'] = trim($pval['rpstBtwHrsT']);  if ((int)$optionsii['rpstBtwHrsT']>23) $optionsii['rpstBtwHrsT'] = 23;         
-    if (isset($pval['rpstBtwHrsF']))  $optionsii['rpstBtwHrsF'] = trim($pval['rpstBtwHrsF']);  if ((int)$optionsii['rpstBtwHrsF']>23) $optionsii['rpstBtwHrsF'] = 23;               
+    if (isset($pval['rpstBtwHrsT']))  $optionsii['rpstBtwHrsT'] = trim($pval['rpstBtwHrsT']);  if (isset($optionsii['rpstBtwHrsT'])&&(int)$optionsii['rpstBtwHrsT']>23) $optionsii['rpstBtwHrsT'] = 23;         
+    if (isset($pval['rpstBtwHrsF']))  $optionsii['rpstBtwHrsF'] = trim($pval['rpstBtwHrsF']);  if (isset($optionsii['rpstBtwHrsF'])&&(int)$optionsii['rpstBtwHrsF']>23) $optionsii['rpstBtwHrsF'] = 23;               
     if (isset($pval['rpstBtwDays']))  $optionsii['rpstBtwDays'] = $pval['rpstBtwDays']; else $optionsii['rpstBtwDays'] = array(); 
     return $optionsii;
 }
+
+function nxs_showCatTagsCTFilters($nt, $ii, $options){ global $nxs_snapAvNts, $nxs_plurl; 
+  if (!isset($options['tagsSel'])) $options['tagsSel'] = ''; if (!isset($options['custTaxSel'])) $options['custTaxSel'] = '';
+  ?> <div class="nxs_tls_cpt"><?php _e('Filter Autoposting by', 'nxs_snap'); ?></div>
+    <div class="nxs_tls_bd">
+    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
+       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
+       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
+    <br/>
+    <div style="width:100%;"><strong><?php _e('Tags and Custom Taxonomies', 'nxs_snap'); ?>:</strong>
+       <input name="<?php echo $nt; ?>[<?php echo $ii; ?>][tagsSel]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['tagsSel'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />     
+    <br/><i><?php _e('Only posts with those tags assigned will be autoposted to this account, you can include custom taxonomy tags in taxonomy_slug|tag format.', 'nxs_snap'); ?></i></div> 
+    <br/>
+    </div> <?php
+}
+
+
 function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs_plurl; 
   if (empty($options['rpstPostIncl'])) $options['rpstPostIncl'] = 0; if (empty($options['rpstPostIncl'])) $options['rpstLastShTime'] = ''; if (empty($options['rpstNxTime'])) $options['rpstNxTime'] = '';
   if (empty($options['rpstLastPostID'])) $options['rpstLastPostID'] = '';
@@ -790,8 +852,10 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
              <select name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"><option <?php echo $options['rpstPostIncl'] == "1"?'selected="selected"':''; ?> value="1">Enabled for Repost</option>
              <option <?php echo $options['rpstPostIncl'] != "1"?'selected="selected"':''; ?>  value="0">Disabled for Repost</option></select><br/>
       <div style="padding-left: 15px;"> <img id="nxsLoadingImg<?php echo $nt; ?><?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />       
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Set All Existing Posts to "Enabled for Repost"]', 'nxs_snap'); ?></a> </span>
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Set All Existing Posts to "Disabled for Repost"]', 'nxs_snap'); ?></a> </span>        
+     <?php _e('Set All Existing Posts to: ', 'nxs_snap'); ?>
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled for Repost]', 'nxs_snap'); ?></a> </span>
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Disabled for Repost]', 'nxs_snap'); ?></a> </span>        
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','2','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters]', 'nxs_snap'); ?></a> </span>        
               
      </div><hr/>
      <b><?php _e('Last post', 'nxs_snap'); ?></b>&nbsp;(ID:&nbsp;<?php echo !empty($options['rpstLastPostID'])?$options['rpstLastPostID']:''; ?>)&nbsp;<b><?php _e('was re-posted on:', 'nxs_snap'); ?></b>&nbsp;<?php echo $options['rpstLastShTime']>0?date_i18n('Y-m-d H:i', $options['rpstLastShTime']):'Never'; ?>
@@ -867,6 +931,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - $rpstToTime) / 86400); 
                      $nxs_rpst_newer = ceil(abs($currTime - $rpstFromTime) / 86400);                   
                    } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':($ntOpts['rpstType']=='3'?'New to Old':'Old to New');
+                   if ($nxs_rpst_newer>5000) $nxs_rpst_newer = 5000;  if ($nxs_rpst_newer<$nxs_rpst_older) $nxs_rpst_older = 0;
                    //if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
                    
                    $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);
@@ -874,7 +939,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  {  add_filter( 'posts_where', 'nxs_filter_where_only' ); }
                    add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); // $extInfo = print_r($query, true);                   
                    
-                   $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1975-01-01':'2050-12-12');
+                   $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1985-01-01':'2050-12-12');
                    $extInfo = " | Reposted (<b>".$ggg."</b>) POST ID:".$rpstLastPostID. " | Prev Post ID:".$nxs_rpst_lastID ." | ".($options['extDebug']=='1'?"|Query: ".print_r($query->request, true):'');
                    
                    //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
@@ -897,15 +962,19 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
             }
         }      
     }
-  } if ($hasChanged) update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options);     
+  } if ($hasChanged) { update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); $plgn_NS_SNAutoPoster->nxs_options = $options; }
 }
 
-function brwsType($agent=null){ $known = array('msie', 'firefox', 'safari', 'opera'); $agent = strtolower($agent ? $agent : $_SERVER['HTTP_USER_AGENT']); $pattern = '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';
-  if (!preg_match_all($pattern, $agent, $matches)) return false; $i = count($matches['browser'])-1; return $matches['browser'][$i];
+function nxs_chckBrwsr() { $isOK = false; 
+  if (preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;    if (preg_match('/Internet Explorer/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
+  if (preg_match('/Firefox/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true; if (preg_match('/Opera/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
+  if (preg_match('/Chrome/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;  if (preg_match('/Safari/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
+  if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone)/i', strtolower($_SERVER['HTTP_USER_AGENT'])) || (strpos(strtolower($_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml')>0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) $isOK = false;
+  return $isOK;
 }
 
 //## NXS Cron
-if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_rePoster();  if (!is_home() && !is_front_page()) return;  if (brwsType()==false) return;    
+if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_rePoster();  if (!is_home() && !is_front_page()) return; if (nxs_chckBrwsr()==false) return;    
    //if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) return;   
    $ltc = get_option('NSX_LastTChecked'); if (time()<$ltc+300) return;  $sh =_get_cron_array();  $itmsToPush = array();   
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
@@ -961,11 +1030,12 @@ function nxs_do_this_hourly() {  $options = get_option('NS_SNAutoPoster');
   } 
 }
 //#### V3 new Query Poster
-function nxs_addToPostingQuery($postID){ $options = get_option('NS_SNAutoPoster'); $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array();  
+function nxs_addToPostingQuery($postID){ global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+  $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array();  
   if (!in_array($postID, $quPosts)) $quPosts[] = $postID; update_option('NSX_PostsQuery', $quPosts);    
   //## Update Next Post time
-  $options = get_option('NS_SNAutoPoster'); $currTime = time() + 10 + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $nxTime = !empty($options['quNxTime'])?$options['quNxTime']:0;
-  if (empty($nxTime) || $nxTime < $currTime) { $options['quNxTime'] = $currTime; update_option('NS_SNAutoPoster', $options); }
+  $currTime = time() + 10 + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $nxTime = !empty($options['quNxTime'])?$options['quNxTime']:0;
+  if (empty($nxTime) || $nxTime < $currTime) { $options['quNxTime'] = $currTime; update_option('NS_SNAutoPoster', $options);  $plgn_NS_SNAutoPoster->nxs_options = $options; }
 }
 function nxs_do_post_from_query() { // nxs_addToLogN('A', 'Debug info only. - Cron Time', 'X', '', $extInfo);    
   $options = get_option('NS_SNAutoPoster'); $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array();

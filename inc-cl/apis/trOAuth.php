@@ -238,7 +238,11 @@ $headers[] = 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3';
         }
     }
 //prr($url);
-    if ($method=='DELETE')  curl_setopt($ci, CURLOPT_URL, $url);  $response = curl_exec($ci);  $out = array();
+    if ($method=='DELETE')  curl_setopt($ci, CURLOPT_URL, $url);  
+    
+    global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, false);
+    
+    $response = curl_exec($ci);  $out = array();
   
     /*  
     $err = curl_errno($ci); if ($err==28){ sleep(10); $tm = true; $response = curl_exec($ci); } //   echo "##".$err; $errmsg = curl_error($ci); $out['errno'] = $err; $out['errmsg'] = $errmsg; prr($out);

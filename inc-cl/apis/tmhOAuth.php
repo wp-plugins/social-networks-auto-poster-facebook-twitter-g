@@ -638,6 +638,7 @@ class NXS_tmhOAuth {
       return;
 
     // do it!
+    global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($c);
     $code = curl_getinfo($c, CURLINFO_HTTP_CODE);
     $info = curl_getinfo($c);

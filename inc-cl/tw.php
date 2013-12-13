@@ -14,14 +14,14 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       </div>
       <div class="nxs_box_inside">
         <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = str_ireplace('https://','', str_ireplace('http://','', $pbo['twURL'])); ?>
-          <p style="margin:0px;margin-left:5px;">
+          <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="doShowHideBlocks('<?php echo $ntInfo['code']; ?>');" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1) echo "checked"; ?> /> 
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
-          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention required. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>A" href="#" onclick="doShowHideBlocks2('<?php echo $ntInfo['code'].$indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention required. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
           <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
-          </p><?php $pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
+          </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div><?php //$pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
         }?>
       </div>
     </div> <?php 
@@ -45,7 +45,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     <br/>
     <ul class="nsx_tabs">
     <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/tw-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
@@ -73,18 +73,19 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       
       </div>
       <?php /* ######################## Tools Tab ####################### */ ?>
-    <div id="nsx<?php echo $nt.$ii ?>_tab2" class="nsx_tab_content">
+  <?php if (!$isNew) { ?>   <div id="nsx<?php echo $nt.$ii ?>_tab2" class="nsx_tab_content">
     
-    <?php if (!$isNew) { ?> <div class="nxs_tls_cpt"><?php _e('Categories', 'nxs_snap'); ?></div>
+    <div class="nxs_tls_cpt"><?php _e('Categories', 'nxs_snap'); ?></div>
     <div class="nxs_tls_bd"> <div class="nxs_tls_sbInfo"><?php _e('Only selected categories will be autoposted to this account.', 'nxs_snap'); ?></div>
     <strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
        <input value="1" id="catSelSTW<?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_TW<?php echo $ii; ?>" onclick="jQuery('#catSelSTW<?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('TW<?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_TW<?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_TW<?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />    
     </div>     
-    <?php } ?>
+  
     
-   <?php nxs_addPostingDelaySelV3($nt, $ii, $options['nHrs'], $options['nMin'], $options['nDays']); ?>    
+   <?php nxs_showCatTagsCTFilters($nt, $ii, $options); 
+         nxs_addPostingDelaySelV3($nt, $ii, $options['nHrs'], $options['nMin'], $options['nDays']);  ?>    
     
    <div class="nxs_tls_cpt"><?php _e('Auto Import of Replies and Mentions:', 'nxs_snap'); ?></div>
    <div class="nxs_tls_bd">
@@ -98,9 +99,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
    <?php } else { echo "<br/>"; _e('Please activate the "Comments Import" from SNAP Settings Tab', 'nxs_snap'); } ?>   
    </div>
    
-   <?php nxs_showRepostSettings($nt, $ii, $options); ?>
+  <?php nxs_showRepostSettings($nt, $ii, $options); ?>
    
-    </div>
+    </div>   <?php } ?>
     </div><br/>      
       <div class="submit clear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
     
@@ -108,7 +109,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     <?php
   }
   //#### Set Unit Settings from POST
-  function setNTSettings($post, $options){ global $nxs_snapThisPageUrl; $code = 'TW'; $lcode = 'tw'; 
+  function setNTSettings($post, $options){ $code = 'TW'; $lcode = 'tw'; 
     foreach ($post as $ii => $pval){ 
       if (isset($pval['apTWURL']) && $pval['apTWURL']!='') { if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDoTW']))         $options[$ii]['doTW'] = $pval['apDoTW']; else $options[$ii]['doTW'] = 0;
@@ -118,7 +119,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
         if (isset($pval['apTWConsSec']))    $options[$ii]['twConsSec'] = trim($pval['apTWConsSec']);                                
         if (isset($pval['apTWAccToken']))   $options[$ii]['twAccToken'] = trim($pval['apTWAccToken']);                
         
-        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']);
+        if (isset($pval['catSel'])) $options[$ii]['catSel'] = trim($pval['catSel']); else $options[$ii]['catSel'] = 0;
         if (isset($options[$ii]['catSel']) && $options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
         
         if (isset($pval['riComments']))      $options[$ii]['riComments'] = $pval['riComments']; else $options[$ii]['riComments'] = 0;
@@ -142,7 +143,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
          $doTW = $ntOpt['doTW'] && (is_array($pMeta) || $ntOpt['catSel']!='1'); $imgToUse = $ntOpt['imgToUse']; 
          $isAvailTW =  $ntOpt['twURL']!='' && $ntOpt['twConsKey']!='' && $ntOpt['twConsSec']!='' && $ntOpt['twAccToken']!=''; $twMsgFormat = htmlentities($ntOpt['twMsgFormat'], ENT_COMPAT, "UTF-8");   $isAttchImg = $ntOpt['attchImg'];    
       ?>  
-      <tr><th style="text-align:left;" colspan="2"><?php if ( $ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='' )  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_TW<?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <tr><th style="text-align:left;" colspan="2">
+      <?php if ($ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='')  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>
+      <?php if (!empty($ntOpt['tagsSelX'])) { ?>  <input type="hidden" class="nxs_TG" id="nxs_TG_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['tagsSelX']; ?>" /> <?php } ?>
       <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" id="doTW<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][doTW]" <?php if ((int)$doTW == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="tw[<?php echo $ii; ?>][doTW]" value="<?php echo $doTW;?>"> <?php } ?> <?php } ?>
       <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - <?php _e('autopost to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)
@@ -159,17 +162,17 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 </td></tr>
                 
                 <?php if (!$isAvailTW) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your Twitter Account to AutoPost to Twitter</b>
-                <?php }else {  if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { nxs_doSMAS5($nt, $ii, $ntOpt); } ?>
+                <?php }else {  if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { $ntOpt['postTime'] = get_post_time('U', false, $post_id); nxs_doSMAS5($nt, $ii, $ntOpt); } ?>
                 
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;">
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="tw[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>tw" type="checkbox" name="tw[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> /> 
                 </th>
                 <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>
                 </td></tr> <?php } ?>
                 
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top:6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Message Format:', 'nxs_snap') ?></th>
                 <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
                 
 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
@@ -262,9 +265,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
       if(trim($imgURL)=='') $options['attchImg'] = 0; else {  
         if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
           if (is_wp_error($img)) $options['attchImg'] = 0; else if ($img['headers']['content-length']<200) { $options['attchImg'] = 0; }  else $img = $img['body']; } else $options['attchImg'] = 0; 
-        } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }   
+        } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }         
+        if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($img), $extInfo);
       }
-      if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($img), $extInfo);
     }  
     if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140; 
     

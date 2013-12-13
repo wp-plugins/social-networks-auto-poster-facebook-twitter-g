@@ -750,6 +750,7 @@ class NXS_XMLRPC_Client
                                     "Content-length: {$length}"));
 
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         // Call cURL to do it's stuff and return us the content
         $contents = curl_exec($curl);
@@ -1313,7 +1314,7 @@ class NXS_XMLRPC_ClientSSL extends NXS_XMLRPC_Client
                 curl_setopt($curl, CURLOPT_CAINFO, $this->_caFile);
             }
         }
-
+        global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         // Call cURL to do it's stuff and return us the content
         $contents = curl_exec($curl);
         curl_close($curl);
