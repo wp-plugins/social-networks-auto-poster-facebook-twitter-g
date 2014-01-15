@@ -27,8 +27,8 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       //## Get URL info.      
       if ($fbPostType!='I' && $fbPostType!='T' && isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') { $url =  $message['url']; $params = array(); 
         $flds = array('id'=>$url, 'scrape'=>'true');      $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds)); 
-        if (is_wp_error($response)) $badOut['Error'] = print_r($response, true)." - ERROR"; else { $response = json_decode($response['body'], true);    //   prr($response);     die();
-            if (trim($response['description']!='')) $message['urlDescr'] = $response['description'];  if (trim($response['title']!='')) $message['urlTitle'] =  $response['title'];
+        if (is_wp_error($response)) $badOut['Error'] = print_r($response, true)." - ERROR"; else { $response = json_decode($response['body'], true);     //  prr($response);     die();
+            if (!empty($response['description'])) $message['urlDescr'] = $response['description'];  if (!empty($response['title'])) $message['urlTitle'] =  $response['title'];
             if (!empty($response['site_name'])) $message['siteName'] = $response['site_name']; elseif ($message['siteName']=='') $message['siteName'] = $message['title'];
             if (!empty($response['image'][0]['url'])) $message['imageURL'] = $response['image'][0]['url'];
         }
@@ -53,8 +53,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
           if (isset($albums) && isset($albums["data"]) && is_array($albums["data"])) foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
           if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
         }        
-      }
-      // prr($message); prr($mssg); prr($options);  // die();
+      }      
       try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { $badOut['Error'] = ' [ERROR] '.$e->getMessage()."<br/>\n";
         if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { 
           if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) $badOut['Error'] .= ' [ERROR] Unrecognized Facebook Group ID. Please use numeric ID.'; 

@@ -101,7 +101,9 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';  if ($imgURL!='') return $imgURL;
   //## Featured Image
-  if ($imgURL=='') { if ((int)$postID>0 && function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; } } 
+  if ($imgURL=='') { if ((int)$postID>0 && function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; 
+    if ((trim($imgURL)!='')  && substr($imgURL, 0, 4)!='http') $imgURL = site_url($imgURL);
+  }} 
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   //## plugin/categories-images
   if ((int)$postID>0 && function_exists('z_taxonomy_image_url')) {  $post_categories = wp_get_post_categories( $postID );
@@ -386,6 +388,7 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 .subDiv{margin-left: 15px;}
 .nxs_hili {color:#008000;}
 .clNewNTSets{width: 800px;}
+.nxclear {clear: both;}
 
 .nxs_icon16 { font-size: 14px; line-height: 18px;
     background-position: 3px 50% !important;
@@ -783,8 +786,8 @@ function nxs_showCatTagsCTFilters($nt, $ii, $options){ global $nxs_snapAvNts, $n
   ?> <div class="nxs_tls_cpt"><?php _e('Filter Autoposting by', 'nxs_snap'); ?></div>
     <div class="nxs_tls_bd">
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
-       <input value="0" id="catSelA<?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> All                                  
-       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;">Selected<?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+       <input value="0" id="catSelA<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> <?php _e('All', 'nxs_snap'); ?>
+       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;"><?php _e('Selected', 'nxs_snap'); ?><?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
     <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
     <br/>
@@ -907,7 +910,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                 $rpstEvrySec = $ntOpts['rpstDays']*86400+$ntOpts['rpstHrs']*3600+$ntOpts['rpstMins']*60; $rndSec = $ntOpts['rpstRndMins']*60;
                 $nxTime = (isset($ntOpts['rpstNxTime']) && (int)$ntOpts['rpstNxTime']>0)?$ntOpts['rpstNxTime']:$currTime+$rpstEvrySec;
                 
-                $times =  "Next Time Requested: ".date_i18n('Y-m-d H:i:s', $nxTime)." | Current Time:".date_i18n('Y-m-d H:i:s', $currTime)." | ";
+                $times =  "Requested Time: ".date_i18n('Y-m-d H:i:s', $nxTime)." | Current Time:".date_i18n('Y-m-d H:i:s', $currTime)." | ";
                 
                 if ($nxTime < $currTime) { $hasChanged = true; // Do Post                
                    $nxs_rpst_type = $ntOpts['rpstType'];
@@ -940,21 +943,20 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); // $extInfo = print_r($query, true);                   
                    
                    $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1985-01-01':'2050-12-12');
-                   $extInfo = " | Reposted (<b>".$ggg."</b>) POST ID:".$rpstLastPostID. " | Prev Post ID:".$nxs_rpst_lastID ." | ".($options['extDebug']=='1'?"|Query: ".print_r($query->request, true):'');
+                   $extInfo = " | Reposting (<b>".$ggg."</b>) POST ID:".$rpstLastPostID. " | Total posts included in reposting: ".$query->found_posts." | Prev Post ID:".$nxs_rpst_lastID ." | ".($options['extDebug']=='1'?"|Query: ".print_r($query->request, true):'');
                    
                    //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
                    $ntOpts['rpstLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec*2 + $rndTime;  
                    if (($ntOpts['rpstType']=='1') && (int)$rpstLastPostID<1) {  $ntOpts['rpstOn']='0'; 
-                     nxs_addToLogN('S','RE-Posted - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
+                     nxs_addToLogN('S','RE-Posting - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
                    } else { $ntOpts['rpstLastPostID'] = $rpstLastPostID;                                      
                      //## Actual Post                     
                      $clName = 'nxs_snapClass'.strtoupper($avNt['lcode']); $pFuncName = 'nxs_doPublishTo'.strtoupper($avNt['lcode']);                     
                      $po =  get_post_meta($rpstLastPostID, 'snap'.strtoupper($avNt['lcode']), true); $po =  maybe_unserialize($po); 
-                     $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOpts = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
-                     if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOpts, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
-                     $result = $pFuncName($rpstLastPostID, $ntOpts); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);     
-                     
-                     nxs_addToLogN('S', 'RE-Posted', $logNT, 'OK  | '.$times.' | Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
+                     $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOptsPost = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
+                     if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOptsPost, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
+                     $result = $pFuncName($rpstLastPostID, $ntOptsPost); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);                          
+                     nxs_addToLogN('S', 'RE-Posted', $logNT, 'OK  | '.$times.' | Previous Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
                    }
                 }
                 if (!isset($ntOpts['rpstLastShTime']) || (int)$ntOpts['rpstLastShTime']==0 ) {  $hasChanged = true; $ntOpts['rpstLastShTime'] = $currTime; $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec + rand(0-$rndSec, $rndSec); }

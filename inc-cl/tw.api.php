@@ -23,7 +23,7 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       if (empty($imgURL) && $img=='') $options['attchImg'] = false;   
       //## Make Post
       //$msg = $message['message']; $imgURL = trim($message['imageURL']); $img = trim($message['img']); $nxs_urlLen = $message['urlLength'];           
-      if ($options['attchImg']!=false && $img=='' && $imgURL!='' ) {
+      if ($options['attchImg']!=false && $img=='' && $imgURL!='' ) { $imgURL = str_replace(' ', '%20', $imgURL);
         if( ini_get('allow_url_fopen') ) { if (getimagesize($imgURL)!==false) { $img = nxs_remote_get($imgURL); if(is_nxs_error($img)) $options['attchImg'] = false; else $img = $img['body']; } else $options['attchImg'] = false; } 
           else { $img = nxs_remote_get($imgURL); if(is_nxs_error($img)) $options['attchImg'] = false; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = false; }   
       }  
@@ -31,7 +31,7 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       
       require_once ('apis/tmhOAuth.php'); if ($nxs_urlLen>0) { $msg = nsTrnc($msg, $twLim-22+$nxs_urlLen); } else $msg = nsTrnc($msg, $twLim); if (substr($msg, 0, 1)=='@') $msg = ' '.$msg;
       $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));      
-      if ($options['attchImg']!=false && $img!='') $code = $tmhOAuth -> request('POST', 'http://api.twitter.com/1.1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
+      if ($options['attchImg']!=false && $img!='') $code = $tmhOAuth -> request('POST', 'https://api.twitter.com/1.1/statuses/update_with_media.json', array( 'media[]' => $img, 'status' => $msg), true, true);    
         else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg)); 
       if ( $code=='403' && stripos($tmhOAuth->response['response'], 'User is over daily photo limit')!==false && $options['attchImg']!=false && $img!='') { 
          $badOut['Error'] .= "User is over daily photo limit. Will post without image\r\n"; $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg));

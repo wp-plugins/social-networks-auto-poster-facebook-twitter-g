@@ -601,7 +601,7 @@ class NXS_XMLRPC_Client
     // Storage place for an error message
     var $error = false;
 
-    function NXS_XMLRPC_Client($server, $path = false, $port = 80, $timeout = 15)
+    function NXS_XMLRPC_Client($server, $path = false, $port = 80, $timeout = 25)
     {
         if (!$path) {
             // Assume we have been given a URL instead
@@ -734,12 +734,15 @@ class NXS_XMLRPC_Client
         $curl=curl_init('http://' . $this->server . ':' . $this->port . $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
+        curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.44 Safari/537.36"); 
+
         //Since 23Jun2004 (0.1.2) - Made timeout a class field
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
 
         if ($this->debug) {
             curl_setopt($curl, CURLOPT_VERBOSE, 1);
         }
+
 
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLOPT_POST, 1);
@@ -753,13 +756,13 @@ class NXS_XMLRPC_Client
         global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         // Call cURL to do it's stuff and return us the content
-        $contents = curl_exec($curl);
+        $contents = curl_exec($curl); $err = curl_errno($curl); $errmsg = curl_error($curl); 
         curl_close($curl);
 
         // Check for 200 Code in $contents
         if (!strstr($contents, '200 OK')) {
             //There was no "200 OK" returned - we failed
-            $this->error = new NXS_XMLRPC_Error(-32300, 'transport error - HTTP status code was not 200');
+            $this->error = new NXS_XMLRPC_Error(-32300, 'transport error - HTTP status code was not 200 - '.$err.' - '.$errmsg.' | '.print_r($contents, true));
             return false;
         }
 
@@ -1316,13 +1319,13 @@ class NXS_XMLRPC_ClientSSL extends NXS_XMLRPC_Client
         }
         global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         // Call cURL to do it's stuff and return us the content
-        $contents = curl_exec($curl);
+        $contents = curl_exec($curl); $err = curl_errno($curl); $errmsg = curl_error($curl);
         curl_close($curl);
 
         // Check for 200 Code in $contents
         if (!strstr($contents, '200 OK')) {
             //There was no "200 OK" returned - we failed
-            $this->error = new NXS_XMLRPC_Error(-32300, 'transport error - HTTP status code was not 200');
+            $this->error = new NXS_XMLRPC_Error(-32300, 'transport error - HTTP status code was not 200! - '.$err.' - '.$errmsg.' | '.print_r($contents, true));
             return false;
         }
 

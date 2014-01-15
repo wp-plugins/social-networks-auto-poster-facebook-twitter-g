@@ -802,7 +802,7 @@ abstract class NXS_BaseFacebook
   protected function _restserver($params) {
     // generic application level parameters
     $params['api_key'] = $this->getAppId();
-    $params['format'] = 'json-strings';
+    $params['format'] = 'json-strings'; 
 
     $result = json_decode($this->_oauthRequest(
       $this->getApiUrl($params['method']),
@@ -898,7 +898,14 @@ abstract class NXS_BaseFacebook
 
     // json_encode all params values that are not strings
     foreach ($params as $key => $value) {
-      if (!is_string($value)) {
+      
+      if (is_array($value)) {  
+          foreach ($value as $key2 => $value2) {
+            if (!is_string($value2) && !($value2 instanceof CURLFile)) {
+               $params[$value][$key2] = json_encode($value2);
+          }
+        }
+      } else if (!is_string($value)) {
         $params[$key] = json_encode($value);
       }
     }
@@ -930,7 +937,7 @@ abstract class NXS_BaseFacebook
    *
    * @return string The response text
    */
-  protected function makeRequest($url, $params, $ch=null) {
+  protected function makeRequest($url, $params, $ch=null) { //$prx = http_build_query($params, null, '&');// prr( urldecode($prx));
     if (!$ch) {
       $ch = curl_init();
     }

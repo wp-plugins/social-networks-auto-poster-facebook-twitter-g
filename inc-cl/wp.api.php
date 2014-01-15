@@ -26,10 +26,9 @@ if (!class_exists("nxs_class_SNAP_WP")) { class nxs_class_SNAP_WP {
       //## Format
       $msg = nxs_doFormatMsg($options['wpMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['wpMsgTFormat'], $message);      
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
-           
-      
-      $link = urlencode($message['url']); $ext = substr($msg, 0, 1000);
-      
+      $link = urlencode($message['url']); $ext = substr($msg, 0, 1000);      
+      //## Fix missing xmlrpc.php
+      if (substr($options['wpURL'], -1)=='/') $options['wpURL'] = substr($options['wpURL'], 0, -1); if (substr($options['wpURL'], -10)!='xmlrpc.php') $options['wpURL'] .= "/xmlrpc.php";     
       //## Post   
       require_once ('apis/xmlrpc-client.php'); $nxsToWPclient = new NXS_XMLRPC_Client($options['wpURL']); $nxsToWPclient->debug = false;
       if ($imgURL!=='' && stripos($imgURL, 'http')!==false) {      

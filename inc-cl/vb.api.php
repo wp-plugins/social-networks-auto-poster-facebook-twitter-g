@@ -25,8 +25,8 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
       } else return 'No Saved Login';
       return false;  
     }
-    function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = $this->nxs_getVBHeaders($url, true); $mids = '';//   echo "LOGGIN";
-      $response = wp_remote_get($url); if(is_wp_error($response)) return "Invalid Connection. ".print_r($response, true);
+    function nxs_doConnectToVB($u, $p, $url){ global $nxs_vbCkArray; $hdrsArr = $this->nxs_getVBHeaders($url); $mids = '';//   echo "LOGGIN";
+      $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => '')); if(is_wp_error($response)) return "Invalid Connection. ".print_r($response, true);
       $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();
       $ckArr = $response['cookies']; $mdhashLoc = stripos($contents, 'md5hash(vb_login_password');
       if ($mdhashLoc===false) return "No VB found";
@@ -36,8 +36,9 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
         $frmTxt = substr($frmTxt, stripos($frmTxt, '<input')+8);
       } $flds['vb_login_username'] = $u; $flds['vb_login_md5password'] = md5($p);  $flds['vb_login_md5password_utf'] = md5($p); $flds['cookieuser'] = '1'; $flds['do'] = 'login'; 
     
-      // $logURL = substr($contents, $mdhashLoc-250, 250); $logURL = CutFromTo($logURL, 'action="', '"');    
+      // $logURL = substr($contents, $mdhashLoc-250, 250); $logURL = CutFromTo($logURL, 'action="', '"');          
       if (stripos($contents, 'base href="')!==false) $baseURL = trim(CutFromTo($contents,'base href="', '"')); else { $uarr = explode('/',$url);  $dd = $uarr[count($uarr)-1]; $baseURL = str_replace($dd, '', $url);}
+      $hdrsArr = $this->nxs_getVBHeaders($url, true);
       $r2 = wp_remote_post( $baseURL.'login.php?do=login', array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); // prr($r2);
       if (stripos($r2['body'],'exec_refresh()')!==false) { $ckArr = nxsMergeArraysOV($ckArr, $r2['cookies']); $nxs_vbCkArray = $ckArr; return false; } else return "Bad Username/Password";
     }    
@@ -67,16 +68,19 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
         }  $flds['title'] = $subj; $flds['message'] = $msg; $flds['message_backup'] = $msg; $flds['wysiwyg'] = '1'; $flds['do'] = 'postreply';  $flds['parseurl'] = '1';  $flds['sbutton'] = 'Submit+Reply';  
         $smURL = $baseURL.'newreply.php?do=postreply'.str_replace('&amp;','&',$fid);
       } //prr($flds);
-      $r2 = wp_remote_post( $smURL, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));// prr($r2['response']);  prr(htmlentities($r2['body'])); $r2['body'] = ''; prr($r2); die();
+      $r2 = wp_remote_post( $smURL, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));
+        // prr($r2['response']);  prr(htmlentities($r2['body'])); $r2['body'] = ''; prr($r2); die();
+      if(is_wp_error($r2)) return "Invalid Connection. ".print_r($r2, true);  
       if (stripos($r2['body'], 'tag can only be ')!==false) { $lgLim =  trim(CutFromTo($r2['body'], 'tag can only be ',' characters')); $flds['taglist'] = substr($flds['taglist'], 0, $lgLim); 
         $r2 = wp_remote_post( $smURL, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr));
       }
+      if(is_wp_error($r2)) return "Invalid Connection. ".print_r($r2, true);  
       if (stripos($r2['body'], 'errorblock')!==false) return trim(strip_tags( CutFromTo($r2['body'], 'errorblock','</div>')));
       if (stripos($r2['body'], 'exec_refresh()')!==false && stripos($r2['body'], 'blockrow restore">')!==false) return trim(strip_tags( CutFromTo($r2['body'], 'blockrow restore">','</p>')));
       if (stripos($r2['body'], '<error>')!==false) return trim(strip_tags( CutFromTo($r2['body'], '<error>','</error>')));
       if ( $r2['response']['code']=='302' || $r2['response']['code']=='303') { return array("code"=>"OK", "post_id"=>$r2['headers']['location']); }
       if (stripos($r2['body'], '<newpostid>')!==false || stripos($r2['body'], 'postbit postid="')!==false ) return 'OK';
-      return "Something wrong";  
+      return "Something wrong - Error: ".print_r($r2, true);  
     }
     
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); global $nxs_vbCkArray; 
@@ -93,7 +97,7 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
       if ($loginError!==false) return "ERROR - BAD USER/PASS - ".print_r($loginError, true);      
       $ret = $this->nxs_doPostToVB($options['vbURL'], $msgT, $msg, $urlToGo, $message['tags']);      
       
-      if ( (!is_array($ret)) && $ret!='OK') $badOut['Error'] .= 'Something went wrong - NO PID '.print_r($ret, true); else return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'));       
+      if ( (!is_array($ret)) && $ret!='OK') $badOut['Error'] .= 'Something went wrong - '.print_r($ret, true); else return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'));       
       return $badOut;      
    }    
 }}
