@@ -337,7 +337,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { require_once ('apis/facebook.php');  if (empty($options['fbAppPageAuthToken'])) return;
     $opts = array('access_token'  => $options['fbAppPageAuthToken']);    
     $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  $ci = 0;    
-    $ret = $facebook->api($po['pgID']."/comments?filter=toplevel", "GET", $opts);
+    $ret = $facebook->api($po['pgID']."/comments?filter=toplevel&limit=250", "GET", $opts);
     $impCmnts = get_post_meta($postID, 'snapImportedFBComments', true); if (!is_array($impCmnts)) $impCmnts = array(); //prr($impCmnts);   
     if (is_array($ret) && is_array($ret['data'])) foreach ($ret['data'] as $comment){ $cid = $comment['id']; if (trim($cid)=='') continue;
       if (!in_array('fbxcw'.$cid, $impCmnts)) {  $authData = $facebook->api($comment['from']['id'], "GET", $opts);  

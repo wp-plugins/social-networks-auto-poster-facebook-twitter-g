@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
 Tested up to: 3.8.0
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -150,6 +150,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.1.2 [01/15/2013] =
+
+* [Critical] Bug Fix - [ERROR] (#100) actions should be a JSON-encoded dictionary with 'name' and 'link' keys
+* Improvement/Bug Fix - Plugin will import all comments from Facebook posts, not just the first 100.  
+* Bug Fix - Plugin were re-posting the same "Sticky" post in some configurations.  
 
 = 3.1.1 [01/14/2013] =
 

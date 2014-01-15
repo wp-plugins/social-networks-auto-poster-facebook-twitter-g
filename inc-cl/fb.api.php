@@ -38,8 +38,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; $page_id = $options['pgID'];        
       $msg = strip_tags($msg); $msg = str_ireplace('&lt;(")','<(")', $msg); //## FB Smiles FIX 3
       if (substr($msg, 0, 1)=='@') $msg = ' '.$msg; // ERROR] couldn't open file fix
-      $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg); //prr($message);
-      
+      $mssg = array('access_token'  => $options['fbAppPageAuthToken'], 'message' => $msg);       
       if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';
       if ($fbPostType=='A' || $fbPostType=='') {
         if (($attachType=='A' || $attachType=='S')) { $attArr = array('name' => $message['urlTitle'], 'caption' => $message['siteName'], 'link' =>$message['url'], 'description' => $message['urlDescr']); $mssg = array_merge($mssg, $attArr); ; }
@@ -53,7 +52,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
           if (isset($albums) && isset($albums["data"]) && is_array($albums["data"])) foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
           if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
         }        
-      }      
+      }
       try { $ret = $facebook->api("/$page_id/".$fbWhere, "post", $mssg);} catch (NXS_FacebookApiException $e) { $badOut['Error'] = ' [ERROR] '.$e->getMessage()."<br/>\n";
         if (stripos($e->getMessage(),'This API call requires a valid app_id')!==false) { 
           if ( !is_numeric($page_id) && stripos($options['fbURL'], '/groups/')!=false) $badOut['Error'] .= ' [ERROR] Unrecognized Facebook Group ID. Please use numeric ID.'; 

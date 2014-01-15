@@ -922,7 +922,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                    
                    //nxs_addToLogN('S', 'pTypes', $logNT, print_r($tpArray, true), $extInfo); // $tpArray = array('post', 'location');
                    
-                   if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false ); 
+                   if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'ignore_sticky_posts' => 1, 'post_status' => 'publish', 'suppress_filters' => false ); 
                  //  if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date ASC, p.ID ASC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );
 //                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date DESC, p.ID DESC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );                   
                    if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );
