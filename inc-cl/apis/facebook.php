@@ -895,7 +895,13 @@ abstract class NXS_BaseFacebook
     if (isset($params['access_token'])) {
       $params['appsecret_proof'] = $this->getAppSecretProof($params['access_token']);
     }
-
+    
+    foreach ($params as $key => $value) {
+      if (!is_string($value) && !($value instanceof CURLFile)) {
+        $params[$key] = json_encode($value);
+      }
+    }
+/*
     // json_encode all params values that are not strings
     foreach ($params as $key => $value) {
       
@@ -909,7 +915,7 @@ abstract class NXS_BaseFacebook
         $params[$key] = json_encode($value);
       }
     }
-
+*/
     return $this->makeRequest($url, $params);
   }
 
