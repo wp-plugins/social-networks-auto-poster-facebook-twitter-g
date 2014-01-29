@@ -130,7 +130,7 @@ if (!class_exists("nxs_snapClassSC")) { class nxs_snapClassSC { var $ntInfo = ar
             <?php } ?>
             <br/><br/>            
             
-            <?php if ($isNew) { ?> <input type="hidden" name="ap[<?php echo $ii; ?>][apDoAP]" value="1" id="apDoNewAP<?php echo $ii; ?>" /> <?php } ?>
+            <?php if ($isNew) { ?> <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][apDo<?php echo $ntU; ?>]" value="1" id="apDoNew<?php echo $ntU; ?><?php echo $ii; ?>" /> <?php } ?>
             <?php if (isset($options['appAppUserID']) && $options['appAppUserID']>0) { ?>
             
             <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('<?php echo $ntU; ?>', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>              <?php } 
