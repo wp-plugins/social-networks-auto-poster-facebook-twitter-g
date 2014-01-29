@@ -109,7 +109,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
             $acctsInfoPost = $_POST['nxsMainFromElementAccts']; unset($_POST['nxsMainFromElementAccts']);  $acctsInfo = array();  
-            $acctsInfo = NXS_parseQueryStr($acctsInfoPost); 
+            $acctsInfo = NXS_parseQueryStr($acctsInfoPost); // prr($acctsInfo);
             
             foreach ($nxs_snapAvNts as $avNt) if (isset($acctsInfo[$avNt['lcode']])) { $clName = 'nxs_snapClass'.$avNt['code']; if (!isset($options[$avNt['lcode']])) $options[$avNt['lcode']] = array(); 
               $ntClInst = new $clName(); $ntOpt = $ntClInst->setNTSettings($acctsInfo[$avNt['lcode']], $options[$avNt['lcode']]); $options[$avNt['lcode']] = $ntOpt;
@@ -160,8 +160,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['riActive']))   $options['riActive'] = 1;  else $options['riActive'] = 0;
             if (isset($_POST['riHowManyPostsToTrack'])) $options['riHowManyPostsToTrack'] = $_POST['riHowManyPostsToTrack'];             
             
-            if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;                            
-            if (isset($_POST['nxsCPTSeld']))      $options['nxsCPTSeld'] = serialize($_POST['nxsCPTSeld']);                      
+            if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;    
+            if (!empty($_POST['nxsCPTSeld']) && is_array($_POST['nxsCPTSeld'])) $cpTypes = $_POST['nxsCPTSeld']; else $cpTypes = array();  $options['nxsCPTSeld'] = serialize($cpTypes); 
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; if (!is_array($pk)) { $pk = urldecode($pk); parse_str($pk); } 
               $cIds = get_all_category_ids(); if(is_array($pk) && $cIds) $options['exclCats'] = serialize(array_diff($cIds, $pk)); else $options['exclCats'] = '';
             }  //prr($options['exclCats']);
@@ -224,6 +224,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     <?php if ((function_exists("nxs_showPRXTab")) && (int)$options['showPrxTab'] == 1) { ?> <li><a href="#nsx_tab5">Proxies</a></li> <?php } ?>
     <li><a href="#nsx_tab3">Log/History</a></li>
     <li><a href="#nsx_tab4">Help/Support</a></li>
+    <li><a class="ab-item" href="#nsx_tab5"><span style="font-weight:bold; font-size: 16px; color:#2ecc2e;">&rArr;</span> New Post to Social Networks</a></li>    
+    
 </ul>
 
 <div class="nsx_tab_container">
@@ -245,7 +247,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            
            </div>
            
-           <div class="popShAtt" id="popOnlyCat"><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></div>
+           <div class="popShAtt" id="popOnlyCat"><?php _e('Filters are "ON". Only selected categories/tags will be autoposted to this account. Click "Show Settings->Advanced" to change', 'nxs_snap'); ?></div>
            <div class="popShAtt" id="popReActive"><?php _e('Reposter is activated for this account', 'nxs_snap'); ?></div>
            
            <div id="showCatSel" style="display: none;background-color: #fff; width: 300px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span><?php _e('Select Categories', 'nxs_snap'); ?>: 
@@ -290,7 +292,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     <form method="post" id="nsStFormMisc" action="<?php echo $nxs_snapThisPageUrl?>">    <input type="hidden" name="nxsMainFromElementAccts" id="nxsMainFromElementAccts" value="" />
        <input type="hidden" name="nxsMainFromSupportFld" id="nxsMainFromSupportFld" value="1" />
      <!-- ##################### OTHER #####################-->            
-            <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>              
+
      <!-- How to make auto-posts? --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('How to make auto-posts?', 'nxs_snap') ?> &lt;-- (<a id="showShAttIS" onmouseover="showPopShAtt('IS', event);" onmouseout="hidePopShAtt('IS');"  onclick="return false;" class="underdash" href="#"><?php _e('What\'s the difference?', 'nxs_snap') ?></a>)</h3></div>
          <div class="popShAtt" id="popShAttIS">
@@ -731,6 +733,8 @@ Please see #4 and #5 for Twitter:<br/>
 4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to <b>"Read and Write"</b>. Click "Update this Twitter application settings".<br/>
 5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have <b>"Read and Write"</b> access level.<br/>
   </div> </div> 
+  
+  <div id="nsx_tab5" class="nsx_tab_content"><?php nxs_showNewPostForm($options); ?>  </div>
 </div>     
             <div class="popShAtt" id="popShAttRPST1"><div class="nxs_tls_sbInfo2"><?php _e('Set random delays around your interval time, to make your posts appear more human', 'nxs_snap'); ?></div></div>
            <form method="post" enctype="multipart/form-data"  id="nsStFormUpl" action="<?php echo $nxs_snapThisPageUrl?>">
@@ -847,7 +851,7 @@ Please see #4 and #5 for Twitter:<br/>
           <div class="inside"><div id="postftfp">           
            
           
-          <input value="1" type="hidden" name="snapEdIT" />   <?php wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); ?>
+          <input value="1" type="hidden" name="snapEdIT" />   
           <div class="popShAtt" style="width: 200px;" id="popShAttSV"><?php _e('If you made any changes to the format, please "Update" the post before reposting', 'nxs_snap'); ?></div>
           <?php if($post->post_status != "publish" ) { ?>
           <div style="float: right;">   <input type="hidden" id="nxsLockIt" value="0" />       
@@ -890,8 +894,8 @@ Please see #4 and #5 for Twitter:<br/>
           
           if ($options['useForPages']=='1') add_meta_box( 'NS_SNAP_AddPostMetaTags',  __( 'NextScripts: Social Networks Auto Poster - Post Options', 'nxs_snap' ), array($this, 'NS_SNAP_AddPostMetaTags'), 'page' );
           
-          $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
-          if ((isset($options['nxsCPTSeld'])) && $options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types); // prr($nxsCPTSeld); prr($post_types);
+          $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator);           
+          if ((isset($options['nxsCPTSeld'])) && $options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);  // prr($nxsCPTSeld); prr($post_types);
           foreach ($post_types as $cptID=>$cptName) if (in_array($cptID, $nxsCPTSeld)){ 
               add_meta_box( 'NS_SNAP_AddPostMetaTags',  __('NextScripts: Social Networks Auto Poster - Post Options', 'nxs_snap'), array($this, 'NS_SNAP_AddPostMetaTags'), $cptID );
           }    

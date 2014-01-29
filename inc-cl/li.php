@@ -48,9 +48,9 @@ function nxs_ntp_time($host='time.nist.gov') { $sock = socket_create(AF_INET, SO
   $data = unpack('N12', $recv); $timestamp = sprintf('%u', $data[9]); $timestamp -= 2208988800;  return $timestamp;
 }
 
-if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
+if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI { var $ntInfo = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn', 'defNName'=>'ulName', 'tstReq' => true);
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl; $ntInfo = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn', 'defNName'=>'ulName', 'tstReq' => true);
+  function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl;  $ntInfo = $this->ntInfo; 
     
     if ( isset($_GET['auth']) && $_GET['auth']=='li'){ require_once('apis/liOAuth.php'); $options = $ntOpts[$_GET['acc']];
               
@@ -92,7 +92,10 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
           if (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='') $pbo[$ntInfo['lcode'].'OK'] = (isset($pbo['liAccessToken']) && $pbo['liAccessTokenSecret']!='')?'1':'';
         ?>
           <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
-            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" onchange="<?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?>nxs_doShowWarning(jQuery(this), '<?php echo (substr_count($pbo['catSelEd'], ",")+1); ?>', '<?php echo $ntInfo['code'];?>', '<?php echo $indx;?>');<?php } ?>" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> /> 
+            <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
+            <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
+            <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />
+           <?php } ?>
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
             <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
@@ -238,7 +241,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
       
   }
   //#### Set Unit Settings from POST
-  function setNTSettings($post, $options){ //prr($post);
+  function setNTSettings($post, $options){  $code = $this->ntInfo['code'];
     foreach ($post as $ii => $pval){ // prr($ii); prr($pval);
       if ( (isset($pval['apLIAPIKey']) && $pval['apLIAPISec']!='') || (isset($pval['uPass']) && $pval['uPass']!='') ) { if (!isset($options[$ii])) $options[$ii] = array();  $options[$ii]['ii'] = $ii;        
         if (isset($pval['apDoLI']))    $options[$ii]['doLI'] = $pval['apDoLI']; else $options[$ii]['doLI'] = 0;
@@ -263,7 +266,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI {
         if (isset($pval['delayDays'])) $options[$ii]['nDays'] = trim($pval['delayDays']);
         if (isset($pval['delayHrs'])) $options[$ii]['nHrs'] = trim($pval['delayHrs']); if (isset($pval['delayMin'])) $options[$ii]['nMin'] = trim($pval['delayMin']); 
         if (isset($pval['qTLng'])) $options[$ii]['qTLng'] = trim($pval['qTLng']); 
-      }  elseif ((isset($pval['catSel'])) && $pval['catSel']=='X' && (isset($pval['apDoFB'])) && $pval['apDoFB']=='1') $options[$ii]['catSel'] = trim($pval['catSel']);
+      }  elseif ( count($pval)==1 ) if (isset($pval['apDo'.$code])) $options[$ii]['do'.$code] = $pval['apDo'.$code]; else $options[$ii]['do'.$code] = 0; 
     } return $options;
   } 
   //#### Show Post->Edit Meta Box Settings

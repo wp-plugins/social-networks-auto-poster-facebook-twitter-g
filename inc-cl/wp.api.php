@@ -23,8 +23,10 @@ if (!class_exists("nxs_class_SNAP_WP")) { class nxs_class_SNAP_WP {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['wpUName']) || trim($options['wpPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'];      
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Format
-      $msg = nxs_doFormatMsg($options['wpMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['wpMsgTFormat'], $message);      
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['wpMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['wpMsgTFormat'], $message);      
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
       $link = urlencode($message['url']); $ext = substr($msg, 0, 1000);      
       //## Fix missing xmlrpc.php

@@ -101,8 +101,8 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = '';  if ($imgURL!='') return $imgURL;
   //## Featured Image
-  if ($imgURL=='') { if ((int)$postID>0 && function_exists("get_post_thumbnail_id") ){ $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; 
-    if ((trim($imgURL)!='')  && substr($imgURL, 0, 4)!='http') $imgURL = site_url($imgURL);
+  if ($imgURL=='') { if ((int)$postID>0 && function_exists("get_post_thumbnail_id") && function_exists('has_post_thumbnail') && has_post_thumbnail($postID) ){ 
+    $imgURL = wp_get_attachment_image_src(get_post_thumbnail_id($postID), $size); $imgURL = $imgURL[0]; if ((trim($imgURL)!='')  && substr($imgURL, 0, 4)!='http') $imgURL = site_url($imgURL);
   }} 
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;  
   //## plugin/categories-images
@@ -355,9 +355,6 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  glob
     background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');    
 }.NXSButton:active {color:#ffffff; position:relative; top:1px;}.NXSButton:focus {color:#ffffff; position:relative; top:1px;} .nsBigText{font-size: 14px; color: #585858; font-weight: bold; display: inline;}
-.nxspButton:hover { background-color: #1E1E1E;}
-.nxspButton { background-color: #2B91AF; color: #FFFFFF; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; border-radius: 6px 6px 6px 6px; box-shadow: none; font: bold 131% sans-serif; padding: 0 6px 2px; position: absolute; right: -7px; top: -7px;}
-#nxs_spPopup, #showLicForm{ min-height: 250px; background-color: #FFFFFF; border-radius: 5px 5px 5px 5px;  box-shadow: 0 0 3px 2px #999999; color: #111111; display: none;  min-width: 850px; padding: 25px;}
 #nxs_ntType {width: 150px;}
 #nsx_addNT {width: 600px;}
 .nxsInfoMsg{  margin: 1px auto; padding: 3px 10px 3px 5px; border: 1px solid #ffea90;  background-color: #fdfae4; display: inline; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
@@ -384,7 +381,7 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
 .nxs_tls_lbl{width:100%;padding-top:7px;padding-bottom:1px;}
 .nxsInstrSpan{ font-size: 11px; }
 
-.nsx_iconedTitle {font-size: 17px; font-weight: bold; margin-bottom: 15px; padding-left: 20px; background-repeat: no-repeat; }
+
 .subDiv{margin-left: 15px;}
 .nxs_hili {color:#008000;}
 .clNewNTSets{width: 800px;}
@@ -766,6 +763,8 @@ function nxs_adjRpst($optionsii, $pval){  if (empty($optionsii['rpstDays'])) $op
     
     if (isset($pval['nxsCPTSeld']))      $optionsii['nxsCPTSeld'] = serialize($pval['nxsCPTSeld']);              
     
+    if (isset($pval['fltrsOn'])) $optionsii['fltrsOn'] = trim($pval['fltrsOn']); else $optionsii['fltrsOn'] = 0;     
+    
     if (isset($pval['tagsSel'])) {  $optionsii['tagsSel'] = trim($pval['tagsSel']); $tagsSelX = array(); $tggsSel = explode(',', $optionsii['tagsSel']); 
       foreach ($tggsSel as $tggg){ $tggg = trim($tggg); $tagsSelX[] = $tggg;  
         if (stripos($tggg, '|')!==false) { $tgArr =  explode('|', $tggg); $taxonomy = $tgArr[0]; $tgggT = $tgArr[1]; } else { $taxonomy = 'post_tag'; $tgggT = $tggg; } 
@@ -783,7 +782,9 @@ function nxs_adjRpst($optionsii, $pval){  if (empty($optionsii['rpstDays'])) $op
 
 function nxs_showCatTagsCTFilters($nt, $ii, $options){ global $nxs_snapAvNts, $nxs_plurl; 
   if (!isset($options['tagsSel'])) $options['tagsSel'] = ''; if (!isset($options['custTaxSel'])) $options['custTaxSel'] = '';
-  ?> <div class="nxs_tls_cpt"><?php _e('Filter Autoposting by', 'nxs_snap'); ?></div>
+  ?> <div class="nxs_tls_cpt">
+  
+  <?php _e('Filter Autoposting by', 'nxs_snap'); ?></div>
     <div class="nxs_tls_bd">
     <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
        <input value="0" id="catSelA<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> <?php _e('All', 'nxs_snap'); ?>
@@ -823,7 +824,8 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
      <input value="1"  id="riOC<?php echo $ii; ?>" <?php if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOnlyPUP]"/> 
        <b><?php _e('Repost ONLY previously unautoposted posts', 'nxs_snap'); ?></b>
      <br/>
-     <?php $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
+     <?php $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); 
+     if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
        if (!empty($post_types) && is_array($post_types)) { ?>
      <b><?php _e('Repost: (Choose Posts, Pages, Custom Post Types)', 'nxs_snap'); ?></b>
      <?php $post_typesIncl = array('post'=>'post', 'page'=>'page'); $post_types = array_merge($post_typesIncl, $post_types);    if ($options['nxsCPTSeld']=='a:1:{i:0;s:1:"0";}') $options['nxsCPTSeld'] = '';
@@ -956,7 +958,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                      $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOptsPost = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
                      if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOptsPost, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
                      $result = $pFuncName($rpstLastPostID, $ntOptsPost); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);                          
-                     nxs_addToLogN('S', 'RE-Posted', $logNT, 'OK  | '.$times.' | Previous Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
+                     nxs_addToLogN('S', 'RE-Posting', $logNT, 'OK  | '.$times.' | Previous Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
                    }
                 }
                 if (!isset($ntOpts['rpstLastShTime']) || (int)$ntOpts['rpstLastShTime']==0 ) {  $hasChanged = true; $ntOpts['rpstLastShTime'] = $currTime; $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec + rand(0-$rndSec, $rndSec); }
@@ -988,7 +990,7 @@ if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (stripos($_SERV
    delete_post_meta(); add_post_meta($toPush['args'][0], 'snap_mp_'.$toPush['func'], (time()+300));
    */
    delete_option("NSX_LastTChecked"); add_option("NSX_LastTChecked", time());
-   $cron_url = site_url('wp-cron.php?doing_wp_cron=0'); ?><script type="text/javascript" > jQuery(document).ready(function($) { jQuery.get('<?php echo $cron_url; ?>'); }); </script><?php die();
+   $cron_url = site_url('wp-cron.php?doing_wp_cron=0'); ?><script type="text/javascript" > jQuery(document).ready(function($) { jQuery.get('<?php echo $cron_url; ?>'); }); </script><?php // die();
    return true;         
 }}
 

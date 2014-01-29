@@ -14,9 +14,10 @@ if (!class_exists("nxs_class_SNAP_PK")) { class nxs_class_SNAP_PK {
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
-      if (!isset($options['pkConsKey']) || trim($options['pkConsSec'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
+      if (!isset($options['pkConsKey']) || trim($options['pkConsSec'])=='' || empty($options['pkAccessTocken'])) { $badOut['Error'] = 'Not Configured'; return $badOut; }   
+      if (empty($options['imgSize'])) $options['imgSize'] = '';               
       //## Format
-      $msg = nxs_doFormatMsg($options['pkMsgFormat'], $message);       
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['pkMsgFormat'], $message);       
       //## Post    
       require_once('apis/plurkOAuth.php'); $consumer_key = $options['pkConsKey']; $consumer_secret = $options['pkConsSec'];
       $tum_oauth = new wpPlurkOAuth($consumer_key, $consumer_secret, $options['pkAccessTocken'], $options['pkAccessTockenSec']); 

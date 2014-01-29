@@ -14,10 +14,12 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); 
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
-      if (!isset($options['trConsKey']) || trim($options['trConsSec'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
+      if (!isset($options['trConsKey']) || trim($options['trConsSec'])=='' || empty($options['trAccessTocken'])) { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
+      if (!isset($options['postType']) && isset($options['trPostType'])) $options['postType'] = $options['trPostType']; //## Compatibility with v <3.2
+      if (empty($options['imgSize'])) $options['imgSize'] = ''; if (empty($message['postDate'])) $message['postDate'] = '';
       //## Format
-      $msg = nxs_doFormatMsg($options['trMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['trMsgTFormat'], $message);
-      
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['trMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['trMsgTFormat'], $message);
       
       //## Post    
       require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
@@ -25,12 +27,12 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
     
       $postArr = array('tags'=>$message['tags'], 'date'=>$message['postDate']);
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
-      
-      if ($options['trPostType']=='I') { $postArr['type'] = 'photo'; $postArr['caption'] = $msg;  $postArr['source'] = $imgURL;       
+      // postType
+      if ($options['postType']=='I') { $postArr['type'] = 'photo'; $postArr['caption'] = $msg;  $postArr['source'] = $imgURL;       
         if (!isset($options['cImgURL']) || $options['cImgURL']=='' || $options['cImgURL']=='R' ) $postArr['link'] = $message['url']; 
           elseif ($options['cImgURL']=='S' ) { $postArr['link'] = $message['url']; $postArr['link'] = nxs_mkShortURL($postArr['link']);} 
-      } elseif($options['trPostType']=='U') { $postArr['type'] = 'audio'; $postArr['caption'] = $msg;  $postArr['external_url'] = $aUrl;
-      } elseif($options['trPostType']=='V') { $postArr['type'] = 'video'; $postArr['caption'] = $msg;   
+      } elseif($options['postType']=='U') { $postArr['type'] = 'audio'; $postArr['caption'] = $msg;  $postArr['external_url'] = $aUrl;
+      } elseif($options['postType']=='V') { $postArr['type'] = 'video'; $postArr['caption'] = $msg;   
         $embedTxt = '<iframe width="560" height="315" src="http://www.youtube.com/embed/'.$message['videoURL'].'" frameborder="0" allowfullscreen></iframe>';
         $postArr['embed'] = $embedTxt;           
       } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = $message['url']; $postArr['body'] = $msg; } 

@@ -25,8 +25,9 @@ if (!class_exists("nxs_class_SNAP_FF")) { class nxs_class_SNAP_FF {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['ffUName']) || trim($options['ffPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }      
       $dusername = $options['ffUName']; $pass = (substr($options['ffPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ffPass'], 5)):$options['ffPass']);
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Format
-      $msg = nxs_doFormatMsg($options['ffMsgFormat'], $message); 
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ffMsgFormat'], $message); 
       if ($options['attchImg']=='1') { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; } else $imgURL = '';      
       
       $postArr = array('title'=>$msg, 'image0_link'=>'', 'room'=>($options['grpID']!=''?strtolower($options['grpID']):''), 'image0_url'=>($imgURL!=''?$imgURL:''));             

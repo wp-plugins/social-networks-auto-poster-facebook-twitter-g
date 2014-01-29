@@ -16,8 +16,9 @@ if (!class_exists("nxs_class_SNAP_PN")) { class nxs_class_SNAP_PN {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['pnUName']) || trim($options['pnPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'];
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Format
-      $msg = nxs_doFormatMsg($options['pnMsgFormat'], $message); $boardID = $options['pnBoard'];  // prr($boardID); prr($_POST); die();    
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['pnMsgFormat'], $message); $boardID = $options['pnBoard'];  // prr($boardID); prr($_POST); die();    
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; if ($imgURL=='') $badOut['Error'] .= 'NO Image.';
       $urlToGo = (!empty($message['url']))?$message['url']:'';
       //## Check for existing session      

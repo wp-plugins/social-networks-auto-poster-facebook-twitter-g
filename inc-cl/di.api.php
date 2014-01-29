@@ -25,7 +25,8 @@ if (!class_exists("nxs_class_SNAP_DI")) { class nxs_class_SNAP_DI {
       if (!isset($options['diUName']) || trim($options['diPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }      
       $email = $options['diUName'];  $pass = substr($options['diPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['diPass'], 5)):$options['diPass3'];  
       //## Format
-      $msg = nxs_doFormatMsg($options['diMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['diMsgTFormat'], $message);       
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['diMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['diMsgTFormat'], $message);       
       $flds = array(); $flds['key']=$options['diAPIKey']; $flds['url']=$message['url']; $flds['title']=nsTrnc($msgT, 250); $flds['desc']=nsTrnc($msg, 250); $flds['tags']=$message['tags']; $flds['shared']='yes';   //   prr($flds); die();
       $hdrsArr = $this->nxs_getDIHeaders('https://secure.diigo.com/api/v2/bookmarks', $email, $pass, true);
       $cnt = wp_remote_post( 'https://secure.diigo.com/api/v2/bookmarks', array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds));        

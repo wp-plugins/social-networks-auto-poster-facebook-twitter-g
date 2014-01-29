@@ -46,7 +46,8 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['bgUName']) || trim($options['bgPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }      
       //## Format
-      $msg = nxs_doFormatMsg($options['bgMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['bgMsgTFormat'], $message); 
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['bgMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['bgMsgTFormat'], $message); 
       if ($options['bgInclTags']=='1') $tags = nsTrnc($message['tags'], 195, ',', ''); else $tags = '';
       //## Check/Fix HTML   
       if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$msg); $doc->encoding = 'UTF-8'; $msg = $doc->saveHTML(); $msg = CutFromTo($msg, '<body>', '</body>'); 

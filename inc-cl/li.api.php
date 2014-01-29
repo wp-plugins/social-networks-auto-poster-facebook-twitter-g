@@ -16,12 +16,13 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if ((!isset($options['ulName']) || trim($options['uPass'])=='') && (empty($options['liOAuthVerifier'])))  { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Format
-      $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);   
-      
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);         
       if ($options['liAttch']=='1') { 
         if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';           
-        if (trim($message['urlDescr'])!='') $dsc = $message['urlDescr']; else $dsc = $msg;          
+        if (!empty($message['urlDescr'])) $dsc = $message['urlDescr']; else $dsc = $msg;          
         $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);        
       }        
       $msg  = strip_tags($msg); $msg = nxs_html_to_utf8($msg);  $msgT = nxs_html_to_utf8($msgT); $urlToGo = $message['url'];

@@ -25,7 +25,8 @@ if (!class_exists("nxs_class_SNAP_LJ")) { class nxs_class_SNAP_LJ {
       if (!isset($options['ljUName']) || trim($options['ljPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = (substr($options['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ljPass'], 5)):$options['ljPass']);
       //## Format
-      $msg = nxs_doFormatMsg($options['ljMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['ljMsgTFormat'], $message);      
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ljMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['ljMsgTFormat'], $message);      
       
       require_once ('apis/xmlrpc-client.php'); if ($options['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
       $nxsToLJclient = new NXS_XMLRPC_Client('http://www.'.$server.'/interface/xmlrpc'); $nxsToLJclient->debug = false;             

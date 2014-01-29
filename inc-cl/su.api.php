@@ -92,7 +92,7 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
       if (!isset($options['suUName']) || trim($options['suPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = (substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass']);      
       //## Format
-      $msg = nxs_doFormatMsg($options['suMsgFormat'], $message);  $urlToGo = (!empty($message['url']))?$message['url']:''; $tags = $message['tags'];
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['suMsgFormat'], $message);  $urlToGo = (!empty($message['url']))?$message['url']:''; $tags = $message['tags'];
       
       if (isset($options['suSvC'])) $nxs_suCkArray = maybe_unserialize( $options['suSvC']); $loginError = true;
       if (is_array($nxs_suCkArray)) $loginError = $this->nxs_doCheckSU(); if ($loginError!=false) $loginError = $this->nxs_doConnectToSU($options['suUName'], $pass);       

@@ -20,12 +20,12 @@ title - [up to 300 characters long] - title of the submission
 text
 
 */
-$nxs_snapAPINts[] = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'app.net');
+$nxs_snapAPINts[] = array('code'=>'SC', 'lcode'=>'sc', 'name'=>'Scoop.It');
 
-if (!class_exists("nxs_class_SNAP_AP")) { class nxs_class_SNAP_AP {
+if (!class_exists("nxs_class_SNAP_SC")) { class nxs_class_SNAP_SC {
     
-    var $ntCode = 'AP';
-    var $ntLCode = 'ap';
+    var $ntCode = 'SC';
+    var $ntLCode = 'sc';
     
     function doPost($options, $message){ if (!is_array($options)) return false; $out = array(); // return false;
       foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
@@ -61,27 +61,29 @@ if (!class_exists("nxs_class_SNAP_AP")) { class nxs_class_SNAP_AP {
     function doPostToNT($options, $message){ global $nxs_urlLen; $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
-      if (!isset($options['apAppAuthToken']) || trim($options['apAppAuthToken'])=='') { $badOut['Error'] = 'Not Authorized'; return $badOut; }      
+      if (!isset($options['accessToken']) || trim($options['accessToken'])=='') { $badOut['Error'] = 'Not Authorized'; return $badOut; }      
       if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Format Post
-      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['apTextFormat'], $message); $text = nsTrnc($text, 256); 
+      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFrmt'], $message);
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['msgTFrmt'], $message); 
       //## Make Post            
-      if (isset($message['imageURL'])) $img = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $img = '';  
-      if ($options['attchImg']!=false && $img!='') $remoteImg = $this->createFile($img, $options['apAppAuthToken']); $ann = array();       
-      if (is_array($remoteImg)) {
-         $ann[] = array("type"=>"net.app.core.oembed", "value"=> array("+net.app.core.file"=>array("file_id" => $remoteImg['id'], "file_token" => $remoteImg['file_token'], "format"=> "oembed"))); 
-      }
-      $url = "https://alpha-api.app.net/stream/0/posts?include_post_annotations=1&access_token=".$options['apAppAuthToken'];            
-      $flds = array('text' => $text, 'annotations' => $ann); $flds = json_encode($flds); $hdrsArr = array('Content-Type' => 'application/json');
-      $response = wp_remote_post( $url, array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'body' => $flds));   
-      if (is_wp_error($response)) {  $badOut['Error'] = print_r($response, true)." - ERROR"; return $badOut; } 
-      $response = json_decode($response['body'], true); //prr($response); die();      
-      //## Check Result
-      if (!is_array($response) || !isset($response['meta']) || $response['meta']['code']!='200' || $response['data']['canonical_url']=='') { $badOut['Error'] = print_r($response, true)." - ERROR"; return $badOut; }       
-      $apNewPostURL = $response['data']['canonical_url']; $apNewPostID = $response['data']['id'];  
-      if ($apNewPostID!='') {         
+      if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  $postType = $options['postType'];       
+      
+      require_once('apis/scOAuth.php');   $tum_oauth = new wpScoopITOAuth($options['appKey'], $options['appSec'], $options['accessToken'], $options['accessTokenSec']);
+      $tiID = $tum_oauth->makeReq('http://www.scoop.it/api/1/topic', array('urlName'=>$options['topicURL']));  
+      if (!empty($tiID) && !empty($tiID['topic']) && !empty($tiID['topic']['id'])) $tiID = $tiID['topic']['id']; else { $badOut['Error'] .= print_r($tiID, true); return $badOut; }
+      $postArr = array('action'=>'create', 'title'=>$msgT, 'content'=>$text, 'url'=>$postType=='A'?$message['url']:'', 'imageUrl'=>(($postType=='I' || $postType=='A') && !empty($imgURL))?$imgURL:'', 'topicId'=>$tiID);  
+      $postinfo = $tum_oauth->makeReq('http://www.scoop.it/api/1/post', $postArr, 'POST'); // prr($postinfo);
+      
+      if (is_array($postinfo) && isset($postinfo['post'])) { $apNewPostID = $postinfo['post']['id']; $apNewPostURL = $postinfo['post']['scoopUrl']; 
+        if ($options['inclTags']=='1') { $postArr = array('action'=>'edit', 'tag'=>$message['tags'], 'id'=>$apNewPostID);  
+          $postinfo = $tum_oauth->makeReq('http://www.scoop.it/api/1/post', $postArr, 'POST'); 
+        }
+              
+      } $code = $tum_oauth->http_code;
+      if (!empty($apNewPostID)) {         
          return array('postID'=>$apNewPostID, 'isPosted'=>1, 'postURL'=>$apNewPostURL, 'pDate'=>date('Y-m-d H:i:s'));          
-      } else { $badOut['Error'] .= print_r($tmhOAuth->response['response'], true)." MSG:".print_r($msg, true); 
+      } else { $badOut['Error'] .= print_r($postinfo, true)." Code:".$tum_oauth->http_code; 
         return $badOut;
       }
       return $badOut;

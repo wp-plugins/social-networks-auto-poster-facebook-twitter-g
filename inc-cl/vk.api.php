@@ -39,10 +39,11 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); global $nxs_vkCkArray;
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       if ((!isset($options['uName']) || trim($options['uPass'])=='') && (!isset($options['vkAppAuthToken']) || trim($options['vkAppAuthToken'])==''))  { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']);            
       //## Format
-      $msg = nxs_doFormatMsg($options['msgFrmt'], $message); $urlToGo = (!empty($message['url']))?$message['url']:'';
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['msgFrmt'], $message); $urlToGo = (!empty($message['url']))?$message['url']:'';
       
       $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
   

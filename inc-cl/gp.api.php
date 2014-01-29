@@ -18,8 +18,10 @@ if (!class_exists("nxs_class_SNAP_GP")) { class nxs_class_SNAP_GP {
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['gpUName']) || trim($options['gpPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Make Post      
-      $gpPostType = $options['postType']; $msg = nxs_doFormatMsg($options['gpMsgFormat'], $message); // Make "message default"
+      $gpPostType = $options['postType']; 
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['gpMsgFormat'], $message); // Make "message default"
       if ($gpPostType=='I' || $gpPostType=='A') { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; } 
             
       $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];                   

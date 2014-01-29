@@ -36,7 +36,8 @@ if (!class_exists("nxs_class_SNAP_RD")) { class nxs_class_SNAP_RD {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['rdUName']) || trim($options['rdUName'])=='' || !isset($options['rdPass']) || trim($options['rdPass'])=='') { $badOut['Error'] = 'No username/password Found'; return $badOut; }      
       //## Format Post
-      $title = nxs_doFormatMsg($options['rdTitleFormat'], $message); $title = nsTrnc($title, 300);  $text = nxs_doFormatMsg($options['rdTextFormat'], $message);       
+      if (!empty($message['pTitle'])) $title = $message['pTitle']; else $title = nxs_doFormatMsg($options['rdTitleFormat'], $message); $title = nsTrnc($title, 300);  
+      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['rdTextFormat'], $message);       
       //## Make Post            
       $pass = substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'];   $hdrsArr = '';      
       $loginInfo = doConnectToRD($options['rdUName'], $pass); if (!is_array($loginInfo))  {  $badOut['Error'] = print_r($loginInfo, true)." - ERROR"; return $badOut; }  

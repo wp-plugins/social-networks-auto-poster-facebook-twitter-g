@@ -89,7 +89,8 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
       if (!isset($options['vbUName']) || trim($options['vbPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $pass = (substr($options['vbPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['vbPass'], 5)):$options['vbPass']);      
       //## Format
-      $msg = nxs_doFormatMsg($options['vbMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['vbMsgTFormat'], $message);
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['vbMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['vbMsgTFormat'], $message);
       $urlToGo = (!empty($message['url']))?$message['url']:''; 
       //## Post
       if (isset($options['vbSvC'])) $nxs_vbCkArray = maybe_unserialize( $options['vbSvC']); $loginError = true;

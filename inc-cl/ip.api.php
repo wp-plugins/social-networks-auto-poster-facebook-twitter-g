@@ -25,7 +25,8 @@ if (!class_exists("nxs_class_SNAP_IP")) { class nxs_class_SNAP_IP {
       if (!isset($options['ipUName']) || trim($options['ipPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
       $dusername = $options['ipUName']; $pass = (substr($options['ipPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ipPass'], 5)):$options['ipPass']);
       //## Format
-      $msg = nxs_doFormatMsg($options['ipMsgFormat'], $message); $msgT = nxs_doFormatMsg($options['ipMsgTFormat'], $message);      
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ipMsgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['ipMsgTFormat'], $message);      
       $link = urlencode($message['url']); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000)); $tags = $message['tags'];
       
       $apicall = "https://www.instapaper.com/api/add?red=api&url=$link&title=$desc&selection=$ext";// prr($apicall);

@@ -12,14 +12,18 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       return $out;
     }
     function doPostToNT($options, $message){ global $nxs_urlLen; $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
+      if (!function_exists('nxs_remote_get') && function_exists('wp_remote_get')) { function nxs_remote_get($url){return wp_remote_get($url);} }
+      if (!function_exists('is_nxs_error') && function_exists('is_wp_error')) { function is_nxs_error($a){return is_wp_error($a);} }
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['twAccToken']) || trim($options['twAccToken'])=='') { $badOut['Error'] = 'No Auth Token Found'; return $badOut; }
+      if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Old Settings Fix
       if ($options['attchImg']=='1') $options['attchImg'] = 'large'; if ($options['attchImg']=='0') $options['attchImg'] = false;
       if (isset($message['img']) && !is_array($message['img']) ) $img = trim($message['img']); else $img = '';
       //## Format Post
-      $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  if ($options['attchImg']!=false) { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; }
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  
+      if ($options['attchImg']!=false) { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; }
       if (empty($imgURL) && $img=='') $options['attchImg'] = false;   
       //## Make Post
       //$msg = $message['message']; $imgURL = trim($message['imageURL']); $img = trim($message['img']); $nxs_urlLen = $message['urlLength'];           

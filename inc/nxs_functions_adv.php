@@ -3,6 +3,7 @@
 if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID, $addURLParams='', $lng=''){ global $ShownAds, $plgn_NS_SNAutoPoster, $nxs_urlLen; $post = get_post($postID); $options = $plgn_NS_SNAutoPoster->nxs_options; 
   if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = '';
   // if ($addURLParams=='' && $options['addURLParams']!='') $addURLParams = $options['addURLParams'];
+  $msg = str_replace('%TEXT%','%EXCERPT%',$msg); $msg = str_replace('%RAWEXTEXT%','%RAWEXCERPT%',$msg);
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
   $msg = nxs_doSpin($msg);
   if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
@@ -19,27 +20,20 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
     if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[0]; }    
       else $postContent = nsTrnc($postContent, $options['anounTagLimit']);  $msg = str_ireplace("%ANNOUNCE%", $postContent, $msg);
-  }
-  if (preg_match('%TEXT%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content, $lng));
-      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%TEXT%", $excerpt, $msg); 
-  }
+  }  
   if (preg_match('%EXCERPT%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); 
-      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%EXCERPT%", $excerpt, $msg);
-  }
-  if (preg_match('%RAWEXTEXT%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = nxs_doQTrans($post->post_excerpt, $lng); else $excerpt= nxs_doQTrans($post->post_content, $lng); 
-      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%RAWEXTEXT%", $excerpt, $msg);
-  }
+    if ($post->post_excerpt!="") $excerpt = strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)))); 
+      else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)))), 300, " ", "..."); 
+    $msg = str_ireplace("%EXCERPT%", $excerpt, $msg);
+  }  
   if (preg_match('%RAWEXCERPT%', $msg)) {      
-    if ($post->post_excerpt!="") $excerpt = nxs_doQTrans($post->post_excerpt, $lng); else $excerpt= nxs_doQTrans($post->post_content, $lng); 
-      $excerpt = nsTrnc(strip_tags(strip_shortcodes($excerpt)), 300, " ", "..."); $msg = str_ireplace("%RAWEXCERPT%", $excerpt, $msg);
+    if ($post->post_excerpt!="") $excerpt = strip_tags(strip_shortcodes(nxs_doQTrans($post->post_excerpt, $lng))); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(nxs_doQTrans($post->post_content, $lng))), 300, " ", "..."); 
+    $msg = str_ireplace("%RAWEXCERPT%", $excerpt, $msg);
   }
   if (preg_match('%RAWEXCERPTHTML%', $msg)) { 
       if ($post->post_excerpt!="") $excerpt = strip_shortcodes(nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(nxs_doQTrans($post->post_content, $lng))), 300, " ", "..."); 
        $msg = str_ireplace("%RAWEXCERPTHTML%", $excerpt, $msg);
-   }
+  }
   if (preg_match('%TAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
     $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(', ',$tggs); $msg = str_ireplace("%TAGS%", $tags, $msg);
   }
@@ -107,5 +101,19 @@ if (!function_exists("nxsCheckSSLCurl")){function nxsCheckSSLCurl($url){
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); 
   $content = curl_exec($ch); $err = curl_errno($ch); $errmsg = curl_error($ch); if ($err!=0) return array('errNo'=>$err, 'errMsg'=>$errmsg); else return false;
 }}
+
+
+if($pagenow!='options-general.php' && !empty($_GET['page']) && $_GET['page']!='NextScripts_SNAP.php') add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
+
+function toolbar_link_to_mypage( $wp_admin_bar ) {
+    $args = array(
+        'id'    => 'snap-post',
+        'title' => '<span style="font-weight:bold; color:#2ecc2e;">{SNAP} </span> New Post to Social Networks',
+        'parent' => 'new-content',
+        'href'  => '#',        
+        'meta'  => array( 'class' => 'my-toolbar-page', 'onclick'  => 'nxs_showNewPostFrom();return false;' )
+    );
+    $wp_admin_bar->add_node( $args );
+}
 
 ?>
