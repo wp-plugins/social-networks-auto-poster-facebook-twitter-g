@@ -152,6 +152,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.2.1 [01/30/2014] =
+
+* [Critical] Bug Fix - Facebook module could overwrite post type to "Text Only" for existing posts.
+* New - New Post to social networks without creating Wordpress post link is now in the top "New" menu.
+* Bug Fix - fixed link [Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters] (yes, again)
+
 = 3.2.0 [01/29/2014] =
 
 * New - Post to social networks without creating Wordpress post. 
@@ -159,7 +165,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * New - New LinkedIn Showcase pages are supported. (Pro Only) 
 * Improvement/Bug Fix - New interface for checkboxes for networks with excluded categories.
 * Improvement/Bug Fix - %EXCERPT% tags won't cut the actual excerpt to 300 characters anymore. 
-* Bug Fix - filed link [Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters]
+* Bug Fix - fized link [Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters]
 * Bug Fix - Stability improvements to re-posting functionality.
 
 = 3.1.2 [01/15/2014] =

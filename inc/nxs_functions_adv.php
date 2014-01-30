@@ -103,7 +103,7 @@ if (!function_exists("nxsCheckSSLCurl")){function nxsCheckSSLCurl($url){
 }}
 
 
-if($pagenow!='options-general.php' && !empty($_GET['page']) && $_GET['page']!='NextScripts_SNAP.php') add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
+if (!($pagenow=='options-general.php' && !empty($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php')) add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
 
 function toolbar_link_to_mypage( $wp_admin_bar ) {
     $args = array(

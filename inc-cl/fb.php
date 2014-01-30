@@ -73,6 +73,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapSetPgURL, $plgn_NS_SNAutoPoster; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); $tmzFrmt = _x('Y-m-d G:i:s', 'timezone date format');
     if (empty($options['postType']) && !empty($options['fbPostType'])) { $options['postType'] = $options['fbPostType']; unset($options['fbPostType']); } //## Compatibility with V <3.2
+    if (empty($options['postType']) && !empty($options['PostType'])) { $pt = $options['PostType']; unset($options['PostType']);  $options['postType'] = $pt; } //## Compatibility with V <3.2
     if ((int)$options['fbAttch']==0 && empty($options['postType'])) $options['postType'] = 'T';  
     if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
@@ -243,6 +244,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         }                 
         //## Compatibility with ver <3.2
         if (empty($options[$ii]['postType']) && !empty($options[$ii]['fbPostType'])) { $options[$ii]['postType'] = $options[$ii]['fbPostType']; unset($options[$ii]['fbPostType']); }
+        if (empty($options[$ii]['postType']) && !empty($options[$ii]['PostType'])) { $pt = $options[$ii]['PostType']; unset($options[$ii]['PostType']); $options[$ii]['postType'] = $pt; }
         
       } elseif ( count($pval)==1 ) if (isset($pval['apDo'.$code])) $options[$ii]['do'.$code] = $pval['apDo'.$code]; else $options[$ii]['do'.$code] = 0; 
     } return $options;
@@ -251,6 +253,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID;  $nt = 'fb'; $ntU = 'FB'; 
     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapFB', true));  if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]);         
         if (empty($ntOpt['postType']) && !empty($ntOpt['fbPostType'])) { $ntOpt['postType'] = $ntOpt['fbPostType']; unset($ntOpt['fbPostType']); } //## Compatibility with ver <3.2         
+        if (empty($ntOpt['postType']) && !empty($ntOpt['PostType'])) { $pt = $ntOpt['PostType']; unset($ntOpt['PostType']); $ntOpt['postType'] = $pt; } //## Compatibility with ver <3.2         
         if (empty($ntOpt['imgToUse'])) $ntOpt['imgToUse'] = '';  if (empty($ntOpt['urlToUse'])) $ntOpt['urlToUse'] = '';
         $doFB = $ntOpt['doFB'] && (is_array($pMeta) || $ntOpt['catSel']!='1');        
         $imgToUse = $ntOpt['imgToUse'];  $urlToUse = $ntOpt['urlToUse']; 
@@ -335,7 +338,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
      if (isset($pMeta['imgToUse'])) $optMt['imgToUse'] = $pMeta['imgToUse']; if (isset($pMeta['urlToUse'])) $optMt['urlToUse'] = $pMeta['urlToUse']; 
      if (isset($pMeta['timeToRun']))  $optMt['timeToRun'] = $pMeta['timeToRun'];  if (isset($pMeta['rpstPostIncl']))  $optMt['rpstPostIncl'] = $pMeta['rpstPostIncl'];    
      if (isset($pMeta['AttachPost'])) $optMt['fbAttch'] = ($pMeta['AttachPost'] != '')?$pMeta['AttachPost']:0; else { if (isset($pMeta['SNAPformat'])) $optMt['fbAttch'] = 0; } 
-     if (isset($pMeta['postType'])) $optMt['postType'] = ($pMeta['postType'] != '')?$pMeta['postType']:0; else { if (isset($pMeta['SNAPformat'])) $optMt['postType'] = 'T'; } 
+     if (isset($pMeta['postType'])) $optMt['postType'] = $pMeta['postType'];
      if (isset($pMeta['doFB'])) $optMt['doFB'] = $pMeta['doFB'] == 1?1:0; else { if (isset($pMeta['SNAPformat'])) $optMt['doFB'] = 0; }      
      if (isset($pMeta['SNAPincludeFB']) && $pMeta['SNAPincludeFB'] == '1' ) $optMt['doFB'] = 1;   // <2.6 Compatibility fix    
      return $optMt;
@@ -399,6 +402,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     $fbWhere = 'feed'; $page_id = $options['fbPgID']; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
     //## Some Common stuff 
     if (empty($options['postType']) && !empty($options['fbPostType'])) { $options['postType'] = $options['fbPostType']; unset($options['fbPostType']); } //## Compatibility with v <3.2
+    if (empty($options['postType']) && !empty($options['PostType'])) { $pt = $options['PostType']; unset($options['PostType']); $options['postType'] = $pt; } //## Compatibility with v <3.2
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
     $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
