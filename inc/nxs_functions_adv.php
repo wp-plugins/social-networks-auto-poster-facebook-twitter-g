@@ -102,9 +102,6 @@ if (!function_exists("nxsCheckSSLCurl")){function nxsCheckSSLCurl($url){
   $content = curl_exec($ch); $err = curl_errno($ch); $errmsg = curl_error($ch); if ($err!=0) return array('errNo'=>$err, 'errMsg'=>$errmsg); else return false;
 }}
 
-
-if (!($pagenow=='options-general.php' && !empty($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php')) add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
-
 function toolbar_link_to_mypage( $wp_admin_bar ) {
     $args = array(
         'id'    => 'snap-post',

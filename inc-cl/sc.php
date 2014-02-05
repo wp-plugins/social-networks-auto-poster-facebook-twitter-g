@@ -37,7 +37,7 @@ if (!class_exists("nxs_snapClassSC")) { class nxs_snapClassSC { var $ntInfo = ar
                 $options['appAppUserID'] = $uinfo['user']['id']; $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
               } //die();
               if (!empty($options['appAppUserID'])) {  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();}
-                else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".$uinfo."</span></span>");              
+                else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".print_r($uinfo, true)."</span></span>");              
             }
     
   ?>    
@@ -114,7 +114,7 @@ if (!class_exists("nxs_snapClassSC")) { class nxs_snapClassSC { var $ntInfo = ar
             <div style="width:100%;"><strong id="altFormatText">Post Type:</strong></div>                      
             <div style="margin-left: 10px;">
               <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
-              <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Google+ Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
+              <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
               <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Add blogpost to message as an attachment', 'nxs_snap'); ?><br/>
             </div>
    

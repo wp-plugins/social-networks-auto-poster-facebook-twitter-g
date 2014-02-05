@@ -70,7 +70,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
 <input type="radio" name="pn[<?php echo $ii; ?>][cImgURL]" value="N" <?php if ($options['cImgURL'] == 'N') echo 'checked="checked"'; ?> /> No Clickthrough URL&nbsp;&nbsp;
 
             <div style="width:100%;"><strong>Default Image to Pin:</strong> 
-            <p style="font-size: 11px; margin: 0px;">If your post missing Featured Image this will be used instead.</p>
+            <p style="font-size: 11px; margin: 0px;">If your post does not have any images this will be used instead.</p>
             </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
             <br/><br/>            
             
@@ -268,7 +268,8 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
       if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-        else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'postURL'=>$ret['postURL'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+        else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'postURL'=>$ret['postURL'], 'pDate'=>date('Y-m-d H:i:s'))); 
+        $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>';  nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     } //prr($ret);
     //## Return Result
     if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);     

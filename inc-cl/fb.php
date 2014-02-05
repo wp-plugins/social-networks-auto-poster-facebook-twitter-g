@@ -69,7 +69,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'imgUpl'=>'1', 'postType'=>'A', 'fbMsgAFormat'=>'', 'fbAppSec'=>'', 'fbAttch'=>'1', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>__('New post (%TITLE%) has been published on %SITENAME%', 'nxs_snap') ); $fbo['ntInfo']= array('lcode'=>'fb'); $this->showNTSettings($mfbo, $fbo, true);}
+  function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'imgUpl'=>'1', 'postType'=>'A', 'fbMsgAFormat'=>'', 'fbAppSec'=>'', 'fbAttch'=>'2', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>__('New post (%TITLE%) has been published on %SITENAME%', 'nxs_snap') ); $fbo['ntInfo']= array('lcode'=>'fb'); $this->showNTSettings($mfbo, $fbo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapSetPgURL, $plgn_NS_SNAutoPoster; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); $tmzFrmt = _x('Y-m-d G:i:s', 'timezone date format');
     if (empty($options['postType']) && !empty($options['fbPostType'])) { $options['postType'] = $options['fbPostType']; unset($options['fbPostType']); } //## Compatibility with V <3.2
@@ -415,9 +415,9 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     if (isset($options['qTLng'])) $lng = $options['qTLng']; else $lng = '';      if (!isset($options['fbAppPageAuthToken'])) $options['fbAppPageAuthToken'] = '';
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();        
     //## Initiate Posting Array
-    $message = array('message'=>'', 'link'=>'', 'title'=>'', 'description'=>'', 'imageURL'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle);    
+    $message = array('message'=>'', 'link'=>'', 'title'=>'', 'description'=>'', 'imageURL'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle);     $imgURL = '';
     
-    if ($postID=='0') { $options['fbMsgFormat'] = 'Test Post, Please Ignore'; $imgURL = '';
+    if ($postID=='0') { $options['fbMsgFormat'] = 'Test Post, Please Ignore';
       $dsc = 'Test Post, Description';  $urlTitle = 'Test Post - Title';  $urlToGo = home_url();    
     } else { $post = get_post($postID); if(!$post) return; $msg = nsFormatMessage($options['fbMsgFormat'], $postID, $addParams); 
       $fbPostType = $options['postType'];  if ($fbPostType=='A') $fbPostType = (int)$options['fbAttch']==2?'S':'A';  $isAttachVidFB = $options['fbAttchAsVid'];
@@ -469,7 +469,8 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-        else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+        else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
+        $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     }
     //## Return Result
     if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);     

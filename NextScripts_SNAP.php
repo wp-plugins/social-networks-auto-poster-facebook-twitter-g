@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.2.1
+Version: 3.2.2
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.2.1' ); 
+define( 'NextScripts_SNAP_Version' , '3.2.2' ); 
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -159,7 +159,9 @@ if (!function_exists("NS_SNAutoPoster_apx")) { function NS_SNAutoPoster_apx() { 
 }}}
 //## Main Function to Post 
 if (!function_exists("nxs_snapLogPublishTo")) { function nxs_snapLogPublishTo( $new_status, $old_status, $post ) {
-  if ( $old_status!='publish' && $old_status!='trash' && $new_status == 'publish' ) nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
+  if ( $old_status!='publish' && $old_status!='trash' && $new_status == 'publish' ) { nxs_addToLogN('BG', "*** ID: {$post->ID}, Type: {$post->post_type}", '', ' Status Changed: '."{$old_status}_to_{$new_status}".'. Autopost requested.'); 
+    nxs_snapPublishTo($post);
+  }
 }}
 if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr, $type='', $aj=false) {  global $plgn_NS_SNAutoPoster, $nxs_snapAvNts, $blog_id, $nxs_tpWMPU;  //  echo " | nxs_doSMAS2 | "; prr($postArr);
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
@@ -242,7 +244,9 @@ if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ globa
   if (function_exists('nxsDoLic_ajax')) { add_action('wp_ajax_nxsDoLic', 'nxsDoLic_ajax');  } 
 }}
 if (!function_exists("nxs_adminInitFunc2")) { function nxs_adminInitFunc2(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow;   $nxs_snapThisPageUrl = nxs_get_admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php';  //## Add MEtaBox to Post Edit Page
-  if (current_user_can("see_snap_box") || current_user_can("manage_options")) add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));        
+  if (current_user_can("see_snap_box") || current_user_can("manage_options")) { add_action('add_meta_boxes', array($plgn_NS_SNAutoPoster, 'NS_SNAP_addCustomBoxes'));        
+    if (!($pagenow=='options-general.php' && !empty($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php')) add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
+  }
 }}
 
 function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap'); 
@@ -352,7 +356,7 @@ function nxs_showNewPostForm($options) { global $nxs_snapAvNts, $nxs_plurl; ?>
     <div class="nxsNPRow" style="font-size: 12px;">
     <?php 
       foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName();
-              if ( isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { ?>  
+        if ( isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { ?>  
               
               <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $avNt['lcode']; ?>16.png);"><?php echo $avNt['name']; ?><br/>
               <?php $ntOpts = $options[$avNt['lcode']]; foreach ($ntOpts as $indx=>$pbo){ ?>
@@ -361,18 +365,22 @@ function nxs_showNewPostForm($options) { global $nxs_snapAvNts, $nxs_plurl; ?>
              <?php echo $avNt['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></br>
               
               <?php  }  ?>
-   </div>  <?php  } } ?> </div>
+              </div>  <?php  
+        } } ?> 
+      </div>
    
-  </div> 
-  
+  </div>   
   </div>
-    </div> 
+  </div> 
+  </div> 
   
   <?php    
 }
 function nxs_doNewNPPost($options){ global $nxs_snapAvNts, $nxs_plurl; $postResults = '';
     if (!empty($_POST['mNts']) && is_array($_POST['mNts'])) { nxs_addToLogN('S', '-=== New Form Post requested ===-', 'Form', count($_POST['mNts']).' Networks', print_r($_POST['mNts'], true));
-      $message = array('title'=>'', 'text'=>'', 'siteName'=>'', 'url'=>'', 'imageURL'=>'', 'videoURL'=>'', 'tags'=>'', 'urlDescr'=>'', 'urlTitle'=>'');  $message['pText'] = $_POST['mText'];   $message['pTitle'] = $_POST['mTitle'];
+      $message = array('title'=>'', 'text'=>'', 'siteName'=>'', 'url'=>'', 'imageURL'=>'', 'videoURL'=>'', 'tags'=>'', 'urlDescr'=>'', 'urlTitle'=>'');  
+      if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") { $_POST['mText'] = stripslashes($_POST['mText']); $_POST['mTitle'] = stripslashes($_POST['mTitle']); }
+      $message['pText'] = $_POST['mText'];   $message['pTitle'] = $_POST['mTitle'];
       //## Get URL info
       if (!empty($_POST['mLink']) && substr($_POST['mLink'], 0, 4)=='http') { $message['url'] = $_POST['mLink'];            
         $flds = array('id'=>$message['url'], 'scrape'=>'true');      $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds)); 
@@ -407,16 +415,14 @@ if (!function_exists("nxs_snapAjax")) { function nxs_snapAjax() { check_ajax_ref
   die();
 }}
 
- function nxs_admin_footer() {global $nxs_plurl; ?> <div style="display: none;" id="nxs_popupDiv"><span class="nxspButton bClose"><span>X</span></span>
+function nxs_admin_footer() {global $nxs_plurl; ?> <div style="display: none;" id="nxs_popupDiv"><span class="nxspButton bClose"><span>X</span></span>
  
  <div id="nxsNPLoader" style="text-align: center; width: 100%; height: 80px; padding-top: 60px;";> <img  src="<?php echo $nxs_plurl; ?>img/ajax-loader-med.gif" /> </div>
  
  <div id="nxs_popupDivCont" style="right: 10px; top:10px; font-size: 16px; font-weight: lighter;">
  
  </div></div> <?php }
- function nxs_admin_header() { wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); }
- 
- 
+function nxs_admin_header() { wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); }
 function nxs_popupCSS() {?><style type="text/css">
   .nxspButton:hover { background-color: #1E1E1E;}
   .nxspButton { background-color: #2B91AF; color: #FFFFFF; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; border-radius: 6px 6px 6px 6px; box-shadow: none; font: bold 131% sans-serif; padding: 0 6px 2px; position: absolute; right: -7px; top: -7px;}
@@ -472,6 +478,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
                        
   if ($isO || $isS) {    
     add_action( 'transition_post_status', 'nxs_snapLogPublishTo', 10, 3 );
+  /*
   //## Whenever you publish a post, post to Social Networks
     add_action('future_to_publish', 'nxs_snapPublishTo');
     add_action('new_to_publish', 'nxs_snapPublishTo');
@@ -480,6 +487,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
     add_action('private_to_publish', 'nxs_snapPublishTo');
     add_action('auto-draft_to_publish', 'nxs_snapPublishTo');
     //## Add nxs_snapPublishTo to custom post types
+    */
 
     foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
     foreach ($nxs_snapAvNts as $avNt) { add_action('wp_ajax_rePostTo'.$avNt['code'], 'nxs_rePostTo'.$avNt['code'].'_ajax'); }
