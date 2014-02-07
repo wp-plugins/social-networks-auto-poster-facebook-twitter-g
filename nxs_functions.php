@@ -973,7 +973,7 @@ function nxs_chckBrwsr() { $isOK = false;
   if (preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;    if (preg_match('/Internet Explorer/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
   if (preg_match('/Firefox/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true; if (preg_match('/Opera/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
   if (preg_match('/Chrome/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;  if (preg_match('/Safari/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
-  if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone)/i', strtolower($_SERVER['HTTP_USER_AGENT'])) || (strpos(strtolower($_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml')>0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) $isOK = false;
+  if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone)/i', strtolower($_SERVER['HTTP_USER_AGENT'])) || (!empty($_SERVER['HTTP_ACCEPT']) && strpos(strtolower($_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml')>0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) $isOK = false;
   return $isOK;
 }
 

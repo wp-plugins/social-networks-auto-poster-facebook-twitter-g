@@ -318,15 +318,19 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
           $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - nxs_strLen($siteTitle);
         }     
         if (stripos($twMsgFormat, '%TEXT%')!==false) {          
-          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 300, " ", "..."); 
+          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 140, " ", "..."); 
           $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%TEXT%", $pText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pText);
         } 
         if (stripos($twMsgFormat, '%EXCERPT%')!==false) {          
-          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 300, " ", "..."); 
+          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 140, " ", "..."); 
           $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%EXCERPT%", $pText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pText);
         } 
+        if (stripos($twMsgFormat, '%ANNOUNCE%')!==false) {          
+          $pText = nsTrnc(strip_tags(strip_shortcodes($pText)), 140, " ", "..."); 
+          $pText = nsTrnc($pText, $twLim); $twMsgFormat = str_ireplace("%ANNOUNCE%", $pText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pText);
+        } 
         if (stripos($twMsgFormat, '%RAWEXCERPT%')!==false) {          
-          $exrText = nsTrnc(strip_tags(strip_shortcodes($exrText)), 300, " ", "..."); 
+          $exrText = nsTrnc(strip_tags(strip_shortcodes($exrText)), 140, " ", "..."); 
           $exrText = nsTrnc($exrText, $twLim); $twMsgFormat = str_ireplace("%RAWEXCERPT%", $exrText, $twMsgFormat); $twLim = $twLim - nxs_strLen($exrText);
         } 
         if (stripos($twMsgFormat, '%FULLTEXT%')!==false) {

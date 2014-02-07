@@ -102,7 +102,7 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
       
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
       if ( (!is_array($ret)) && $ret!='OK') { $badOut['Error'] .= 'Something went wrong - '.print_r($ret, true);  } 
-        elseif (isset($ret['code']) && $ret['code']=='OK') return array('isPosted'=>'1', 'postID'=>$ret['post_id'], 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')); else $badOut['Error'] .= 'Error - '.print_r($ret, true);
+        elseif (isset($ret['code']) && $ret['code']=='OK') return array('isPosted'=>'1', 'postID'=>$ret['post_id'], 'postURL'=>'http://www.stumbleupon.com/content/'.$ret['post_id'].'/comments', 'pDate'=>date('Y-m-d H:i:s')); else $badOut['Error'] .= 'Error - '.print_r($ret, true);
       return $badOut;      
    }    
 }}

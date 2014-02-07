@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.2.2
+Version: 3.2.3
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.2.2' ); 
+define( 'NextScripts_SNAP_Version' , '3.2.3' ); 
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -255,7 +255,7 @@ function nxs_saveSiteSets_ajax(){ check_ajax_referer('nxssnap');
        $options =  get_option('NS_SNAutoPoster'); $options['suaMode'] = $_POST['sset']; update_option('NS_SNAutoPoster', $options);
      }       
    } else { switch_to_blog($_POST['sid']); 
-     $options = get_option('NS_SNAutoPoster'); $options['suaMode'] = $_POST['sset']; update_option('NS_SNAutoPoster', $options); //    prr($plgn_NS_SNAutoPoster->dbOptionsName);  prr($options);
+     $options = get_option('NS_SNAutoPoster'); $options['suaMode'] = $_POST['sset']; if( is_super_admin() && $_POST['sid']=='1' && $options['suaMode']!='O') $options['suaMode'] = 'O'; update_option('NS_SNAutoPoster', $options); 
    }
    echo "OK"; die();
 }
@@ -415,13 +415,10 @@ if (!function_exists("nxs_snapAjax")) { function nxs_snapAjax() { check_ajax_ref
   die();
 }}
 
-function nxs_admin_footer() {global $nxs_plurl; ?> <div style="display: none;" id="nxs_popupDiv"><span class="nxspButton bClose"><span>X</span></span>
- 
- <div id="nxsNPLoader" style="text-align: center; width: 100%; height: 80px; padding-top: 60px;";> <img  src="<?php echo $nxs_plurl; ?>img/ajax-loader-med.gif" /> </div>
- 
- <div id="nxs_popupDivCont" style="right: 10px; top:10px; font-size: 16px; font-weight: lighter;">
- 
- </div></div> <?php }
+function nxs_admin_footer() {global $nxs_plurl; ?> <div style="display: none;" id="nxs_popupDiv"><span class="nxspButton bClose"><span>X</span></span> 
+   <div id="nxsNPLoader" style="text-align: center; width: 100%; height: 80px; padding-top: 60px;";> <img  src="<?php echo $nxs_plurl; ?>img/ajax-loader-med.gif" /> </div> 
+   <div id="nxs_popupDivCont" style="right: 10px; top:10px; font-size: 16px; font-weight: lighter;"> </div></div> <?php 
+}
 function nxs_admin_header() { wp_nonce_field( 'nxsSsPageWPN', 'nxsSsPageWPN_wpnonce' ); }
 function nxs_popupCSS() {?><style type="text/css">
   .nxspButton:hover { background-color: #1E1E1E;}
@@ -440,6 +437,8 @@ function nxs_popupCSS() {?><style type="text/css">
 }
 
 add_action('admin_head', 'nxs_popupCSS');
+add_action('in_admin_footer', 'nxs_admin_footer');
+add_action('in_admin_header', 'nxs_admin_header');
  
 //## Actions and filters    
 add_action('shutdown', 'nxs_psCron', 25); //add_action( 'transition_post_status', 'nxs_snapLogPublishTo', 10, 3 );
@@ -505,9 +504,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
   
   if ($isO) {    
     add_action('admin_menu', 'NS_SNAutoPoster_ap');    
-    add_action('admin_init', 'nxs_adminInitFunc2');    
-    add_action('in_admin_footer', 'nxs_admin_footer');
-    add_action('in_admin_header', 'nxs_admin_header');
+    add_action('admin_init', 'nxs_adminInitFunc2');        
     //## Initialize options on plugin activation
     $myrelpath = preg_replace( '/.*wp-content.plugins./', '', __FILE__ ); 
     add_action("activate_".$myrelpath,  array(&$plgn_NS_SNAutoPoster, 'init'));    

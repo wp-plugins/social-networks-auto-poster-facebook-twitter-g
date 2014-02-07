@@ -63,7 +63,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
             <div style="width:100%;"><strong>Reddit Password:</strong> </div><input name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <div style="width:100%;"><strong>Subreddit ID:</strong>                         
-            Please <a href="#" onclick="nxs_getBrdsOrCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDPass<?php echo $ii; ?>').val(), 'rd' , '<?php echo $ii; ?>', ''); return false;">click here to retrieve your subreddits</a>
+            Please <a href="#" onclick="nxs_getBrdsOrCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDPass<?php echo $ii; ?>').val(), 'rd' , '<?php echo $ii; ?>', 'rdSubReddit'); return false;">click here to retrieve your subreddits</a>
             </div>
             <img id="rdLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' /> 
             <select name="rd[<?php echo $ii; ?>][rdSubReddit]" id="rdSubReddit<?php echo $ii; ?>">
@@ -255,7 +255,8 @@ if (!function_exists("nxs_doPublishToRD")) { //## Second Function to Post to RD
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
         if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-          else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+          else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
+          $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       }
       //## Return Result
       if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);      
