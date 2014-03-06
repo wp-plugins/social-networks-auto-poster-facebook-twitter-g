@@ -38,8 +38,9 @@ class nsx_LinkedIn {
     $headers = Array();
     $url = $request->to_url(); // echo "^^^^^";  prr($url); 
     $response = $this->httpRequest($url, $headers, "GET"); //prr($response); 
-    if ($response!='') $this->http_code = 200;
+    if ($response!='') $this->http_code = 200;    
     parse_str($response, $response_params); //prr($response_params); echo "!!!!";
+    if (is_array($response_params) && !empty($response_params['oauth_problem'])) return print_r($response, true);
     $this->request_token = new nsx_trOAuthConsumer($response_params['oauth_token'], $response_params['oauth_token_secret'], 1); return $this->request_token;
   }
 

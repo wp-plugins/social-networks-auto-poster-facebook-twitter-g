@@ -29,7 +29,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
     
       if (function_exists("doConnectToLinkedIn") && $options['ulName']!='' && $options['uPass']!='') {
         $dusername = $options['ulName']; $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']); // ??? Do we need that??????
-        $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!==false) die($auth);
+        $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!=false) { $badOut['Error'] .= "|Auth Error - ".$auth;  return $badOut; }
         $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
         if ($options['liAttch']=='1') { $lnk['title'] = $message['urlTitle']; $lnk['postTitle'] = $msgT; $lnk['desc'] =  $message['urlDescr']; $lnk['url'] = $urlToGo; $lnk['img'] = $imgURL; }      
         $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];

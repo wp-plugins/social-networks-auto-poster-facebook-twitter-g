@@ -22,6 +22,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['trMsgTFormat'], $message);
       
       //## Post    
+      $options['trURL'] = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($options['trURL'],-1)=='/') $options['trURL'] = substr($options['trURL'], 0, -1);
       require_once('apis/trOAuth.php'); $consumer_key = $options['trConsKey']; $consumer_secret = $options['trConsSec'];
       $tum_oauth = new TumblrOAuth($consumer_key, $consumer_secret, $options['trAccessTocken']['oauth_token'], $options['trAccessTocken']['oauth_token_secret']); //prr($options);    
     
@@ -37,7 +38,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
         $postArr['embed'] = $embedTxt;           
       } else { $postArr['title'] = $msgT; $postArr['type'] = 'text'; $postArr['source'] = $message['url']; $postArr['body'] = $msg; } 
     
-    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$options['trURL']."/post", $postArr); //  prr($postinfo);  prr($postArr);
+    $postinfo = $tum_oauth->post("http://api.tumblr.com/v2/blog/".$options['trURL']."/post", $postArr); prr("http://api.tumblr.com/v2/blog/".$options['trURL']."/post"); // prr($postinfo);  prr($postArr);
     
     $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     

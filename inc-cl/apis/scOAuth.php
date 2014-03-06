@@ -149,6 +149,7 @@ class wpScoopITOAuth{
       echo "<br/>REQ Token URL: ".$url."<br/>";
       $hdrsArr = $this->makeHTTPHeaders($url); $ckArr = '';   
       $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));  
+      if ( is_wp_error($response) ) return print_r($response, true);
       $this->http_code = $response['response']['code']; //  prr($response);
       if (stripos($response['body'],'oauth_token_secret=')===false) echo 'Bad oAuth Login:'.$response['body']; else return $this->oAuthRespToArr($response['body']);
     }

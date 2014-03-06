@@ -2,19 +2,19 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 3.2.3
+Stable tag: 3.3.0
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-* **Latest version 3.2** - Post to all social accounts without creating a Wordpress Post. New networks - Flickr and Scoop.It. 
+* **Latest version 3.3** - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard and Scoop.It. 
 * *Version 3.0* - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
 * *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
@@ -31,6 +31,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **Diigo** - Auto-submit bookmark to your account. 
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **Flickr** - Autopost images to your photostream and/or sets. Tags are supported. 
+* **Flipboard** (*with third party API library*) - post to your magazines.
 * **FriendFeed** - Autopost to your account. Ability to attach Image to posts.
 * **Instapaper** - Auto-submit bookmark to your account. 
 * **Google+** (*with third party API library*) - Autopost to your profile, business page or community. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
@@ -49,6 +50,8 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **YouTube** (*with third party API library*) - Post messages to your YouTube channel feed. If blogpost has youtube reference it will be attached.
 
 ... more networks are coming soon ...
+
+* (*with third party API library*) means that you need to have at least "Run-Time Edition" of <a href="http://www.nextscripts.com/snap-api/">SNAP Universal API</a>. SNAP API Run-Time Edition is included in the <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">SNAP Pro Plugin</a>.
 
 **Plugin makes 100% White Labeled Posts** The main idea behind the plugin is to give you the ability to promote only yourself. Plugin uses your own apps and all posts to all networks come only from you. No "Shared via NextScripts.com" or "Posted by SNAP for Wordpress" messages.
 
@@ -70,7 +73,7 @@ Please see <a href="http://www.nextscripts.com/installation-of-social-networks-a
 * Ability to "Spin" message post templates
 * Auto re-posting of the old posts
 
-** Also included exclusively in the "Pro" version **
+** Also included exclusively in the <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">SNAP Pro Plugin</a> **
 
 * Ability to make Scheduled and Delayed postings
 * Auto-repost existing random posts from from specific dates or "older then N days and younger then X days".
@@ -115,7 +118,7 @@ Have problems? Please check out the <a href="http://www.nextscripts.com/troubles
 
 Free plugin is limited to one account per each type of connected networks. In other words you can add 1 Facebook, AND 1 Twitter AND 1 LinkedIn AND 1 etc ... accounts in the "Free" version. This is enough for about 95% of users.
 
-Pro plugin is NOT limited in number of accounts per each type of connected networks.  You can add 10 (or 100) Facebook, AND 15 Twitter AND 5 LinkedIn AND 25 etc ... accounts in the "Pro" version. 
+<a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">SNAP Pro Plugin</a> is NOT limited in number of accounts per each type of connected networks.  You can add 10 (or 100) Facebook, AND 15 Twitter AND 5 LinkedIn AND 25 etc ... accounts in the "Pro" version. 
 
 Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions//">Compare Editions</a>
 
@@ -152,6 +155,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.0 [03/06/2014] =
+
+* New - New network "Flipboard". Post your links to your magazine. 
+* Improvement - A lot of code, error handling and interface optimizations and improvements. 
+* Improvement - Plugin is not using 47kb of official Facebook API for PHP anymore. Facabook autoposting is now more stable and faster.
+* Improvement - Auto-Reposting functionality will be disabled if WP Cron is not configured correctly. 
+* Improvement - Plugin show how many posts is included in auto-reposting on the settings page.
+* Bug Fix - Many bug fixes and improvements to the "Auto-Reposting" and "Posts from Query" functionality.
+* Bug Fix - Checkboxes with selected categories were not saving correctly.
+* Bug Fix - Google+ - custom URL postings were incorrect.
+* Bug Fix - Tumblr is now working "New Post to Social Networks"
 
 = 3.2.3 [02/07/2014] =
 
@@ -1073,10 +1088,8 @@ Author: Next Scripts
 
 Author URL: http://www.nextscripts.com
 
-Copyright 2012  Next Scripts, Inc
+Copyright 2012-2014  Next Scripts, Inc
 
 PHP Twitter API: Copyright 2012 -  themattharris - tmhOAuth
-
-PHP Facebook API: Copyright 2011 Facebook, Inc.
 
 NextScripts.com, Inc

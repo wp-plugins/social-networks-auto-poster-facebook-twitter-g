@@ -17,24 +17,38 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$fbo['fbAppSec'].'&client_id='.$fbo['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at, $wprg); 
       if ((is_object($response) && isset($response->errors))) { prr($response); die();}
       parse_str($response['body'], $params); $at = $params['access_token']; $fbo['fbAppAuthToken'] = $at; 
-      require_once ('apis/facebook.php'); echo "-= Using API =-<br/>";
-      $facebook = new NXS_Facebook(array( 'appId' => $fbo['fbAppID'], 'secret' => $fbo['fbAppSec'], 'cookie' => true)); 
-      $facebook -> setAccessToken($fbo['fbAppAuthToken']); $user = $facebook->getUser(); echo "USER:"; prr($user);
-      if ($user) {
-        try { $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-";          
-          if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { //$fbPgIDR = wp_remote_get('nxs.php?g='.$fbo['fbURL']); // TODO - how to replace
-             $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
-          } $page_info = $facebook->api("/$page_id?fields=access_token");           
-          if( !empty($page_info['access_token']) ) { $fbo['fbAppPageAuthToken'] = $page_info['access_token']; }
-        } catch (NXS_FacebookApiException $e) { $errMsg = $e->getMessage(); prr($errMsg);
-          if ( stripos($errMsg, 'Unknown fields: access_token')!==false) { $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; } else { 
-              if (stripos($errMsg, 'Unsupported get request')!==false) echo "<b style='color:red;'>Error </b>: Your Facebook URL ( <i>".$fbo['fbURL']."</i> ) is either incorrect or authorzing user don't have rights to post there.<br/>";
-              echo 'Reported Error: ',  $errMsg, "\n"; die(); 
-          }
+      
+      
+     //  $user_info = $this->api('/me');  $user = $user_info['id'];
+      $appsecret_proof = hash_hmac('sha256', $fbo['fbAppAuthToken'], $fbo['fbAppSec']); 
+      $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  
+      $res = wp_remote_get( "https://graph.facebook.com/me?".http_build_query($aacct, null, '&')); 
+      if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Facebook User."; prr($res); die();} else {
+        $user = json_decode($res['body'], true); if (empty($user)) {echo "Can't get Facebook User. JSON Error. "; prr($res); die();} else {
+            if (!empty($user['id'])) {
+              $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-";          
+              if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { //$fbPgIDR = wp_remote_get('nxs.php?g='.$fbo['fbURL']); // TODO - how to replace
+                $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
+              } 
+              $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  
+              $res = wp_remote_get( "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&'));// prr($res);
+              if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Page Token."; prr($res); die();} else {
+                  $token = json_decode($res['body'], true); if (empty($token)) {echo "Can't get Page Token. JSON Error. "; prr($res); die();} else {
+                    if (!empty($token['error'])) if (!empty($token['error']['message'])) { $errMsg = $token['error']['message'];
+                      if ( stripos($errMsg, 'Unknown fields: access_token')!==false) { $token['access_token'] = $fbo['fbAppAuthToken']; } else { 
+                        if (stripos($errMsg, 'Unsupported get request')!==false) echo "<b style='color:red;'>Error </b>: Your Facebook URL ( <i>".$fbo['fbURL']."</i> ) is either incorrect or authorzing user don't have rights to post there.<br/>";
+                        echo '<br/>Reported Error: ',  $errMsg, "\n"; die(); 
+                      }                    
+                    }                      
+                    if (!empty($token['access_token'])) { $fbo['fbAppPageAuthToken'] = $token['access_token']; } else {echo "Can't get Page Token. NO TOKEN RETURNED. "; prr($res); die();}
+                  } 
+              }
+              
+            } else {echo "Can't get User. NO USER RETURNED. "; prr($res); die();}
         }
-      } else echo "Can't get Facebook User. Please login to Facebook.";                
-                                                
-      if ($user>0) { $fbo['fbAppAuthUser'] = $user;  
+      }
+                                               
+      if (!empty($user['id'])) { $fbo['fbAppAuthUser'] = $user['id'];  $fbo['fbAppAuthUserName'] = $user['name']." (".$user['username'].")";  
         $optionsG = get_option('NS_SNAutoPoster'); $optionsG['fb'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
       <?php } die(); }
@@ -158,8 +172,8 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             if($options['fbAppSec']=='') { ?>
             <b><?php _e('Authorize Your Facebook Account', 'nxs_snap'); ?></b> <?php _e('Please click "Update Settings" to be able to Authorize your account.', 'nxs_snap'); ?>
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
-            <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
-            <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
+            <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'].(!empty($options['fbAppAuthUserName'])?" - ".$options['fbAppAuthUserName']:''), ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
+            <br/><?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
             <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&client_secret=<?php echo trim($options['fbAppSec']);?>&scope=publish_stream,user_photos,photo_upload,friends_photos,offline_access,read_stream,manage_pages,user_groups,friends_groups&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
@@ -345,22 +359,26 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   }
 }}
 
-if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { require_once ('apis/facebook.php');  if (empty($options['fbAppPageAuthToken'])) return;
-    $opts = array('access_token'  => $options['fbAppPageAuthToken']);    
-    $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true ));  $ci = 0;    
-    $ret = $facebook->api($po['pgID']."/comments?filter=toplevel&limit=250", "GET", $opts);
-    $impCmnts = get_post_meta($postID, 'snapImportedFBComments', true); if (!is_array($impCmnts)) $impCmnts = array(); //prr($impCmnts);   
-    if (is_array($ret) && is_array($ret['data'])) foreach ($ret['data'] as $comment){ $cid = $comment['id']; if (trim($cid)=='') continue;
-      if (!in_array('fbxcw'.$cid, $impCmnts)) {  $authData = $facebook->api($comment['from']['id'], "GET", $opts);  
+if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { $ci = 0;  if (empty($options['fbAppPageAuthToken'])) return;    
+    $options['appsecret_proof'] = hash_hmac('sha256', $options['fbAppPageAuthToken'], $options['fbAppSec']);     
+    $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');      
+    $res = wp_remote_get( "https://graph.facebook.com/".$po['pgID']."/comments?filter=toplevel&limit=250&".http_build_query($aacct, null, '&')); 
+    if (is_wp_error($res) || empty($res['body'])) $badOut['Error'] = ' [ERROR] '.print_r($res, true); else {
+    $ret = json_decode($res['body'], true); if (empty($ret)) $badOut['Error'] .= "JSON ERROR: ".print_r($res, true); else {        
+      $impCmnts = get_post_meta($postID, 'snapImportedFBComments', true); if (!is_array($impCmnts)) $impCmnts = array(); //prr($impCmnts);   
+      if (is_array($ret) && is_array($ret['data'])) foreach ($ret['data'] as $comment){ $cid = $comment['id']; if (trim($cid)=='') continue;
+      if (!in_array('fbxcw'.$cid, $impCmnts)) {  
+          $res = wp_remote_get( "https://graph.facebook.com/".$comment['from']['id']."?".http_build_query($aacct, null, '&')); $authData = json_decode($res['body'], true);
           $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['from']['name'], 'comment_author_email' => $comment['from']['id'].'@facebook.com', 
             'comment_author_url' => $authData['link'], 'comment_content' => $comment['message'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_time'] ) ), 'comment_type' => '');
            //prr($commentdata);
           $wpCid = nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++; $impCmnts[$wpCid] = 'fbxcw'.$cid; 
-      } else $wpCid = array_search('fbxcw'.$cid, $impCmnts);
-      $replRet = $facebook->api($cid."/comments", "GET", $opts); 
+      } else $wpCid = array_search('fbxcw'.$cid, $impCmnts);      
+            
+      $res = wp_remote_get( "https://graph.facebook.com/".$cid."/comments?".http_build_query($aacct, null, '&')); $replRet = json_decode($res['body'], true);
       if (is_array($replRet) && is_array($replRet['data'])) foreach ($replRet['data'] as $rComment){ $rCid = $rComment['id']; 
         if (trim($rCid)!='' && !in_array('fbxcw'.$rCid, $impCmnts)) {  // prr($impCmnts);
-          $authData = $facebook->api($rComment['from']['id'], "GET", $opts);  
+          $res = wp_remote_get( "https://graph.facebook.com/".$rComment['from']['id']."?".http_build_query($aacct, null, '&')); $authData = json_decode($res['body'], true);
           $commentdata = array( 'comment_parent' => $wpCid, 'comment_post_ID' => $postID, 'comment_author' => $rComment['from']['name'], 'comment_author_email' => $rComment['from']['id'].'@facebook.com', 
             'comment_author_url' => $authData['link'], 'comment_content' => $rComment['message'], 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $rComment['created_time'] ) ), 'comment_type' => '');
           // prr($commentdata);
@@ -371,6 +389,7 @@ if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments(
     delete_post_meta($postID, 'snapImportedFBComments'); add_post_meta($postID, 'snapImportedFBComments', $impCmnts ); 
     //## if Importing manually from Button echo result.
     if (isset($_POST['id']) && $_POST['id']!='') printf( _n( '%d comment has been imported.', '%d comments has been imported.', $ci, 'nxs_snap'), $ci );
+   }}
 }}
 
 // ShortCode [nxs_fbembed accnum=0]
@@ -457,7 +476,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
       //prr($options);
       $urlTitle = nxs_doQTrans($post->post_title, $lng);  $options['fbMsgFormat'] = $msg;    $urlTitle = strip_tags(strip_shortcodes($urlTitle));
-    }  // prr($mssg); // prr($options);  //   prr($facebook); echo "/$page_id/feed";
+    } 
     
     $message = array('url'=>$urlToGo, 'urlTitle'=>$urlTitle, 'urlDescr'=>$dsc, 'imageURL'=>$imgURL, 'videoURL'=>$vidURL, 'siteName'=>$blogTitle);  
       if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin

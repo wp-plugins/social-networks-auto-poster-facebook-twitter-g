@@ -8,8 +8,8 @@ if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fst
 if (!function_exists('nsx_doEncode')){ function nsx_doEncode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string);$keyLen = strlen($key); $j = 0; $hash = '';
   for ($i = 0; $i < $strLen; $i++) { $ordStr = ord(substr($string,$i,1)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= strrev(base_convert(dechex($ordStr + $ordKey),16,36));} return $hash;
 }}
-if (!function_exists('nsx_doDecode')){ function nsx_doDecode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string); $keyLen = strlen($key); $j = 0; $hash = '';
-  for ($i = 0; $i < $strLen; $i+=2) { $ordStr = hexdec(base_convert(strrev(substr($string,$i,2)),36,16)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= chr($ordStr - $ordKey);} return $hash;
+if (!function_exists('nsx_doDecode')){ function nsx_doDecode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string); $keyLen = strlen($key); $j = 0; $hash = ''; $strA = str_split($string, 2);
+  foreach($strA as $ordStr){ $ordStr = hexdec(base_convert(strrev($ordStr),36,16)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= chr($ordStr - $ordKey);} return $hash;
 }}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
   return html_entity_decode(preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/', 'nxs_convertEntity', $string), $quotes, $charset); 
@@ -740,9 +740,10 @@ function nxs_cURLTest($url, $msg, $testText){ echo "<br/>--== Test Requested ...
 //## Reposter
 function nxs_adjRpst($optionsii, $pval){  if (empty($optionsii['rpstDays'])) $optionsii['rpstDays'] = 0; if (empty($optionsii['rpstHrs'])) $optionsii['rpstHrs'] = 0; if (empty($optionsii['rpstMins'])) $optionsii['rpstMins'] = 0;
     
-    $rpstEvrySecEx = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
+    $rpstEvrySecEx = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60; $isRpstWasOn = isset($optionsii['rpstOn']) && $optionsii['rpstOn']=='1';
     
     if (isset($pval['rpstOn']))    $optionsii['rpstOn'] = $pval['rpstOn']; else $optionsii['rpstOn'] = 0;
+    
     if (isset($pval['rpstDays']))  $optionsii['rpstDays'] = trim($pval['rpstDays']);       
     if (isset($pval['rpstHrs']))   $optionsii['rpstHrs'] = trim($pval['rpstHrs']);     if ((int)$optionsii['rpstHrs']>23) $optionsii['rpstHrs'] = 23;
     if (isset($pval['rpstMins']))  $optionsii['rpstMins'] = trim($pval['rpstMins']);   if ((int)$optionsii['rpstMins']>59) $optionsii['rpstMins'] = 59;    
@@ -752,7 +753,7 @@ function nxs_adjRpst($optionsii, $pval){  if (empty($optionsii['rpstDays'])) $op
     $rpstEvrySecNew = $optionsii['rpstDays']*86400+$optionsii['rpstHrs']*3600+$optionsii['rpstMins']*60;
     $rpstRNDSecs = isset($optionsii['rpstRndMins'])?$optionsii['rpstRndMins']*60:0; if ($rpstRNDSecs>$rpstEvrySecNew) $optionsii['rpstRndMins'] = 0;
     
-    if ($rpstEvrySecNew!=$rpstEvrySecEx) { $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $optionsii['rpstNxTime'] = $currTime + $rpstEvrySecNew; }
+    if ($rpstEvrySecNew!=$rpstEvrySecEx || (!$isRpstWasOn && $optionsii['rpstOn']=='1')) { $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $optionsii['rpstNxTime'] = $currTime + $rpstEvrySecNew; }
     if (isset($pval['rpstType']))  $optionsii['rpstType'] = trim($pval['rpstType']);       
     if (isset($pval['rpstTimeType']))  $optionsii['rpstTimeType'] = trim($pval['rpstTimeType']);       
     if (isset($pval['rpstFromTime']))  $optionsii['rpstFromTime'] = trim($pval['rpstFromTime']);       
@@ -800,7 +801,7 @@ function nxs_showCatTagsCTFilters($nt, $ii, $options){ global $nxs_snapAvNts, $n
 }
 
 
-function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs_plurl; 
+function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs_plurl;   
   if (empty($options['rpstPostIncl'])) $options['rpstPostIncl'] = 0; if (empty($options['rpstPostIncl'])) $options['rpstLastShTime'] = ''; if (empty($options['rpstNxTime'])) $options['rpstNxTime'] = '';
   if (empty($options['rpstLastPostID'])) $options['rpstLastPostID'] = '';
 
@@ -808,6 +809,17 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
     <div class="nxs_tls_cpt">
    <?php _e('Auto Reposting', 'nxs_snap'); ?>&nbsp;&nbsp;<span class="nxsInstrSpan"><a href="http://www.nextscripts.com/snap-features/old-posts-auto-reposting/" target="_blank"><?php _e('[Instructions]', 'nxs_snap'); ?></a> </span>
    </div>
+   
+   <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { 
+      global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
+       if (isset($gOptions['forceBrokenCron']) && $gOptions['forceBrokenCron'] =='1') { ?> 
+         <span style="color: red"> <?php _e('Your WP Cron is not working correctly. Auto Reposting service is active by force. <br/> This might cause problems. Please see the test results and recommendations', 'nxs_snap'); ?>
+         &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span>
+        <?php } else { ?> <span style="color: red"> <?php _e('Auto Reposting service is Disabled. Your WP Cron is not working correctly. Please see the test results and recommendations', 'nxs_snap'); ?>
+     &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span>
+   <?php return; } } ?>
+   
+   
    <div class="nxs_tls_bd">
      <div class="nxs_tls_sbInfo"><?php _e('Plugin could autorepost existing posts', 'nxs_snap'); ?></div>
      <input value="1"  id="riC<?php echo $ii; ?>" <?php if (isset($options['rpstOn']) && trim($options['rpstOn'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOn]"/> 
@@ -857,6 +869,26 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
              <select name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"><option <?php echo $options['rpstPostIncl'] == "1"?'selected="selected"':''; ?> value="1">Enabled for Repost</option>
              <option <?php echo $options['rpstPostIncl'] != "1"?'selected="selected"':''; ?>  value="0">Disabled for Repost</option></select><br/>
       <div style="padding-left: 15px;"> <img id="nxsLoadingImg<?php echo $nt; ?><?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />       
+      
+      <?php      
+        global $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_code, $nxs_rpst_NT;  $ntOpts = $options;         
+        $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+        if (!empty($ntOpts['nxsCPTSeld'])) $tpArray = maybe_unserialize($ntOpts['nxsCPTSeld']); else $tpArray = 'post';
+        if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'ignore_sticky_posts' => 1, 'post_status' => 'publish', 'suppress_filters' => false ); 
+        if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );
+        if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );                   
+        $rpstToTime = strtotime($ntOpts['rpstToTime']); if ($currTime < $rpstToTime) $rpstToTime = $currTime;
+        $rpstFromTime = strtotime($ntOpts['rpstFromTime']); if ($currTime < $rpstFromTime) $rpstFromTime = $currTime;
+        if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - $rpstToTime) / 86400); $nxs_rpst_newer = ceil(abs($currTime - $rpstFromTime) / 86400);                   
+          } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':($ntOpts['rpstType']=='3'?'New to Old':'Old to New');
+        if ($nxs_rpst_newer>5000) $nxs_rpst_newer = 5000;  if ($nxs_rpst_newer<$nxs_rpst_older) $nxs_rpst_older = 0;                 
+        $nxs_rpst_code = 'nxsi'.$ii.$nt; $nxs_rpst_NT = strtoupper($nt);
+        add_filter( 'posts_join' , 'nxs_custom_posts_join');
+        if (isset($ntOpts['rpstOnlyPUP']) && trim($ntOpts['rpstOnlyPUP'])=='1')  {  add_filter( 'posts_where', 'nxs_filter_where_only' ); }
+        add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); 
+        echo "Total posts included in reposting: ".$query->found_posts;      
+      ?><br/>
+      
      <?php _e('Set All Existing Posts to: ', 'nxs_snap'); ?>
      &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled for Repost]', 'nxs_snap'); ?></a> </span>
      &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Disabled for Repost]', 'nxs_snap'); ?></a> </span>        
@@ -884,85 +916,91 @@ function nxs_filter_where( $where = '' ) { global $wpdb, $nxs_rpst_older, $nxs_r
     return $where; 
 }
 
-function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_code, $nxs_rpst_NT;  
+function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_older, $nxs_rpst_newer, $nxs_rpst_lastID, $nxs_rpst_lastTime, $nxs_rpst_type, $nxs_rpst_code, $nxs_rpst_NT;   
   if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;  $rpstBtwHrsF = 0; $rpstBtwHrsT = 0;
   $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );  $hasChanged = false;   
   // if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_addToLogN('A', 'NXSPoster - Cron', $logNT, '-=Time=- '.$ret. "ERR: ".$currTime, $extInfo);
-  if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')===false) return false;
+  if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')===false) return false; $warn = true;
+  
   foreach ($nxs_snapAvNts as $avNt) {
     if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { 
         foreach ($options[$avNt['lcode']] as $ii=>$ntOpts) { $logNT = '<span style="color:#800000">'.$avNt['name'].'</span> - '.$ntOpts['nName'];      
-          if ($ntOpts['rpstOn']=='1') { if (!isset($ntOpts['rpstNxTime']) || (int)$ntOpts['rpstNxTime']<1) $ntOpts['rpstNxTime'] = 0; //prr($ntOpts);            
-          if (isset($ntOpts['rpstBtwHrsType']) && $ntOpts['rpstBtwHrsType']=='D'){
-            //## Check Days
-            if (isset($ntOpts['rpstBtwDays']) && count($ntOpts['rpstBtwDays'])>0 ) $rpstBtwDays = $ntOpts['rpstBtwDays']; else $rpstBtwDays = array();            
-            if ($rpstBtwHrsF>0 && $rpstBtwHrsT>0) { $currDay = (int)date_i18n('w'); if (!(in_array($currDay, $rpstBtwDays))) { // echo "D :( ";
-              nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Day - '.$currDay, $extInfo);  continue;  
-            }}
-            //## Check Hours
-            if (isset($ntOpts['rpstBtwHrsF']) && (int)$ntOpts['rpstBtwHrsF']>0) $rpstBtwHrsF = (int)$ntOpts['rpstBtwHrsF'];
-            if (isset($ntOpts['rpstBtwHrsT']) && (int)$ntOpts['rpstBtwHrsT']>0) $rpstBtwHrsT = (int)$ntOpts['rpstBtwHrsT'];
-            if ($rpstBtwHrsF>0 && $rpstBtwHrsT>0) { $currHour = (int)date_i18n('H');  //echo "H ".$currHour." ?";
-              if ( !( ($rpstBtwHrsF<$rpstBtwHrsT && $currHour<$rpstBtwHrsT && $currHour>=$rpstBtwHrsF) || ($rpstBtwHrsF>$rpstBtwHrsT && $currHour<$rpstBtwHrsF && $currHour>=$rpstBtwHrsT) )) {  //echo "H :( ";
-                nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Hour - '.$currHour, $extInfo);  continue;  
-            }}
-          }
-          // echo "Yo -".$ntOpts['rpstLastShTime']."|<br/>";
-                $lastTime = (isset($ntOpts['rpstLastShTime']) && (int)$ntOpts['rpstLastShTime']>0 )?$ntOpts['rpstLastShTime']:$currTime;
-                $rpstEvrySec = $ntOpts['rpstDays']*86400+$ntOpts['rpstHrs']*3600+$ntOpts['rpstMins']*60; $rndSec = $ntOpts['rpstRndMins']*60;
-                $nxTime = (isset($ntOpts['rpstNxTime']) && (int)$ntOpts['rpstNxTime']>0)?$ntOpts['rpstNxTime']:$currTime+$rpstEvrySec;
-                
-                $times =  "Requested Time: ".date_i18n('Y-m-d H:i:s', $nxTime)." | Current Time:".date_i18n('Y-m-d H:i:s', $currTime)." | ";
-                
-                if ($nxTime < $currTime) { $hasChanged = true; // Do Post                
-                   $nxs_rpst_type = $ntOpts['rpstType'];
+          if ($ntOpts['rpstOn']=='1') {    
+            //## Calculate Times
+            $lastTime = (isset($ntOpts['rpstLastShTime']) && (int)$ntOpts['rpstLastShTime']>0 )?$ntOpts['rpstLastShTime']:$currTime;
+            $rpstEvrySec = $ntOpts['rpstDays']*86400+$ntOpts['rpstHrs']*3600+$ntOpts['rpstMins']*60; $rndSec = $ntOpts['rpstRndMins']*60;
+            $nxTime = (isset($ntOpts['rpstNxTime']) && (int)$ntOpts['rpstNxTime']>0)?$ntOpts['rpstNxTime']:$currTime+$rpstEvrySec;  
+            //## First time? Set the options and get out. 
+            if (empty($ntOpts['rpstLastShTime'])) {  $ntOpts['rpstLastShTime'] = $currTime; $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec + rand(0-$rndSec, $rndSec); 
+              $options[$avNt['lcode']][$ii] = $ntOpts; update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); $plgn_NS_SNAutoPoster->nxs_options = $options;  
+               nxs_addToLogN('S', 'RE-Poster', $logNT, 'Initialization - First post will be: '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']), $extInfo); continue; 
+            }
+            //## Is it time to post?
+            if ($nxTime < $currTime) {  $times =  "Requested Time: ".date_i18n('Y-m-d H:i:s', $nxTime)." | Current Time:".date_i18n('Y-m-d H:i:s', $currTime)." | "; 
+              //## Check if WP Cron is healthy   
+              if ($warn) { $cr = get_option('NXS_cronCheck'); $warn = false; if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { global $nxs_snapThisPageUrl;     
+                if (isset($options['forceBrokenCron']) && $options['forceBrokenCron'] =='1') 
+                  nxs_addToLogN('W', 'Re-Poster is active by force. This could cause problems.', $logNT, 'Please see ', '<a target="_blank" href="'.$nxs_snapThisPageUrl.'&do=crtest">WP Cron Test Results</a>|'.$times); 
+                else { nxs_addToLogN('W', 'Re-Poster is Disabled', $logNT, 'Please see ', '<a target="_blank" href="'.$nxs_snapThisPageUrl.'&do=crtest">WP Cron Test Results</a>|'.$times); return; }
+              }} 
+              
+              if (!isset($ntOpts['rpstNxTime']) || (int)$ntOpts['rpstNxTime']<1) $ntOpts['rpstNxTime'] = 0; //prr($ntOpts);            
+              //## Check if Day or Hour is excluded
+              if (isset($ntOpts['rpstBtwHrsType']) && $ntOpts['rpstBtwHrsType']=='D'){ 
+                //## Check Days
+                if (isset($ntOpts['rpstBtwDays']) && count($ntOpts['rpstBtwDays'])>0 ) $rpstBtwDays = $ntOpts['rpstBtwDays']; else $rpstBtwDays = array();            
+                if (is_array($rpstBtwDays) && count($rpstBtwDays)>0) { $currDay = (int)date_i18n('w'); if (!(in_array($currDay, $rpstBtwDays))) { // echo "D :( ";
+                  nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Day - '.$currDay, $extInfo);  continue;  
+                }}
+                //## Check Hours
+                if (isset($ntOpts['rpstBtwHrsF']) && (int)$ntOpts['rpstBtwHrsF']>0) $rpstBtwHrsF = (int)$ntOpts['rpstBtwHrsF'];
+                if (isset($ntOpts['rpstBtwHrsT']) && (int)$ntOpts['rpstBtwHrsT']>0) $rpstBtwHrsT = (int)$ntOpts['rpstBtwHrsT'];
+                if ($rpstBtwHrsF>0 && $rpstBtwHrsT>0) { $currHour = (int)date_i18n('H');  //echo "H ".$currHour." ?";
+                if ( !( ($rpstBtwHrsF<$rpstBtwHrsT && $currHour<$rpstBtwHrsT && $currHour>=$rpstBtwHrsF) || ($rpstBtwHrsF>$rpstBtwHrsT && $currHour<$rpstBtwHrsF && $currHour>=$rpstBtwHrsT) )) {  //echo "H :( ";
+                  nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Hour - '.$currHour, $extInfo);  continue;  
+                }}
+              }
+              //## Do Post                
+              $hasChanged = true; $nxs_rpst_type = $ntOpts['rpstType'];
+              $nxs_rpst_lastID = (isset($ntOpts['rpstLastPostID']) && (int)$ntOpts['rpstLastPostID']>0)?$ntOpts['rpstLastPostID']:($ntOpts['rpstType']=='3'?'90000000':'0');
+              $nxs_rpst_lastTime = (!empty($ntOpts['rpstLastPostTime']) && $ntOpts['rpstLastPostTime']!='2050-12-12' && $ntOpts['rpstLastPostTime']!='1975-01-01')?$ntOpts['rpstLastPostTime']:($ntOpts['rpstType']=='3'?'2050-12-12':'1975-01-01');
+              if (!empty($ntOpts['nxsCPTSeld'])) $tpArray = maybe_unserialize($ntOpts['nxsCPTSeld']); else $tpArray = 'post';
+              //nxs_addToLogN('S', 'pTypes', $logNT, print_r($tpArray, true), $extInfo); // $tpArray = array('post', 'location');
+              if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'ignore_sticky_posts' => 1, 'post_status' => 'publish', 'suppress_filters' => false ); 
+              if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );
+              if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );                   
+              //## Get Post for Reposting
+              //   nxs_addToLogN('S', 'pTypes- ARG', $logNT, print_r($args, true), $extInfo);
+              $rpstToTime = strtotime($ntOpts['rpstToTime']); if ($currTime < $rpstToTime) $rpstToTime = $currTime;  $rpstFromTime = strtotime($ntOpts['rpstFromTime']); if ($currTime < $rpstFromTime) $rpstFromTime = $currTime;
+              if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - $rpstToTime) / 86400); 
+                $nxs_rpst_newer = ceil(abs($currTime - $rpstFromTime) / 86400);                   
+              } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':($ntOpts['rpstType']=='3'?'New to Old':'Old to New');
+              if ($nxs_rpst_newer>5000) $nxs_rpst_newer = 5000;  if ($nxs_rpst_newer<$nxs_rpst_older) $nxs_rpst_older = 0;
+                $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);
+                add_filter( 'posts_join' , 'nxs_custom_posts_join');
+                if (isset($ntOpts['rpstOnlyPUP']) && trim($ntOpts['rpstOnlyPUP'])=='1')  {  add_filter( 'posts_where', 'nxs_filter_where_only' ); }
+                add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); // $extInfo = print_r($query, true);                   
                    
-                   $nxs_rpst_lastID = (isset($ntOpts['rpstLastPostID']) && (int)$ntOpts['rpstLastPostID']>0)?$ntOpts['rpstLastPostID']:($ntOpts['rpstType']=='3'?'90000000':'0');
-                   $nxs_rpst_lastTime = (isset($ntOpts['rpstLastPostTime']) && $ntOpts['rpstLastPostTime']!='' && $ntOpts['rpstLastPostTime']!='2050-12-12' && $ntOpts['rpstLastPostTime']!='1975-01-01')?$ntOpts['rpstLastPostTime']:($ntOpts['rpstType']=='3'?'2050-12-12':'1975-01-01');
+                $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1985-01-01':'2050-12-12');
+                $extInfo = " | Reposting (<b>".$ggg."</b>) POST ID:".$rpstLastPostID. " | Total posts included in reposting: ".$query->found_posts." | Prev Post ID:".$nxs_rpst_lastID ." | ".($options['extDebug']=='1'?"|Query: ".print_r($query->request, true):'');
                    
-                   if (!empty($ntOpts['nxsCPTSeld'])) $tpArray = maybe_unserialize($ntOpts['nxsCPTSeld']); else $tpArray = 'post';
-                   
-                   //nxs_addToLogN('S', 'pTypes', $logNT, print_r($tpArray, true), $extInfo); // $tpArray = array('post', 'location');
-                   
-                   if ($ntOpts['rpstType']=='1') $args = array ( 'orderby' => 'rand', 'posts_per_page' => '1', 'post_type' => $tpArray, 'ignore_sticky_posts' => 1, 'post_status' => 'publish', 'suppress_filters' => false ); 
-                 //  if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date ASC, p.ID ASC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );
-//                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'post_date DESC, p.ID DESC', 'post_type' => 'post', 'post_status' => 'publish', 'suppress_filters' => false );                   
-                   if ($ntOpts['rpstType']=='2') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'ASC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );
-                   if ($ntOpts['rpstType']=='3') $args = array ( 'posts_per_page' => '1', 'orderby' => 'date ID', 'order'=>'DESC', 'post_type' => $tpArray, 'post_status' => 'publish', 'suppress_filters' => false );                   
-                   //## Get Post for Reposting
-                //   nxs_addToLogN('S', 'pTypes- ARG', $logNT, print_r($args, true), $extInfo);
-                   $rpstToTime = strtotime($ntOpts['rpstToTime']); if ($currTime < $rpstToTime) $rpstToTime = $currTime;
-                   $rpstFromTime = strtotime($ntOpts['rpstFromTime']); if ($currTime < $rpstFromTime) $rpstFromTime = $currTime;
-                   if ($ntOpts['rpstTimeType']=='D') { $nxs_rpst_older = ceil(abs($currTime - $rpstToTime) / 86400); 
-                     $nxs_rpst_newer = ceil(abs($currTime - $rpstFromTime) / 86400);                   
-                   } else { $nxs_rpst_older = $ntOpts['rpstOLDays']; $nxs_rpst_newer = $ntOpts['rpstNWDays']; } $ggg = $ntOpts['rpstType']=='1'?'Random':($ntOpts['rpstType']=='3'?'New to Old':'Old to New');
-                   if ($nxs_rpst_newer>5000) $nxs_rpst_newer = 5000;  if ($nxs_rpst_newer<$nxs_rpst_older) $nxs_rpst_older = 0;
-                   //if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  { add_filter( 'posts_join' , 'nxs_custom_posts_join'); add_filter( 'posts_where', 'nxs_filter_where_only' ); }
-                   
-                   $nxs_rpst_code = 'nxsi'.$ii.$avNt['lcode']; $nxs_rpst_NT = strtoupper($avNt['lcode']);
-                   add_filter( 'posts_join' , 'nxs_custom_posts_join');
-                   if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1')  {  add_filter( 'posts_where', 'nxs_filter_where_only' ); }
-                   add_filter( 'posts_where', 'nxs_filter_where' ); $query = new WP_Query( $args ); remove_filter( 'posts_where', 'filter_where' ); // $extInfo = print_r($query, true);                   
-                   
-                   $rpstLastPostID = $query->posts[0]->ID;  $rpstLastPostTime = $query->posts[0]->post_date;  $ntOpts['rpstLastPostTime'] =  ($rpstLastPostTime!='')?$rpstLastPostTime:($ntOpts['rpstType']=='3'?'1985-01-01':'2050-12-12');
-                   $extInfo = " | Reposting (<b>".$ggg."</b>) POST ID:".$rpstLastPostID. " | Total posts included in reposting: ".$query->found_posts." | Prev Post ID:".$nxs_rpst_lastID ." | ".($options['extDebug']=='1'?"|Query: ".print_r($query->request, true):'');
-                   
-                   //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
-                   $ntOpts['rpstLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec*2 + $rndTime;  
-                   if (($ntOpts['rpstType']=='1') && (int)$rpstLastPostID<1) {  $ntOpts['rpstOn']='0'; 
-                     nxs_addToLogN('S','RE-Posting - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
-                   } else { $ntOpts['rpstLastPostID'] = $rpstLastPostID;                                      
-                     //## Actual Post                     
-                     $clName = 'nxs_snapClass'.strtoupper($avNt['lcode']); $pFuncName = 'nxs_doPublishTo'.strtoupper($avNt['lcode']);                     
-                     $po =  get_post_meta($rpstLastPostID, 'snap'.strtoupper($avNt['lcode']), true); $po =  maybe_unserialize($po); 
-                     $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOptsPost = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
-                     if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOptsPost, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
-                     $result = $pFuncName($rpstLastPostID, $ntOptsPost); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);                          
-                     nxs_addToLogN('S', 'RE-Posting', $logNT, 'OK  | '.$times.' | Previous Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
-                   }
+                //echo "<br/>\r\n".$rpstEvrySec."<br/>\r\n";
+                $ntOpts['rpstLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec*2 + $rndTime;  
+                if ((int)$rpstLastPostID<1) {  
+                  if ($ntOpts['rpstType']=='1') nxs_addToLogN('S','Random Re-Posting - Nothing to post',$logNT, $times.'| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
+                  else { $ntOpts['rpstOn']='0';  
+                    nxs_addToLogN('S','RE-Posting - End of the Query',$logNT,'OK '.$times.' ||| Last Time:'.date_i18n('Y-m-d H:i:s', $lastTime).' RND Time: '.$rndTime.' - Next Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")", $extInfo);
+                  }
+                } else { $ntOpts['rpstLastPostID'] = $rpstLastPostID;                                      
+                  //## Actual Post                     
+                  $clName = 'nxs_snapClass'.strtoupper($avNt['lcode']); $pFuncName = 'nxs_doPublishTo'.strtoupper($avNt['lcode']);                     
+                  $po =  get_post_meta($rpstLastPostID, 'snap'.strtoupper($avNt['lcode']), true); $po =  maybe_unserialize($po); 
+                  $ntClInst = new $clName(); $ntOpts['ii'] = $ii; $ntOpts['pType'] = 'aj'; $ntOptsPost = $ntClInst->adjMetaOpt($ntOpts, $po[$ii]); 
+                  if ($options['extDebug']=='1') $extInfo .= "<br/><br/>NT OPTS: ".print_r($ntOptsPost, true);  if ($options['extDebug']=='1') $extInfo .= "ARGS: <br/><br/>".print_r($args, true);
+                  $result = $pFuncName($rpstLastPostID, $ntOptsPost); //if ($result == 200) die("Successfully sent your post to App.Net."); else die($result);                          
+                  nxs_addToLogN('S', 'RE-Posting', $logNT, 'OK  | '.$times.' | Previous Time:'.date_i18n('Y-m-d H:i:s', $lastTime).'| Next Shedulled Time - '.date_i18n('Y-m-d H:i:s', $ntOpts['rpstNxTime']).")<br/>", $extInfo);
                 }
-                if (!isset($ntOpts['rpstLastShTime']) || (int)$ntOpts['rpstLastShTime']==0 ) {  $hasChanged = true; $ntOpts['rpstLastShTime'] = $currTime; $ntOpts['rpstNxTime'] = $lastTime + $rpstEvrySec + rand(0-$rndSec, $rndSec); }
-                $options[$avNt['lcode']][$ii] = $ntOpts; // prr($ntOpts);
+              } $options[$avNt['lcode']][$ii] = $ntOpts; // prr($ntOpts);
             }
         }      
     }
@@ -978,9 +1016,9 @@ function nxs_chckBrwsr() { $isOK = false;
 }
 
 //## NXS Cron
-if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_rePoster();  if (!is_home() && !is_front_page()) return; if (nxs_chckBrwsr()==false) return;    
+if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (!is_home() && !is_front_page()) return; if (nxs_chckBrwsr()==false) return;    
    //if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) return;   
-   $ltc = get_option('NSX_LastTChecked'); if (time()<$ltc+300) return;  $sh =_get_cron_array();  $itmsToPush = array();   
+   $ltc = get_option('NSX_LastTChecked'); if (empty($ltc)) { add_option("NSX_LastTChecked", time()); return; } if (time()<$ltc+300) return;  $sh =_get_cron_array();  $itmsToPush = array();   
    if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
      if ($evTime>'1359495839' && $evTime<time()-$chkTime) $itmsToPush[] = array('time'=>$evTime);
    } if (count($itmsToPush)<1) return;  
@@ -989,7 +1027,7 @@ if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (stripos($_SERV
    nxs_addToLogN('S', 'Missed Scheduled Autoposts Found', '', ' - ('.$evTime."&lt;".(time()-$chkTime).') - Trying to Post', '');
    delete_post_meta(); add_post_meta($toPush['args'][0], 'snap_mp_'.$toPush['func'], (time()+300));
    */
-   delete_option("NSX_LastTChecked"); add_option("NSX_LastTChecked", time());
+   update_option("NSX_LastTChecked", time());
    $cron_url = site_url('wp-cron.php?doing_wp_cron=0'); ?><script type="text/javascript" > jQuery(document).ready(function($) { jQuery.get('<?php echo $cron_url; ?>'); }); </script><?php // die();
    return true;         
 }}
@@ -1001,7 +1039,7 @@ if (!function_exists("nxs_addToRI")) { function nxs_addToRI($postID) { global $p
 
 function nxs_activation(){ if (!wp_next_scheduled('nxs_hourly_event')){wp_schedule_event(time(), 'hourly', 'nxs_hourly_event');} if (!wp_next_scheduled('nxs_querypost_event')){wp_schedule_event(time(), 'nxsreposter', 'nxs_querypost_event');}  }
 function nxs_do_this_hourly() {  $options = get_option('NS_SNAutoPoster');   
-  if (isset($options['errNotifEmailCB']) && (int)$options['errNotifEmailCB'] == 1 && isset($options['errNotifEmail']) && trim($options['errNotifEmail']) != '') { $logToSend = maybe_unserialize(get_option('NSX_LogToEmail')); echo "SSS"; 
+  if (isset($options['errNotifEmailCB']) && (int)$options['errNotifEmailCB'] == 1 && isset($options['errNotifEmail']) && trim($options['errNotifEmail']) != '') { $logToSend = maybe_unserialize(get_option('NSX_LogToEmail')); // echo "SSS"; 
 //  prr($logToSend);
     if (is_array($logToSend) && count($logToSend)>0) { $to = $options['errNotifEmail']; $subject = "SNAP Error Log for ".$_SERVER["SERVER_NAME"]; $message = print_r($logToSend, true);
       $eml = get_bloginfo('admin_email'); if (trim($eml)=='') $eml = "snap-notify@".str_ireplace('www.','',$_SERVER["SERVER_NAME"]); 
@@ -1041,9 +1079,10 @@ function nxs_addToPostingQuery($postID){ global $plgn_NS_SNAutoPoster; if (!isse
   $currTime = time() + 10 + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); $nxTime = !empty($options['quNxTime'])?$options['quNxTime']:0;
   if (empty($nxTime) || $nxTime < $currTime) { $options['quNxTime'] = $currTime; update_option('NS_SNAutoPoster', $options);  $plgn_NS_SNAutoPoster->nxs_options = $options; }
 }
-function nxs_do_post_from_query() { // nxs_addToLogN('A', 'Debug info only. - Cron Time', 'X', '', $extInfo);    
+function nxs_do_post_from_query() { nxs_cron_check(); // nxs_addToLogN('A', 'Debug info only. - Cron Time', 'X', '', $extInfo);      
+  if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) nxs_rePoster(); //## Run Reposter.
   $options = get_option('NS_SNAutoPoster'); $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array();
-  if ($options['quLimit'] != 1 || count($quPosts)<1) return;  $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );  $hasChanged = false; 
+  if ($options['quLimit'] != '1' || count($quPosts)<1) return;  $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );  $hasChanged = false; 
   $postToPost = array_shift($quPosts);   
   
   $pstEvrySec = $options['quDays']*86400+$options['quHrs']*3600+$options['quMins']*60; $rndSec = $options['quLimitRndMins']*60;  
@@ -1054,10 +1093,11 @@ function nxs_do_post_from_query() { // nxs_addToLogN('A', 'Debug info only. - Cr
   if (empty($options['quNxTime']) || $nxTime < $currTime) $hasChanged = true;  // Do Post  
        
   if ($hasChanged) { //## Do Post     
+    nxs_addToLogN('A', '**START** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, $logNT, '-=Time=- '.$currTime, $extInfo);
     nxs_snapPublishTo($postToPost, '', true);  
     $options['quLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $options['quNxTime'] = $currTime + $pstEvrySec + $rndTime;    
     if ($options['nxsOverLimit']=='D') { $dateC = date("d"); $dayN = date("d", $nxTime); if ($dayN!=$dateC) $quPosts = array(); }    
-    nxs_addToLogN('A', 'NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, $logNT, '-=Time=- '.$currTime, $extInfo); update_option('NSX_PostsQuery', $quPosts);  update_option('NS_SNAutoPoster', $options);
+    nxs_addToLogN('A', '**END** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, $logNT, '-=Time=- '.$currTime, $extInfo); update_option('NSX_PostsQuery', $quPosts);  update_option('NS_SNAutoPoster', $options);
   }
 }
 

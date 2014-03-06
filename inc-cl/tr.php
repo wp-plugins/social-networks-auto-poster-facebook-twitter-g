@@ -325,8 +325,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
       if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
       $gOptions = $plgn_NS_SNAutoPoster->nxs_options; $addURLParams = trim($gOptions['addURLParams']);  if($addURLParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addURLParams;               
     }   
-    $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'').' |'.$options['pType'];    
-    $options['trURL'] = trim(str_ireplace('http://', '', $options['trURL'])); if (substr($options['trURL'],-1)=='/') $options['trURL'] = substr($options['trURL'], 0, -1);
+    $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'').' |'.$options['pType'];        
     //## Post             
     $message = array('siteName'=>$blogTitle, 'imageURL'=>$imgURL, 'tags'=>$tags, 'url'=>$urlToGo, 'postDate'=>$postDate, 'videoURL'=>$ytUrl); // prr($message); prr($options); die();
     //## Actual Post

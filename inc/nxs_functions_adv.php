@@ -92,6 +92,7 @@ if (!function_exists("nxs_memCheck")) { function nxs_memCheck() { global $nxs_sn
       <strong><?php _e('Memory limit'); ?></strong>: <span><?php echo $mLimit; ?>; &nbsp;</span>
       <strong><?php _e('Memory usage'); ?></strong>: <span><?php echo $mUsage; ?>; &nbsp;</span>
       &nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=test">Check HTTPS/SSL</a>
+      &nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=crtest">Show Cron Test Results</a>
     </div> <?php
 }}
 //## Check SSL Sec
@@ -101,6 +102,14 @@ if (!function_exists("nxsCheckSSLCurl")){function nxsCheckSSLCurl($url){
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); 
   $content = curl_exec($ch); $err = curl_errno($ch); $errmsg = curl_error($ch); if ($err!=0) return array('errNo'=>$err, 'errMsg'=>$errmsg); else return false;
 }}
+if (!function_exists("nxs_cron_check")){function nxs_cron_check() { if (stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) {  
+  $cronCheckArray = get_option('NXS_cronCheck'); if (empty($cronCheckArray)) $cronCheckArray = array('cronCheckStartTime'=>time(), 'cronChecks'=>array());    
+  if (($cronCheckArray['cronCheckStartTime']+900)>time()) {  ( $offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+    $cronCheckArray['cronChecks'][] = '['.date_i18n('Y-m-d H:i:s', $_SERVER["REQUEST_TIME"]+$offset).'] - WP Cron called from '.$_SERVER["REMOTE_ADDR"].' ('.$_SERVER["HTTP_USER_AGENT"].')';
+    //nxs_addToLogN('S', 'Cron Check', '', 'WP Cron called from '.$_SERVER["REMOTE_ADDR"].' ('.$_SERVER["HTTP_USER_AGENT"].')', date_i18n('Y-m-d H:i:s', $_SERVER["REQUEST_TIME"]+$offset));
+  } elseif (empty($cronCheckArray['status']) &&  is_array($cronCheckArray['cronChecks'])) $cronCheckArray['status'] = (count($cronCheckArray['cronChecks'])<11 && count($cronCheckArray['cronChecks'])>2)?1:0;
+  update_option("NXS_cronCheck", $cronCheckArray);    
+}}}
 
 function toolbar_link_to_mypage( $wp_admin_bar ) {
     $args = array(

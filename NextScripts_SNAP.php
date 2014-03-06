@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.2.3
+Version: 3.3.0
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.2.3' ); 
+define( 'NextScripts_SNAP_Version' , '3.3.0' ); 
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -41,6 +41,18 @@ if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET
   nxs_cURLTest("https://www.pinterest.com/", "HTTPS to Pinterest", 'content="Pinterest"');
   nxs_cURLTest("http://www.livejournal.com/", "HTTP to LiveJournal", '1999 LiveJournal');  
   die('Done');
+}
+if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='crtest'){ 
+    if (isset($_GET['redo']) && $_GET['redo']=='1'){ delete_option("NXS_cronCheck");  ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>&do=crtest"</script><?php }    
+    $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr)) { $checks = $cr['cronChecks']; $numChecks = count($checks); echo '<div style="font-family:\'Open Sans\',sans-serif;font-size: 15px;">';
+      if ( ($cr['cronCheckStartTime']+900)>(time())) echo "<b>Cron Check is in Progress.....</b> will be finished in ".($cr['cronCheckStartTime']+900-time()).' seconds. Please <input type="button" value="Reload" onClick="location.reload()"> this page to see more results.... <br/><br/>'; else { echo "Cron Check Results:<br/>";
+        echo '<span style="color:#761616">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==== Cron was executed <b>'.$numChecks.'</b> times in 15 minutes ===</span>';
+        if ($numChecks>15 || $numChecks<2) echo '<b style="color:#FF0000"><br/><br/>Your WP Cron is not healthy</b><br/><br/><span style="color:#761616">'.(($numChecks>15)?('WP Cron should NOT be executed more then once per minute.'):('WP Cron should be executed at least once in 5-10 minutes.')).'  Some functionality (like auto-reposting) will be disabled.</span><br/><br/><span style="color:#005858; font-weight:bold;">Why this is important?</span><br/><span style="color:#005858">Please see this post: <a href="http://www.nextscripts.com/blog/troubles-wp-cron-existing-posts-auto-reposter/" target="_blank">Troubles with WP Cron and existing posts auto-reposter</a></span><br/><br/><span style="color:#005858; font-weight:bold;">Solution</span><br/><span style="color:#005858">Please see the instructions for the correct WP Cron setup: <a href="http://www.nextscripts.com/tutorials/wp-cron-scheduling-tasks-in-wordpress/" target="_blank">WP-Cron: Scheduling Tasks in WordPress</a></span>'; else  echo '<b style="color:#0000FF"><br/><br/>Your WP Cron is OK</b>';
+      }
+     ?> <br/><br/><span style="color:#000058; font-weight:normal;">Technical Info:</span> <?php prr($cr);  ?>&nbsp;&nbsp;====&nbsp;<a href="<?php echo $nxs_snapThisPageUrl; ?>&do=crtest&redo=1">Re-do Cron Check</a> (it will take 10 minutes to complete)<?php
+    } else echo 'Check is not started yet... Please <input type="button" value="Reload" onClick="location.reload()"> this page in couple minutes.';
+     echo '</div>';
+    die();
 }
 //## Delete Account
 if (!function_exists("ns_delNT_ajax")) { function ns_delNT_ajax(){ check_ajax_referer('nxsSsPageWPN'); $indx = (int)$_POST['id']; 
@@ -138,8 +150,9 @@ if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax
   $logInfo = nxs_getnxsLog();
   if (is_array($logInfo))foreach (array_reverse($logInfo) as $logline) { 
             if ($logline['type']=='E') $actSt = "color:#FF0000;"; elseif ($logline['type']=='M') $actSt = "color:#585858;"; elseif ($logline['type']=='BG') $actSt = "color:#008000; font-weight:bold;";
-              elseif ($logline['type']=='I') $actSt = "color:#0000FF;"; elseif ($logline['type']=='W') $actSt = "color:#DB7224;"; elseif ($logline['type']=='BI') $actSt = "color:#0000FF; font-weight:bold;"; 
-              elseif ($logline['type']=='GR') $actSt = "color:#008080;"; elseif ($logline['type']=='S') $actSt = "color:#005800; font-weight:bold;"; else $actSt = "color:#585858;";              
+              elseif ($logline['type']=='I') $actSt = "color:#0000FF;"; elseif ($logline['type']=='W') $actSt = "color:#DB7224;"; elseif ($logline['type']=='A') $actSt = "color:#580058;";
+              elseif ($logline['type']=='BI') $actSt = "color:#0000FF; font-weight:bold;"; elseif ($logline['type']=='GR') $actSt = "color:#008080;"; 
+              elseif ($logline['type']=='S') $actSt = "color:#005800; font-weight:bold;"; else $actSt = "color:#585858;";              
             if ($logline['type']=='E') $msgSt = "color:#FF0000;"; elseif ($logline['type']=='BG') $msgSt = "color:#008000; font-weight:bold;"; else $msgSt = "color:#585858;";                            
             if ($logline['nt']!='') $ntInfo = ' ['.$logline['nt'].'] '; else $ntInfo = '';           
             echo '<snap style="color:#008000">['.$logline['date'].']</snap> - <snap style="'.$actSt.'">['.$logline['act'].']</snap>'.$ntInfo.'-  <snap style="'.$msgSt.'">'.$logline['msg'].'</snap> '.$logline['extInfo'].'<br/>'; 
@@ -189,7 +202,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
     $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1') { nxs_addToLogN('W', 'Skipped', '', 'Already Autoposted - Post ID:('.$postID.')' ); return; }  
     $snap_isEdIT = get_post_meta($postID, 'snapEdIT', true); if ($snap_isEdIT!='1') { $doPost = true; $exclCats = maybe_unserialize($options['exclCats']); $postCats = wp_get_post_categories($postID);
        foreach ($postCats as $pCat) { if ( (is_array($exclCats)) && in_array($pCat, $exclCats)) $doPost = false; else {$doPost = true; break;}}
-       if (!$doPost) { nxs_addToLogN('I', 'Skipped', '', 'Non-Human Post - Category Excluded - Post ID:('.$postID.')' ); return; }
+       if (!$doPost) { nxs_addToLogN('I', 'Skipped', '', 'Automated Post - Category Excluded - Post ID:('.$postID.')' ); return; }
     }    
       
     foreach ($nxs_snapAvNts as $avNt) { 
@@ -202,7 +215,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
         $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }       
           if ($snap_isEdIT!='1') { $doPost = true; 
             if ( $optMt['catSel']=='1' && trim($optMt['catSelEd'])!='' ) { $inclCats = explode(',',$optMt['catSelEd']); foreach ($postCats as $pCat) { if (!in_array($pCat, $inclCats)) $doPost = false; else {$doPost = true; break;}} 
-              if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Non-Human Post]  - Individual Category Excluded - Post ID:('.$postID.')' ); continue; }
+              if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Automated Post]  - Individual Category Excluded - Post ID:('.$postID.')' ); continue; }
             }
           }        
           if ($optMt['do'.$avNt['code']]=='1') { $optMt['ii'] = 0; 
@@ -441,12 +454,14 @@ add_action('in_admin_footer', 'nxs_admin_footer');
 add_action('in_admin_header', 'nxs_admin_header');
  
 //## Actions and filters    
-add_action('shutdown', 'nxs_psCron', 25); //add_action( 'transition_post_status', 'nxs_snapLogPublishTo', 10, 3 );
+//add_action( 'transition_post_status', 'nxs_snapLogPublishTo', 10, 3 );
 
 add_filter('cron_schedules', 'cron_add_nxsreposter');  
-add_action('nxs_hourly_event', 'nxs_do_this_hourly');
-add_action('nxs_querypost_event', 'nxs_do_post_from_query');  
-add_action('wp', 'nxs_activation'); //## Adds Hourly Event  
+add_action('nxs_hourly_event', 'nxs_do_this_hourly'); //## Adds Hourly Event  
+add_action('nxs_querypost_event', 'nxs_do_post_from_query'); //## Query and Re-Poster  
+add_action('wp', 'nxs_activation'); 
+add_action('shutdown', 'nxs_psCron', 25); 
+
 add_filter('get_avatar','ns_get_avatar', 10, 5 );
   
 if (isset($plgn_NS_SNAutoPoster)) { //## Actions
@@ -477,17 +492,7 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
                        
   if ($isO || $isS) {    
     add_action( 'transition_post_status', 'nxs_snapLogPublishTo', 10, 3 );
-  /*
-  //## Whenever you publish a post, post to Social Networks
-    add_action('future_to_publish', 'nxs_snapPublishTo');
-    add_action('new_to_publish', 'nxs_snapPublishTo');
-    add_action('draft_to_publish', 'nxs_snapPublishTo');
-    add_action('pending_to_publish', 'nxs_snapPublishTo');   
-    add_action('private_to_publish', 'nxs_snapPublishTo');
-    add_action('auto-draft_to_publish', 'nxs_snapPublishTo');
-    //## Add nxs_snapPublishTo to custom post types
-    */
-
+  
     foreach ($nxs_snapAvNts as $avNt) { add_action('ns_doPublishTo'.$avNt['code'], 'nxs_doPublishTo'.$avNt['code'], 1, 2); }
     foreach ($nxs_snapAvNts as $avNt) { add_action('wp_ajax_rePostTo'.$avNt['code'], 'nxs_rePostTo'.$avNt['code'].'_ajax'); }
     

@@ -93,6 +93,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
                <?php return; 
           }
         }
+        
         function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $nxsOne = ''; $options = $this->nxs_options; //prr($options);
           //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
           
@@ -106,7 +107,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           }
           //## Save Settings
           if (isset($_POST['nxsMainFromElementAccts']) || isset($_POST['nxsMainFromSupportFld'])) { 
-            if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
+            if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")) {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
             $acctsInfoPost = $_POST['nxsMainFromElementAccts']; unset($_POST['nxsMainFromElementAccts']);  $acctsInfo = array();  
             $acctsInfo = NXS_parseQueryStr($acctsInfoPost); // prr($acctsInfo);
@@ -128,6 +129,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             
             if (isset($_POST['errNotifEmailCB']))   $options['errNotifEmailCB'] = 1;  else $options['errNotifEmailCB'] = 0;
             if (isset($_POST['errNotifEmail']))$options['errNotifEmail'] = $_POST['errNotifEmail']; 
+            
+            if (isset($_POST['forceBrokenCron']))   $options['forceBrokenCron'] = 1;  else $options['forceBrokenCron'] = 0;            
             
             if (isset($_POST['nxsURLShrtnr']))$options['nxsURLShrtnr'] = $_POST['nxsURLShrtnr']; 
             if (isset($_POST['bitlyUname']))  $options['bitlyUname'] = $_POST['bitlyUname']; 
@@ -163,6 +166,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;    
             if (!empty($_POST['nxsCPTSeld']) && is_array($_POST['nxsCPTSeld'])) $cpTypes = $_POST['nxsCPTSeld']; else $cpTypes = array();  $options['nxsCPTSeld'] = serialize($cpTypes); 
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; if (!is_array($pk)) { $pk = urldecode($pk); parse_str($pk); } 
+              remove_action( 'get_terms', 'order_category_by_id', 10); // import category plugin breaks get_all_category_ids function
               $cIds = get_all_category_ids(); if(is_array($pk) && $cIds) $options['exclCats'] = serialize(array_diff($cIds, $pk)); else $options['exclCats'] = '';
             }  //prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
@@ -204,7 +208,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           }  
           
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
-          
+          remove_action( 'get_terms', 'order_category_by_id', 10); // import category plugin breaks get_all_category_ids function
           $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
 if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($pk)) { ?>
   <div class="error" id="message"><p><strong>All your categories are excluded from auto-posting.</strong> Nothing will be auto-posted. Please Click "Settings Tab" and select some categories.</div>
@@ -301,6 +305,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
         <?php _e('<b>"Scheduled"</b> - Releases the page immediately back to you, so you can proceed with something else and it schedules all auto-posting jobs to your WP-Cron. This is much faster and much more efficient, but it could not work if your WP-Cron is disabled or broken.', 'nxs_snap') ?>
       </div>
              <div class="nxs_box_inside"> 
+             
               <div class="itemDiv">
                <input type="radio" name="nxsHTDP" value="I" <?php if (isset($options['nxsHTDP']) && $options['nxsHTDP']=='I') echo 'checked="checked"'; ?> /> <b><?php _e('Publish Immediately', 'nxs_snap') ?></b>  - <i><?php _e('No WP Cron will be used. Choose if WP Cron is disabled or broken on your website', 'nxs_snap') ?></i><br/>
               </div>  
@@ -308,10 +313,15 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <div class="itemDiv">
               <input type="radio" name="nxsHTDP" value="S" <?php if (!isset($options['nxsHTDP']) || $options['nxsHTDP']=='S') echo 'checked="checked"'; ?> /> <b><?php _e('Use WP Cron to Schedule autoposts', 'nxs_snap') ?></b> - <i><?php _e('Recommended for most sites. Faster Performance - requires working WP Cron', 'nxs_snap') ?></i><br/> <?php /* ?>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="runNXSCron" value="1"> <b><?php _e('Try to process missed "Scheduled" posts.', 'nxs_snap') ?></b> <i><?php _e('Usefull when WP Cron is disabled or broken, but can cause some short perfomance issues and duplicates. It is <b>highly</b> recomended to setup a proper cron job of fix WP Cron instead', 'nxs_snap') ?></i>. <?php */ ?>
-              </div>                          
+              </div>         
               
               <div class="itemDiv">
-              <div style="margin-left: 20px;">****<?php _e('Proper setup for WP Cron is REQURED for this feature to work.', 'nxs_snap') ?>&nbsp;<a target="_blank" href="http://www.nextscripts.com/tutorials/wp-cron-scheduling-tasks-in-wordpress/"><?php _e('Please see here for the proper WP Cron setup tutorial', 'nxs_snap') ?></a><br/> 
+              <div style="margin-left: 20px;">
+              
+              <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { ?> <span style="color: red"> *** <?php _e('Your WP Cron is not working correctly. This feature may not work properly, and might cause duplicate postings and stability problems.<br/> Please see the test results and recommendations here:', 'nxs_snap'); ?>
+     &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span> <br/>
+            <?php  } ?>
+              
               <input type="checkbox" name="quLimit" value="1" <?php if (isset($options['quLimit']) && $options['quLimit']=='1') echo 'checked="checked"'; ?> /> <b><?php _e('Limit autoposting speed', 'nxs_snap') ?></b> - <i><?php _e('Recommended for busy sites with a lot of new posts.', 'nxs_snap') ?> </i><br/> 
               <div style="margin-left: 10px;">
               Do not autopost more then one post per network every <input name="quDays" style="width: 24px;" value="<?php echo isset($options['quDays'])?$options['quDays']:'0'; ?>" /> Days,&nbsp;&nbsp;
@@ -465,7 +475,13 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             
             <!-- ##################### Auto-Import comments from Social Networks #####################-->
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Auto-Import comments from Social Networks', 'nxs_snap') ?><span class="nxs_newLabel">[<?php _e('New', 'nxs_snap') ?>]</span></h3></div>
-             <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;">Plugin will automatically grab the comments posted on Social Networks and insert them as "Comments to your post". Plugin will check for the new comments every hour. </span> <br/>
+             <div class="nxs_box_inside"> 
+             
+             <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { ?> <span style="color: red"> *** <?php _e('Your WP Cron is not working correctly. This feature may not work properly, and might cause duplicate postings and stability problems.<br/> Please see the test results and recommendations here:', 'nxs_snap'); ?>
+     &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span> <br/>
+            <?php  } ?>             
+             
+             <span style="font-size: 11px; margin-left: 1px;">Plugin will automatically grab the comments posted on Social Networks and insert them as "Comments to your post". Plugin will check for the new comments every hour. </span> <br/>
               <div class="itemDiv">
               <input value="set" id="riActive" name="riActive"  type="checkbox" <?php if ((int)$options['riActive'] == 1) echo "checked"; ?> /> 
               <strong>Enable "Comments Import"</strong>
@@ -586,7 +602,23 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               </div>
               </div>
               
+              <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { ?> 
+                <div class="itemDiv">             
+             <span style="color: red"> *** <?php _e('Your WP Cron is not working correctly.', 'nxs_snap'); ?>
+     &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span> <br/>
              
+              <input value="set" id="forceBrokenCron" name="forceBrokenCron"  type="checkbox" <?php if (isset($options['forceBrokenCron']) && (int)$options['forceBrokenCron'] == 1) echo "checked"; ?> /> 
+              <strong>Enable Cron functions even if WP Cron is not working correctly.</strong>
+               <br/><span style="color:red; font-weight: bold;"><?php _e('I understand that this could cause duplicate postings as well as perfomance and stability problems.', 'nxs_snap') ?></span> - 
+               <span style="margin-left: 1px; color:red;"><?php _e('Please do not check this unless you absolutely sure that you know what are you doing.', 'nxs_snap') ?></span>
+               <br/><span style="margin-left: 1px; color:#005800;"><?php _e('Setting up WP Cron correctly will be much better solution:', 'nxs_snap') ?>
+                 <a href="http://www.nextscripts.com/tutorials/wp-cron-scheduling-tasks-in-wordpress/" target="_blank">WP-Cron: Scheduling Tasks in WordPress</a>
+               </span>
+               
+               
+               
+               </div>              
+             <?php  } ?> 
               
            </div></div>               
     
@@ -609,7 +641,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     <a href="#" style="float: right" onclick="nxs_rfLog();return false;" class="NXSButton" id="nxs_clearLog">Refresh</a>
     
     Showing last 150 records <a href="#" onclick="nxs_clLog();return false;" class="NXSButton" id="nxs_clearLog">Clear Log</a><br/><br/>    
-      <div style="overflow: auto; border: 1px solid #999; width: 750px; height: 600px; font-size: 11px;" class="logDiv" id="nxslogDiv">
+      <div style="overflow: auto; border: 1px solid #999; width: 920px; height: 600px; font-size: 11px;" class="logDiv" id="nxslogDiv">
         <?php //$logInfo = maybe_unserialize(get_option('NS_SNAutoPosterLog')); 
         $logInfo = nxs_getnxsLog();
         if (is_array($logInfo)) 
@@ -692,46 +724,9 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 </td></tr></table>
    
    <br/><br/>
-   <h3>Solutions for some common problems (Please see more in the <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a>) </h3>
+   <h3>Solutions for the most common problems: <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a>) </h3>
    
-   <b>Problem:</b> <i>I can't create an app on developers.facebook.com/apps</i>. When I am trying to enter that page it redirects me back to my account?<br/>
-<b>Solution:</b> Facebook "Business" or "Advertising" accounts can't manage apps. This is an unavoidable Facebook limitation. Only real user accounts are able to create and manage apps. Please login to Facebook as a personal account to be able to create app. You will need to add your personal Facebook account as "Administrator" to your page..
-   <br/><br/>
-   <b>Problem:</b> When I follow the instructions to allow plugin authorize/access to my Facebook/Twitter/Tumblr/LinkedIn account, it redirects me to my <i>"Google Analytics for WordPress Configuration"</i> page.<br/>
-<b>Solution:</b> It's a known issue. Google Analytics plugin hijacks the authorization workflow. Please temporary deactivate Google Analytics plugin, do all authorizations and then activate it back. There are some other plugins ("Blog Promoter", "Tweet Old Post", etc.. ) that could also hijack the authorization. Solution is the same: Deactivate the other plugin, do authorization, reactivate it.   
-<br/><br/>
-
-<b>Problem:</b> When I publish a new post to <i>Facebook</i> I am getting this weird Twitter Error:<i> Error:(#100) The status you are trying to publish is a duplicate of, or too similar to, one that we recently posted to Twitter</i>.<br/>
-<b>Solution:</b> Your Facebook is already auto-posting to Twitter. When it sees the same tweet made by our plugin it fails with this error. You need to either unlink your Facebook from Twitter or disable Twitter auto-posting from our plugin.
-If you decide to unlink your Facebook from Twitter:<br/>
-Go to http://www.facebook.com/twitter and remove the link to twitter from the affected wall (Click on "Unlink from Twitter").
-<br/><br/>
-
-<b>Problem:</b> Facebook Error: <i>"The user hasn't authorized the application to perform this action"</i><br/>
-<b>Solution:</b>
-The most popular cause for "The user hasn't authorized the application to perform this action" is that your domain is not configured for your app.<br/>
-Please read and carefully follow the installation instructions:<br/>
-You missed/messed steps 1.4 and 1.5 from Facebook section:<br/>
-4. Click "Website", enter your website URL<br/>
-5. Enter your domain to the App Domain. Domain should be the same domain from URL that you have entered to the "Website" during the step 4.
-<br/><br/>
-
-
-<b>Problem:</b> Facebook Error:  <i>SSL certificate problem, verify that the CA cert is OK. Details:error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</i><br/>
-<b>Solution:</b>
-This error means that cURL is misconfigured on your server. Most probably curl ssl(open SSL) is broken or it simply can't find the certificates at the pointed location. Please contact your hosting provider and ask them to fix this.<br/>
-http://curl.haxx.se/docs/sslcerts.html<br/>
-Unlike Twitter or Google+ that could be automatically switched to non-SSL connections in such cases, Facebook requires to be accessed by SSL at all times.
-
-<br/><br/>
-
-<b>Problem:</b> Twitter Error:  <i>{"error":"Read-only application cannot POST","request":"/1/statuses/update.json"}</i><br/>
-<b>Solution:</b>You just need to follow the instructions step by step. Please don't skip anything.<br/>
-<br/>
-Please see #4 and #5 for Twitter:<br/>
-<br/>
-4. Click "Settings" tab. Scroll to the "Application type", change Access level from "Read Only" to <b>"Read and Write"</b>. Click "Update this Twitter application settings".<br/>
-5. Come back to "Details" tab. Scroll to the "Your access token" and click "Create my access token" button. Refresh page and notice "Access token" and "Access token secret". Make sure you have <b>"Read and Write"</b> access level.<br/>
+   
   </div> </div> 
   
   <div id="nsx_tab5" class="nsx_tab_content"><?php nxs_showNewPostForm($options); ?>  </div>
@@ -784,7 +779,7 @@ Please see #4 and #5 for Twitter:<br/>
            if (stripos($disabled_functions, 'curl_exec')!==false) {  
                echo ("<br/><b style='font-size:16px; color:red;'>curl_exec function is disabled in php.ini</b> - <i style='font-size:12px; color:red;'>Social Networks AutoPoster needs the CURL PHP extension. Please enable it or contact your hosting company to enable it.</i><br/><br/>"); 
            }
-           if (empty($options['skipSSLSec'])) { $err = nxsCheckSSLCurl('https://www.google.com'); 
+           if (!isset($options['skipSSLSec'])) { $err = nxsCheckSSLCurl('https://www.google.com'); 
              if ($err!==false && $err['errNo']=='60') { $nxs_skipSSLCheck = true; $options['skipSSLSec'] = true; } else { $nxs_skipSSLCheck = false; $options['skipSSLSec'] = false; } 
              update_option($this->dbOptionsName, $options); $this->nxs_options = $options;
            }
