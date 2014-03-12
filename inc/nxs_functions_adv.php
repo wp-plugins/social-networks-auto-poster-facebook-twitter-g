@@ -107,7 +107,7 @@ if (!function_exists("nxs_cron_check")){function nxs_cron_check() { if (stripos(
   if (($cronCheckArray['cronCheckStartTime']+900)>time()) {  ( $offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
     $cronCheckArray['cronChecks'][] = '['.date_i18n('Y-m-d H:i:s', $_SERVER["REQUEST_TIME"]+$offset).'] - WP Cron called from '.$_SERVER["REMOTE_ADDR"].' ('.$_SERVER["HTTP_USER_AGENT"].')';
     //nxs_addToLogN('S', 'Cron Check', '', 'WP Cron called from '.$_SERVER["REMOTE_ADDR"].' ('.$_SERVER["HTTP_USER_AGENT"].')', date_i18n('Y-m-d H:i:s', $_SERVER["REQUEST_TIME"]+$offset));
-  } elseif (empty($cronCheckArray['status']) &&  is_array($cronCheckArray['cronChecks'])) $cronCheckArray['status'] = (count($cronCheckArray['cronChecks'])<11 && count($cronCheckArray['cronChecks'])>2)?1:0;
+  } elseif (empty($cronCheckArray['status']) &&  is_array($cronCheckArray['cronChecks'])) $cronCheckArray['status'] = (count($cronCheckArray['cronChecks'])<17 && count($cronCheckArray['cronChecks'])>1)?1:0;
   update_option("NXS_cronCheck", $cronCheckArray);    
 }}}
 

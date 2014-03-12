@@ -156,6 +156,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.3.1 [03/12/2014] =
+
+* New/Improvement - More advanced auto-reposting configuration. You can now control what should happen when it's finished. You can turn it of, keep it in waiting mode, or reset and auto-start from the beginning. 
+* Improvement - Flipboard is now able so set custom URL for autoposting. 
+* Bug Fix - API message after the tumblr post has been removed.
+* Bug Fix - Cron check could produce inconclusive results.
+
 = 3.3.0 [03/06/2014] =
 
 * New - New network "Flipboard". Post your links to your magazine. 

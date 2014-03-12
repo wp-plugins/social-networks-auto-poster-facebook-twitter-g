@@ -348,7 +348,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
              <div class="nxs_box_inside"> 
               <div class="itemDiv">
               
-             <input value="set" id="skipSecurity" name="skipSecurity"  type="checkbox" <?php if ((int)$options['skipSecurity'] == 1) echo "checked"; ?> />  <b><?php _e('Skip User Security Verification.', 'nxs_snap') ?></b>     
+             <input value="set" id="skipSecurity" name="skipSecurity"  type="checkbox" <?php if (!empty($options['skipSecurity']) && (int)$options['skipSecurity'] == 1) echo "checked"; ?> />  <b><?php _e('Skip User Security Verification.', 'nxs_snap') ?></b>     
              <span style="font-size: 11px; margin-left: 1px;"><?php _e('NOT Recommended, but useful in some situations. This will allow autoposting for everyone even for the non-existent users.', 'nxs_snap') ?></span>  
               
               <h4><?php _e('Who can make autoposts without seeing any auto-posting options?', 'nxs_snap') ?></h4>
@@ -391,14 +391,14 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Include/Exclude Wordpress Pages and Custom Post Types', 'nxs_snap') ?></h3></div>                          
              <div class="nxs_box_inside"> 
              <div class="itemDiv"> 
-              <input value="set" id="useForPages" name="useForPages"  type="checkbox" <?php if ((int)$options['useForPages'] == 1) echo "checked"; ?> />  <b><?php _e('Use for Wordpress Pages', 'nxs_snap') ?></b>     
+              <input value="set" id="useForPages" name="useForPages"  type="checkbox" <?php if (!empty($options['useForPages'])&&(int)$options['useForPages'] == 1) echo "checked"; ?> />  <b><?php _e('Use for Wordpress Pages', 'nxs_snap') ?></b>     
              <span style="font-size: 11px; margin-left: 1px;"><?php _e('Show the SNAP metabox and auto-post for pages, not just posts.', 'nxs_snap') ?></span>  
              </div>
               <div class="itemDiv"><b><br/><?php _e('Custom Post Types:', 'nxs_snap') ?></b>              
               <span style="font-size: 11px; margin-left: 1px;"><?php _e('Please select "Custom Post Types" that you would like to be autoposted to your social networks', 'nxs_snap') ?> </span> <br/>
               <?php $nxsOne = base64_encode("v=".$nxsOne);
               $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
-              if ($options['nxsCPTSeld']!='') $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);
+              if (!empty($options['nxsCPTSeld'])) $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array_keys($post_types);
               
              ?> <div class="taxonomydiv"><div class="tabs-panel" style="padding: 10px;"><input type="hidden" name="nxsCPTSeld[]" value="0" /> <?php //prr($nxsCPTSeld); prr($post_types); prr($_POST['nxsCPTSeld']);              
              foreach ($post_types as $cptID=>$cptName){ if (in_array($cptID, $nxsCPTSeld)) $dCh = ' checked="checked" '; else $dCh = "";
@@ -439,7 +439,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <input type="radio" name="nxsURLShrtnr" value="G" <?php if (!isset($options['nxsURLShrtnr']) || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') echo 'checked="checked"'; ?> /> <b>gd.is</b> (Default) - fast, simple, free, no configuration nessesary.            
               </div> -->
               <div class="itemDiv">
-              <input type="radio" name="nxsURLShrtnr" value="O" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='O' || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') echo 'checked="checked"'; ?> /> <b>goo.gl</b>  - <i> Enter goo.gl <a target="_blank" href="https://developers.google.com/url-shortener/v1/getting_started#APIKey">API Key</a> below [Optional]</i><br/>
+              <input type="radio" name="nxsURLShrtnr" value="O" <?php if (!isset($options['nxsURLShrtnr']) || (isset($options['nxsURLShrtnr']) && ($options['nxsURLShrtnr']=='O' || $options['nxsURLShrtnr']=='G'))) echo 'checked="checked"'; ?> /> <b>goo.gl</b>  - <i> Enter goo.gl <a target="_blank" href="https://developers.google.com/url-shortener/v1/getting_started#APIKey">API Key</a> below [Optional]</i><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;goo.gl&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="gglAPIKey" style="width: 20%;" value="<?php if (isset($options['gglAPIKey'])) _e(apply_filters('format_to_edit',$options['gglAPIKey']), 'nxs_snap') ?>" />
               </div>
               
@@ -483,7 +483,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
              
              <span style="font-size: 11px; margin-left: 1px;">Plugin will automatically grab the comments posted on Social Networks and insert them as "Comments to your post". Plugin will check for the new comments every hour. </span> <br/>
               <div class="itemDiv">
-              <input value="set" id="riActive" name="riActive"  type="checkbox" <?php if ((int)$options['riActive'] == 1) echo "checked"; ?> /> 
+              <input value="set" id="riActive" name="riActive"  type="checkbox" <?php if (!empty($options['riActive']) && (int)$options['riActive'] == 1) echo "checked"; ?> /> 
               <strong>Enable "Comments Import"</strong>
               </div>
               <div class="itemDiv">
@@ -528,7 +528,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('"Open Graph" Tags', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('This is simple and useful implementation of "Open Graph" Tags, as this option will only add tags needed for "Auto Posting". If you use other specialized plugins, uncheck this option.', 'nxs_snap') ?> </span> <br/>
               <div class="itemDiv">
-              <input value="1" id="nsOpenGraph" name="nsOpenGraph"  type="checkbox" <?php if ((int)$options['nsOpenGraph'] == 1) echo "checked"; ?> /> <b><?php _e('Add Open Graph Tags', 'nxs_snap') ?></b>
+              <input value="1" id="nsOpenGraph" name="nsOpenGraph"  type="checkbox" <?php if (!empty($options['nsOpenGraph']) && (int)$options['nsOpenGraph'] == 1) echo "checked"; ?> /> <b><?php _e('Add Open Graph Tags', 'nxs_snap') ?></b>
               </div>                           
               <div class="itemDiv">
              <b><?php _e('Default Image URL for og:image tag:', 'nxs_snap') ?></b> 
@@ -539,7 +539,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Advanced "Featured" Image Settings', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> 
               <div class="itemDiv">
-              <input value="set" id="imgNoCheck" name="imgNoCheck"  type="checkbox" <?php if ((int)$options['imgNoCheck'] != 1) echo "checked"; ?> /> <strong>Verify "Featured" Image</strong>               
+              <input value="set" id="imgNoCheck" name="imgNoCheck"  type="checkbox" <?php if (!empty($options['nsOpenGraph']) &&  (int)$options['imgNoCheck'] != 1) echo "checked"; ?> /> <strong>Verify "Featured" Image</strong>               
               <br/><span style="font-size: 11px; margin-left: 1px;"><?php _e('Advanced Setting. Uncheck only if you are 100% sure that your images are valid or if you have troubles with image verification.', 'nxs_snap') ?> </span> <br/>
               </div>
               
@@ -656,10 +656,11 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
       </div>        
       <?php $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array(); if (count($quPosts)>0) { ?>
       <br/>Query:<br/>
-      <div style="overflow: auto; border: 1px solid #999; width: 750px; height: 200px; font-size: 11px;" class="logDiv" id="nxsQUDiv">
+      <div style="overflow: auto; border: 1px solid #999; width: 920px; height: 200px; font-size: 11px;" class="logDiv" id="nxsQUDiv">
       <?php 
         $pstEvrySec = $options['quDays']*86400+$options['quHrs']*3600+$options['quMins']*60; $offSet = ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );  $currTime = time() + $offSet;
-        if (count($quPosts)>0) { $nxTime = (isset($options['quNxTime']) && (int)$options['quNxTime']>0)?$options['quNxTime']:($currTime+$pstEvrySec); echo  "Next Shedulled Time: ~".date_i18n('Y-m-d H:i', $nxTime)."  |  Last Post made from query: ".date_i18n('Y-m-d H:i', $options['quLastShTime'])."<br/>";
+        if (count($quPosts)>0) { $nxTime = (isset($options['quNxTime']) && (int)$options['quNxTime']>0)?$options['quNxTime']:($currTime+$pstEvrySec); 
+          echo  "<snap style='color:#008000;'>Current Time:</snap> ".date_i18n('Y-m-d H:i', $currTime)." | <snap style='color:#000080;'>Next Shedulled Time:</snap> ~".date_i18n('Y-m-d H:i', $nxTime)."  |  <snap style='color:#580058;'>Last Post made from query:</snap> ".date_i18n('Y-m-d H:i', $options['quLastShTime'])."<br/>----====== Query:<br/>";
           foreach ($quPosts as $spostID){  $pst = get_post($spostID);  echo $spostID." - ".$pst->post_title."<br/>";}
         }
       ?>

@@ -195,6 +195,8 @@ function nxs_hideTip(id){
   }, "html")
 }
 
+function nxs_actDeActTurnOff(objId){ if (jQuery('#'+objId).val()!='1') jQuery('#'+objId+'xd').show(); else jQuery('#'+objId+'xd').hide();}
+
 //## Export File
 (function(jQuery){ jQuery.generateFile = function(options){ options = options || {};
         if(!options.script || !options.filename || !options.content){
