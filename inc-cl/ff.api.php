@@ -13,7 +13,7 @@ if (!class_exists("nxs_class_SNAP_FF")) { class nxs_class_SNAP_FF {
     }    
     function nxs_getFFHeaders($up){ $hdrsArr = array(); 
       $hdrsArr['Cache-Control']='no-cache'; $hdrsArr['Connection']='keep-alive'; 
-      $hdrsArr['User-Agent']='SNAP for Wordpress; Ver '.NextScripts_SNAP_Version;
+      $hdrsArr['User-Agent']='SNAP for Wordpress; Ver 3';
       $hdrsArr['Accept']='text/html, application/xhtml+xml, */*'; $hdrsArr['DNT']='1';
       $hdrsArr['Content-Type']='application/x-www-form-urlencoded'; 
       $hdrsArr['Authorization'] = 'Basic ' . base64_encode("$up");
@@ -34,11 +34,11 @@ if (!class_exists("nxs_class_SNAP_FF")) { class nxs_class_SNAP_FF {
       $apicall = "http://friendfeed.com/api/share";  $hdrsArr = $this->nxs_getFFHeaders($dusername.':'.$pass); 
       $paramcall = array( 'method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'body'=> $postArr,  'headers' => $hdrsArr); 
       
-      $cnt = wp_remote_post( $apicall, $paramcall ); // prr(json_decode($cnt['body'], true));
+      $cnt = wp_remote_post( $apicall, $paramcall );  prr(json_decode($cnt['body'], true));
       
       if(is_wp_error($cnt)) $ret = 'Something went wrong - '.print_r($cnt, true); 
         else { if (is_array($cnt)) $retInfo = json_decode($cnt['body'], true); else $retInfo = false;
-        if (is_array($cnt) &&  $cnt['response']['code']=='200' && is_array($retInfo)) return array('postID'=>$retInfo['entries'][0]['id'], 'isPosted'=>1, 'postURL'=>'DL', 'pDate'=>date('Y-m-d H:i:s')); 
+        if (is_array($cnt) &&  $cnt['response']['code']=='200' && is_array($retInfo)) return array('postID'=>$retInfo['entries'][0]['id'], 'isPosted'=>1, 'postURL'=>'http://friendfeed.com/e/'.$retInfo['entries'][0]['id'], 'pDate'=>date('Y-m-d H:i:s')); 
           else { $ret = "Error: "; if ($cnt['response']['code']=='401') $ret .= " Incorrect Username/Password "; $ret .= $cnt['response']['message']; }
       } $badOut['Error'] .= $ret;  return $badOut;
    }    

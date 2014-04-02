@@ -13,7 +13,7 @@ if (!class_exists("nxs_class_SNAP_IP")) { class nxs_class_SNAP_IP {
     }    
     function nxs_getIPHeaders($up){ $hdrsArr = array(); 
       $hdrsArr['Cache-Control']='no-cache'; $hdrsArr['Connection']='keep-alive'; 
-      $hdrsArr['User-Agent']='SNAP for Wordpress; Ver '.NextScripts_SNAP_Version;
+      $hdrsArr['User-Agent']='SNAP for Wordpress; Ver 3';
       $hdrsArr['Accept']='text/html, application/xhtml+xml, */*'; $hdrsArr['DNT']='1';
       $hdrsArr['Authorization'] = 'Basic ' . base64_encode("$up");
       if (function_exists('gzdeflate')) $hdrsArr['Accept-Encoding']='gzip,deflate'; 

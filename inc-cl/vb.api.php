@@ -7,7 +7,7 @@ if (!class_exists("nxs_class_SNAP_VB")) { class nxs_class_SNAP_VB {
     var $ntCode = 'VB';
     var $ntLCode = 'vb';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
       foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    

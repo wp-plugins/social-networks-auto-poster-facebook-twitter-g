@@ -335,14 +335,16 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
       }
       if (!empty($options['attchAsVid']) && $options['attchAsVid']=='1' && trim($imgVURL)!='') $imgURL = $imgVURL; 
       
-      if (trim($options['msgAFormat'])!='') {$dsc = nsFormatMessage($options['msgAFormat'], $postID, $addParams);} else { 
+      if ($options['postType']=='A'){
+        if (trim($options['msgAFormat'])!='') {$dsc = nsFormatMessage($options['msgAFormat'], $postID, $addParams);} else { 
           if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
           if (is_object($post) && $dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
           if (is_object($post) && $dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
           if (is_object($post) && $dsc=='') $dsc = get_bloginfo('description'); 
-      }  $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
+        }  $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
+      } else $dsc = '';
       
       $message = array('siteName'=>$blogTitle, 'url'=>$urlToGo, 'imageURL'=>$imgURL, 'videoURL'=>$vidURL, 'urlTitle'=>nxs_doQTrans($post->post_title, $lng), 'urlDescr'=>$dsc);    
       //## Actual Post
@@ -365,7 +367,8 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
         if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
-          else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+          else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
+           $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       }
       //## Return Result
       if ($ret['isPosted']=='1') return 200; else return print_r($ret, true); 

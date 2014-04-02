@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts FriendFeed Connection Class
+//## NextScripts Tumblr Connection Class
 $nxs_snapAPINts[] = array('code'=>'TR', 'lcode'=>'tr', 'name'=>'Tumblr');
 
 if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
@@ -17,6 +17,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
       if (!isset($options['trConsKey']) || trim($options['trConsSec'])=='' || empty($options['trAccessTocken'])) { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
       if (!isset($options['postType']) && isset($options['trPostType'])) $options['postType'] = $options['trPostType']; //## Compatibility with v <3.2
       if (empty($options['imgSize'])) $options['imgSize'] = ''; if (empty($message['postDate'])) $message['postDate'] = '';
+      if (empty($options['trMsgTFormat'])) $options['trMsgTFormat'] = '%TITLE%'; 
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['trMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['trMsgTFormat'], $message);
@@ -42,7 +43,7 @@ if (!class_exists("nxs_class_SNAP_TR")) { class nxs_class_SNAP_TR {
     
     $code = $postinfo->meta->status;// echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     
-    if ($code == 201) { return array('postID'=>$postinfo->response->id, 'isPosted'=>1, 'postURL'=>$postinfo->response->id, 'pDate'=>date('Y-m-d H:i:s')); } 
+    if ($code == 201) { return array('postID'=>$postinfo->response->id, 'isPosted'=>1, 'postURL'=>'http://'.$options['trURL']."post/".$postinfo->response->id, 'pDate'=>date('Y-m-d H:i:s')); } 
       else  $badOut['Error'] .=  $code . " - ".($postinfo->meta->msg).(isset($postinfo->errmsg)?$postinfo->errmsg:'')." | ".print_r($postinfo, true); 
     return $badOut;      
    }    

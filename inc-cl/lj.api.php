@@ -28,14 +28,15 @@ if (!class_exists("nxs_class_SNAP_LJ")) { class nxs_class_SNAP_LJ {
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ljMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['ljMsgTFormat'], $message);      
       
-      require_once ('apis/xmlrpc-client.php'); if ($options['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
+      require_once ('apis/xmlrpc-client.php'); if (!empty($options['ljSrv']) && $options['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
       $nxsToLJclient = new NXS_XMLRPC_Client('http://www.'.$server.'/interface/xmlrpc'); $nxsToLJclient->debug = false;             
       
       $date = time(); $year = date("Y", $date); $mon = date("m", $date); $day = date("d", $date); $hour = date("G", $date); $min = date("i", $date);
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
-      if ($options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];  if ($options['inclTags']=='1' && !empty($message['tags'])) $nxsToLJContent['props'] = array('taglist' => $message['tags']);      
-        
-      if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) { $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
+      if (!empty($options['commID']) && $options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];  
+      if (!empty($options['inclTags']) && $options['inclTags']=='1' && !empty($message['tags'])) $nxsToLJContent['props'] = array('taglist' => $message['tags']);      
+        prr($nxsToLJContent);
+      if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) {  prr($nxsToLJclient); $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
       $pid = $nxsToLJclient->getResponse(); 
       if (is_array($pid) && !empty($pid['url'])) return array('postID'=>$pid['url'], 'isPosted'=>1, 'postURL'=>$pid['url'], 'pDate'=>date('Y-m-d H:i:s'));  
         else $badOut['Error'] .= 'Something went wrong - NO PID '.print_r($pid, true); 

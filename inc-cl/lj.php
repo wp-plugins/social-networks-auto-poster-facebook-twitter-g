@@ -107,7 +107,7 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
       if (isset($pval['apLJUName']) && $pval['apLJUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();        
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);  
         if (isset($pval['ljSrv']))   $options[$ii]['ljSrv'] = trim($pval['ljSrv']); if ($options[$ii]['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
-        if (isset($pval['apLJUName']))   $options[$ii]['ljUName'] = trim($pval['apLJUName']);  $options[$ii]['ljURL'] = 'http://'.$options[$ii]['ljUName'].$server;
+        if (isset($pval['apLJUName']))   $options[$ii]['ljUName'] = trim($pval['apLJUName']);  $options[$ii]['ljURL'] = 'http://'.$options[$ii]['ljUName'].".".$server;
         if (isset($pval['apLJPass']))    $options[$ii]['ljPass'] = 'n5g9a'.nsx_doEncode($pval['apLJPass']); else $options[$ii]['ljPass'] = '';  
         if (isset($pval['apLJMsgFrmt'])) $options[$ii]['ljMsgFormat'] = trim($pval['apLJMsgFrmt']);                                                  
         if (isset($pval['apLJMsgTFrmt'])) $options[$ii]['ljMsgTFormat'] = trim($pval['apLJMsgTFrmt']);               

@@ -40,7 +40,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                         echo '<br/>Reported Error: ',  $errMsg, "\n"; die(); 
                       }                    
                     }                      
-                    if (!empty($token['access_token'])) { $fbo['fbAppPageAuthToken'] = $token['access_token']; } else {echo "Can't get Page Token. NO TOKEN RETURNED. "; prr($res); die();}
+                    if (!empty($token['access_token'])) { $fbo['fbAppPageAuthToken'] = $token['access_token']; } else { echo "Can't get Page Token. NO TOKEN RETURNED. Are you sure that user you are trying to authorize is an admin of the page? This message means user was authorized as profile, but page refused to return authorization token. This usually happens when user has <b>no rights</b> to post to that page. "; prr($res); die(); }
                   } 
               }
               
@@ -400,7 +400,7 @@ function nxs_fbembed_func( $atts ) { extract( shortcode_atts( array('accnum' => 
 <div class="fb-post" data-href="https://www.facebook.com/permalink.php?story_fbid='.$fpid.'&amp;id='.$fpg.'"><div class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/permalink.php?story_fbid='.$fpid.'&amp;id='.$fpg.'">Post</a></div></div>';
   return $txtOut;
 }
-add_shortcode( 'nxs_fbembed', 'nxs_fbembed_func' );
+if (function_exists("add_shortcode")) add_shortcode( 'nxs_fbembed', 'nxs_fbembed_func' );
 
 if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() { check_ajax_referer('nxsSsPageWPN');  $postID = $_POST['id']; // $result = nsPublishTo($id, 'FB', true);   
       $options = get_option('NS_SNAutoPoster');  foreach ($options['fb'] as $ii=>$fbo) if ($ii==$_POST['nid']) {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj';

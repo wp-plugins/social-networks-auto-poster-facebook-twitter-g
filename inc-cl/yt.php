@@ -191,7 +191,7 @@ if (!function_exists("nxs_rePostToYT_ajax")) {
 }  
 
 if (!function_exists("nxs_doPublishToYT")) { //## Second Function to Post to G+
-  function nxs_doPublishToYT($postID, $options){ $ntCd = 'YT'; $ntCdL = 'yt'; $ntNm = 'YouTube';   global $nxs_gCookiesArr; $vUrl = '';
+  function nxs_doPublishToYT($postID, $options){ $ntCd = 'YT'; $ntCdL = 'yt'; $ntNm = 'YouTube'; $post = '';  global $nxs_gCookiesArr; $vUrl = '';
       if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
       // $backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
       //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToYT',  array($postID, $options));
@@ -207,8 +207,9 @@ if (!function_exists("nxs_doPublishToYT")) { //## Second Function to Post to G+
            nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
         }
       }         
-      if ($postID=='0') echo "Testing ... <br/><br/>";  else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return;}
-      $options['ytMsgFormat'] = nsFormatMessage($options['ytMsgFormat'], $postID, $addParams);// prr($msg); echo $postID;
+      if ($postID=='0') $options['ytMsgFormat'] = 'Test Post, Please Ignore';  else { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));  $post = get_post($postID); if(!$post) return;
+        $options['ytMsgFormat'] = nsFormatMessage($options['ytMsgFormat'], $postID, $addParams);// prr($msg); echo $postID;
+      }
       $extInfo = ' | PostID: '.$postID." - ".(is_object($post)?$post->post_title:'');
       
       //## Message & Format                 

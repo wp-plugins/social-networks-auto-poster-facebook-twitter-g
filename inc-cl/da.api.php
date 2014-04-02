@@ -22,7 +22,7 @@ text
 $nxs_snapAPINts[] = array('code'=>'DA', 'lcode'=>'da', 'name'=>'deviantART');
 
 if (!function_exists("doConnectToDeviantART")) { function doConnectToDeviantART($unm, $pass){ $url = "https://www.deviantart.com/users/login";  $hdrsArr = nxs_getDAHeaders('http://www.deviantart.com/');
-  $rep = wp_remote_get($url, array( 'headers' => $hdrsArr, 'httpversion' => '1.1')); $ck =  $rep['cookies'];
+  $rep = wp_remote_get($url, array( 'headers' => $hdrsArr, 'httpversion' => '1.1')); if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $ck =  $rep['cookies'];
   $rTok = CutFromTo($rep['body'], 'name="validate_token" value="', '"'); $rKey = CutFromTo($rep['body'], 'name="validate_key" value="', '"'); $ck[0]->value = urlencode($ck[0]->value);
   $hdrsArr = nxs_getDAHeaders('https://www.deviantart.com/users/login', 'https://www.deviantart.com/', true);
   $flds = array('ref' => 'https://www.deviantart.com/users/loggedin', 'username' => $unm, 'password' => $pass, 'remember_me' => '1', 'validate_token' => $rTok, 'validate_key' => $rKey);
@@ -85,6 +85,7 @@ if (!class_exists("nxs_class_SNAP_DA")) { class nxs_class_SNAP_DA {
       $hdrsArr = nxs_getDAHeaders($mh.'/journal/?edit', $mh, true);
       $response = wp_remote_post($mh.'/journal/?edit', array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ck));
       
+    //  prr($response);
       
       if ($response['response']['code']=='302') { $hdrsArr = nxs_getDAHeaders('http://okapy6.deviantart.com/journal/?edit');
           $rep = wp_remote_get(  $mh.'/journal/', array( 'headers' => $hdrsArr, 'cookies' => $ck)); 

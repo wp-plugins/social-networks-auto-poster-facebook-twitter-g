@@ -7,7 +7,8 @@ if (isset($_GET['ca']) && $_GET['ca']!='') { $ch = curl_init();  curl_setopt($ch
   header("Cache-Control: private",false); header("Content-Type: image/jpg"); header("Content-Transfer-Encoding: binary"); echo $imageData; die();
 }
 
-add_action('wp_ajax_nxsCptCheck' , 'nxsCptCheck_ajax'); 
+if (function_exists("add_action")) add_action('wp_ajax_nxsCptCheck' , 'nxsCptCheck_ajax'); 
+
 if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global $nxs_gCookiesArr; $advSettings = array();
   if (!empty($_POST['c'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $flds = $ser['f']; 
     $flds['recaptcha_response_field'] = $_POST['c'];  $cfldsTxt = build_http_query($flds);  // prr($cfldsTxt); prr($nxs_gCookiesArr);
@@ -22,23 +23,25 @@ if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global
       } 
     }
   } 
-  if (!empty($_POST['s'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $flds = $ser['f']; 
-    $flds['PinVerificationForm_pinParam'] = $_POST['s'];  $cfldsTxt = build_http_query($flds);  // prr($cfldsTxt); prr($nxs_gCookiesArr);
-    $contents2 = getCurlPageX('https://www.linkedin.com/uas/ato-pin-challenge-submit','https://www.linkedin.com/uas/login-submit', false, $cfldsTxt, false, $advSettings);  //  prr($contents2);
-    if (stripos($contents2['content'], 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
-    if (stripos($contents2['content'], '<div id="global-error">')!==false) { echo CutFromTo($contents2['content'], '<div role="alert" class="alert error">', '</div>'); die(); }    
-    if (stripos($contents2['content'], 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }    
-    if (stripos($contents2['url'], 'linkedin.com/uas/ato-pin-challenge-submit')!==false) echo "Wrong Code. Please try Again";
-    if (stripos($contents2['url'], 'linkedin.com/home')!==false) { echo "OK. You are In";    
-      $contents3 = getCurlPageX('http://www.linkedin.com/profile/edit?trk=tab_pro', 'http://www.linkedin.com/home', false, '', false, $advSettings); // prr($contents3);
-      if ($_POST['i']!='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-          $options['li'][$_POST['i']]['uCook'] = $nxs_gCookiesArr; if (is_array($options)) update_option('NS_SNAutoPoster', $options);
-      } 
-    }
-  } 
-  
-  die();     
-}}
+  if (!empty($_POST['s'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $ck = $ser['c']; $flds = $ser['f']; 
+    $flds['PinVerificationForm_pinParam'] = $_POST['s']; $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', true);
+    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); // prr($advSet);
+    $rep = nxs_remote_post('https://www.linkedin.com/uas/ato-pin-challenge-submit', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body']; prr($rep);
+    
+    if (stripos($contents2, 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
+    if (stripos($contents2, '<div id="global-error">')!==false) { echo CutFromTo($contents2, '<div role="alert" class="alert error">', '</div>'); die(); }    
+    if (stripos($contents2, 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }        
+    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  stripos($rep['headers']['location'], 'linkedin.com/uas/ato-pin-challenge-submit')!==false) echo "Wrong Code. Please try Again";
+    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  stripos($rep['headers']['location'], 'linkedin.com/home')!==false) echo "OK. You are In";    
+    
+    $hdrsArr = $liObj->headers('http://www.linkedin.com/home', 'https://www.linkedin.com');  $ck = $rep['cookies'];    
+    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck); // prr($advSet);
+    $rep = nxs_remote_get('http://www.linkedin.com/profile/edit?trk=tab_pro', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $ck = $rep['cookies'];   
+    if ($_POST['i']!='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
+          $options['li'][$_POST['i']]['ck'] = $ck; if (is_array($options)) update_option('NS_SNAutoPoster', $options);
+    }       
+  } die();     
+}}  
 
 //## NextScripts Facebook Connection Class
 $nxs_snapAvNts[] = array('code'=>'LI', 'lcode'=>'li', 'name'=>'LinkedIn');
@@ -88,7 +91,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI { var $ntInfo = ar
         </div>
       </div>
       <div class="nxs_box_inside">
-        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = $pbo[$ntInfo['defNName']]; 
+        <?php foreach ($ntOpts as $indx=>$pbo){ if (trim($pbo['nName']=='')) $pbo['nName'] = !empty($pbo[$ntInfo['defNName']])?$pbo[$ntInfo['defNName']]:'LinkedIn'; 
           if (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='') $pbo[$ntInfo['lcode'].'OK'] = (isset($pbo['liAccessToken']) && $pbo['liAccessTokenSecret']!='')?'1':'';
         ?>
           <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
@@ -380,7 +383,7 @@ if (!function_exists("nxs_doPublishToLI")) { //## Second Function to Post to LI
     }
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:''); 
     //$images = array(nxs_getPostImage($postID, 'thumb'), nxs_getPostImage($postID, 'medium'), nxs_getPostImage($postID, 'full'), nxs_getPostImage($postID, 'original')); 
-    $message = array('url'=>$urlToGo, 'surl'=>$urlToGo, 'urlDescr'=>$urlDescr, 'urlTitle'=>$title, 'imageURL' => $imgURL, 'videoCode'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle, 'cats'=>'', 'authorName'=>'');   
+    $message = array('url'=>$urlToGo, 'surl'=>$urlToGo, 'urlDescr'=>$urlDescr, 'urlTitle'=>$title, 'title'=>$title, 'imageURL' => $imgURL, 'videoCode'=>'', 'videoURL'=>'', 'siteName'=>$blogTitle, 'cats'=>'', 'authorName'=>'');   
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_LI(); $ret = $ntToPost->doPostToNT($options, $message);
     //## Process Results

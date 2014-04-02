@@ -8,7 +8,7 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
     var $ntLCode = 'bg';     
     
     function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+      foreach ($options as $ntOpts) { $out[] = $this->doPostToNT($ntOpts, $message); }
       return $out;
     }
     
@@ -43,32 +43,32 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
       //## Check API Lib
       //if (!function_exists('doConnectToBlogger')) if (file_exists('apis/postToGooglePlus.php')) require_once ('apis/postToGooglePlus.php'); elseif (file_exists('/home/_shared/deSrc.php')) require_once ('/home/_shared/deSrc.php');       
       //## Check settings
-      if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
+      if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }   
       if (!isset($options['bgUName']) || trim($options['bgPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }      
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['bgMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['bgMsgTFormat'], $message); 
-      if ($options['bgInclTags']=='1') $tags = nsTrnc($message['tags'], 195, ',', ''); else $tags = '';
+      if ($options['bgInclTags']=='1') $tags = nsTrnc($message['tags'], 195, ',', ''); else $tags = ''; 
       //## Check/Fix HTML   
       if (class_exists('DOMDocument')) {$doc = new DOMDocument();  @$doc->loadHTML('<?xml encoding="UTF-8">' .$msg); $doc->encoding = 'UTF-8'; $msg = $doc->saveHTML(); $msg = CutFromTo($msg, '<body>', '</body>'); 
         $msg = preg_replace('/<br(.*?)\/?>/','<br$1/>',$msg);   $msg = preg_replace('/<img(.*?)\/?>/','<img$1/>',$msg);
-        require_once ('apis/htmlNumTable.php');  if (is_array($HTML401NamedToNumeric)) { $msg = strtr($msg, $HTML401NamedToNumeric); $msgT = strtr($msgT, $HTML401NamedToNumeric); }
+        require ('apis/htmlNumTable.php');  if (is_array($HTML401NamedToNumeric)) { $msg = strtr($msg, $HTML401NamedToNumeric); $msgT = strtr($msgT, $HTML401NamedToNumeric); }
       }    
       $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg);      
-      $msg = str_replace("\r\n","\n", $msg); $msg = str_replace("\n\r","\n", $msg); $msg = str_replace("\r","\n", $msg); $msg = str_replace("\n","<br/>", $msg);
+      $msg = str_replace("\r\n","\n", $msg); $msg = str_replace("\n\r","\n", $msg); $msg = str_replace("\r","\n", $msg); $msg = str_replace("\n","<br/>", $msg);  
       //## Make Post
       $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID']; // prr($msgT); prr($msg); die();
-      if (function_exists("doConnectToBlogger")) { $auth = doConnectToBlogger($email, $pass); if ($auth!==false) $ret = $auth; else $ret = doPostToBlogger($blogID, $msgT, $msg, $tags);} 
+      if (function_exists("doConnectToBlogger")) { $auth = doConnectToBlogger($email, $pass); if ($auth!==false) $ret = $auth; else $ret = doPostToBlogger($blogID, $msgT, $msg, $tags); } 
        else { $auth = $this->nsBloggerGetAuth($email, $pass); if ($auth===false) $ret = 'Incorrect Username/Password'; else { 
         if (is_array($auth))  $ret = $auth['error']; else { 
          $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = $this->nsBloggerNewPost($auth, $blogID, $msgT, $msg);
         }
-      }}
+      }} 
       //## Return      
-      if (is_array($ret) && $ret['post_id']!='') {         
+      if (is_array($ret) && $ret['post_id']!='') {
          return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'));          
       } else { $badOut['Error'] .= print_r($ret, true); 
-        return $badOut;
+         return $badOut;
       }
     }
 }}

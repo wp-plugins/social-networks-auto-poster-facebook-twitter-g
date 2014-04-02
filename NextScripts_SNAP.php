@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.3.1
+Version: 3.3.2
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.3.1' ); 
+define( 'NextScripts_SNAP_Version' , '3.3.2' ); 
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -223,7 +223,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
             if ($publtype=='S') { if (isset($optMt['nHrs']) && isset($optMt['nMin']) && ($optMt['nHrs']>0 || $optMt['nMin']>0) ) { $delay = $optMt['nMin']*60+$optMt['nHrs']*3600;
                 nxs_addToLogN('I', 'Delayed', $avNt['name'].' ('.$optMt['nName'].')', 'Post has been delayed for '.$delay.' Seconds ('.($optMt['nHrs']>0?$optMt['nHrs'].' Hours':'')." ".($optMt['nMin']>0?$optMt['nMin'].' Minutes':'').')' );
               } else $delay = rand(2,10); $optMt['timeToRun'] = time()+$delay; 
-              if ($options['ver']>300.330) { $shName = 'nxs_snap_sh_'.$avNt['code'].'0_'.$optMt['timeToRun']; delete_post_meta($postID, $shName); add_post_meta($postID, $shName, $optMt); $args = array($postID, $shName); }
+              if ($options['ver']>300.330) { $shName = '_nxs_snap_sh_'.$avNt['code'].'0_'.$optMt['timeToRun']; delete_post_meta($postID, $shName); add_post_meta($postID, $shName, $optMt); $args = array($postID, $shName); }
                 else $args = array($postID, $optMt);  
               wp_schedule_single_event($optMt['timeToRun'],'ns_doPublishTo'.$avNt['code'], $args); 
                 nxs_addToLogN('BI', 'Scheduled', $avNt['name'].' ('.$optMt['nName'].')', ' PostID:('.$postID.')' );

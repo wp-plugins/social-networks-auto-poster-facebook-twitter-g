@@ -19,8 +19,7 @@ if (!class_exists("nxs_class_SNAP_YT")) { class nxs_class_SNAP_YT {
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ytMsgFormat'], $message); 
       
-      $loginError = doConnectToGooglePlus2($options['ytUName'], $pass, 'YT');  
-      if ($loginError!==false) {if ($postID=='0') echo $loginError; nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($loginError, true)." - BAD USER/PASS", $extInfo); return "BAD USER/PASS";} 
+      $loginError = doConnectToGooglePlus2($options['ytUName'], $pass, 'YT'); if ($loginError!==false) return "BAD USER/PASS - ".$loginError; 
       
       $ret = doPostToYouTube($msg, $options['ytPageID'], $message['videoURL'], $options['ytGPPageID']); //prr($ret);
       if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');

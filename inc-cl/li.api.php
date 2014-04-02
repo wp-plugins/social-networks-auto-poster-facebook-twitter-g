@@ -16,7 +16,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if ((!isset($options['ulName']) || trim($options['uPass'])=='') && (empty($options['liOAuthVerifier'])))  { $badOut['Error'] = 'Not Configured'; return $badOut; }                  
-      if (empty($options['imgSize'])) $options['imgSize'] = '';
+      if (empty($options['imgSize'])) $options['imgSize'] = ''; if (empty($options['liMsgFormatT'])) $options['liMsgFormatT'] = '%TITLE%'; 
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);         

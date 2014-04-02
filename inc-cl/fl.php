@@ -185,8 +185,7 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
      foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snap'.$ntU, true));  
         if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]);  if (empty($ntOpt['imgToUse'])) $ntOpt['imgToUse'] = '';
         $doIT = $ntOpt['do'.$ntU] && (is_array($pMeta) || $ntOpt['catSel']!='1'); $imgToUse = $ntOpt['imgToUse']; 
-        $isAvail = $ntOpt['appKey']!='' && $ntOpt['appSec']!=''; $msgFormat = htmlentities($ntOpt['msgFrmt'], ENT_COMPAT, "UTF-8");    $msgFormatT = htmlentities($ntOpt['msgTFrmt'], ENT_COMPAT, "UTF-8"); 
-        $postType = $ntOpt['postType'];         
+        $isAvail = $ntOpt['appKey']!='' && $ntOpt['appSec']!=''; $msgFormat = htmlentities($ntOpt['msgFrmt'], ENT_COMPAT, "UTF-8");    $msgFormatT = htmlentities($ntOpt['msgTFrmt'], ENT_COMPAT, "UTF-8");         
       ?>  
       <tr><th style="text-align:left;" colspan="2"> 
       <?php if ($ntOpt['catSel']=='1' && trim($ntOpt['catSelEd'])!='')  { ?> <input type="hidden" class="nxs_SC" id="nxs_SC_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['catSelEd']; ?>" /> <?php } ?>

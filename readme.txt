@@ -2,10 +2,10 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, YouTube
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 3.3.0
+Stable tag: 3.3.2
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,7 +14,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-* **Latest version 3.3** - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard and Scoop.It. 
+* **Latest version 3.3** - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
 * *Version 3.0* - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
 * *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
@@ -155,6 +155,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.2 [04/02/2014] =
+
+* New - New network "SETT". Post your blogposts to your Sett Blog. 
+* Bug Fix - LinkedIn Connection issues. 
+* Bug Fix - Entries like nxs_snap_sh_ have been removed from "Custom Fields" list
+* Bug Fix - Many minor bugs. 
 
 = 3.3.1 [03/12/2014] =
 
