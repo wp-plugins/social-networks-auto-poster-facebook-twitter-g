@@ -35,7 +35,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
               if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Page Token."; prr($res); die();} else {
                   $token = json_decode($res['body'], true); if (empty($token)) {echo "Can't get Page Token. JSON Error. "; prr($res); die();} else {
                     if (!empty($token['error'])) if (!empty($token['error']['message'])) { $errMsg = $token['error']['message'];
-                      if ( stripos($errMsg, 'Unknown fields: access_token')!==false) { $token['access_token'] = $fbo['fbAppAuthToken']; } else { 
+                      if ( stripos($errMsg, 'Unknown fields: access_token')!==false || stripos($errMsg, 'node type (User)')!==false) $token['access_token'] = $fbo['fbAppAuthToken']; else { 
                         if (stripos($errMsg, 'Unsupported get request')!==false) echo "<b style='color:red;'>Error </b>: Your Facebook URL ( <i>".$fbo['fbURL']."</i> ) is either incorrect or authorzing user don't have rights to post there.<br/>";
                         echo '<br/>Reported Error: ',  $errMsg, "\n"; die(); 
                       }                    

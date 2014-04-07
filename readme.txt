@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -25,10 +25,11 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 = Supported Networks =
 
 * **App.net** - Autopost to your account.
-* **Blogger/Blogspot** - Autopost to your Blog. HTML is supported.
+* **Blogger/Blogspot** - Autopost to your blog. HTML is supported.
 * **Delicious** - Auto-submit bookmark to your account. 
 * **Deviantart.com** - Autopost to your blog. HTML is supported.
 * **Diigo** - Auto-submit bookmark to your account. 
+* **Evernote/postach.io** – Auto-post to your Evernote account or postach.io blog.
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **Flickr** - Autopost images to your photostream and/or sets. Tags are supported. 
 * **Flipboard** (*with third party API library*) - post to your magazines.
@@ -40,6 +41,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
 * **Reddit** (*with third party API library*) - post to your subreddits.
 * **Scoop.It** - Autopost to your "Topics". Ability to attach your blogpost to scoop. Ability to make "Image" posts.
+* **SETT** – Auto-post to your Sett.com blog.
 * **Stumbleupon** - Auto-submit bookmark to your account. 
 * **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
 * **Twitter** - Autopost to your account. Ability to attach Image to tweets.
@@ -155,6 +157,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.3 [04/07/2014] =
+
+* Bug Fix/Improvement - Connection to Facebook has been updated to comply with new requirements. THis will fix all "(#100) Tried accessing unexisting field (access_token) on node type (User)" errors.
 
 = 3.3.2 [04/02/2014] =
 
