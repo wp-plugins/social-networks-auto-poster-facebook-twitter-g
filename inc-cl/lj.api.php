@@ -35,7 +35,7 @@ if (!class_exists("nxs_class_SNAP_LJ")) { class nxs_class_SNAP_LJ {
       $nxsToLJContent = array( "username" => $options['ljUName'], "password" => $pass, "event" => $msg, "subject" => $msgT, "lineendings" => "unix", "year" => $year, "mon" => $mon, "day" => $day, "hour" => $hour, "min" => $min, "ver" => 2);      
       if (!empty($options['commID']) && $options['commID']!='') $nxsToLJContent["usejournal"] = $options['commID'];  
       if (!empty($options['inclTags']) && $options['inclTags']=='1' && !empty($message['tags'])) $nxsToLJContent['props'] = array('taglist' => $message['tags']);      
-        prr($nxsToLJContent);
+        // prr($nxsToLJContent);
       if (!$nxsToLJclient->query('LJ.XMLRPC.postevent', $nxsToLJContent)) {  prr($nxsToLJclient); $ret = 'Something went wrong - '.$nxsToLJclient->getErrorCode().' : '.$nxsToLJclient->getErrorMessage();} else $ret = 'OK';      
       $pid = $nxsToLJclient->getResponse(); 
       if (is_array($pid) && !empty($pid['url'])) return array('postID'=>$pid['url'], 'isPosted'=>1, 'postURL'=>$pid['url'], 'pDate'=>date('Y-m-d H:i:s'));  

@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 3.3.3
+Stable tag: 3.3.4
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -29,7 +29,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **Delicious** - Auto-submit bookmark to your account. 
 * **Deviantart.com** - Autopost to your blog. HTML is supported.
 * **Diigo** - Auto-submit bookmark to your account. 
-* **Evernote/postach.io** – Auto-post to your Evernote account or postach.io blog.
+* **Evernote/postach.io** - Auto-post to your Evernote account or postach.io blog.
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **Flickr** - Autopost images to your photostream and/or sets. Tags are supported. 
 * **Flipboard** (*with third party API library*) - post to your magazines.
@@ -158,9 +158,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.3.4 [04/11/2014] =
+
+* Bug Fix - LinkedIn troubles with entering captcha
+* Bug Fix - LinkedIn "Array - Array" Error
+* Bug Fix - Plurk "Array" message removed
+* Bug Fix - LiveJournal "Array" message removed
+* Bug Fix - Sett error "You need to enter a name and email address"
+* Bug Fix - Twitter "over 140 characters" error when too many tags are used.
+
 = 3.3.3 [04/07/2014] =
 
-* Bug Fix/Improvement - Connection to Facebook has been updated to comply with new requirements. THis will fix all "(#100) Tried accessing unexisting field (access_token) on node type (User)" errors.
+* Bug Fix/Improvement - Connection to Facebook has been updated to comply with new requirements. This will fix all "(#100) Tried accessing unexisting field (access_token) on node type (User)" errors.
 
 = 3.3.2 [04/02/2014] =
 

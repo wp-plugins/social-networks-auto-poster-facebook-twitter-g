@@ -60,6 +60,35 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   return trim($msg);
 }}
 
+if (!function_exists('nxs_showListRow')){function nxs_showListRow($ntParams) { $ntInfo = $ntParams['ntInfo']; $nxs_plurl = $ntParams['nxs_plurl']; $ntOpts = $ntParams['ntOpts'];  ?>
+          <div class="nxs_box">
+            <div class="nxs_box_header"> 
+              <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
+              <?php $cbo = count($ntOpts); ?> 
+              <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+              </div>
+            </div>
+            <div class="nxs_box_inside">            
+            <?php if(!empty($ntParams['checkFunc']) &&  !function_exists($ntParams['checkFunc']['funcName'])) echo $ntParams['checkFunc']['msg']; else foreach ($ntOpts as $indx=>$pbo){  if (trim($pbo['nName']=='')) $pbo['nName'] = $ntInfo['name']; 
+              if (empty($pbo[$ntInfo['lcode'].'OK'])) $pbo[$ntInfo['lcode'].'OK'] = !empty($pbo[$ntParams['chkField']])?'1':''; ?>
+              <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
+              <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
+                <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
+                <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />             
+              <?php } ?>            
+              <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
+              <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
+              <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+              &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?>
+              <a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;          
+              <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+              </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div>
+            <?php } ?>
+            </div>
+          </div> <?php            
+        }
+}
+
 if (!function_exists("nxs_get_admin_url")) { function nxs_get_admin_url($path=''){ //## Workaround for some buggy 'admin hiding' plugins.
   $admURL = admin_url($path); if (substr($admURL, 0, 4)!='http') { $admURL = admin_url($path, 'https'); $admURL = str_ireplace('https://', 'http://', $admURL);} return $admURL;
 }}
@@ -111,7 +140,7 @@ if (!function_exists("nxs_cron_check")){function nxs_cron_check() { if (stripos(
   update_option("NXS_cronCheck", $cronCheckArray);    
 }}}
 
-function toolbar_link_to_mypage( $wp_admin_bar ) {
+function nxs_toolbar_link_to_mypage( $wp_admin_bar ) {
     $args = array(
         'id'    => 'snap-post',
         'title' => '<span style="font-weight:bold; color:#2ecc2e;">{SNAP} </span> New Post to Social Networks',

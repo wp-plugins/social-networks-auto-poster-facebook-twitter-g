@@ -25,7 +25,7 @@ if (!class_exists("nxs_class_SNAP_PK")) { class nxs_class_SNAP_PK {
       if ($options['pkCat']=='') $options['pkCat'] = ':';    
       if ($options['attchImg']=='1') { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; if ($imgURL!='') $msg .= " ".$imgURL; }         
     
-      $postArr = array('content'=>$msg, 'qualifier'=>$options['pkCat']);  $postinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Timeline/plurkAdd', $postArr);   prr($postinfo);
+      $postArr = array('content'=>$msg, 'qualifier'=>$options['pkCat']);  $postinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Timeline/plurkAdd', $postArr); //  prr($postinfo);
       if (is_array($postinfo) && isset($postinfo['plurk_id'])) $pkID = $postinfo['plurk_id'];  $code = $tum_oauth->http_code; // echo "XX".print_r($code);  prr($postinfo); // prr($msg); prr($postinfo); echo $code."VVVV"; die("|====");
     
       if ($code == 200 && $pkID!='') { $alphabet = str_split("0123456789abcdefghijklmnopqrstuvwxyz"); $shorten = ''; $plurk_id = $pkID;

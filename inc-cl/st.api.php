@@ -29,7 +29,7 @@ if (!class_exists('nxsAPI_ST')){class nxsAPI_ST{ var $ck = array();  var $debug 
     function check(){ $ck = $this->ck;  if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://thoughts.com'); if ($this->debug) echo "[ST] Checking....;<br/>\r\n";
         $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck)); 
         if (is_nxs_error($rep)) return false; $ck = $rep['cookies']; $contents = $rep['body']; //if ($this->debug) prr($contents);
-        return stripos($contents, "class='logout_link'")!==false;
+        return stripos($contents, 'data-url="')!==false;
       } else return false;
     }
     function connect($u,$p){ $badOut = 'Error: '; 

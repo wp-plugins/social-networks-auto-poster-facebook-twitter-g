@@ -34,7 +34,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     $options['ntInfo']= array('lcode'=>'tw'); $this->showNTSettings($mtwo, $options, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){ global $nxs_plurl, $plgn_NS_SNAutoPoster; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); $tmzFrmt = _x('Y-m-d G:i:s', 'timezone date format');
-    if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
+    if (!isset($plgn_NS_SNAutoPoster)) $gOptions = array(); else $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['riComments'])) $options['riComments'] = '';  if (!isset($options['riCommentsAA'])) $options['riCommentsAA'] = ''; if (!isset($options['riCommentsM'])) $options['riCommentsM'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
@@ -84,7 +84,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
    <div class="nxs_tls_cpt"><?php _e('Auto Import of Replies and Mentions:', 'nxs_snap'); ?></div>
    <div class="nxs_tls_bd">
    <div class="nxs_tls_sbInfo"><?php _e('Plugin could grab Replies and Mentions from Twitter and import them as Wordpress Comments', 'nxs_snap'); ?></div>
-   <?php if ( $gOptions['riActive'] == '1' ) { ?>
+   <?php if ( !empty($gOptions['riActive']) && $gOptions['riActive'] == '1' ) { ?>
    <input value="1" id="riC<?php echo $ii; ?>" <?php if (trim($options['riComments'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riComments]"/> <b><?php _e('Import Twitter Replies', 'nxs_snap'); ?></b>
    <br/>
    <input value="1" id="riCM<?php echo $ii; ?>" <?php if (trim($options['riCommentsM'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riCommentsM]"/> <b><?php _e('Import Twitter Mentions', 'nxs_snap'); ?></b>
@@ -289,7 +289,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%ANNOUNCE%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pText)) ||
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pFullText)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pRawText)) ) {} else $tggs[] = '#'.$frmTag;
-          } $tags = implode(' ',$tggs); while(count($tags)>($twLim-10)) {array_pop($tggs); $tags = implode(' ',$tggs);} $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
+          } $tags = implode(' ', $tggs); $tgsTwLim = $twLim-20; $tags = nsTrnc($tags, $tgsTwLim, " ", ""); $twMsgFormat = str_ireplace("%TAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
           $twLim = $twLim - nxs_strLen($tags);
         } 
         if (stripos($twMsgFormat, '%CATS%')!==false || stripos($twMsgFormat, '%HCATS%')!==false) {
@@ -306,7 +306,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
                    ((stripos($twMsgFormat, '%ANNOUNCE%')!==false) && (stripos($pText, $cat->name)!==false || stripos($pText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && (stripos($pFullText, $cat->name)!==false || stripos($pFullText, $frmTag)!==false)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && (stripos($pRawText, $cat->name)!==false || stripos($pRawText, $frmTag)!==false)) ) {} else $ctts[] = '#'.$frmTag; 
-          } $cats = implode(' ',$ctts); while(count($cats)>($twLim-10)) {array_pop($ctts); $cats = implode(' ',$ctts);} $twMsgFormat = str_ireplace("%CATS%", $cats, $twMsgFormat);  $twMsgFormat = str_ireplace("%HCATS%", $cats, $twMsgFormat);
+          } $cats = implode(' ',$ctts); $tgsTwLim = $twLim-20; $cats = nsTrnc($cats, $tgsTwLim, " ", ""); $twMsgFormat = str_ireplace("%CATS%", $cats, $twMsgFormat);  $twMsgFormat = str_ireplace("%HCATS%", $cats, $twMsgFormat);
           $twLim = $twLim - nxs_strLen($cats);
         } 
         if (stripos($twMsgFormat, '%TITLE%')!==false) { if (stripos($pTitle, '.co.uk')!==false) $twLim = $twLim - 14;

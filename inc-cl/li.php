@@ -10,17 +10,20 @@ if (isset($_GET['ca']) && $_GET['ca']!='') { $ch = curl_init();  curl_setopt($ch
 if (function_exists("add_action")) add_action('wp_ajax_nxsCptCheck' , 'nxsCptCheck_ajax'); 
 
 if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global $nxs_gCookiesArr; $advSettings = array();
-  if (!empty($_POST['c'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $flds = $ser['f']; 
-    $flds['recaptcha_response_field'] = $_POST['c'];  $cfldsTxt = build_http_query($flds);  // prr($cfldsTxt); prr($nxs_gCookiesArr);
-    $contents2 = getCurlPageX('https://www.linkedin.com/uas/captcha-submit','https://www.linkedin.com/uas/login-submit', false, $cfldsTxt, false, $advSettings);  //  prr($contents2);
-    if (stripos($contents2['content'], 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
-    if (stripos($contents2['content'], 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }    
-    if (stripos($contents2['url'], 'linkedin.com/uas/captcha-submit')!==false) echo "Wrong Captcha. Please try Again";
-    if (stripos($contents2['url'], 'linkedin.com/home')!==false) { echo "OK. You are In";    
-      $contents3 = getCurlPageX('http://www.linkedin.com/profile/edit?trk=tab_pro', 'http://www.linkedin.com/home', false, '', false, $advSettings); // prr($contents3);
+  if (!empty($_POST['c'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $flds = $ser['f']; $flds['recaptcha_response_field'] = $_POST['c'];
+    $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', true);
+    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); // prr($advSet);
+    $rep = nxs_remote_post('https://www.linkedin.com/uas/captcha-submit', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body']; 
+    if (stripos($contents2, 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
+    if (stripos($contents2, 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }    
+    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  stripos($rep['headers']['location'], 'linkedin.com/uas/captcha-submit')!==false) echo "Wrong Captcha. Please try Again";
+    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  (stripos($rep['headers']['location'], 'linkedin.com/nhome')!==false || stripos($rep['headers']['location'], 'linkedin.com/home')!==false)) { echo "OK. You are In";    
+      $hdrsArr = $liObj->headers('http://www.linkedin.com/home', 'https://www.linkedin.com');  $ck = $rep['cookies'];    
+      $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck); // prr($advSet);
+      $rep = nxs_remote_get('http://www.linkedin.com/profile/edit?trk=tab_pro', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $ck = $rep['cookies'];   
       if ($_POST['i']!='') { global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
-          $options['li'][$_POST['i']]['uCook'] = $nxs_gCookiesArr; if (is_array($options)) update_option('NS_SNAutoPoster', $options);
-      } 
+          $options['li'][$_POST['i']]['ck'] = $ck; if (is_array($options)) update_option('NS_SNAutoPoster', $options);
+      }
     }
   } 
   if (!empty($_POST['s'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $ck = $ser['c']; $flds = $ser['f']; 
@@ -32,7 +35,7 @@ if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global
     if (stripos($contents2, '<div id="global-error">')!==false) { echo CutFromTo($contents2, '<div role="alert" class="alert error">', '</div>'); die(); }    
     if (stripos($contents2, 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }        
     if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  stripos($rep['headers']['location'], 'linkedin.com/uas/ato-pin-challenge-submit')!==false) echo "Wrong Code. Please try Again";
-    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  stripos($rep['headers']['location'], 'linkedin.com/home')!==false) echo "OK. You are In";    
+    if ($rep['response']['code']=='302' && !empty($rep['headers']['location']) &&  (stripos($rep['headers']['location'], 'linkedin.com/nhome')!==false || stripos($rep['headers']['location'], 'linkedin.com/home')!==false)) echo "OK. You are In";    
     
     $hdrsArr = $liObj->headers('http://www.linkedin.com/home', 'https://www.linkedin.com');  $ck = $rep['cookies'];    
     $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck); // prr($advSet);
