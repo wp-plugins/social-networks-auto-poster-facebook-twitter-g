@@ -25,17 +25,18 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $res = wp_remote_get( "https://graph.facebook.com/me?".http_build_query($aacct, null, '&')); 
       if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Facebook User."; prr($res); die();} else {
         $user = json_decode($res['body'], true); if (empty($user)) {echo "Can't get Facebook User. JSON Error. "; prr($res); die();} else {
-            if (!empty($user['id'])) {
+            if (!empty($user['id'])) {        echo "-= Got user: "; prr($user);
               $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-";          
               if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { //$fbPgIDR = wp_remote_get('nxs.php?g='.$fbo['fbURL']); // TODO - how to replace
                 $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
               } 
-              $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  
-              $res = wp_remote_get( "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&'));// prr($res);
+              $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  $fbo['destType'] = '';
+              $res = wp_remote_get( "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&')); prr($res);
               if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Page Token."; prr($res); die();} else {
                   $token = json_decode($res['body'], true); if (empty($token)) {echo "Can't get Page Token. JSON Error. "; prr($res); die();} else {
                     if (!empty($token['error'])) if (!empty($token['error']['message'])) { $errMsg = $token['error']['message'];
-                      if ( stripos($errMsg, 'Unknown fields: access_token')!==false || stripos($errMsg, 'node type (User)')!==false) $token['access_token'] = $fbo['fbAppAuthToken']; else { 
+                      if ( stripos($errMsg, 'Unknown fields: access_token')!==false || stripos($errMsg, 'Cannot query users by their username')!==false || stripos($errMsg, 'node type (User)')!==false) {
+                          $token['access_token'] = $fbo['fbAppAuthToken']; $fbo['destType'] =  (stripos($fbo['fbURL'], '/groups/')!=false)?'gr':'pr'; } else { 
                         if (stripos($errMsg, 'Unsupported get request')!==false) echo "<b style='color:red;'>Error </b>: Your Facebook URL ( <i>".$fbo['fbURL']."</i> ) is either incorrect or authorzing user don't have rights to post there.<br/>";
                         echo '<br/>Reported Error: ',  $errMsg, "\n"; die(); 
                       }                    
@@ -48,9 +49,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         }
       }
                                                
-      if (!empty($user['id'])) { $fbo['fbAppAuthUser'] = $user['id'];  $fbo['fbAppAuthUserName'] = $user['name']." (".$user['username'].")";  
+      if (!empty($user['id'])) { $fbo['fbAppAuthUser'] = $user['id'];  $fbo['fbAppAuthUserName'] = $user['name'].(!empty($user['username'])?" (".$user['username'].")":'');  
         $optionsG = get_option('NS_SNAutoPoster'); $optionsG['fb'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
-        ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
+        ?><script type="text/javascript">window.loXcation = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
       <?php } die(); }
     }     
     $ntParams = array('ntInfo'=>$ntInfo, 'nxs_plurl'=>$nxs_plurl, 'ntOpts'=>$ntOpts, 'chkField'=>'fbAppAuthUser'); nxs_showListRow($ntParams); 
@@ -140,14 +141,18 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 
 
               
-            <?php if ($options['fbPgID']!='') {?><div style="width:100%;"><strong>Facebook Page ID:</strong> <?php _e(apply_filters('format_to_edit', htmlentities($options['fbPgID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?> </div><?php } ?>
+            <?php if ($options['fbPgID']!='') {?><div style="width:100%;"><strong>Facebook Page ID:</strong> <?php if (!empty($options['destType']) && $options['destType'] == 'pr') _e('Profile', 'nxs_snap');  
+              if (!empty($options['destType']) && $options['destType'] == 'gr') _e('Group', 'nxs_snap');               
+              if (empty($options['destType']) || (!empty($options['destType']) && $options['destType'] == 'pg')) _e('Page', 'nxs_snap'); ?>&nbsp;-&nbsp;
+              <?php _e(apply_filters('format_to_edit', htmlentities($options['fbPgID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>
+              </div><?php } ?>
             <?php 
             if($options['fbAppSec']=='') { ?>
             <b><?php _e('Authorize Your Facebook Account', 'nxs_snap'); ?></b> <?php _e('Please click "Update Settings" to be able to Authorize your account.', 'nxs_snap'); ?>
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
             <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'].(!empty($options['fbAppAuthUserName'])?" - ".$options['fbAppAuthUserName']:''), ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <br/><?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&client_secret=<?php echo trim($options['fbAppSec']);?>&scope=publish_stream,user_photos,photo_upload,friends_photos,offline_access,read_stream,manage_pages,user_groups,friends_groups&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&client_secret=<?php echo trim($options['fbAppSec']);?>&scope=publish_actions,manage_pages&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
             <?php } ?>

@@ -45,7 +45,7 @@ if (!class_exists("nxs_class_SNAP_SC")) { class nxs_class_SNAP_SC {
       
       require_once('apis/scOAuth.php');   $tum_oauth = new wpScoopITOAuth($options['appKey'], $options['appSec'], $options['accessToken'], $options['accessTokenSec']);
       $tiID = $tum_oauth->makeReq('http://www.scoop.it/api/1/topic', array('urlName'=>$options['topicURL']));  
-      if (!empty($tiID) && !empty($tiID['topic']) && !empty($tiID['topic']['id'])) $tiID = $tiID['topic']['id']; else { $badOut['Error'] .= print_r($tiID, true); return $badOut; }
+      if (!empty($tiID) && is_array($tiID) && !empty($tiID['topic']) && !empty($tiID['topic']['id'])) $tiID = $tiID['topic']['id']; else { $badOut['Error'] .= print_r($tiID, true); return $badOut; }
       $postArr = array('action'=>'create', 'title'=>$msgT, 'content'=>$text, 'url'=>$postType=='A'?$message['url']:'', 'imageUrl'=>(($postType=='I' || $postType=='A') && !empty($imgURL))?$imgURL:'', 'topicId'=>$tiID);  
       $postinfo = $tum_oauth->makeReq('http://www.scoop.it/api/1/post', $postArr, 'POST'); // prr($postinfo);
       

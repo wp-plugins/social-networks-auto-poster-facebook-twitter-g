@@ -182,7 +182,7 @@ if (!function_exists("nxs_rePostToDL_ajax")) {
 
 
 if (!function_exists("nxs_doPublishToDL")) { //## Second Function to Post to DL
-  function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious';  if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
+  function nxs_doPublishToDL($postID, $options){ $ntCd = 'DL'; $ntCdL = 'dl'; $ntNm = 'Delicious'; global $plgn_NS_SNAutoPoster;  if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
       // if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToDL',  array($postID, $options));      
       $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));     
       $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();  

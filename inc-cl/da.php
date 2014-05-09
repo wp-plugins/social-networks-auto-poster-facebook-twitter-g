@@ -140,7 +140,7 @@ if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
                     if ($post->post_status == "publish" && $isAvailDA) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToDA_repostButton" id="rePostToDA_button" value="<?php _e('Repost to deviantART', 'nxs_snap') ?>" />
                     <?php } ?>
                     
-                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { 
+                    <?php  if (is_array($pMeta) && !empty($pMeta[$ii]) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { 
                         
                         ?> <span id="pstdDA<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
                       <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['postURL']; ?>" target="_blank"><?php $nType="deviantART"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
@@ -213,6 +213,14 @@ if (!function_exists("nxs_doPublishToDA")) { //## Second Function to Post to DA
       }            
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_DA(); $ret = $ntToPost->doPostToNT($options, $message); // echo "~~~"; prr($ret); echo "+++";
+      //## Save Session
+      if (empty($options['ck'])) $options['ck'] = '';
+      if (!empty($ret) && is_array($ret) && !empty($ret['ck']) && !empty($ret['ck']) && serialize($ret['ck'])!=$options['ck']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
+        if (isset($options['ii']) && $options['ii']!=='')  { $gOptions[$ntCdL][$options['ii']]['ck'] = serialize($ret['ck']);   $gOptions[$ntCdL][$options['ii']]['mh'] = serialize($ret['mh']); update_option('NS_SNAutoPoster', $gOptions);  }        
+        else foreach ($gOptions[$ntCdL] as $ii=>$gpn) { $result = array_diff($options, $gpn);
+          if (!is_array($result) || count($result)<1) { $gOptions[$ntCdL][$ii]['ck'] = serialize($ret['ck']);  $gOptions[$ntCdL][$options['ii']]['mh'] = serialize($ret['mh']); $plgn_NS_SNAutoPoster->nxs_options = $gOptions; update_option('NS_SNAutoPoster', $gOptions); break; }
+        }        
+      } 
       //## Process Results
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 

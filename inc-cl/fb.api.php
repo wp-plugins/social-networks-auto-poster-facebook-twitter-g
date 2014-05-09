@@ -38,7 +38,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['fbMsgFormat'], $message); 
       $imgURL = nxs_getImgfrOpt($message['imageURL']); $fbWhere = 'feed'; 
       $attachType = $options['attachType']; if ($attachType=='1') $attachType = 'A'; else $attachType = 'S';
-      if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; $page_id = $options['pgID'];        
+      if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; if (!empty($options['destType']) && $options['destType'] == 'pr') $page_id = $options['fbAppAuthUser']; else $page_id = $options['pgID'];        
       $msg = strip_tags($msg); $msg = str_ireplace('&lt;(")','<(")', $msg); //## FB Smiles FIX 3
       if (substr($msg, 0, 1)=='@') $msg = ' '.$msg; // ERROR] couldn't open file fix
       $mssg = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'post', 'message'=>$msg);
@@ -58,9 +58,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
             }
           }
         }        
-      } 
+      } //$page_id = '1444414072467583';
       //## Actual Post
-      $response = wp_remote_post( "https://graph.facebook.com/$page_id/".$fbWhere, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $mssg)); 
+      $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; prr($destURL); $response = wp_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $mssg)); 
       if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);
       $res = json_decode($response['body'], true); if (empty($res)) return "JSON ERROR: ".print_r($response, true);
       if (!empty($res['error'])) if (!empty($res['error']['message'])) { $badOut['Error'] .= $res['error']['message']; //## Some Known Errors

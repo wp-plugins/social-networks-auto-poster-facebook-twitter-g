@@ -24,12 +24,12 @@ if (!function_exists('nxs_convertEntity')){ function nxs_convertEntity($matches,
   // else 
   return $destroy ? '' : $matches[0];
 }}
-function nxs_decodeEntities($text) {
+if (!function_exists('nxs_decodeEntities')){function nxs_decodeEntities($text) {
     $text= html_entity_decode($text,ENT_QUOTES,"ISO-8859-1"); #NOTE: UTF-8 does not work!
     $text= preg_replace('/&#(\d+);/me',"chr(\\1)",$text); #decimal notation
     $text= preg_replace('/&#x([a-f0-9]+);/mei',"chr(0x\\1)",$text);  #hex notation
     return $text;
-}
+}}
 if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  $postImgs = array();
   if ($advImgFnd) $postCntEx = apply_filters('the_content', $post->post_excerpt); else $postCntEx = $post->post_excerpt;   
   if ($advImgFnd) $postCnt = apply_filters('the_content', $post->post_content); else $postCnt = $post->post_content; 
@@ -964,9 +964,9 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
                   nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Day - '.$currDay, $extInfo);  continue;  
                 }}
                 //## Check Hours
-                if (isset($ntOpts['rpstBtwHrsF']) && (int)$ntOpts['rpstBtwHrsF']>0) $rpstBtwHrsF = (int)$ntOpts['rpstBtwHrsF'];
+                if (isset($ntOpts['rpstBtwHrsF']) && (int)$ntOpts['rpstBtwHrsF']>0) $rpstBtwHrsF = (int)$ntOpts['rpstBtwHrsF']; else $rpstBtwHrsF = 0;
                 if (isset($ntOpts['rpstBtwHrsT']) && (int)$ntOpts['rpstBtwHrsT']>0) $rpstBtwHrsT = (int)$ntOpts['rpstBtwHrsT'];
-                if ($rpstBtwHrsF>0 && $rpstBtwHrsT>0) { $currHour = (int)date_i18n('H');  //echo "H ".$currHour." ?";
+                if ($rpstBtwHrsT>0) { $currHour = (int)date_i18n('H', $currTime);  //echo "H ".$currHour." ?";
                 if ( !( ($rpstBtwHrsF<$rpstBtwHrsT && $currHour<$rpstBtwHrsT && $currHour>=$rpstBtwHrsF) || ($rpstBtwHrsF>$rpstBtwHrsT && $currHour<$rpstBtwHrsF && $currHour>=$rpstBtwHrsT) )) {  //echo "H :( ";
                   nxs_addToLogN('S', 'RE-Poster', $logNT, 'Skipped - Excluded Hour - '.$currHour, $extInfo);  continue;  
                 }}

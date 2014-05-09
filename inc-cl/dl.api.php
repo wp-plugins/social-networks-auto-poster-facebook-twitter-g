@@ -26,10 +26,10 @@ if (!class_exists("nxs_class_SNAP_DL")) { class nxs_class_SNAP_DL {
       $email = $options['dlUName'];  $pass = substr($options['dlPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['dlPass'], 5)):$options['dlPass'];  
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['dlMsgFormat'], $message); 
-      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['dlMsgTFormat'], $message); $tags = urlencode(nsTrnc($message['tags'], 195, ',', ''));    
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['dlMsgTFormat'], $message); $tags = nsTrnc($message['tags'], 195, ',', '');
       
       $api = "api.del.icio.us/v1"; $link = urlencode($message['url']); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000));            
-      $apicall = "https://$api/posts/add?red=api&url=$link&description=$desc&extended=$ext&tags=$tags"; 
+      $apicall = "https://$api/posts/add?red=api&url=$link&description=$desc&extended=$ext&tags=$tags"; //prr($apicall);
       $hdrsArr = $this->nxs_getDLHeaders($email.':'.$pass); $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) ); // prr($cnt);      
       
       if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); 

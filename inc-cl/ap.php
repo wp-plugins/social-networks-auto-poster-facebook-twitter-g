@@ -4,19 +4,19 @@ $nxs_snapAvNts[] = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'App.net');
 
 if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP { var $ntInfo = array('code'=>'AP', 'lcode'=>'ap', 'name'=>'App.Net', 'defNName'=>'', 'tstReq' => true);
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL;  $ntInfo = $this->ntInfo;
-    if ( isset($_GET['code']) && $_GET['code']!='' && (isset($_GET['auth']) && $_GET['auth']=='ap') ){  $at = $_GET['code'];  
+  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL, $nxs_gOptions;  $ntInfo = $this->ntInfo;
+    if ( isset($_GET['code']) && $_GET['code']!='' && (isset($_GET['state']) && stripos($_GET['state'], 'ap-')!==false) ){  $at = $_GET['code'];  $to = explode('-', $_GET['state']); $_GET['acc'] = $to[1];
      echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>";
      $fbo = $ntOpts[$_GET['acc']]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg);
-     echo $nxs_snapSetPgURL.'&auth=ap&acc='.$_GET['acc']."||"; 
+     echo $nxs_snapSetPgURL.'&auth=ap&acc='.$_GET['acc']."||"; if(stripos($nxs_snapSetPgURL, 'page=NextScripts_SNAP.php')===false) { $newURL = explode('?', $nxs_snapSetPgURL); $nxs_snapSetPgURL = $newURL[0]; }
      if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
      if (isset($fbo['appID'])){ echo "-="; prr($fbo);
-       $wprg['body'] = array('client_id'=>$fbo['appID'], 'client_secret'=>$fbo['appSec'], 'grant_type'=>'authorization_code', 'redirect_uri'=>$nxs_snapSetPgURL.'&auth=ap&acc='.$_GET['acc'], 'code'=>$at);        
+       $wprg['body'] = array('client_id'=>$fbo['appID'], 'client_secret'=>$fbo['appSec'], 'grant_type'=>'authorization_code', 'redirect_uri'=>$nxs_snapSetPgURL, 'state'=>'ap-'.$_GET['acc'], 'code'=>$at); prr($wprg);  
        $response = wp_remote_post('https://account.app.net/oauth/access_token', $wprg); 
        if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }  
        $params = json_decode($response['body'], true);  $fbo['apAppAuthToken'] = $params['access_token']; if ($params['user_id']>0) { $fbo['appAppUserID'] = $params['user_id']; $fbo['appAppUserName'] = $params['username'];  }
-       if ($params['user_id']>0) { $optionsG = get_option('NS_SNAutoPoster'); $optionsG['ap'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
-         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
+       if ($params['user_id']>0) { if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { 
+         $nxs_gOptions['ap'][$_GET['acc']] = $fbo;  nxs_settings_save($nxs_gOptions); } ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
        <?php } die(); }
     }  
   ?>    
@@ -91,7 +91,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP { var $ntInfo = ar
             <?php } else { if(isset($options['appAppUserID']) && $options['appAppUserID']>0) { ?>
             <?php _e('Your App.Net Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['appAppUserID'].' - '.$options['appAppUserName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://account.app.net/oauth/authenticate?client_id=<?php echo trim($options['appID']);?>&response_type=code&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=ap&acc='.$ii));?>&scope=stream+write_post+follow+messages+update_profile+files">Authorize Your App.Net Account</a> 
+            <a href="https://account.app.net/oauth/authenticate?client_id=<?php echo trim($options['appID']);?>&response_type=code&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL).'&state=ap-'.$ii.'&scope=stream+write_post+follow+messages+update_profile+files');?>">Authorize Your App.Net Account</a> 
             <?php if (!isset($options['appAppUserID']) || $options['appAppUserID']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get App.Net message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your App.Net App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
             <?php } ?>

@@ -415,7 +415,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
      }); }); })(jQuery); </script>                 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Categories to Include/Exclude:', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Each blogpost will be autoposted to all categories selected below. All categories are selected by default. 
-              <b>Uncheck</b> categories that you would like <b>NOT</b> to auto-post by default. Assigning the uncheked category to the new blogpost will turn off auto-posting to all configured networks.', 'nxs_snap') ?> </span> <br/>
+              <b>Uncheck</b> categories that you would like <b>NOT</b> to auto-post by default. Assigning the unchecked category to the new blogpost will turn off auto-posting to all configured networks.', 'nxs_snap') ?> </span> <br/>
               <div class="itemDiv">
               <a href="#" onclick="nxs_chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCats(0); return false;">UnCheck all</a>
 
@@ -725,7 +725,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 </td></tr></table>
    
    <br/><br/>
-   <h3>Solutions for the most common problems: <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a>) </h3>
+   <h3>Solutions for the most common problems: <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/troubleshooting-social-networks-auto-poster">Troubleshooting FAQ</a> </h3>
    
    
   </div> </div> 

@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
-Tested up to: 3.8.1
-Stable tag: 3.3.4
+Tested up to: 3.9.1
+Stable tag: 3.3.5
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -157,6 +157,18 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.5 [05/09/2014] =
+
+* [Critical] Bug Fix - Facebook - Facebook API 2.0 Compatibility. Please see here: <a href="http://www.nextscripts.com/known-issues/facebook-issues/">www.nextscripts.com/known-issues/facebook-issues</a>
+* Improvement - Compatibility to up to Wordpress 3.9.1.
+* Improvement - Added support for Twitter multiline posts.
+* Improvement - Twitter - Better 140 characters cut if a lot of tags used.
+* Bug Fix - Contributors can't submit posts for review.
+* Bug Fix - app.net authorization issues. (like "Please contact the website that sent you here and let them know that there is a problem with the authorization URL")
+* Bug Fix - DeviantArt connection problems.
+* Bug Fix - Delicious connection problems.
+* Bug Fix - Delicious broken tags.
 
 = 3.3.4 [04/11/2014] =
 

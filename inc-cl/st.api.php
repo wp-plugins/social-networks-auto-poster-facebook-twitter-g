@@ -45,7 +45,7 @@ if (!class_exists('nxsAPI_ST')){class nxsAPI_ST{ var $ck = array();  var $debug 
         } return "ERROR (Login): ".$badOut.print_r($rep, true);
       } else { if ($this->debug) echo "[TH] Saved Data is OK;<br/>\r\n"; return false; }
     }
-    function post($post){ $ck = $this->ck; $oneTime = '0R4qFyHCMAYYclyZQFNYrOkq4uy4mN5'; $enText = AesCtr::encrypt($post['text'], $oneTime, 256); $blogID = '';
+    function post($post){ $ck = $this->ck; $oneTime = '0R4qFyHCMAYYclyZQFNYrOkq4uy4mN5'; $enText = nxs_AesCtr::encrypt($post['text'], $oneTime, 256); $blogID = '';
       $hdrsArr = $this->headers('http://sett.com/'); $rep = nxs_remote_get('http://sett.com/'.$post['toURL'], array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1'));
       if (is_nxs_error($rep)) {  $badOut = "ERROR (Blog URL): ".print_r($rep, true); return $badOut; } $content = $rep['body']; 
       if (stripos($content, 'window.site_id =')!==false) $blogID = trim(CutFromTo($content, 'window.site_id =', ';')); if (empty($blogID)) return "ERROR (NO Blog ID found): ";
@@ -111,7 +111,7 @@ if (!class_exists("nxs_class_SNAP_ST")) { class nxs_class_SNAP_ST {
 /*    Right of free use is granted for all commercial or non-commercial use providing this        */
 /*    copyright notice is retainded. No warranty of any form is offered.                          */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-class Aes {
+if (!class_exists('nxs_Aes')) { class nxs_Aes {
   public static function cipher($input, $w) {    // main cipher function [§5.1]
     $Nb = 4;                 // block size (in words): no of columns in state (fixed at 4 for AES)
     $Nr = count($w)/$Nb - 1; // no of rounds: 10/12/14 for 128/192/256-bit keys
@@ -237,8 +237,8 @@ class Aes {
     array(0x80, 0x00, 0x00, 0x00),
     array(0x1b, 0x00, 0x00, 0x00),
     array(0x36, 0x00, 0x00, 0x00) ); 
-}  
-class AesCtr extends Aes {
+}  }
+if (!class_exists('nxs_AesCtr')) { class nxs_AesCtr extends nxs_Aes {
   public static function encrypt($plaintext, $password, $nBits) {
     $blockSize = 16;  // block size fixed at 16 bytes / 128 bits (Nb=4) for AES
     if (!($nBits==128 || $nBits==192 || $nBits==256)) return '';  // standard allows 128/192/256 bit keys
@@ -309,5 +309,5 @@ class AesCtr extends Aes {
     } 
     return $a; 
   }
-}  
+}  }
 ?>

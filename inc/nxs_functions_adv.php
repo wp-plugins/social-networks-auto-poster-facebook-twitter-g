@@ -1,4 +1,5 @@
 <?php
+if (!function_exists("nxs_settings_save")) {function nxs_settings_save($options) { update_option('NS_SNAutoPoster',$options); }}
 //## Format Message
 if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID, $addURLParams='', $lng=''){ global $ShownAds, $plgn_NS_SNAutoPoster, $nxs_urlLen; $post = get_post($postID); $options = $plgn_NS_SNAutoPoster->nxs_options; 
   if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = '';
@@ -150,5 +151,12 @@ function nxs_toolbar_link_to_mypage( $wp_admin_bar ) {
     );
     $wp_admin_bar->add_node( $args );
 }
+
+if (!function_exists('nxs_remote_request')){function nxs_remote_request($url, $args = array()) { return wp_remote_request($url, $args); }}
+if (!function_exists('nxs_remote_get')){function nxs_remote_get($url, $args = array()) { return wp_remote_get($url, $args); }}
+if (!function_exists('nxs_remote_post')){function nxs_remote_post($url, $args = array()) { return wp_remote_post($url, $args); }}
+if (!function_exists('nxs_remote_head')){function nxs_remote_head($url, $args = array()) { return wp_remote_head($url, $args); }}
+if (!function_exists('is_nxs_error')){function is_nxs_error($thing) { return is_wp_error($thing); }}
+if (!function_exists('nxs_parse_args')){function nxs_parse_args($args, $defaults='') { return wp_parse_args($args, $defaults); }}
 
 ?>
