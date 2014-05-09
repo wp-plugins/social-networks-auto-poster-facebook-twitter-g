@@ -249,7 +249,7 @@ if (!class_exists('nxs_AesCtr')) { class nxs_AesCtr extends nxs_Aes {
     $nBytes = $nBits/8;  // no bytes in key
     $pwBytes = array();
     for ($i=0; $i<$nBytes; $i++) $pwBytes[$i] = ord(substr($password,$i,1)) & 0xff;
-    $key = Aes::cipher($pwBytes, Aes::keyExpansion($pwBytes));
+    $key = nxs_Aes::cipher($pwBytes, nxs_Aes::keyExpansion($pwBytes));
     $key = array_merge($key, array_slice($key, 0, $nBytes-16));  // expand key to 16/24/32 bytes long 
   
     // initialise 1st 8 bytes of counter block with nonce (NIST SP800-38A §B.2): [0-1] = millisec, 
@@ -269,7 +269,7 @@ if (!class_exists('nxs_AesCtr')) { class nxs_AesCtr extends nxs_Aes {
     for ($i=0; $i<8; $i++) $ctrTxt .= chr($counterBlock[$i]);
   
     // generate key schedule - an expansion of the key into distinct Key Rounds for each round
-    $keySchedule = Aes::keyExpansion($key);
+    $keySchedule = nxs_Aes::keyExpansion($key);
     //print_r($keySchedule);
     
     $blockCount = ceil(strlen($plaintext)/$blockSize);
@@ -281,7 +281,7 @@ if (!class_exists('nxs_AesCtr')) { class nxs_AesCtr extends nxs_Aes {
       for ($c=0; $c<4; $c++) $counterBlock[15-$c] = self::urs($b, $c*8) & 0xff;
       for ($c=0; $c<4; $c++) $counterBlock[15-$c-4] = self::urs($b/0x100000000, $c*8);
   
-      $cipherCntr = Aes::cipher($counterBlock, $keySchedule);  // -- encrypt counter block --
+      $cipherCntr = nxs_Aes::cipher($counterBlock, $keySchedule);  // -- encrypt counter block --
   
       // block size is reduced on final block
       $blockLength = $b<$blockCount-1 ? $blockSize : (strlen($plaintext)-1)%$blockSize+1;
