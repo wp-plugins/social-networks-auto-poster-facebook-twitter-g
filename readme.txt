@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.9.1
-Stable tag: 3.3.5
+Stable tag: 3.3.6
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -41,7 +41,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
 * **Reddit** (*with third party API library*) - post to your subreddits.
 * **Scoop.It** - Autopost to your "Topics". Ability to attach your blogpost to scoop. Ability to make "Image" posts.
-* **SETT** – Auto-post to your Sett.com blog.
+* **SETT** - Auto-post to your Sett.com blog.
 * **Stumbleupon** - Auto-submit bookmark to your account. 
 * **Tumblr** - Autopost to your account. Ability to attach your blogpost to Tumblr post. HTML is supported.
 * **Twitter** - Autopost to your account. Ability to attach Image to tweets.
@@ -158,7 +158,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 3.3.5 [05/09/2014] =
+= 3.3.6 [05/09/2014] =
 
 * [Critical] Bug Fix - Facebook - Facebook API 2.0 Compatibility. Please see here: <a href="http://www.nextscripts.com/known-issues/facebook-issues/">www.nextscripts.com/known-issues/facebook-issues</a>
 * Improvement - Compatibility to up to Wordpress 3.9.1.

@@ -143,7 +143,7 @@ if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) 
     return $templ;
 }}
 
-function nxs_tiny_mce_before_init( $init ) {
+function nxs_tiny_mce_before_init( $init ) { 
     $init['setup'] = "function( ed ) { ed.onChange.add( function( ed, e ) { 
       nxs_updateGetImgsX( e ); 
     }); }";
@@ -237,7 +237,7 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     <?php
   }
 }
-if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() {  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; 
+if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; 
    if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
 ?>
             

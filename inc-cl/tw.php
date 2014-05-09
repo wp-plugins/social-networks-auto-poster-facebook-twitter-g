@@ -62,8 +62,10 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     <br/><br/>
     <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$options['attchImg'] == 1) echo "checked"; ?> /> <strong><?php _e('Attach Image to Twitter Post', 'nxs_snap'); ?></strong></p>
     <br/>
-    <strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>
-    <input type="text" name="tw[<?php echo $ii; ?>][apTWMsgFrmt]" id="apTWMsgFrmt" style="width: 50%;" value="<?php if (!$isNew) _e(apply_filters('format_to_edit', htmlentities($options['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo "%TITLE% - %URL%"; ?>"  onfocus="mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');" />
+    <strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong><br/>
+    
+    <textarea cols="150" rows="3" id="tw<?php echo $ii; ?>SNAPformat" name="tw[<?php echo $ii; ?>][apTWMsgFrmt]"  style="width:51%;max-width: 610px;" onfocus="jQuery('#tw<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"><?php _e(apply_filters('format_to_edit', htmlentities($options['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?></textarea>    <?php nxs_doShowHint("apTWMsgFrmt".$ii); ?> 
+    
     
      <?php nxs_doShowHint("apTWMsgFrmt".$ii, '<br/><br/><b>%TAGS% and %CATS% will be posted as hashtags. <br/>Please remember that Twitter takes only 140 characters.</b>'); ?>
     
@@ -167,7 +169,8 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 </td></tr> <?php } ?>
                 
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Message Format:', 'nxs_snap') ?></th>
-                <td><input value="<?php echo $twMsgFormat ?>" type="text" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apTWMsgFrmt".$ii); ?></td></tr>
+                <td><textarea cols="150" rows="2" id="tw<?php echo $ii; ?>SNAPformat" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#tw<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"><?php echo $twMsgFormat ?></textarea>                
+                </td></tr>
                 
 <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 5px; padding-right:10px;">
                  <input value="0"  type="hidden" name="tw[<?php echo $ii; ?>][attchImg]"/>

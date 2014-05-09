@@ -663,6 +663,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           echo  "<snap style='color:#008000;'>Current Time:</snap> ".date_i18n('Y-m-d H:i', $currTime)." | <snap style='color:#000080;'>Next Shedulled Time:</snap> ~".date_i18n('Y-m-d H:i', $nxTime)."  |  <snap style='color:#580058;'>Last Post made from query:</snap> ".date_i18n('Y-m-d H:i', $options['quLastShTime'])."<br/>----====== Query:<br/>";
           foreach ($quPosts as $spostID){  $pst = get_post($spostID);  echo $spostID." - ".$pst->post_title."<br/>";}
         }
+
       ?>
       </div>
       <?php } ?>
@@ -863,7 +864,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
          
          <div id="showSetTime" style="display: none;background-color: #fff; width: 350px; padding: 25px;"><span class="nxspButton bClose"><span>X</span></span>
            
-           Set Time: (Current Time: <?php echo date_i18n('Y-m-d H:i'); ?> ) <div id="timestampdiv" class="hide-if-js" style="display: block;"><div class="timestamp-wrap"><select id="nxs_mm" name="nxs_mm">
+           Set Time: (Current Time: <?php echo date_i18n('Y-m-d H:i'); ?> ) <div id="nxs_timestampdiv" class="hide-if-js" style="display: block;"><div class="timestamp-wrap"><select id="nxs_mm" name="nxs_mm">
             <option value="1" <?php if (date_i18n('n')=='1') echo 'selected="selected"' ?>>01-Jan</option> <option value="2" <?php if (date_i18n('n')=='2') echo 'selected="selected"' ?>>02-Feb</option> 
             <option value="3" <?php if (date_i18n('n')=='3') echo 'selected="selected"' ?>>03-Mar</option> <option value="4" <?php if (date_i18n('n')=='4') echo 'selected="selected"' ?>>04-Apr</option> 
             <option value="5" <?php if (date_i18n('n')=='5') echo 'selected="selected"' ?>>05-May</option> <option value="6" <?php if (date_i18n('n')=='6') echo 'selected="selected"' ?>>06-Jun</option> 
