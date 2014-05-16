@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.9.1
-Stable tag: 3.3.6
+Stable tag: 3.3.7
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -157,6 +157,11 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.7 [05/09/2014] =
+
+* [Critical] Googd news!  Facebook backed down on app review requirement. You no longer need to submit your app for review. This version revises this. Please see full story here: <a href="http://www.nextscripts.com/known-issues/facebook-issues/">www.nextscripts.com/known-issues/facebook-issues</a>
+* Bug Fix - Debug Facebook URL message has been removed. 
 
 = 3.3.6 [05/09/2014] =
 

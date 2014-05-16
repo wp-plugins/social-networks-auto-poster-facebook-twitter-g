@@ -810,7 +810,7 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
 
   ?>
     <div class="nxs_tls_cpt">
-   <?php _e('Auto Reposting', 'nxs_snap'); ?>&nbsp;&nbsp;<span class="nxsInstrSpan"><a href="http://www.nextscripts.com/snap-features/old-posts-auto-reposting/" target="_blank"><?php _e('[Instructions]', 'nxs_snap'); ?></a> </span>
+   <?php _e('Auto Reposting', 'nxs_snap'); ?>&nbsp;&nbsp;<span class="nxsInstrSpan"><a href="http://www.nextscripts.com/snap-features/old-posts-auto-reposting/" target="_blank"><?php _e('[Instructions]', 'nxs_snap'); ?></a> &nbsp;&nbsp; <b style="color: darkred;">Please note:</b> This feature is depreciated, <a href="http://www.nextscripts.com/blog/old-posts-reposting-no-longer-supported/" target="_blank">no longer supported</a> and will be replaced with something much better in the upcoming ver 3.5 </span>
    </div>
    
    <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { 

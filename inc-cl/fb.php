@@ -58,7 +58,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     $ntParams = array('ntInfo'=>$ntInfo, 'nxs_plurl'=>$nxs_plurl, 'ntOpts'=>$ntOpts, 'chkField'=>'fbAppAuthUser'); nxs_showListRow($ntParams); 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'fbAppID'=>'', 'imgUpl'=>'1', 'postType'=>'A', 'fbMsgAFormat'=>'', 'fbAppSec'=>'', 'fbAttch'=>'2', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>__('New post (%TITLE%) has been published on %SITENAME%', 'nxs_snap') ); $fbo['ntInfo']= array('lcode'=>'fb'); $this->showNTSettings($mfbo, $fbo, true);}
+  function showNewNTSettings($mfbo){ $fbo = array('nName'=>'', 'doFB'=>'1', 'fbURL'=>'', 'atpKey'=>'','uName'=>'','uPass'=>'', 'fbAppID'=>'', 'imgUpl'=>'1', 'postType'=>'A', 'fbMsgAFormat'=>'', 'fbAppSec'=>'', 'fbAttch'=>'2', 'fbPgID'=>'', 'fbAppAuthUser'=>'', 'fbMsgFormat'=>__('New post (%TITLE%) has been published on %SITENAME%', 'nxs_snap') ); $fbo['ntInfo']= array('lcode'=>'fb'); $this->showNTSettings($mfbo, $fbo, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl, $nxs_snapSetPgURL, $plgn_NS_SNAutoPoster; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); $tmzFrmt = _x('Y-m-d G:i:s', 'timezone date format'); 
     if (empty($options['postType']) && !empty($options['fbPostType'])) { $options['postType'] = $options['fbPostType']; unset($options['fbPostType']); } //## Compatibility with V <3.2
@@ -73,7 +73,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     <div id="doFB<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
     
-     <div class="nsx_iconedTitle" style="float: right; max-width: 322px; text-align: right; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/facebook-social-networks-auto-poster-setup-installation"><?php $nType="Facebook"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a><br/>
+     <div class="nsx_iconedTitle" style="float: right; max-width: 342px; text-align: right; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/facebook-social-networks-auto-poster-setup-installation"><?php $nType="Facebook"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a><br/>
      <span style="font-size: 10px;"><?php _e('Please use in your Facebook App:', 'nxs_snap'); ?> <br/> URL: <em style="font-size: 10px; color:#CB4B16;">http://<?php echo $_SERVER["SERVER_NAME"] ?></em> <br/>Domain: <em style="font-size: 10px; color:#CB4B16;"><?php echo $_SERVER["SERVER_NAME"] ?></em> </span>
      
      </div>
@@ -84,16 +84,37 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     
     <ul class="nsx_tabs">
     <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>    
+    
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
     <div style="width:100%;"><strong>Facebook URL:</strong> </div>
     <p style="font-size: 11px; margin: 0px;"><?php _e('Could be your Facebook Profile, Facebook Page, Facebook Group', 'nxs_snap'); ?></p>
-    <input name="fb[<?php echo $ii; ?>][apFBURL]" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-    <div style="width:100%;"><strong>Facebook App ID:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppID]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
-    <div style="width:100%;"><strong>Facebook App Secret:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppSec]" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/><br/>
+    <input name="fb[<?php echo $ii; ?>][apFBURL]" id="apFBURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />              
+    <br/><br/> <?php /* 
+    <?php if ($isNew) { ?><b>Choose How to connect to Facebook:</b>&nbsp;&lt;-&nbsp;<a target="_blank" href="http://www.nextscripts.com/connect-facebook/">What is it?</a> <br/> 
+    
+    <select onchange="nxs_showHideBlock('fbChooseSRVB'+this.value, 'fbChooseSRVC');" id="fbChooseSRV<?php echo $ii; ?>"><option value="0">Your own app</option><option value="1">Autopost.to Service</option><option value="2">Username/password (Pro Only)</option></select> <br/> <br/> 
+    
+    <?php } */ ?>
+    <div id="fbChooseSRVB0" class="fbChooseSRVC" style="padding-left:15px; display: <?php if ($isNew || !empty($options['fbAppID'])) echo 'block'; else echo 'none'; ?>;">  
+      <div style="width:100%;"><strong>Facebook App ID:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppID]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
+      <div style="width:100%;"><strong>Facebook App Secret:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppSec]" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+    </div>
+    <div id="fbChooseSRVB1" class="fbChooseSRVC" style="padding-left:15px; display: <?php if (!empty($options['atpKey'])) echo 'block'; else echo 'none'; ?>;">  
+      <div style="width:100%;"><strong>Autopost.to Key:</strong> </div><input name="fb[<?php echo $ii; ?>][atpKey]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['atpKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+    </div>
+    <div id="fbChooseSRVB2" class="fbChooseSRVC" style="padding-left:15px; display: <?php if (!empty($options['uName'])) echo 'block'; else echo 'none'; ?>;">  
+      <?php if(!function_exists('doPostToFacebook')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
+            <b><?php _e('NextScritps Facebook API Library not found. Please upgrade plugin to "Pro" to get it.', 'nxs_snap'); ?></b>
+      <?php } else { ?>      
+      <div style="width:100%;"><strong><?php echo $nType; ?> Login/Email:</strong> </div><input name="<?php echo $nt; ?>[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
+      <div style="width:100%;"><strong><?php echo $nType; ?> Password:</strong> </div><input name="<?php echo $nt; ?>[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>  
+      <?php } ?>
+    </div>
+    <br/><br/>
     <div id="altFormat">
       <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apFBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
         
@@ -148,6 +169,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
               <?php _e(apply_filters('format_to_edit', htmlentities($options['fbPgID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>
               </div><?php } ?>
             <?php 
+          if (!empty($options['fbAppID'])) {
             if($options['fbAppSec']=='') { ?>
             <b><?php _e('Authorize Your Facebook Account', 'nxs_snap'); ?></b> <?php _e('Please click "Update Settings" to be able to Authorize your account.', 'nxs_snap'); ?>
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
@@ -156,9 +178,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&client_secret=<?php echo trim($options['fbAppSec']);?>&scope=publish_actions,manage_pages&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
-            <?php } ?>
+          <?php } } ?>
             
-            <?php  if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
+            <?php  if((isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) || !empty($options['atpKey']) || !empty($options['uName']) ) { ?>
             
             <br/><br/><b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('FB','<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>         
             <?php }?>
@@ -199,7 +221,12 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'FB'; $lcode = 'fb';
     foreach ($post as $ii => $pval){ 
-      if (isset($pval['apFBAppID']) && $pval['apFBAppID']!='') { if (!isset($options[$ii])) $options[$ii] = array();
+      if (!empty($pval['apFBAppID']) || !empty($pval['atpKey']) || !empty($pval['uName'])) { if (!isset($options[$ii])) $options[$ii] = array();
+        
+        if (isset($pval['atpKey']))         $options[$ii]['atpKey'] = trim($pval['atpKey']);
+        if (isset($pval['uName']))          $options[$ii]['uName'] = trim($pval['uName']);
+        if (isset($pval['uPass']))          $options[$ii]['uPass'] = trim($pval['uPass']);        
+        
         if (isset($pval['apDoFB']))         $options[$ii]['doFB'] = $pval['apDoFB']; else $options[$ii]['doFB'] = 0;
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apFBAppID']))      $options[$ii]['fbAppID'] = trim($pval['apFBAppID']);                                
