@@ -10,9 +10,9 @@ if (isset($_GET['ca']) && $_GET['ca']!='') { $ch = curl_init();  curl_setopt($ch
 if (function_exists("add_action")) add_action('wp_ajax_nxsCptCheck' , 'nxsCptCheck_ajax'); 
 
 if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global $nxs_gCookiesArr; $advSettings = array();
-  if (!empty($_POST['c'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $flds = $ser['f']; $flds['recaptcha_response_field'] = $_POST['c'];
-    $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', false);
-    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds);  prr($advSet);
+  if (!empty($_POST['c'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $nxs_gCookiesArr = $ser['c']; $ck = $nxs_gCookiesArr; $flds = $ser['f']; 
+    $flds['recaptcha_response_field'] = $_POST['c']; $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', false);
+    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); // prr($advSet);
     $rep = nxs_remote_post('https://www.linkedin.com/uas/captcha-submit', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body']; 
     if (stripos($contents2, '<div id="global-error">')!==false) { echo CutFromTo($contents2, '<div role="alert" class="alert error">', '</div>'); die(); }    
     if (stripos($contents2, 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
@@ -30,7 +30,7 @@ if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global
   if (!empty($_POST['s'])) { $seForDB = get_option('nxs_li_ctp_save'); $ser = maybe_unserialize($seForDB); $ck = $ser['c']; $flds = $ser['f']; 
     $flds['PinVerificationForm_pinParam'] = $_POST['s']; $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', true);
     $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); // prr($advSet);
-    $rep = nxs_remote_post('https://www.linkedin.com/uas/ato-pin-challenge-submit', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body']; prr($rep);
+    $rep=nxs_remote_post('https://www.linkedin.com/uas/ato-pin-challenge-submit',$advSet); if (is_nxs_error($rep)) {$badOut = print_r($rep, true)." - ERROR"; return $badOut; } $contents2 = $rep['body']; // prr($rep);
     
     if (stripos($contents2, 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
     if (stripos($contents2, '<div id="global-error">')!==false) { echo CutFromTo($contents2, '<div role="alert" class="alert error">', '</div>'); die(); }    
@@ -70,7 +70,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI { var $ntInfo = ar
               }
               $options['liOAuthToken'] = $request_token->key;
               $options['liOAuthTokenSecret'] = $request_token->secret; // prr($li_oauth);
-              switch ($li_oauth->http_code) { case 200: $url = $li_oauth->generateAuthorizeUrl();   $optionsG = get_option('NS_SNAutoPoster'); $optionsG['li'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
+              switch ($li_oauth->http_code) { case 200: $url = $li_oauth->generateAuthorizeUrl();   
+                $optionsG = get_option('NS_SNAutoPoster'); $optionsG['li'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
                 echo '<script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to LinkedIn. Refresh the page or try again later.</b>'; die();
               }die();
@@ -345,7 +346,8 @@ if (!function_exists("nxs_rePostToLI_ajax")) { function nxs_rePostToLI_ajax() { 
       foreach ($options['li'] as $ii=>$po) if ($ii==$_POST['nid']) {  $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapLI', true); $mpo =  maybe_unserialize($mpo);
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassLI(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); } 
-      $result = nxs_doPublishToLI($postID, $po);  if ($result == 200 && ($postID=='0') && (!isset($options['li'][$ii]['liOK']) || $options['li'][$ii]['liOK']!='1')) { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
+      $result = nxs_doPublishToLI($postID, $po);  
+      if ($result == 200 && ($postID=='0') && (!isset($options['li'][$ii]['liOK']) || $options['li'][$ii]['liOK']!='1')) { $options['li'][$ii]['liOK']=1;  update_option('NS_SNAutoPoster', $options); }
       if ($result == 200) die("Successfully sent your post to LinkedIn."); else die($result);
     }    
   }

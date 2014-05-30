@@ -11,12 +11,12 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
               $callback_url = $nxs_snapSetPgURL."&auth=".$ntInfo['lcode']."a&acc=".$_GET['acc'];
              
               $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret); 
-              $tum_oauth->baseURL = 'http://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
+              $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
               $request_token = $tum_oauth->getReqToken($callback_url); 
               $options['oAuthToken'] = $request_token['oauth_token'];
               $options['oAuthTokenSecret'] = $request_token['oauth_token_secret'];
               
-              switch ($tum_oauth->http_code) { case 200: $url = 'http://www.flickr.com/services/oauth/authorize?oauth_token='.$options['oAuthToken']; 
+              switch ($tum_oauth->http_code) { case 200: $url = 'https://www.flickr.com/services/oauth/authorize?oauth_token='.$options['oAuthToken']; 
                 $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
                 echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to Flickr. Refresh the page or try again later.</b>'; die();
@@ -27,14 +27,14 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
               $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
             
               $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['oAuthToken'], $options['oAuthTokenSecret']); //prr($tum_oauth);
-              $tum_oauth->baseURL = 'http://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
+              $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
               $access_token = $tum_oauth->getAccToken($_GET['oauth_verifier']); prr($access_token);
               $options['accessToken'] = $access_token['oauth_token'];  $options['accessTokenSec'] = $access_token['oauth_token_secret'];              
               $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);              
               $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['accessToken'], $options['accessTokenSec']);               
               echo "OK. Let's Get Profile: "; prr($access_token); 
               $params = array ('format' => 'php_serial', 'method'=>'flickr.urls.getUserProfile');
-              $uinfo = $tum_oauth->makeReq('http://api.flickr.com/services/rest/',$params); // prr($uinfo);die();
+              $uinfo = $tum_oauth->makeReq('https://api.flickr.com/services/rest/',$params); // prr($uinfo);die();
               
               
               if (is_array($uinfo) && isset($uinfo['user'])) { $options['appAppUserName'] = $access_token['username']."(".urldecode($access_token['fullname']).")";                            

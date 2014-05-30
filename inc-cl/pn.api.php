@@ -7,8 +7,8 @@ if (!class_exists("nxs_class_SNAP_PN")) { class nxs_class_SNAP_PN {
     var $ntCode = 'PN';
     var $ntLCode = 'pn';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
     function doPostToNT($options, $message){ global $nxs_gCookiesArr; $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
@@ -22,7 +22,7 @@ if (!class_exists("nxs_class_SNAP_PN")) { class nxs_class_SNAP_PN {
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; if ($imgURL=='') $badOut['Error'] .= 'NO Image.';
       $urlToGo = (!empty($message['url']))?$message['url']:'';
       //## Check for existing session      
-      if (isset($options['pnSvC'])) $nxs_gCookiesArr = maybe_unserialize( $options['pnSvC']); $loginError = true; if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
+      if (isset($options['ck'])) $nxs_gCookiesArr = maybe_unserialize( $options['ck']); $loginError = true; if (is_array($nxs_gCookiesArr)) $loginError = doCheckPinterest(); 
       if ($loginError!==false) $loginError = doConnectToPinterest($options['pnUName'], $pass);  if ($loginError!==false) { $badOut['Error'] = print_r($loginError, true)." - BAD USER/PASS"; return $badOut; } 
       if (preg_match ( '/\$(\d+\.\d+)/', $msg, $matches )) $price = $matches[0];  else $price = '';
       
@@ -30,7 +30,7 @@ if (!class_exists("nxs_class_SNAP_PN")) { class nxs_class_SNAP_PN {
       
       $ret = doPostToPinterest($msg, $imgURL, $urlToGo, $boardID, 'TITLE WHERE IS IT?', $price, $urlToGo."/GTH/" ); if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
       //prr($ret);
-      if (is_array($ret) && !empty($ret['post_id'])) return array('postID'=>str_ireplace('/pin/', '', $ret['post_id']), 'isPosted'=>1, 'postURL'=>'http://www.pinterest.com'.$ret['post_id'].'/', 'pDate'=>date('Y-m-d H:i:s'));  
+      if (is_array($ret) && !empty($ret['post_id'])) return array('postID'=>str_ireplace('/pin/', '', $ret['post_id']), 'isPosted'=>1, 'postURL'=>$ret['post_url'], 'pDate'=>date('Y-m-d H:i:s'));  
         else $badOut['Error'] .= 'Something went wrong - '.print_r($ret, true); 
       return $badOut;      
    }    

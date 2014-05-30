@@ -7,8 +7,8 @@ if (!class_exists("nxs_class_SNAP_WP")) { class nxs_class_SNAP_WP {
     var $ntCode = 'WP';
     var $ntLCode = 'wp';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
     function nxs_getLJHeaders($up){ $hdrsArr = array(); 

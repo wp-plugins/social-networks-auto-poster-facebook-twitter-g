@@ -36,6 +36,7 @@ if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = ''
     }
     function check(){ $ck = $this->ck;  if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://www.deviantart.com'); if ($this->debug) echo "[DA] Checking....;<br/>\r\n";
         $rep = nxs_remote_get('https://www.deviantart.com', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck)); 
+        if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR https://www.deviantart.com is not accessible. "; return $badOut; }  
         $ck2 =  $rep['cookies']; for($i=0;$i<count($ck);$i++) if ($ck[$i]->name=='userinfo') $ck[$i]->value = urlencode($ck2[0]->value);  $this->ck = $ck;
         if (is_nxs_error($rep)) return false; $contents = $rep['body']; //if ($this->debug) prr($contents);
         return stripos($contents, 'https://www.deviantart.com/users/logout')!==false;
@@ -71,8 +72,8 @@ if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = ''
       $flds['portal'] = '1'; $flds['skinlabel'] = 'No+skin'; $flds['jheader'] = ''; $flds['jcss'] = ''; $flds['jfooter'] = '';       
       $ck2 =  $rep['cookies']; for($i=0;$i<count($ck);$i++) if ($ck[$i]->name=='userinfo') $ck[$i]->value = urlencode($ck2[0]->value);       
       $fldsOut = $flds;  $ckk = array(); for($i=0;$i<count($ck);$i++)  if ($ck[$i]->name=='userinfo' || $ck[$i]->name=='auth') $ckk[] = $ck[$i]; $ck = $ckk; sleep(16); //## Important.      
-      $hdrsArr = $this->headers($mh.'/journal/?edit', $mh, true); $advSets = array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $fldsOut, 'cookies' => $ck); //prr($advSets);
-      $response = wp_remote_post($mh.'/journal/?edit', $advSets);
+      $hdrsArr = $this->headers($mh.'/journal/?edit', $mh, true); $advSets = array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $fldsOut, 'cookies' => $ck); 
+      $response = wp_remote_post($mh.'/journal/?edit', $advSets); // prr($advSets); prr($response);
       if ($response['response']['code']=='200' && stripos($response['body'],'field_error')!==false) { $eRRMsg = CutFromTo($response['body'],'field_error', '</div>');  $eRRMsg = trim(strip_tags(CutFromTo($eRRMsg."|GGG|",'>', '|GGG|')));
            $badOut = "POST Error: ".$eRRMsg; return $badOut;
       }      

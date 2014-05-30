@@ -7,8 +7,8 @@ if (!class_exists("nxs_class_SNAP_IP")) { class nxs_class_SNAP_IP {
     var $ntCode = 'IP';
     var $ntLCode = 'ip';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
     function nxs_getIPHeaders($up){ $hdrsArr = array(); 

@@ -7,8 +7,8 @@ if (!class_exists("nxs_class_SNAP_LJ")) { class nxs_class_SNAP_LJ {
     var $ntCode = 'LJ';
     var $ntLCode = 'lj';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
     function nxs_getLJHeaders($up){ $hdrsArr = array(); 

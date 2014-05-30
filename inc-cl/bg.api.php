@@ -8,7 +8,7 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
     var $ntLCode = 'bg';     
     
     function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) { $out[] = $this->doPostToNT($ntOpts, $message); }
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }
     

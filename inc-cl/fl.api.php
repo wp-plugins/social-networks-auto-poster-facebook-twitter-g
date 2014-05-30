@@ -58,7 +58,7 @@ if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  $postType = $options['postType'];       
       
       require_once('apis/scOAuth.php');   $tum_oauth = new wpScoopITOAuth($options['appKey'], $options['appSec'], $options['accessToken'], $options['accessTokenSec']);
-      $tum_oauth->baseURL = 'http://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
+      $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
       
       $tags = $message['tags'];
       
@@ -67,7 +67,7 @@ if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
       
       if (!empty($phiID) && strpos($phiID, 'Problem: ')===false) {         
           $params = array ('format' => 'php_serial', 'method'=>'flickr.photosets.addPhoto', 'photo_id'=>$phiID, 'photoset_id'=>$options['setID']);
-              $uinfo = $tum_oauth->makeReq('http://api.flickr.com/services/rest/',$params); 
+              $uinfo = $tum_oauth->makeReq('https://api.flickr.com/services/rest/',$params); 
       }
       
       if (!empty($phiID) && strpos($phiID, 'Problem: ')===false) {         

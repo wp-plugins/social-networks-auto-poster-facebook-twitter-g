@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.3.7
+Version: 3.3.8
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
-Copyright 2012  Next Scripts, Inc
+Copyright 2012-2014  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.3.7' ); 
+define( 'NextScripts_SNAP_Version' , '3.3.8' ); 
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -158,6 +158,8 @@ if (!function_exists("nxs_rfLgo_ajax")) { function nxs_rfLgo_ajax() { check_ajax
             echo '<snap style="color:#008000">['.$logline['date'].']</snap> - <snap style="'.$actSt.'">['.$logline['act'].']</snap>'.$ntInfo.'-  <snap style="'.$msgSt.'">'.$logline['msg'].'</snap> '.$logline['extInfo'].'<br/>'; 
   }
 }} 
+
+
 //## Initialize the admin panel if the plugin has been activated
 if (!function_exists("nxs_AddSUASettings")) { function nxs_AddSUASettings() {  global $plgn_NS_SNAutoPoster, $nxs_plurl; // if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;       
   add_menu_page('Social Networks Auto Poster', 'Social Networks Auto Poster', 'manage_options', basename(__FILE__), array(&$plgn_NS_SNAutoPoster, 'showSNAP_WPMU_OptionsPage'), $nxs_plurl.'img/snap-icon12.png');  }}
@@ -329,11 +331,13 @@ if (!function_exists("nxssnap_enqueue_scripts")) { function nxssnap_enqueue_scri
   wp_localize_script( 'nxssnap-scripts', 'MyAjax', array( 'ajaxurl' => nxs_get_admin_url( 'admin-ajax.php' ), 'nxsnapWPnonce' => wp_create_nonce( 'nxsnapWPnonce' ),));
 }} 
 
+function nxs_noR(&$item, &$key){ $item = is_string($item)?(str_replace("\r","\n",str_replace("\n\r","\n",str_replace("\r\n","\n",$item)))):$item; }
+
 if (!function_exists("nxs_getExpSettings_ajax")) { function nxs_getExpSettings_ajax() { /* check_ajax_referer('nsDN'); */  $filename = preg_replace('/[^a-z0-9\-\_\.]/i','',$_POST['filename']);
  header("Cache-Control: "); header("Content-type: text/plain"); header('Content-Disposition: attachment; filename="'.$filename.'"');
  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
  //array_walk_recursive($options, 'nxs_addslashes');
- echo serialize($options); die();
+ $ser = serialize($options); array_walk_recursive($ser,"nxs_noR"); echo $ser;  die();
 }}
 
 function cron_add_nxsreposter( $schedules ) { $schedules['nxsreposter'] = array( 'interval' => 90, 'display' => __( 'NXS Reposter' )); return $schedules;} // Do this every 90 seconds

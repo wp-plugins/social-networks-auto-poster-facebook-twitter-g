@@ -54,7 +54,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
             <br/><br/>            
             
             <div style="width:100%;"><strong>Board:</strong> 
-            Please <a href="#" onclick="getBoards(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>'); return false;">click here to retrieve your boards</a>
+            Please <a href="#" onclick="nxs_getPNBoards(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apPNPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>'); return false;">click here to retrieve your boards</a>
             </div>
             <img id="pnLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
             <select name="pn[<?php echo $ii; ?>][apPNBoard]" id="apPNBoard<?php echo $ii; ?>">
@@ -217,7 +217,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
          nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate |'.$uqID); return;
         }
     }
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.$blogTitle; $urlToGo = home_url(); 
+    if ($postID=='0') { echo "Testing ... <br/><br/>"; $options['pnMsgFormat'] = 'Test Post from '.$blogTitle; $urlToGo = home_url(); 
       if ($options['pnDefImg']!='') $imgURL = $options['pnDefImg']; else $imgURL ="http://direct.gtln.us/img/nxs/NXS-Lama.jpg"; 
     }
     else { $post = get_post($postID); if(!$post) return; $options['pnMsgFormat'] = nsFormatMessage( $options['pnMsgFormat'], $postID, $addParams); 
@@ -228,18 +228,19 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
             
       if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, 'full', $options['pnDefImg']); if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = ''; 
       if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}         
+      $extInfo = ' | PostID: '.$postID." - ".(is_object($post))?$post->post_title:''; 
     }    
-    $extInfo = ' | PostID: '.$postID." - ".(is_object($post))?$post->post_title:''; 
+    $extInfo = ' TEST '; 
     if ($options['cImgURL']=='S') $options['cImgURL'] = 'R'; //## Pinterest no longer allows shorthened URLs.
     //## Post                 
     $message = array('siteName'=>$blogTitle, 'tags'=>'', 'url'=>$urlToGo, 'imageURL'=>$imgURL);// prr($message);
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_PN(); $ret = $ntToPost->doPostToNT($options, $message);
     //## Save Session
-    if (serialize($nxs_gCookiesArr)!=$options['pnSvC']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
-        if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['pn'][$options['ii']]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions);  }        
+    if (serialize($nxs_gCookiesArr)!=$options['ck']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
+        if (isset($options['ii']) && $options['ii']!=='')  { $gOptions['pn'][$options['ii']]['ck'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions);  }        
         else foreach ($gOptions['pn'] as $ii=>$gpn) { $result = array_diff($options, $gpn);
-          if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['pnSvC'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
+          if (!is_array($result) || count($result)<1) { $gOptions['pn'][$ii]['ck'] = serialize($nxs_gCookiesArr); update_option('NS_SNAutoPoster', $gOptions); break; }
         }        
     }    
     //## Process Results

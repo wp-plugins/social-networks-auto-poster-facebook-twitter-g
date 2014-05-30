@@ -7,8 +7,8 @@ if (!class_exists("nxs_class_SNAP_YT")) { class nxs_class_SNAP_YT {
     var $ntCode = 'YT';
     var $ntLCode = 'yt';     
     
-    function doPost($options, $message){ if (!is_array($options)) return false; 
-      foreach ($options as $ntOpts) $out[] = $this->doPostToNT($ntOpts, $message);
+    function doPost($options, $message){ if (!is_array($options)) return false; $out = array();
+      foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }    
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');

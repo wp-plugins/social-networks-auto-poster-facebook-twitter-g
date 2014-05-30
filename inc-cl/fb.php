@@ -5,21 +5,19 @@ $nxs_snapAvNts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Common Settings  
   function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl; $ntInfo = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook', 'defNName'=>'dlUName', 'tstReq' => true);
-    if ( isset($_GET['code']) && $_GET['code']!='' && (isset($_GET['auth']) && $_GET['auth']=='fb') && ((!isset($_GET['action'])) || $_GET['action']!='gPlusAuth')){  $at = $_GET['code'];  echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>";
-     //$fbo = array('wfa'=> 1339160000); //foreach ($ntOpts as $two) { if (isset($two['wfa']) && $two['wfa']>$fbo['wfa']) $fbo =  $two; }
-     $fbo = $ntOpts[$_GET['acc']]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg); 
+    if ( isset($_GET['code']) && $_GET['code']!='' && isset($_GET['state']) && substr($_GET['state'], 0, 7) == 'nxs-fb-'){  $at = $_GET['code'];  $ii = str_replace('nxs-fb-','',$_GET['state']);
+     echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>"; 
+     $gGet = $_GET; unset($gGet['code']); unset($gGet['state']); $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); 
+     $fbo = $ntOpts[$ii]; $wprg = array(); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg); 
      if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
      if (isset($fbo['fbPgID'])){ echo "-="; prr($fbo);// die();
-      $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$_GET['acc']).'&client_secret='.$fbo['fbAppSec'].'&code='.$at, $wprg); 
-      //prr('https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['fbAppSec'].'&code='.$at);
+      $tknURL = 'https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&state=nxs-fb-'.$ii.'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['fbAppSec'].'&code='.$at;       
+      $response  = wp_remote_get($tknURL, $wprg); prr($tknURL);      
       if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
       parse_str($response['body'], $params);  $at = $params['access_token'];  prr($response); prr($params);
       $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$fbo['fbAppSec'].'&client_id='.$fbo['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at, $wprg); 
       if ((is_object($response) && isset($response->errors))) { prr($response); die();}
       parse_str($response['body'], $params); $at = $params['access_token']; $fbo['fbAppAuthToken'] = $at; 
-      
-      
-     //  $user_info = $this->api('/me');  $user = $user_info['id'];
       $appsecret_proof = hash_hmac('sha256', $fbo['fbAppAuthToken'], $fbo['fbAppSec']); 
       $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  
       $res = wp_remote_get( "https://graph.facebook.com/me?".http_build_query($aacct, null, '&')); 
@@ -51,7 +49,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       }
                                                
       if (!empty($user['id'])) { $fbo['fbAppAuthUser'] = $user['id'];  $fbo['fbAppAuthUserName'] = $user['name'].(!empty($user['username'])?" (".$user['username'].")":'');  
-        $optionsG = get_option('NS_SNAutoPoster'); $optionsG['fb'][$_GET['acc']] = $fbo;  update_option('NS_SNAutoPoster', $optionsG); 
+        if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions['fb'][$ii] = $fbo; nxs_settings_save($nxs_gOptions); }
         ?><script type="text/javascript">window.location = "<?php echo $nxs_snapSetPgURL; ?>"</script>      
       <?php } die(); }
     }     
@@ -175,7 +173,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
             <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'].(!empty($options['fbAppAuthUserName'])?" - ".$options['fbAppAuthUserName']:''), ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <br/><?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&client_secret=<?php echo trim($options['fbAppSec']);?>&scope=publish_actions,manage_pages&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL.'&auth=fb&acc='.$ii));?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&scope=publish_actions,manage_pages&state=<?php echo 'nxs-fb-'.$ii; ?>&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
           <?php } } ?>

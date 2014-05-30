@@ -206,7 +206,6 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             update_option($this->dbOptionsName, $options); $this->nxs_options = $options;
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", 'nxs_snap');?></strong></p></div><?php        
           }  
-          
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
           remove_action( 'get_terms', 'order_category_by_id', 10); // import category plugin breaks get_all_category_ids function
           $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
@@ -664,6 +663,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           foreach ($quPosts as $spostID){  $pst = get_post($spostID);  echo $spostID." - ".$pst->post_title."<br/>";}
         }
 
+
       ?>
       </div>
       <?php } ?>
@@ -799,10 +799,10 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 <?php }  
         }
         
-        function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;  
-          if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")){ array_walk_recursive($_POST, 'nsx_stripSlashes'); } array_walk_recursive($_POST, 'nsx_fixSlashes'); 
+        function NS_SNAP_SavePostMetaTags($id) { global $nxs_snapAvNts, $plgn_NS_SNAutoPoster;            
           if (!empty($_POST['nxs_snapPostOptions'])) { $NXS_POSTX = $_POST['nxs_snapPostOptions']; $NXS_POST = array(); $NXS_POST = NXS_parseQueryStr($NXS_POSTX); } else $NXS_POST = $_POST;
-          if (count($NXS_POST)<1 || !isset($NXS_POST["snapEdIT"]) || empty($NXS_POST["snapEdIT"])) return;
+          if (count($NXS_POST)<1 || !isset($NXS_POST["snapEdIT"]) || empty($NXS_POST["snapEdIT"])) return; 
+          if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")){ array_walk_recursive($NXS_POST, 'nsx_stripSlashes'); }  array_walk_recursive($NXS_POST, 'nsx_fixSlashes');  
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; //  echo "| NS_SNAP_SavePostMetaTags - ".$id." |";
           $post = get_post($id); if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return; // prr($NXS_POST);          
           delete_post_meta($id, 'snap_MYURL'); add_post_meta($id, 'snap_MYURL', $NXS_POST["urlToUse"]);   delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            
