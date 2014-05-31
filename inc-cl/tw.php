@@ -30,7 +30,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     </div> <?php 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($mtwo){ $options = array('nName'=>'', 'doTW'=>'1', 'twURL'=>'', 'twConsKey'=>'',  'twConsSec'=>'', 'twAccToken'=>'', 'twAccTokenSec'=>'', 'attchImg'=>0, 'twAttch'=>'', 'twAccTokenSec'=>''); 
+  function showNewNTSettings($mtwo){ $options = array('nName'=>'', 'doTW'=>'1', 'twURL'=>'', 'twConsKey'=>'', 'twMsgFormat'=>'%TITLE% - %URL%', 'twConsSec'=>'', 'twAccToken'=>'', 'twAccTokenSec'=>'', 'attchImg'=>0, 'twAttch'=>'', 'twAccTokenSec'=>''); 
     $options['ntInfo']= array('lcode'=>'tw'); $this->showNTSettings($mtwo, $options, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){ global $nxs_plurl, $plgn_NS_SNAutoPoster; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); $tmzFrmt = _x('Y-m-d G:i:s', 'timezone date format');
