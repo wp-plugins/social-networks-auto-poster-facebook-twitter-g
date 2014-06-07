@@ -216,7 +216,7 @@ class wpScoopITOAuth{
         if (!empty($errmsg)) return $errmsg; else  return $response;
     }
     
-    public function flUploadPhoto ($imgFile, $parameters) { $url = 'http://www.flickr.com/services/upload/'; $requestParams = ($parameters == NULL ? array() : $parameters);    $phid = '';    
+    public function flUploadPhoto ($imgFile, $parameters) { $url = 'https://www.flickr.com/services/upload/'; $requestParams = ($parameters == NULL ? array() : $parameters);    $phid = '';    
         $oauthParams = array (            
             'oauth_nonce' => $this->genRndString(),
             'oauth_timestamp' => time(),            
