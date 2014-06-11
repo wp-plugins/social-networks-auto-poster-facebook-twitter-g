@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
 Requires at least: 3.1
 Tested up to: 3.9.1
-Stable tag: 3.3.8
+Stable tag: 3.3.9
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -157,6 +157,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.3.9 [06/06/2014] =
+
+* New - New tag %ORID% - will insert wordpress post ID.
+* Improvement/Bug Fix - [Flickr] Fix for empty error message problem.
+* Bug Fix - [LinkedIn] Fix for some connection issues when URL has special chars.
+* Bug Fix - [Pinterest] Fix for posting to boards with international characters in URL.
 
 = 3.3.8 [05/30/2014] =
 
