@@ -6,7 +6,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
     
   function pkCats() { return '<option value="">:freestyle(None)</option><option value="loves">loves</option><option value="likes">likes</option><option value="shares">shares</option><option value="gives">gives</option><option value="hates">hates</option><option value="wants">wants</option><option value="wishes">wishes</option><option value="needs">needs</option><option value="will">will</option><option value="hopes">hopes</option><option value="asks">asks</option><option value="has">has</option><option value="was">was</option><option value="wonders">wonders</option><option value="feels on">feels</option><option value="thinks">thinks</option><option value="says">says</option><option value="is">is</option>';}  
   //#### Show Common Settings  
-  function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl;  $ntInfo = $this->ntInfo;  
+  function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl, $nxs_gOptions;  $ntInfo = $this->ntInfo;  
    if ( isset($_GET['auth']) && $_GET['auth']=='pk'){ require_once('apis/plurkOAuth.php'); $options = $ntOpts[$_GET['acc']];
               $consumer_key = $options['pkConsKey']; $consumer_secret = $options['pkConsSec'];
               $callback_url = $nxs_snapSetPgURL."&auth=pka&acc=".$_GET['acc'];
@@ -18,8 +18,8 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
 
               //prr($tum_oauth); prr($options); die();
               
-              switch ($tum_oauth->http_code) { case 200: $url = 'http://www.plurk.com/OAuth/authorize?oauth_token='.$options['pkOAuthToken']; 
-                $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
+              switch ($tum_oauth->http_code) { case 200: $url = 'http://www.plurk.com/OAuth/authorize?oauth_token='.$options['pkOAuthToken'];                 
+                if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions['pk'][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions); }
                 echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to Plurk. Refresh the page or try again later.</b>'; die();
               }
@@ -31,16 +31,18 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
               $tum_oauth = new wpPlurkOAuth($consumer_key, $consumer_secret, $options['pkOAuthToken'], $options['pkOAuthTokenSecret']); //prr($tum_oauth);
               $access_token = $tum_oauth->getAccToken($_GET['oauth_verifier']); prr($access_token);
               $options['pkAccessTocken'] = $access_token['oauth_token'];  $options['pkAccessTockenSec'] = $access_token['oauth_token_secret'];
-              $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
+              if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions['pk'][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions); }
               
               $tum_oauth = new wpPlurkOAuth($consumer_key, $consumer_secret, $options['pkAccessTocken'], $options['pkAccessTockenSec']); 
               $uinfo = $tum_oauth->makeReq('http://www.plurk.com/APP/Profile/getOwnProfile', $params); 
               if (is_array($uinfo) && isset($uinfo['user_info'])) $userinfo = $uinfo['user_info']['display_name'];
-              if (empty($userinfo) && is_array($uinfo) && isset($uinfo['user_info'])) $userinfo = $uinfo['user_info']['nick_name'];
-              
-              $options['pkPgID'] = $userinfo; $optionsG = get_option('NS_SNAutoPoster'); $optionsG['pk'][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
-
-              if ($options['pkPgID']!='') {  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();}
+              if (empty($userinfo) && is_array($uinfo) && isset($uinfo['user_info'])) $userinfo = $uinfo['user_info']['nick_name'];  $options['pkPgID'] = $userinfo; 
+              if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions['pk'][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions); }
+              if ($options['pkPgID']!='') {  
+                  $gGet = $_GET; unset($gGet['auth']); unset($gGet['acc']); unset($gGet['oauth_token']);  unset($gGet['oauth_verifier']); unset($gGet['post_type']);
+                  $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):'');
+                  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();
+              }
                 else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".$options['pkPgID']."</span></span>");              
             }
     global $nxs_plurl; ?>    
@@ -56,7 +58,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
         if (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='') $pbo[$ntInfo['lcode'].'OK'] = (isset($pbo['pkOAuthTokenSecret']) && $pbo['pkOAuthTokenSecret']!='')?'1':''; ?>
           <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
             <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
-            <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
+            <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" value="1" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />
            <?php } ?>
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
@@ -120,10 +122,10 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
               <?php 
             if($options['pkConsSec']=='') { ?>
             <b>Authorize Your Plurk Account</b>. Please save your settings and come back here to Authorize your account.
-            <?php } else { if(isset($options['pkAccessTocken']) && isset($options['pkAccessTocken']['oauth_token_secret']) && $options['pkAccessTocken']['oauth_token_secret']!=='') { ?>
+            <?php } else { if (!empty($options['pkAccessTocken']) && $options['pkAccessTockenSec']!=='') { ?>
             Your Plurk Account has been authorized. Your display name: <?php _e(apply_filters('format_to_edit', htmlentities($options['pkPgID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>. 
             You can Re- <?php } ?>            
-            <a href="<?php echo $nxs_snapSetPgURL;?>&auth=pk&acc=<?php echo $ii; ?>">Authorize Your Plurk Account</a> 
+            <a href="<?php echo $nxs_snapSetPgURL.(stripos($nxs_snapSetPgURL, '?')!==false?'&':'?');?>auth=pk&acc=<?php echo $ii; ?>">Authorize Your Plurk Account</a> 
               <?php if (!isset($options['pkOAuthTokenSecret']) || $options['pkOAuthTokenSecret']=='') { ?> <div class="blnkg">&lt;=== Authorize your account ===</div> <?php } ?>            
             <?php }  ?>            
             
@@ -144,7 +146,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
     </div>  <?php } ?><?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submit nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
             
         </div>
         <?php
@@ -184,7 +186,7 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; $nt = 'pk'; $ntU = 'PK';
     foreach($ntOpts as $ii=>$ntOpt)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPK', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
        $doPK = $ntOpt['doPK'] && (is_array($pMeta) || $ntOpt['catSel']!='1'); 
-       $isAvailPK =  isset($ntOpt['pkAccessTocken']) && isset($ntOpt['pkAccessTocken']['oauth_token_secret']) && $ntOpt['pkAccessTocken']['oauth_token_secret']!=='';          
+       $isAvailPK =  (!empty($ntOpt['pkAccessTocken'])  && $ntOpt['pkAccessTocken']['oauth_token_secret']!=='');
        $pkMsgFormat = htmlentities($ntOpt['pkMsgFormat'], ENT_COMPAT, "UTF-8"); 
       ?>  
       

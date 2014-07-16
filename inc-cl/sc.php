@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts App.net Connection Class
+//## NextScripts App.net Connection Class 
 $nxs_snapAvNts[] = array('code'=>'SC', 'lcode'=>'sc', 'name'=>'Scoop.It');
 
 if (!class_exists("nxs_snapClassSC")) { class nxs_snapClassSC { var $ntInfo = array('code'=>'SC', 'lcode'=>'sc', 'name'=>'Scoop.It', 'defNName'=>'', 'tstReq' => true);

@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Facebook Connection Class
+//## NextScripts Facebook Connection Class 
 $nxs_snapAvNts[] = array('code'=>'KT', 'lcode'=>'kt', 'name'=>'Kippt');
 
 if (!class_exists("nxs_snapClassKT")) { class nxs_snapClassKT { var $ntInfo = array('code'=>'KT', 'lcode'=>'kt', 'name'=>'Kippt', 'defNName'=>'uName', 'tstReq' => false);

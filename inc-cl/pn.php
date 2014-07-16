@@ -95,7 +95,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
     </div>   <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submit nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
             
             </div>
   </div>
@@ -229,8 +229,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
       if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, 'full', $options['pnDefImg']); if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = ''; 
       if ($isAttachVid=='1') { $vids = nsFindVidsInPost($post); if (count($vids)>0) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = 'http://img.youtube.com/vi/'.$vids[0].'/0.jpg'; }}         
       $extInfo = ' | PostID: '.$postID." - ".(is_object($post))?$post->post_title:''; 
-    }    
-    $extInfo = ' TEST '; 
+    }        
     if ($options['cImgURL']=='S') $options['cImgURL'] = 'R'; //## Pinterest no longer allows shorthened URLs.
     //## Post                 
     $message = array('siteName'=>$blogTitle, 'tags'=>'', 'url'=>$urlToGo, 'imageURL'=>$imgURL);// prr($message);

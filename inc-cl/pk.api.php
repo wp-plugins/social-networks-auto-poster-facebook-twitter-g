@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts FriendFeed Connection Class
+//## NextScripts FriendFeed Connection Class 
 $nxs_snapAPINts[] = array('code'=>'PK', 'lcode'=>'pk', 'name'=>'Plurk');
 
 if (!class_exists("nxs_class_SNAP_PK")) { class nxs_class_SNAP_PK {

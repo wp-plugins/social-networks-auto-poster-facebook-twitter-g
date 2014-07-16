@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Kippt Connection Class
+//## NextScripts Kippt Connection Class 
 $nxs_snapAPINts[] = array('code'=>'KT', 'lcode'=>'kt', 'name'=>'Kippt');
 
 if (!class_exists("nxs_class_SNAP_KT")) { class nxs_class_SNAP_KT {

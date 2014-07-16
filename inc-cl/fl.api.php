@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts App.net Connection Class
+//## NextScripts App.net Connection Class 
 
 /* 
 1. Options

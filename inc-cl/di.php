@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Facebook Connection Class
+//## NextScripts Facebook Connection Class 
 $nxs_snapAvNts[] = array('code'=>'DI', 'lcode'=>'di', 'name'=>'Diigo');
 
 if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {

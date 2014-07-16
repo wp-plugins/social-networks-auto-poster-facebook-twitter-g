@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Facebook Connection Class
+//## NextScripts Facebook Connection Class 
 $nxs_snapAPINts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 
 if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {

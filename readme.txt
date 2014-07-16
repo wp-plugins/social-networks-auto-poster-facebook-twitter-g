@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt
 Requires at least: 3.2
 Tested up to: 3.9.1
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -160,7 +160,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
-= 3.4.0 [07/16/2014] =
+= 3.4.1 [07/16/2014] =
 
 * New - New network "Kippt". Post your blogpost links to your Kippt Lists. 
 * Improvement - Full PHP 5.5 compatibility including fixed for all "depreciated" notices.
@@ -174,7 +174,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * Bug Fix - [Pinterest] Invalid log entry. "TEST".
 * Bug Fix - [Twitter] Wrong codes (like &#8212;).
 * Bug Fix - [VK] Better support for phone verification.
-* Bug Fix - [SETT] SSL Error
+* Bug Fix - [SETT] Fix for "Please make sure your redirect_uri is identical to the one you used in the OAuth dialog request" problem.
 * Bug Fix - If you put 4 minutes in the dropdown for the Posting Delay, it returns 45 minutes.
 
 = 3.3.9 [06/06/2014] =

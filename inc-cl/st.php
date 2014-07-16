@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts sett.com Connection Class
+//## NextScripts sett.com Connection Class 
 $nxs_snapAvNts[] = array('code'=>'ST', 'lcode'=>'st', 'name'=>'SETT');
 
 if (!class_exists("nxs_snapClassST")) { class nxs_snapClassST { var $ntInfo = array('code'=>'ST', 'lcode'=>'st', 'name'=>'SETT', 'defNName'=>'', 'tstReq' => false);

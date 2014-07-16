@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts SETT Connection Class
+//## NextScripts SETT Connection Class 
 
 $nxs_snapAPINts[] = array('code'=>'ST', 'lcode'=>'st', 'name'=>'SETT');
 

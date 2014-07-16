@@ -4,46 +4,41 @@ $nxs_snapAvNts[] = array('code'=>'FL', 'lcode'=>'fl', 'name'=>'Flickr');
 
 if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = array('code'=>'FL', 'lcode'=>'fl', 'name'=>'Flickr', 'defNName'=>'', 'tstReq' => true);
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL;  $ntInfo = $this->ntInfo;
-    if ( isset($_GET['auth']) && $_GET['auth']==$ntInfo['lcode']){ require_once('apis/scOAuth.php'); $options = $ntOpts[$_GET['acc']];
-              
-              $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
-              $callback_url = $nxs_snapSetPgURL."&auth=".$ntInfo['lcode']."a&acc=".$_GET['acc'];
-             
-              $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret); 
-              $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
-              $request_token = $tum_oauth->getReqToken($callback_url); 
-              $options['oAuthToken'] = $request_token['oauth_token'];
-              $options['oAuthTokenSecret'] = $request_token['oauth_token_secret'];
-              
-              switch ($tum_oauth->http_code) { case 200: $url = 'https://www.flickr.com/services/oauth/authorize?oauth_token='.$options['oAuthToken']; 
-                $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
-                echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
-                default: echo '<br/><b style="color:red">Could not connect to Flickr. Refresh the page or try again later.</b>'; die();
-              }
-              die();
-            }
+  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL, $nxs_gOptions;  $ntInfo = $this->ntInfo;
+    if ( isset($_GET['auth']) && $_GET['auth']==$ntInfo['lcode']){ require_once('apis/scOAuth.php'); $options = $ntOpts[$_GET['acc']];              
+           $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
+           $callback_url = $nxs_snapSetPgURL."&auth=".$ntInfo['lcode']."a&acc=".$_GET['acc'];             
+           $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret); 
+           $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
+           $request_token = $tum_oauth->getReqToken($callback_url); $options['oAuthToken'] = $request_token['oauth_token']; $options['oAuthTokenSecret'] = $request_token['oauth_token_secret'];              
+           switch ($tum_oauth->http_code) { case 200: $url = 'https://www.flickr.com/services/oauth/authorize?oauth_token='.$options['oAuthToken'];                 
+             if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions[$ntInfo['lcode']][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions);}
+             echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
+             default: echo '<br/><b style="color:red">Could not connect to Flickr. Refresh the page or try again later.</b>'; die();
+           } die();
+    }
     if ( isset($_GET['auth']) && $_GET['auth']==$ntInfo['lcode'].'a'){ require_once('apis/scOAuth.php'); $options = $ntOpts[$_GET['acc']];
-              $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
+           $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
             
-              $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['oAuthToken'], $options['oAuthTokenSecret']); //prr($tum_oauth);
-              $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
-              $access_token = $tum_oauth->getAccToken($_GET['oauth_verifier']); prr($access_token);
-              $options['accessToken'] = $access_token['oauth_token'];  $options['accessTokenSec'] = $access_token['oauth_token_secret'];              
-              $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);              
-              $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['accessToken'], $options['accessTokenSec']);               
-              echo "OK. Let's Get Profile: "; prr($access_token); 
-              $params = array ('format' => 'php_serial', 'method'=>'flickr.urls.getUserProfile');
-              $uinfo = $tum_oauth->makeReq('https://api.flickr.com/services/rest/',$params); // prr($uinfo);die();
-              
-              
-              if (is_array($uinfo) && isset($uinfo['user'])) { $options['appAppUserName'] = $access_token['username']."(".urldecode($access_token['fullname']).")";                            
-                $options['appAppUserID'] = urldecode($uinfo['user']['nsid']);  $options['userURL'] = urldecode($uinfo['user']['url']); 
-                $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
-              } //die();
-              if (!empty($options['appAppUserID'])) {  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();}
-                else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".print_r($uinfo, true)."</span></span>");              
-            }
+           $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['oAuthToken'], $options['oAuthTokenSecret']); //prr($tum_oauth);
+           $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
+           $access_token = $tum_oauth->getAccToken($_GET['oauth_verifier']); prr($access_token);
+           $options['accessToken'] = $access_token['oauth_token'];  $options['accessTokenSec'] = $access_token['oauth_token_secret'];                            
+           if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions[$ntInfo['lcode']][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions); }
+           $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['accessToken'], $options['accessTokenSec']);               
+           echo "OK. Let's Get Profile: "; prr($access_token); 
+           $params = array ('format' => 'php_serial', 'method'=>'flickr.urls.getUserProfile');
+           $uinfo = $tum_oauth->makeReq('https://api.flickr.com/services/rest/',$params); // prr($uinfo);die();
+           if (is_array($uinfo) && isset($uinfo['user'])) { $options['appAppUserName'] = $access_token['username']."(".urldecode($access_token['fullname']).")";                            
+             $options['appAppUserID'] = urldecode($uinfo['user']['nsid']);  $options['userURL'] = urldecode($uinfo['user']['url']); 
+             if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions[$ntInfo['lcode']][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions); }
+           } //die();
+           if (!empty($options['appAppUserID'])) {  
+             $gGet = $_GET; unset($gGet['auth']); unset($gGet['acc']); unset($gGet['oauth_token']);  unset($gGet['oauth_verifier']); unset($gGet['post_type']);
+             $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):'');  
+             echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();
+           } else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".print_r($uinfo, true)."</span></span>");              
+    }
     
   ?>    
     <div class="nxs_box">
@@ -59,7 +54,7 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
         ?>
             <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />           
             
-            <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
+            <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" value="1" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>            
             <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
             <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />             
             <?php } ?>            
@@ -125,7 +120,7 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
             <?php } else { if(isset($options['appAppUserID']) && $options['appAppUserID']>0) { ?>
             <?php _e('Your '.$ntInfo['name'].' Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['appAppUserID'].' - '.$options['appAppUserName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="<?php echo $nxs_snapSetPgURL;?>&auth=<?php echo $nt; ?>&acc=<?php echo $ii; ?>">Authorize Your <?php echo $ntInfo['name']; ?> Account</a> 
+            <a href="<?php echo $nxs_snapSetPgURL.(stripos($nxs_snapSetPgURL, '?')!==false?'&':'?');?>auth=<?php echo $nt; ?>&acc=<?php echo $ii; ?>">Authorize Your <?php echo $ntInfo['name']; ?> Account</a> 
             
             <?php if (!isset($options['appAppUserID']) || $options['appAppUserID']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> <?php }?>
             <?php } ?>
@@ -146,7 +141,7 @@ if (!class_exists("nxs_snapClassFL")) { class nxs_snapClassFL { var $ntInfo = ar
     </div> <?php } ?>       <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submit nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
             
             
             </div><?php
