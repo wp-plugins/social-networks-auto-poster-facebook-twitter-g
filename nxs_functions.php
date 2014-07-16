@@ -143,12 +143,7 @@ if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) 
     return $templ;
 }}
 
-function nxs_tiny_mce_before_init( $init ) { 
-    $init['setup'] = "function( ed ) { ed.onChange.add( function( ed, e ) { 
-      nxs_updateGetImgsX( e ); 
-    }); }";
-    return $init;
-}
+function nxs_tiny_mce_before_init($init) { $init['setup'] = "function(ed) {ed.on('NodeChange', function(e){nxs_updateGetImgsX(e);});}"; return $init;}
 
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>
@@ -355,6 +350,17 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
     background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');    
 }.NXSButton:active {color:#ffffff; position:relative; top:1px;}.NXSButton:focus {color:#ffffff; position:relative; top:1px;} .nsBigText{font-size: 14px; color: #585858; font-weight: bold; display: inline;}
+.NXSButtonB { background-color:#038bc4;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #038bc4), color-stop(1, #096aa8) );
+    background:-moz-linear-gradient( center top, #038bc4 5%, #096aa8 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#038bc4', endColorstr='#096aa8');    
+    -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; border:1px solid #077cb8; display:inline-block; color:#ffffff;
+    font-family:Trebuchet MS; font-size:12px; font-weight:bold; padding:4px 5px;  text-decoration:none;  text-shadow:1px 1px 0px #095d80;
+}.NXSButtonB:hover {color:#ffffff; background-color:#096aa8;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #096aa8), color-stop(1, #038bc4) );
+    background:-moz-linear-gradient( center top, #096aa8 5%, #038bc4 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#096aa8', endColorstr='#038bc4');    
+}.NXSButtonB:active {color:#ffffff; position:relative; top:1px;}.NXSButton:focus {color:#ffffff; position:relative; top:1px;} .nsBigText{font-size: 14px; color: #585858; font-weight: bold; display: inline;}
 #nxs_ntType {width: 150px;}
 #nsx_addNT {width: 600px;}
 .nxsInfoMsg{  margin: 1px auto; padding: 3px 10px 3px 5px; border: 1px solid #ffea90;  background-color: #fdfae4; display: inline; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
@@ -394,13 +400,13 @@ html ul.nsx_tabs li.active, html ul.nsx_tabs li.active a:hover  { background: #f
     padding: 1px 0 1px 23px !important;
 }
 
-.nxs_box{border-color: #DFDFDF; border-radius: 3px 3px 3px 3px; box-shadow: 0 1px 0 #FFFFFF inset; border-style: solid; border-width: 1px; line-height: 1; margin-bottom: 10px; padding: 0; max-width: 1080px;}
+.nxs_box{border-color: #DFDFDF; border-radius: 3px 3px 3px 3px; box-shadow: 0 1px 0 #FFFFFF inset; border-style: solid; border-width: 1px; line-height: 1; margin-bottom: 10px; padding: 0; /* max-width: 1080px; */}
 .nxs_box_header{border-bottom-color: #DFDFDF; box-shadow: 0 1px 0 #FFFFFF; text-shadow: 0 1px 0 #FFFFFF;font-size: 15px;font-weight: normal;line-height: 1;margin: 0;padding: 6px;
 background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top,from(#ececec),to(#f9f9f9));background-image:-webkit-linear-gradient(bottom,#ececec,#f9f9f9);background-image:-moz-linear-gradient(bottom,#ececec,#f9f9f9);background-image:-o-linear-gradient(bottom,#ececec,#f9f9f9);background-image:linear-gradient(to top,#ececec,#f9f9f9)
 -moz-user-select: none;border-bottom-style: solid;border-bottom-width: 1px;}
 .nxs_box_inside{line-height: 1.4em; padding: 10px;}
 .nxs_box_inside input[type=text]{ padding: 5px; height: 24px; border: 1px solid #ACACAC;}
-.nxs_box_inside .insOneDiv, #nsx_addNT .insOneDiv{max-width: 1020px; background-color: #f8f9f9; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none;}
+.nxs_box_inside .insOneDiv, #nsx_addNT .insOneDiv{max-width: 1020px; background-color: #f8f9f9; background-repeat: no-repeat; margin: 10px; border: 1px solid #808080; padding: 10px; display:none; overflow: hidden;}
 .nxs_box_inside .itemDiv {margin:5px;margin-left:10px;}
 .nxs_box_header h3 {font-size: 14px; margin-bottom: 2px; margin-top: 2px;}
 .nxs_newLabel {font-size: 11px; color:red; padding-left: 5px; padding-right: 5px;}
@@ -414,7 +420,10 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
 .nxs_checkIcon{display:none; height:24px;width:24px;position:absolute;top:-7px;right:-7px;outline:0;border:1px solid #fff;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,0.4);background:#800000;background-image:-webkit-gradient(linear,left top,left bottom,from(#800000),to(#570000));background-image:-webkit-linear-gradient(top,#800000,#570000);background-image:-moz-linear-gradient(top,#800000,#570000);background-image:-o-linear-gradient(top,#800000,#570000);background-image:linear-gradient(to bottom,#800000,#570000)}
 .nxs_checkIcon{ top:-5px; right: -3px; width: 15px; height: 15px; box-shadow:0 0 0 1px #800000;background:#800000;background-image:-webkit-gradient(linear,left top,left bottom,from(#800000),to(#570000));background-image:-webkit-linear-gradient(top,#800000,#570000);background-image:-moz-linear-gradient(top,#800000,#570000);background-image:-o-linear-gradient(top,#800000,#570000);background-image:linear-gradient(to bottom,#800000,#570000)}
 .nxs_checkIcon div{background-position:-21px 0; width: 15px; height: 15px;}
-  
+/* #nxsDivWrap .postbox .inside {overflow: hidden;}  */
+#nxsDivWrap .postbox .description {vertical-align: middle; color: #ACACAC;}  
+
+.submitX {padding-top: 7px; padding-bottom: 5px;}
 </style>
 <?php }}
 

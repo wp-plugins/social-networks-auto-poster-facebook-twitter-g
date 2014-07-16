@@ -2,10 +2,10 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube
-Requires at least: 3.1
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt
+Requires at least: 3.2
 Tested up to: 3.9.1
-Stable tag: 3.3.9
+Stable tag: 3.4.0
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,7 +14,8 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. 
 
-* **Latest version 3.3** - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
+* **Latest version 3.4** - New network - Kippt, compatibility with WP 3.9 and PHP 5.5. 
+* *Version 3.3* - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
 * *Version 3.0* - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
 * *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
@@ -36,6 +37,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **FriendFeed** - Autopost to your account. Ability to attach Image to posts.
 * **Instapaper** - Auto-submit bookmark to your account. 
 * **Google+** (*with third party API library*) - Autopost to your profile, business page or community. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
+* **Kippt** - Auto-submit links to your blogpost to your Kippt list.
 * **LinkedIn** - Autopost to your account. Ability to attach your blogpost to LinkedIn post. Autopost to LinkedIn Company pages and/or Groups (*with third party API library*)
 * **LiveJournal** - Auto-submit your blogpost to LiveJournal blog or community. "LiveJournal Engine" based website DreamWidth.org is also supported. 
 * **Pinterest** (*with third party API library*) - Pin your blogpost's featured image to your Pinterest board.
@@ -157,6 +159,23 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.0 [07/16/2014] =
+
+* New - New network "Kippt". Post your blogpost links to your Kippt Lists. 
+* Improvement - Full PHP 5.5 compatibility including fixed for all "depreciated" notices.
+* Improvement - Full Wordpress 3.9 and TinyMCE 4.0 compatibility including fixed for all "depreciated" notices.
+* Bug Fix - Checkboxes/Radiobuttons got incorrectly unchecked 
+* Bug Fix - [Facebook] Fix for "Please make sure your redirect_uri is identical to the one you used in the OAuth dialog request" problem.
+* Bug Fix - [Facebook] Fix for posting to boards with international characters in URL.
+* Bug Fix - [Facebook] "Unsupported post request" error.
+* Bug Fix - [Facebook] Broken ability to post to the hidden groups. 
+* Bug Fix - [Blogger] "Incorrect JSON" error.
+* Bug Fix - [Pinterest] Invalid log entry. "TEST".
+* Bug Fix - [Twitter] Wrong codes (like &#8212;).
+* Bug Fix - [VK] Better support for phone verification.
+* Bug Fix - [SETT] SSL Error
+* Bug Fix - If you put 4 minutes in the dropdown for the Posting Delay, it returns 45 minutes.
 
 = 3.3.9 [06/06/2014] =
 

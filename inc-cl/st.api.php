@@ -26,18 +26,18 @@ if (!class_exists('nxsAPI_ST')){class nxsAPI_ST{ var $ck = array();  var $debug 
       $hdrsArr['Accept-Language']='en-US,en;q=0.8'; return $hdrsArr;         
     }
     function makeSlug($str){ $str = strtolower($str); $str = preg_replace('/[^a-zA-Z0-9]/i',' ', $str); $str = trim($str); $str = preg_replace('/\s+/', ' ', $str); $str = preg_replace('/\s+/', '-', $str); return $str;}
-    function check(){ $ck = $this->ck;  if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://thoughts.com'); if ($this->debug) echo "[ST] Checking....;<br/>\r\n";
-        $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck)); 
+    function check(){ $ck = $this->ck; $sslverify = false; if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://thoughts.com'); if ($this->debug) echo "[ST] Checking....;<br/>\r\n";
+        $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck, 'sslverify'=>$sslverify)); 
         if (is_nxs_error($rep)) return false; $ck = $rep['cookies']; $contents = $rep['body']; //if ($this->debug) prr($contents);
         return stripos($contents, 'data-url="')!==false;
       } else return false;
     }
     function connect($u,$p){ $badOut = 'Error: '; 
       //## Check if alrady IN
-      if (!$this->check()){ if ($this->debug) echo "[ST] NO Saved Data;<br/>\r\n"; $llURL = 'https://sett.com/login.php?email='.urlencode($u).'&pw='.urlencode($p).'&remember=on&undefined=Log+in';
-        $hdrsArr = $this->headers('http://sett.com/'); $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1'));
+      if (!$this->check()){ if ($this->debug) echo "[ST] NO Saved Data;<br/>\r\n"; $sslverify = false;  $llURL = 'https://sett.com/login.php?email='.urlencode($u).'&pw='.urlencode($p).'&remember=on&undefined=Log+in';
+        $hdrsArr = $this->headers('http://sett.com/'); $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'sslverify'=>$sslverify));
         if (is_nxs_error($rep)) {  $badOut = "ERROR (Login Form): ".print_r($rep, true); return $badOut; } if ($rep['response']['code']!='200') { $badOut = "ERROR (Login Form): ".print_r($rep, true); return $badOut; }
-        $ck = $rep['cookies'];  $rep = nxs_remote_get($llURL, array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1')); 
+        $ck = $rep['cookies'];  $rep = nxs_remote_get($llURL, array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1', 'sslverify'=>$sslverify)); 
         if (is_nxs_error($rep)) {  $badOut = print_r($rep, true); if (stripos($badOut, 'Operation timed out')!==false) return "Invalid login email!"; else return "ERROR (Login Form 2): ".$badOut;  } 
         if ($rep['response']['code']!='200') { $badOut = "ERROR (Login Form 2): ".print_r($rep, true); return $badOut; } //prr($rep);
         if ($rep['response']['code']=='200') { $content = $rep['body']; if (stripos($content, '{"user":{"')!==false) { $ck = $rep['cookies']; $this->ck = $ck; $loginArr = json_decode($content, true); /* prr($loginArr); */  return false;}
@@ -45,17 +45,17 @@ if (!class_exists('nxsAPI_ST')){class nxsAPI_ST{ var $ck = array();  var $debug 
         } return "ERROR (Login): ".$badOut.print_r($rep, true);
       } else { if ($this->debug) echo "[TH] Saved Data is OK;<br/>\r\n"; return false; }
     }
-    function post($post){ $ck = $this->ck; $oneTime = '0R4qFyHCMAYYclyZQFNYrOkq4uy4mN5'; $enText = nxs_AesCtr::encrypt($post['text'], $oneTime, 256); $blogID = '';
-      $hdrsArr = $this->headers('http://sett.com/'); $rep = nxs_remote_get('http://sett.com/'.$post['toURL'], array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1'));
+    function post($post){ $ck = $this->ck; $sslverify = false; $oneTime = '0R4qFyHCMAYYclyZQFNYrOkq4uy4mN5'; $enText = nxs_AesCtr::encrypt($post['text'], $oneTime, 256); $blogID = '';
+      $hdrsArr = $this->headers('http://sett.com/'); $rep = nxs_remote_get('http://sett.com/'.$post['toURL'], array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1', 'sslverify'=>$sslverify));
       if (is_nxs_error($rep)) {  $badOut = "ERROR (Blog URL): ".print_r($rep, true); return $badOut; } $content = $rep['body']; 
       if (stripos($content, 'window.site_id =')!==false) $blogID = trim(CutFromTo($content, 'window.site_id =', ';')); if (empty($blogID)) return "ERROR (NO Blog ID found): ";
     
       $hdrsArr = $this->headers('http://sett.com', 'http://sett.com', 'POST'); $flds = array('text'=>$enText);
-      $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); //prr($advSet);
+      $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'sslverify'=>$sslverify, 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); //prr($advSet);
       $rep = nxs_remote_post('http://sett.com/storetext.php', $advSet); if (is_nxs_error($rep)) {  $badOut = "ERROR (Post Post):".print_r($rep, true); return $badOut; } 
       if (stripos($rep['body'], '{"id":')!==false) { $textPush = json_decode($rep['body'], true); } else {  $badOut = "ERROR (Post Post):".print_r($rep, true); return $badOut; } 
       $pURL = 'https://sett.com/newpost.php?autosave=0&context=&is_html=&offset=&one_time=&parent_uid=&promote=&site=&submit_visible=1&to=&uid=&title='.urlencode($post['title']).'&url='.$this->makeSlug($post['title']).'&category=&allow_comments=1&allow_promoting=1&allow_indexing=1&subscribe=1&context=false&is_html=false&offset=-4&parent_uid=&promote=1&site_id='.$blogID.'&type=post&uid=&one_time='.$oneTime.'&text_id='.$textPush['id'].'&text_hash='.$textPush['hash'];      
-      $hdrsArr = $this->headers('http://sett.com/'.$post['toURL']); $rep = nxs_remote_get($pURL, array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1'));
+      $hdrsArr = $this->headers('http://sett.com/'.$post['toURL']); $rep = nxs_remote_get($pURL, array('headers' => $hdrsArr, 'cookies' => $ck, 'httpversion' => '1.1', 'sslverify'=>$sslverify));
       if (is_nxs_error($rep)) { $badOut = "ERROR (Post Info): ".print_r($rep, true); return $badOut; } 
       if (stripos($rep['body'],'{"uid":')!==false){$content = json_decode($rep['body'], true); return array('isPosted'=>'1', 'postID'=>$content['uid'], 'postURL'=>'http://sett.com/'.$post['toURL']."/".$content['uid'], 'pDate'=>date('Y-m-d H:i:s'));}
       return 'Error: '.print_r($rep, true); 

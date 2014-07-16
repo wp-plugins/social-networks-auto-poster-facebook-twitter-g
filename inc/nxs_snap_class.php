@@ -3,7 +3,7 @@
 if (!class_exists("NS_SNAutoPoster")) {
     class NS_SNAutoPoster {//## General Functions         
         var $dbOptionsName = "NS_SNAutoPoster";       
-        var $nxs_options = ""; var $nxs_ntoptions = "";
+        var $nxs_options = ""; var $nxs_ntoptions = ""; var $sMode = array('s'=>'S', 'l'=>'F', 'u'=>'O', 'a'=>'S'); 
         
         function __construct() {  load_plugin_textdomain('nxs_snap', FALSE, substr(dirname( plugin_basename( __FILE__ ) ), 0, -4).'/lang/'); $this->nxs_options = $this->getAPOptions(); } 
         //## Constructor
@@ -269,7 +269,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                 ?>
             </ul>
           </div>  
-       </div>    <div class="submit"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); jQuery('#showCatSel').bPopup().close();" value="Select Categories" /></div>
+       </div>    <div class="submitX"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); jQuery('#showCatSel').bPopup().close();" value="Select Categories" /></div>
            </div>
             <?php 
            foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName();
@@ -285,7 +285,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <input onclick="jQuery('#impFileSettings_button').click(); return false;" type="button" class="button" name="impSettings_repostButton" id="impSettings_button"  value="<?php _e('Import Settings', 'nxs_snap') ?>" />            
            </div>
            <input value="'" type="hidden" name="nxs_mqTest" /> 
-           <div class="submit"><input type="submit" id="nxs-button-primary-submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+           <div class="submitX"><input type="submit" id="nxs-button-primary-submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
            
            <?php } ?>   
     </form>          
@@ -630,7 +630,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
         </p>    
       <?php } ?>       
            
-      <div class="submit"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>           
+      <div class="submitX"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>           
       </form>
     </div>
     
