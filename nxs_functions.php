@@ -143,7 +143,11 @@ if (!function_exists('nxs_makeURLParams')){ function nxs_makeURLParams($params) 
     return $templ;
 }}
 
-function nxs_tiny_mce_before_init($init) { $init['setup'] = "function(ed) {ed.on('NodeChange', function(e){nxs_updateGetImgsX(e);});}"; return $init;}
+function nxs_tiny_mce_before_init($init) { global $tinymce_version; 
+  if (substr($tinymce_version,0,1)<4) $init['setup'] = "function( ed ) { ed.onChange.add( function( ed, e ) {  nxs_updateGetImgsX( e );   }); }"; else
+    $init['setup'] = "function(ed) {ed.on('NodeChange', function(e){nxs_updateGetImgsX(e);});}";     
+    return $init;
+}
 
 //## CSS && JS
 if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_snapAvNts, $nxs_plurl; ?>

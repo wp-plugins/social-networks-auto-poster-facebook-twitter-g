@@ -4,12 +4,14 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.1
+Version: 3.4.2
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2014  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.1' ); 
+define( 'NextScripts_SNAP_Version' , '3.4.2' ); 
+
+
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
