@@ -20,7 +20,7 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       if (empty($options['imgSize'])) $options['imgSize'] = '';
       //## Old Settings Fix
       if ($options['attchImg']=='1') $options['attchImg'] = 'large'; if ($options['attchImg']=='0') $options['attchImg'] = false;
-      if (isset($message['img']) && !is_array($message['img']) ) $img = trim($message['img']); else $img = ''; 
+      if (isset($message['img']) && is_string($message['img']) ) $img = trim($message['img']); else $img = ''; 
       //## Format Post
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['twMsgFormat'], $message);  
       if ($options['attchImg']!=false) { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; }

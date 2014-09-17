@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Facebook Connection Class 
+//## NextScripts Facebook Connection Class
 $nxs_snapAPINts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook');
 
 if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
@@ -57,7 +57,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
             $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  
             $res = wp_remote_get( "https://graph.facebook.com/$page_id/albums?".http_build_query($aacct, null, '&')); 
             if (is_wp_error($res) || empty($res['body'])) $badOut['Error'] = ' [ERROR] '.print_r($res, true); else {
-              $albums = json_decode($res['body'], true); if (empty($albums)) $badOut['Error'] .= "JSON ERROR: ".print_r($res, true); else {
+              $albums = json_decode($res['body'], true);  if (empty($albums)) $badOut['Error'] .= "JSON ERROR: ".print_r($res, true); else {
                 if (is_array($albums) && is_array($albums["data"])) foreach ($albums["data"] as $album) { if ($album["type"] == "wall") { $chosen_album = $album; break;}}
                 if (isset($chosen_album) && isset($chosen_album["id"])) $page_id = $chosen_album["id"];
               }
@@ -69,7 +69,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
         $response = wp_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $mssg)); 
       }
       //## Autopost.to
-      if (!empty($options['atpKey'])) { $toGo = array('g'=>$msg, 'o'=>$options, 'm'=>$message); $toGo = base64_encode(serialize($toGo));
+      if (!empty($options['atpKeyZZZZZZZ'])) { $toGo = array('g'=>$msg, 'o'=>$options, 'm'=>$message); $toGo = base64_encode(serialize($toGo));
         $toGo = array('nxsremotepost' => $toGo); 
         $response = wp_remote_post( 'http://autopost.to/post/', array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $toGo)); 
         if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);

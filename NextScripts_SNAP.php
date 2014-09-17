@@ -4,14 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.2
+Version: 3.4.3
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2014  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.2' ); 
-
-
+define( 'NextScripts_SNAP_Version' , '3.4.3' );  
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -212,19 +210,36 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
     }    
       
     foreach ($nxs_snapAvNts as $avNt) { 
-      if (count($options[$avNt['lcode']])>0) { $clName = 'nxs_snapClass'.$avNt['code'];
-        if ($isPost && isset($NXS_POST[$avNt['lcode']])) $po = $NXS_POST[$avNt['lcode']]; else { $po =  get_post_meta($postID, 'snap'.$avNt['code'], true); $po =  maybe_unserialize($po);} 
-      
+      if (count($options[$avNt['lcode']])>0) { $clName = 'nxs_snapClass'.$avNt['code']; 
+        if ($isPost && isset($NXS_POST[$avNt['lcode']])) $po = $NXS_POST[$avNt['lcode']]; else { $po =  get_post_meta($postID, 'snap'.$avNt['code'], true); $po =  maybe_unserialize($po);}       
         if (isset($po) && is_array($po)) $isPostMeta = true; else { $isPostMeta = false; $po = $options[$avNt['lcode']]; }
         delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1');
-      
         $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }       
+        
+         
+        
           if ($snap_isEdIT!='1') { $doPost = true; 
             if ( $optMt['catSel']=='1' && trim($optMt['catSelEd'])!='' ) { $inclCats = explode(',',$optMt['catSelEd']); foreach ($postCats as $pCat) { if (!in_array($pCat, $inclCats)) $doPost = false; else {$doPost = true; break;}} 
               if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Automated Post]  - Individual Category Excluded - Post ID:('.$postID.')' ); continue; }
             }
+            //## Get tags
+            if (!empty($optMt['tagsSel'])) { $inclTags = explode(',',strtolower($optMt['tagsSel'])); $postTags = wp_get_post_tags( $postID, array( 'fields' => 'slugs' ) ); $postCust = array();
+              //## Get all custom post types
+              foreach ($inclTags as $iTag){ 
+                if (strpos($iTag,'|')!==false){ $dd=explode('',$itag); if (empty($postCust[$dd[0]])) $postCust[$dd[0]]=wp_get_object_terms($postID,$dd[0],array('fields'=>'slugs')); 
+                  if (!in_array(strtolower($dd[1]), $postCust[$dd[0]])) $doPost = false; else {$doPost = true; break;}
+                } else if (!in_array(strtolower($iTag), $postTags)) $doPost = false; else {$doPost = true; break;}              
+              }
+              //nxs_addToLogN('I', 'Plus 1', '', ' + Post ID:( '.$postID.' - '.print_r($postTags, true).')' );
+            
+              //foreach ($postTags as $pCat) { if (!in_array(strtolower($pCat), $inclTags)) $doPost = false; else {$doPost = true; break;}} 
+              if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Automated Post]  - Tag Excluded - Post ID:('.$postID.') - Included Tags: '.$optMt['tagsSel'].' | Post Tags: '.print_r($postTags, true)." | ".print_r($postCust, true) ); continue; }
+            }
           }        
-          if ($optMt['do'.$avNt['code']]=='1') { $optMt['ii'] = 0; 
+          
+          
+          
+          if ($optMt['do'.$avNt['code']]=='1') { $optMt['ii'] = 0;  
             if ($publtype=='A' && ($optMt['nMin']>0 || $optMt['nHrs']>0 || $optMt['nTime']!='')) $publtype='S';        
             if ($publtype=='S') { if (isset($optMt['nHrs']) && isset($optMt['nMin']) && ($optMt['nHrs']>0 || $optMt['nMin']>0) ) { $delay = $optMt['nMin']*60+$optMt['nHrs']*3600;
                 nxs_addToLogN('I', 'Delayed', $avNt['name'].' ('.$optMt['nName'].')', 'Post has been delayed for '.$delay.' Seconds ('.($optMt['nHrs']>0?$optMt['nHrs'].' Hours':'')." ".($optMt['nMin']>0?$optMt['nMin'].' Minutes':'').')' );
@@ -341,7 +356,7 @@ if (!function_exists("nxs_getExpSettings_ajax")) { function nxs_getExpSettings_a
  header("Cache-Control: "); header("Content-type: text/plain"); header('Content-Disposition: attachment; filename="'.$filename.'"');
  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
  //array_walk_recursive($options, 'nxs_addslashes');
- $ser = serialize($options); array_walk_recursive($ser,"nxs_noR"); echo $ser;  die();
+ array_walk_recursive($options,"nxs_noR");  $ser = serialize($options); echo $ser;  die();
 }}
 
 function cron_add_nxsreposter( $schedules ) { $schedules['nxsreposter'] = array( 'interval' => 90, 'display' => __( 'NXS Reposter' )); return $schedules;} // Do this every 90 seconds

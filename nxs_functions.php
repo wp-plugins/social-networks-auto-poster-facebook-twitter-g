@@ -91,8 +91,8 @@ if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType=
     else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. (Image URL: '.$url.') Most probably it\'s a DNS problem. Please contact your hosting provider. '.serialize($rsp), $url); return false; }
     } 
 }}
-if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
-  $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1';
+if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $options['sImg'] = (defined('NXSAPIVER') && NXSAPIVER == '2.15.11')?1:0;
+  $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1'; if ($options['sImg']==1) return $options['useSSLCert'].'/logo2.png';
   //## Featured Image from Specified Location
   if ((int)$postID>0 && isset($options['featImgLoc']) && $options['featImgLoc']!=='') {  $afiLoc= get_post_meta($postID, $options['featImgLoc'], true); 
     if (is_array($afiLoc) && $options['featImgLocArrPath']!='') { $cPath = $options['featImgLocArrPath'];
@@ -123,7 +123,7 @@ if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $s
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;
   //## Attachements
   if ((int)$postID>0 && $imgURL=='') { $attachments = get_posts(array('post_type' => 'attachment', 'posts_per_page' => -1, 'post_parent' => $postID)); 
-      if (is_array($attachments && count($attachments)>0) && is_object($attachments[0])) $imgURL = wp_get_attachment_image_src($attachments[0]->ID, $size); $imgURL = $imgURL[0];      
+      if (is_array($attachments) && count($attachments)>0 && is_object($attachments[0])) { $imgURL = wp_get_attachment_image_src($attachments[0]->ID, $size); $imgURL = $imgURL[0]; }     
   }
   if ($imgURL!='' && $options['imgNoCheck']!='1' && nxs_chckRmImage($imgURL)==false) $imgURL = ''; if ($imgURL!='') return $imgURL;    
   //## Default
@@ -316,29 +316,35 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
   
   function nxs_in_array(needle, haystack) { for(var i in haystack) { if(haystack[i] == needle) return true;} return false; }
   
-  jQuery(document).ready(function() {   
-    nxs_doTabs();
-    //## Check for excluded Tags
-    var nxs_curTagsValue = jQuery('#tax-input-post_tag').val();    
-    // !!FIXIT!!
-    jQuery(function () { setTimeout(nxs_checkTagsChanges, 0.1); });
-    function nxs_checkTagsChanges() { var currentValue = jQuery('#tax-input-post_tag').val(); var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
-    if ((currentValue) && currentValue != nxs_curTagsValue && currentValue != '') {
-        nxs_curTagsValue = jQuery('#tax-input-post_tag').val();        
-        var nxs_curTagsValueX = '';  var tValX = [];        
+ 
+  
+  jQuery(document).ready(function() {    nxs_doTabs();
+    //## Check for excluded Tags    
+    var nxs_curTagsValue = []; jQuery('.the-tags').each(function() {if (jQuery(this).val()!='') nxs_curTagsValue[jQuery(this).attr('id')] = jQuery(this).val(); });
+    jQuery(function () { setTimeout(nxs_checkTagsChangesX, 0.1); });
+    
+    function nxs_checkTagsChangesX() { var isChanged = false; var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
+      jQuery('.the-tags').each(function() {       
+        currentValue = jQuery( this ).val(); currID = jQuery(this).attr('id');   //   console.log( currID );   
+        if ((currentValue) && currentValue != nxs_curTagsValue[currID] && currentValue != '') isChanged = true;
+      });          
+      if (isChanged) { //## Changed
+        jQuery('.the-tags').each(function() { if (jQuery(this).val()!='') nxs_curTagsValue[jQuery(this).attr('id')] = jQuery(this).val(); });
+        var nxs_curTagsValueX = ''; var tValX = [];
         jQuery('.the-tags').each(function() { 
-           var tVals = jQuery( this ).val().split(","); var tID = jQuery( this ).attr('id').replace("tax-input-",""); 
+           var tVals = jQuery( this ).val().toLowerCase().split(","); var tID = jQuery( this ).attr('id').replace("tax-input-",""); 
            for(var ii in tVals) tValX.push(tID+"|"+jQuery.trim(tVals[ii])); 
-        });    //    alert(tValX);
+        }); //  console.log( tValX );
         jQuery(".nxs_TG").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_TG_", "do", "gi");
-        // console.log( uqID ); console.log( JSON.stringify( catsA ) );
+          // console.log( uqID ); console.log( JSON.stringify( catsA ) );
         for(var ii in catsA) { var tgVal = jQuery.trim(catsA[ii]);
           if (tgVal.indexOf("|")<1 && tgVal!="") tgVal = "post_tag|"+tgVal;
           if (tgVal!="" && jQuery.inArray(tgVal, tValX)>-1) {  jQuery('#'+uqID).attr('checked','checked'); }           
         }        
         });
-      } setTimeout(nxs_checkTagsChanges, 0.1);
+      } setTimeout(nxs_checkTagsChangesX, 0.1);
     }
+    
   });
 </script>
 
@@ -1118,16 +1124,17 @@ function nxs_do_post_from_query() { nxs_cron_check(); // nxs_addToLogN('A', 'Deb
   $pstEvrySec = $options['quDays']*86400+$options['quHrs']*3600+$options['quMins']*60; $rndSec = $options['quLimitRndMins']*60;  
   $nxTime = !empty($options['quNxTime'])?$options['quNxTime']:$currTime+$pstEvrySec; 
   
-  $extInfo = date_i18n('Y-m-d H:i:s', $options['quNxTime'])."|".date_i18n('Y-m-d H:i:s', $options['quLastShTime']);
+  $extInfo = 'Query Time:'.date_i18n('Y-m-d H:i:s', $options['quNxTime'])."|Previous Time:".date_i18n('Y-m-d H:i:s', $options['quLastShTime']);
   
   if (empty($options['quNxTime']) || $nxTime < $currTime) $hasChanged = true;  // Do Post  
        
   if ($hasChanged) { //## Do Post     
-    nxs_addToLogN('A', '**POST STARTED** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, $logNT, '-=Time=- '.$currTime, $extInfo);
-    nxs_snapPublishTo($postToPost, '', true);  
+    nxs_addToLogN('A', '**POST STARTED** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, '', 'Curr Time: '.date_i18n('Y-m-d H:i:s', $currTime).'~', $extInfo);        
     $options['quLastShTime'] = $currTime; $rndTime = rand(0-$rndSec, $rndSec); $options['quNxTime'] = $currTime + $pstEvrySec + $rndTime;    
     if ($options['nxsOverLimit']=='D') { $dateC = date("d"); $dayN = date("d", $nxTime); if ($dayN!=$dateC) $quPosts = array(); }    
-    nxs_addToLogN('A', '**POST FINISHED** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, $logNT, '-=Time=- '.$currTime, $extInfo); update_option('NSX_PostsQuery', $quPosts);  update_option('NS_SNAutoPoster', $options);
+    update_option('NSX_PostsQuery', $quPosts);  update_option('NS_SNAutoPoster', $options);    
+    nxs_snapPublishTo($postToPost, '', true);      
+    nxs_addToLogN('A', '**POST FINISHED** NXSPoster - WP CRON - Post from Query - Post ID: '.$postToPost, '', '-=Time=- '.$currTime, $extInfo); 
   }
 }
 

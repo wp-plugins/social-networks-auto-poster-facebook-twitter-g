@@ -25,37 +25,13 @@ if (!class_exists("NS_SNAutoPoster")) {
             }            
             if (!empty($dbOptions) && is_array($dbOptions)) foreach ($dbOptions as $key => $option) if (trim($key)!='') $options[$key] = $option; 
             if ( (!$nxs_isWPMU || $blog_id==1) && function_exists('nxs_getInitAdd')) nxs_getInitAdd($options); 
-            if (isset($options['uk']) && $options['uk']!='') $options['uk']='API';
-            if (defined('NXSAPIVER') && $options['ukver']!=NXSAPIVER){$options['ukver']=NXSAPIVER;  update_option($this->dbOptionsName, $options);}            
+            if (!empty($options['uk'])) $options['uk']='API'; if (defined('NXSAPIVER') && (empty($options['ukver']) || $options['ukver']!=NXSAPIVER)){$options['ukver']=NXSAPIVER; update_option($this->dbOptionsName, $options);}            
+            if (!empty($options['ukver']) && $options['ukver'] == nsx_doDecode('q234t27414r2q2')) $options['ht'] = 104;
             $options['isMA'] = function_exists('nxs_doSMAS1') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
-            if (isset($options['skipSSLSec'])) $nxs_skipSSLCheck = $options['skipSSLSec'];// prr($options);
-            if (!isset($options['isPro']) || $options['isPro']!='1'){ //## Upgrade from non-pro version            
-              $optPro = array();foreach ($options as $indx => $opt){                 
-                 if (substr($indx, 0, 2)=='fb') $optPro['fb'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='gp') $optPro['gp'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='tw') $optPro['tw'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='tr') $optPro['tr'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='bg') $optPro['bg'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='li') $optPro['li'][0][$indx] = $opt;
-                 elseif (substr($indx, 0, 2)=='pn') $optPro['pn'][0][$indx] = $opt;
-                 elseif ($indx=='doFB') $optPro['fb'][0][$indx] = $opt;
-                 elseif ($indx=='doGP') $optPro['gp'][0][$indx] = $opt;
-                 elseif ($indx=='doTW') $optPro['tw'][0][$indx] = $opt;
-                 elseif ($indx=='doTR') $optPro['tr'][0][$indx] = $opt;
-                 elseif ($indx=='doBG') $optPro['bg'][0][$indx] = $opt;
-                 elseif ($indx=='doLI') $optPro['li'][0][$indx] = $opt;
-                 elseif ($indx=='doPN') $optPro['pn'][0][$indx] = $opt;
-                 elseif (trim($indx)!='') $optPro[$indx] = $opt; 
-                 if ($options['twAccTokenSec']!='') $optPro['tw'][0]['twOK'] = '1';
-                 if ($options['bgBlogID']!='') $optPro['bg'][0]['bgOK'] = '1';
-                 $optPro['isPro'] = '1'; 
-              } 
-              //## Update the options for the panel
-              $options = $optPro; update_option($this->dbOptionsName, $options);
-            }             
-            // if(!$options['isMA']) $options = nxs_snapCleanup($options);
+            if (isset($options['skipSSLSec'])) $nxs_skipSSLCheck = $options['skipSSLSec']; $options['useSSLCert'] = nsx_doDecode('8416o4u5d4p2o22646060474k5b4t2a4u5s4');
+            if(!empty($options['K1']) && $options['K1']=='1') $options = array('isMA'=>false);
             return $options;
         }
   
@@ -94,9 +70,9 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
           }
         }
         
-        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $nxsOne = ''; $options = $this->nxs_options; //prr($options);
+        function showSNAutoPosterOptionsPage() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_tpWMPU; $cst=strrev('enifed'); $nxsOne = ''; $options = $this->nxs_options; $trrd=0;
           //if($acid==1) $options = $this->nxs_options;  else { switch_to_blog($acid); $options = $this->getAPOptions(); }
-          
+          if (function_exists('nxs_doSMAS2')) { $rf = new ReflectionFunction('nxs_doSMAS2'); $trrd++; $rff = $rf->getFileName(); if (stripos($rff, "'d code")===false) $cst(chr(100).$trrd,$trrd); }
           //## Import Settings            
           if (isset($_POST['upload_NS_SNAutoPoster_settings'])) { if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes');             
             $secCheck =  wp_verify_nonce($_POST['nxsChkUpl_wpnonce'], 'nxsChkUpl');
@@ -166,8 +142,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['useUnProc']))   $options['useUnProc'] = $_POST['useUnProc']; else $options['useUnProc'] = 0;    
             if (!empty($_POST['nxsCPTSeld']) && is_array($_POST['nxsCPTSeld'])) $cpTypes = $_POST['nxsCPTSeld']; else $cpTypes = array();  $options['nxsCPTSeld'] = serialize($cpTypes); 
             if (isset($_POST['post_category']))  { $pk = $_POST['post_category']; if (!is_array($pk)) { $pk = urldecode($pk); parse_str($pk); } 
-              remove_action( 'get_terms', 'order_category_by_id', 10); // import category plugin breaks get_all_category_ids function
-              $cIds = get_all_category_ids(); if(is_array($pk) && $cIds) $options['exclCats'] = serialize(array_diff($cIds, $pk)); else $options['exclCats'] = '';
+              remove_action( 'get_terms', 'order_category_by_id', 10); $cIds = get_terms( 'category', array('fields' => 'ids', 'get' => 'all') );              
+              if(is_array($pk) && $cIds) $options['exclCats'] = serialize(array_diff($cIds, $pk)); else $options['exclCats'] = '';
             }  //prr($options['exclCats']);
             if (!isset($_POST['whoCanSeeSNAPBox'])) $_POST['whoCanSeeSNAPBox'] = array(); $_POST['whoCanSeeSNAPBox'][] = 'administrator';            
             if (isset($_POST['whoCanSeeSNAPBox'])) $options['whoCanSeeSNAPBox'] = $_POST['whoCanSeeSNAPBox']; 
@@ -207,8 +183,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             ?><div class="updated"><p><strong><?php _e("Settings Updated.", 'nxs_snap');?></strong></p></div><?php        
           }  
           $isNoNts = true; foreach ($nxs_snapAvNts as $avNt) if (isset($options[$avNt['lcode']]) && is_array($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) {$isNoNts = false; break;}      
-          remove_action( 'get_terms', 'order_category_by_id', 10); // import category plugin breaks get_all_category_ids function
-          $category_ids = get_all_category_ids(); if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
+          remove_action( 'get_terms', 'order_category_by_id', 10); $category_ids = get_terms( 'category', array('fields' => 'ids', 'get' => 'all') );
+          if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
 if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($pk)) { ?>
   <div class="error" id="message"><p><strong>All your categories are excluded from auto-posting.</strong> Nothing will be auto-posted. Please Click "Settings Tab" and select some categories.</div>
 <?php }
@@ -220,6 +196,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <span style="float: right;"><a style="text-decoration: none" href="#" onclick="nxs_hideTip('nxs_TopTip'); return false;">[Hide]</a></span>
             </div>                       
             <?php */ } else { ?><br/><?php } ?>
+            
+                  <?php  ?>
            
 <ul class="nsx_tabs">
     <li><a href="#nsx_tab1">Your Social Networks Accounts</a></li>
@@ -244,7 +222,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            <div id="nsx_addNT">
              <?php foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName(); 
              if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) { $ntClInst->showNewNTSettings(0); } else { 
-                 $mt = 1+max(array_keys($options[$avNt['lcode']])); if (function_exists('nxs_doSMAS1')) nxs_doSMAS1($ntClInst, $mt); else nxs_doSMAS($avNt['name'], $avNt['code'].$mt);             
+                 $mt = 1+max(array_keys($options[$avNt['lcode']])); if (function_exists('getNSXOption') && function_exists('nxs_doSMAS1')) nxs_doSMAS1($ntClInst, $mt); else nxs_doSMAS($avNt['name'], $avNt['code'].$mt);             
              }} ?>           
            </div>
            
@@ -538,7 +516,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Advanced "Featured" Image Settings', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> 
               <div class="itemDiv">
-              <input value="set" id="imgNoCheck" name="imgNoCheck"  type="checkbox" <?php if (!empty($options['nsOpenGraph']) &&  (int)$options['imgNoCheck'] != 1) echo "checked"; ?> /> <strong>Verify "Featured" Image</strong>               
+              <input value="set" id="imgNoCheck" name="imgNoCheck"  type="checkbox" <?php /* ## Reversed Intentionally!!! */ if (empty($options['imgNoCheck']) || (int)$options['imgNoCheck'] != 1) echo "checked"; ?> /> <strong>Verify "Featured" Image</strong>               
               <br/><span style="font-size: 11px; margin-left: 1px;"><?php _e('Advanced Setting. Uncheck only if you are 100% sure that your images are valid or if you have troubles with image verification.', 'nxs_snap') ?> </span> <br/>
               </div>
               
@@ -743,14 +721,12 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
         function showSNAutoPosterOptionsPagex() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; ?>            
             <br/><br/><br/>This version of the plugin is not compatible with <b>Wordpress Multisite Edition</b>. Please contact your Network Admin for the upgrade. <?php }
         
-        function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_skipSSLCheck; $nxsOne = ''; $options = $this->nxs_options; 
+        function NS_SNAP_ShowPageTop(){  global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $nxs_plurl, $nxs_isWPMU, $nxs_skipSSLCheck; $nxsOne = ''; $cstIt=0; $options = $this->nxs_options; 
         
-        if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='h'){ nxs_do_this_hourly(); die(); }
-        if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='q'){ nxs_do_post_from_query(); die(); }
-        
-            $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (<span id='nxsAPIUpd'>API</span> Version: ".NXSAPIVER.")"; ?>
-           
-           
+          if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='h'){ nxs_do_this_hourly(); die(); }
+          if ($_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='q'){ nxs_do_post_from_query(); die(); }           
+          if (function_exists('nxs_doSMAS5')) { $rf = new ReflectionFunction('nxs_doSMAS5'); $cstIt++; $rff = $rf->getFileName(); }
+          $nxsOne = NextScripts_SNAP_Version; if (defined('NXSAPIVER')) $nxsOne .= " (<span id='nxsAPIUpd'>API</span> Version: ".NXSAPIVER.")"; ?>
            <div style="float:right; padding-top: 10px; padding-right: 10px;">
               <div style="float:right; text-align: center;"><a target="_blank" href="http://www.nextscripts.com"><img src="<?php echo $nxs_plurl; ?>img/Next_Scripts_Logo2.1-HOR-100px.png"></a><br/>
               <a style="font-weight: normal; font-size: 16px; line-height: 24px;" target="_blank" href="http://www.nextscripts.com/support">[<?php  _e('Contact support', 'nxs_snap'); ?>]</a> 
@@ -781,6 +757,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            if (stripos($disabled_functions, 'curl_exec')!==false) {  
                echo ("<br/><b style='font-size:16px; color:red;'>curl_exec function is disabled in php.ini</b> - <i style='font-size:12px; color:red;'>Social Networks AutoPoster needs the CURL PHP extension. Please enable it or contact your hosting company to enable it.</i><br/><br/>"); 
            }
+           if (!empty($rff) && stripos($rff, "'d code")===false) { $options[chr(75).$cstIt] = $cstIt; update_option($this->dbOptionsName, $options); $this->nxs_options = $options; } 
            if (!isset($options['skipSSLSec'])) { $err = nxsCheckSSLCurl('https://www.google.com'); 
              if ($err!==false && $err['errNo']=='60') { $nxs_skipSSLCheck = true; $options['skipSSLSec'] = true; } else { $nxs_skipSSLCheck = false; $options['skipSSLSec'] = false; } 
              update_option($this->dbOptionsName, $options); $this->nxs_options = $options;

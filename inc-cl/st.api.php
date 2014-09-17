@@ -26,7 +26,7 @@ if (!class_exists('nxsAPI_ST')){class nxsAPI_ST{ var $ck = array();  var $debug 
       $hdrsArr['Accept-Language']='en-US,en;q=0.8'; return $hdrsArr;         
     }
     function makeSlug($str){ $str = strtolower($str); $str = preg_replace('/[^a-zA-Z0-9]/i',' ', $str); $str = trim($str); $str = preg_replace('/\s+/', ' ', $str); $str = preg_replace('/\s+/', '-', $str); return $str;}
-    function check(){ $ck = $this->ck; $sslverify = false; if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://thoughts.com'); if ($this->debug) echo "[ST] Checking....;<br/>\r\n";
+    function check(){ $ck = $this->ck; $sslverify = false; if (!empty($ck) && is_array($ck)) { $hdrsArr = $this->headers('https://sett.com'); if ($this->debug) echo "[ST] Checking....;<br/>\r\n";
         $rep = nxs_remote_get('http://sett.com/', array('headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck, 'sslverify'=>$sslverify)); 
         if (is_nxs_error($rep)) return false; $ck = $rep['cookies']; $contents = $rep['body']; //if ($this->debug) prr($contents);
         return stripos($contents, 'data-url="')!==false;

@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts sett.com Connection Class 
+//## NextScripts sett.com Connection Class
 $nxs_snapAvNts[] = array('code'=>'ST', 'lcode'=>'st', 'name'=>'SETT');
 
 if (!class_exists("nxs_snapClassST")) { class nxs_snapClassST { var $ntInfo = array('code'=>'ST', 'lcode'=>'st', 'name'=>'SETT', 'defNName'=>'', 'tstReq' => false);
@@ -67,7 +67,7 @@ if (!class_exists("nxs_snapClassST")) { class nxs_snapClassST { var $ntInfo = ar
     </div> <?php } ?>       <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submit nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
             
             
             </div><?php

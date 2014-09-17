@@ -71,7 +71,8 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI { var $ntInfo = ar
         if (is_array($response)&& stripos($response['body'],'"error":')!==false){ prr($response['body']); prr(json_decode($response['body'],true)); die(); }
         $resp = json_decode($response['body'], true); prr($resp); if (!is_array($resp) || empty($resp['access_token'])) { prr($resp); die(); }
         if (function_exists('get_option')) $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); else  $currTime = time();
-        $nto['liAccessToken'] = $resp['access_token'];  $nto['liAccessTokenExp'] = $currTime + $resp['expires_in'];    echo "<br/>----=={ Expires: ".date('Y-m-d H:i:s', $nto['liAccessTokenExp'])." }==---- <br/>";
+        $nto['liAccessToken'] = $resp['access_token']; $nto['liAccessTokenSecret'] = 'No Need for oAuth V2'; $nto['liOAuthVerifier'] = 'No Need for oAuth V2';
+        $nto['liAccessTokenExp'] = $currTime + $resp['expires_in'];    echo "<br/>----=={ Expires: ".date('Y-m-d H:i:s', $nto['liAccessTokenExp'])." }==---- <br/>";
         $tknURL = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)?format=json&oauth2_access_token='.$nto['liAccessToken'];
         $response  = wp_remote_get($tknURL, $wprg); prr($tknURL); prr($response);  $user = json_decode($response['body'], true);
        

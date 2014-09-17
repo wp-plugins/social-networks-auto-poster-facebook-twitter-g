@@ -55,7 +55,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
         if ($options['liAttch']=='1') { $lnk['title'] = $message['urlTitle']; $lnk['postTitle'] = $msgT; $lnk['desc'] =  $message['urlDescr']; $lnk['url'] = $urlToGo; $lnk['img'] = $imgURL; }      
         $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];
       } else { 
-        if ($options['isV2']) {  //## V2
+        if (!empty($options['isV2'])) {  //## V2
           if ($options['grpID']!=''){
             try { if ($msgT == '') $msgT = ' '; 
               if($options['liAttch']=='1') $ret = $this->postToGroup($options['liAccessToken'], $msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 

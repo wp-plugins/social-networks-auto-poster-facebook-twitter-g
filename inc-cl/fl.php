@@ -248,7 +248,7 @@ if (!function_exists("nxs_rePostToFL_ajax")) {
   }
 }  
 if (!function_exists("nxs_doPublishToFL")) { //## Post to FL. // V3 - imgToUse - Done, class_SNAP_AP - Done, New Format - Done
-  function nxs_doPublishToFL($postID, $options){ global $plgn_NS_SNAutoPoster; $ntCd = 'FL'; $ntCdL = 'fl'; $ntNm = 'Flickr'; if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
+  function nxs_doPublishToFL($postID, $options){ $ntCd = 'FL'; $ntCdL = 'fl'; $ntNm = 'Flickr'; if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
       $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));   
       if (empty($options['imgToUse'])) $options['imgToUse'] = ''; if (empty($options['imgSize'])) $options['imgSize'] = '';
       $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
@@ -272,10 +272,8 @@ if (!function_exists("nxs_doPublishToFL")) { //## Post to FL. // V3 - imgToUse -
                 
         $imgURL = nxs_getPostImage($postID, 'full'); if (preg_match("/noImg.\.png/i", $imgURL)) { $imgURL = ''; $isNoImg = true; }
         
-        //## MyURL - URLToGo code
-        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
-        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
-        $gOptions = $plgn_NS_SNAutoPoster->nxs_options; $addURLParams = trim($gOptions['addURLParams']);  if($addURLParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addURLParams;                 
+        $options = nxs_getURL($options, $postID); $urlToGo = $options['urlToUse']; 
+        
         $message = array('url'=>$urlToGo, 'imageURL'=>$imgURL, 'noImg'=>$isNoImg, 'tags'=>$tags);                 
         $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:''); 
       }            

@@ -185,8 +185,8 @@ if (!class_exists("nxs_snapClassPK")) { class nxs_snapClassPK { var $ntInfo = ar
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; $nt = 'pk'; $ntU = 'PK';
     foreach($ntOpts as $ii=>$ntOpt)  {$pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPK', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
-       $doPK = $ntOpt['doPK'] && (is_array($pMeta) || $ntOpt['catSel']!='1'); 
-       $isAvailPK =  (!empty($ntOpt['pkAccessTocken'])  && !empty($ntOpt['pkAccessTockenSec']));
+       $doPK = $ntOpt['doPK'] && (is_array($pMeta) || $ntOpt['catSel']!='1');// prr($ntOpt);
+       $isAvailPK =  (!empty($ntOpt['pkAccessTocken'])  && !empty($ntOpt['pkOAuthTokenSecret']));
        $pkMsgFormat = htmlentities($ntOpt['pkMsgFormat'], ENT_COMPAT, "UTF-8"); 
       ?>  
       

@@ -62,6 +62,14 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   return trim($msg);
 }}
 
+if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID) { global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
+  if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true));
+  $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if ($myurl!='') $options['urlToUse'] = $myurl;
+  if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['useFBGURLInfo'] = true; } else $options['urlToUse'] = get_permalink($postID);      
+  $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; $addURLParams = trim($gOptions['addURLParams']);  
+  if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams; return $options;
+}}
+
 if (!function_exists('nxs_showListRow')){function nxs_showListRow($ntParams) { $ntInfo = $ntParams['ntInfo']; $nxs_plurl = $ntParams['nxs_plurl']; $ntOpts = $ntParams['ntOpts'];  ?>
           <div class="nxs_box">
             <div class="nxs_box_header"> 
@@ -74,7 +82,7 @@ if (!function_exists('nxs_showListRow')){function nxs_showListRow($ntParams) { $
             <?php if(!empty($ntParams['checkFunc']) &&  !function_exists($ntParams['checkFunc']['funcName'])) echo $ntParams['checkFunc']['msg']; else foreach ($ntOpts as $indx=>$pbo){  if (trim($pbo['nName']=='')) $pbo['nName'] = $ntInfo['name']; 
               if (empty($pbo[$ntInfo['lcode'].'OK'])) $pbo[$ntInfo['lcode'].'OK'] = !empty($pbo[$ntParams['chkField']])?'1':''; ?>
               <p style="margin:0px;margin-left:5px;"> <img id="<?php echo $ntInfo['code'].$indx;?>LoadingImg" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
-              <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>
+              <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && ((isset($pbo['catSel']) && (int)$pbo['catSel'] == 1)||(!empty($pbo['tagsSel'])))) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>
                 <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
                 <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />             
               <?php } ?>            

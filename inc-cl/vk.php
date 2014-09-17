@@ -172,7 +172,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
           $options[$ii]['vkAppAuthUser'] = trim( CutFromTo($pval['apVKAuthResp']."&", 'user_id=','&')); 
           $hdrsArr = nxs_getVKHeaders($pval['url']);
           $response = wp_remote_get($pval['url'], array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr)); 
-          if (is_wp_error($response)) { echo "ERROR: <br/>"; prr($response); return;} $contents = $response['body'];     
+          if (is_wp_error($response)) { echo "ERROR: <br/>"; prr($response); return;} $contents = $response['body']; $contents = utf8_decode($contents);    
           if (stripos($contents, '"group_id":')!==false) { $options[$ii]['pgIntID'] =  '-'.CutFromTo($contents, '"group_id":', ','); $type='all'; }  
           if (stripos($contents, '"public_id":')!==false) { $options[$ii]['pgIntID'] =  '-'.CutFromTo($contents, '"public_id":', ','); $type='all'; }  
           if (stripos($contents, '"user_id":')!==false) {   $options[$ii]['pgIntID'] =  CutFromTo($contents, '"user_id":', ','); $type='own'; }  
@@ -363,6 +363,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
           }        
       } 
       //## Process Results
+      if (is_array($ret) && !empty($ret['err'])) nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.

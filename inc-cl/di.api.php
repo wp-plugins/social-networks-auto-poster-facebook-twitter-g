@@ -1,5 +1,5 @@
 <?php    
-//## NextScripts Diigo Connection Class 
+//## NextScripts Diigo Connection Class
 $nxs_snapAPINts[] = array('code'=>'DI', 'lcode'=>'di', 'name'=>'Diigo');
 
 if (!class_exists("nxs_class_SNAP_DI")) { class nxs_class_SNAP_DI {
