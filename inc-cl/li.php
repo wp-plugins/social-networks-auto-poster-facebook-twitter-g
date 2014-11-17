@@ -14,6 +14,7 @@ if (!function_exists("nxsCptCheck_ajax")) { function nxsCptCheck_ajax() { global
     $flds['recaptcha_response_field'] = $_POST['c']; $liObj = new nxsAPI_LI();   $hdrsArr = $liObj->headers('https://www.linkedin.com/uas/login-submit', 'https://www.linkedin.com', 'POST', false);
     $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds); // prr($advSet);
     $rep = nxs_remote_post('https://www.linkedin.com/uas/captcha-submit', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body']; 
+    if (stripos($contents2, '<span class="error">')!==false) { echo strip_tags(CutFromTo($contents2, '<span class="error">', '</span>')); die(); }    
     if (stripos($contents2, '<div id="global-error">')!==false) { echo CutFromTo($contents2, '<div role="alert" class="alert error">', '</div>'); die(); }    
     if (stripos($contents2, 'The email address or password you provided does not match our records')!==false) { echo "Invalid Login/Password"; die(); }
     if (stripos($contents2, 'Hmm, ')!==false) { echo "Invalid Login/Password"; die(); }    

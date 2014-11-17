@@ -241,14 +241,15 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }
     }  
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $uln = 0; $extInfo = ' | PostID: '.$postID;    
-    if ($options['attchImg']=='1') { if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID);  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  
+    if ($options['attchImg']=='1') { if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID);  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  
       if(trim($imgURL)=='') $options['attchImg'] = 0; else { $imgURL = str_replace(' ', '%20', $imgURL);
-        if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL); 
-          if (is_wp_error($img)) $options['attchImg'] = 0; else if ( (!empty($img['headers']['content-length'])) && (int)$img['headers']['content-length']<200) { $options['attchImg'] = 0; } else $img = $img['body']; } else $options['attchImg'] = 0; 
-        } else {  $img = wp_remote_get($imgURL); if(is_wp_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }         
+        $hdrsArr['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0'; $advSet=array('headers'=>$hdrsArr,'httpversion'=>'1.1','timeout'=>45,'sslverify'=>false);      
+        if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL, $advSet); 
+          if (is_nxs_error($img)) $options['attchImg'] = 0; else if ( (!empty($img['headers']['content-length'])) && (int)$img['headers']['content-length']<200) { $options['attchImg'] = 0; } else $img = $img['body']; } else $options['attchImg'] = 0; 
+        } else {  $img = wp_remote_get($imgURL,$advSet); if(is_nxs_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }         
         if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($img, true), $extInfo);
       }
-    }  
+    } 
     if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140;     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
      else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));    

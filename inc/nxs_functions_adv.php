@@ -47,7 +47,7 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
   }  
   if (preg_match('%HTAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
-    $tggs = array(); foreach ($t as $tagA) {$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));  } 
+    $tggs = array(); foreach ($t as $tagA){$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(nxs_ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));} 
     $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
   } 
   if (preg_match('%CF-[a-zA-Z0-9_]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
@@ -62,11 +62,18 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   return trim($msg);
 }}
 
-if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID) { global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
+if (!function_exists("nxs_mbConvertCaseUTF8var")){ function nxs_mbConvertCaseUTF8var($s) { $arr = preg_split("//u", $s, -1, PREG_SPLIT_NO_EMPTY); $result = ""; $mode = false; 
+  foreach ($arr as $char) { $res = preg_match('/\\p{Mn}|\\p{Me}|\\p{Cf}|\\p{Lm}|\\p{Sk}|\\p{Lu}|\\p{Ll}|\\p{Lt}|\\p{Sk}|\\p{Cs}/u', $char) == 1; 
+    if ($mode) { if (!$res)$mode = false; } elseif ($res) { $mode = true; $char = mb_convert_case($char, MB_CASE_TITLE, "UTF-8"); } $result .= $char; 
+  } return $result; 
+}} 
+if (!function_exists("nxs_ucwords")){ function nxs_ucwords($str) { if (function_exists("mb_convert_case")) return nxs_mbConvertCaseUTF8var($str); else return ucwords($str); }}
+
+if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID, $addURLParams='') { global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
   if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true));
   $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if ($myurl!='') $options['urlToUse'] = $myurl;
   if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['useFBGURLInfo'] = true; } else $options['urlToUse'] = get_permalink($postID);      
-  $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; $addURLParams = trim($gOptions['addURLParams']);  
+  $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; // $addURLParams = trim($gOptions['addURLParams']);  
   if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams; return $options;
 }}
 

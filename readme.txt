@@ -2,21 +2,21 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt
-Requires at least: 3.2
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
+Requires at least: 3.4
 Tested up to: 4.0.0
-Stable tag: 3.4.3
+Stable tag: 3.4.4
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, XING etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
 
 **ALL NEW SNAP for Wordpress Version 4 is coming soon...**
 
-* **Latest version 3.4** - New network - Kippt, compatibility with WP 3.9, 4.0 and PHP 5.5. 
+* **Latest version 3.4** - New networks - XING, Kippt, compatibility with WP 3.9, 4.0 and PHP 5.5. 
 * *Version 3.3* - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
 * *Version 3.0* - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
 * *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text
@@ -54,6 +54,7 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 * **vKontakte(VK.com)** - Autopost to your profile or group page. Ability to attach your blogpost to vk.com post. Ability to make "Image" posts.
 * **Wordpress** - Auto-submit your blogpost to another blog based on Wordpress. This options includes Wordpress.com, Blog.com, etc..
 * **YouTube** (*with third party API library*) - Post messages to your YouTube channel feed. If blogpost has youtube reference it will be attached.
+* **XING** - Post text messages or share links.
 
 ... more networks are coming soon ...
 
@@ -165,6 +166,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.4 [11/17/2014] =
+
+* New - New network "XING". Post  text messages or share links to your personal account. 
+* Improvement - Performance and memory usage improvement
+* Bug Fix - [Diigo] "301" error message has been fixed.
 
 = 3.4.3 [09/17/2014] =
 

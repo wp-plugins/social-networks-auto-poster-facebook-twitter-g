@@ -53,15 +53,15 @@ class nxssc_SigMethod_HMAC_SHA1 extends nxssc_SignatureMethod {
       }
       return "$scheme://$host$path";
     }
-    public function get_signature_base_string($url, $params) {
-      $parts = array( 'GET', $this->get_normalized_http_url($url), $params); //prr($parts);
+    public function get_signature_base_string($url, $params, $method = 'GET') {
+      $parts = array( $method, $this->get_normalized_http_url($url), $params); //prr($parts);
       $parts = $this->urlencode_rfc3986($parts);
       return implode('&', $parts);
     }
     
     public function sign2($request, $consumer_secret, $token){
       
-      $base_string = $this->get_signature_base_string($request['normalized_url'], $request['normalized_parameters']);
+      $base_string = $this->get_signature_base_string($request['normalized_url'], $request['normalized_parameters'],  $request['method']);
       //$request->base_string = $base_string;
       
       //$key_parts = array( $consumer_secret);  if ($token) $key_parts[] = $token->secret;
@@ -175,10 +175,19 @@ class wpScoopITOAuth{
       $this->http_code = $response['response']['code']; 
       if (stripos($response['body'],'oauth_token_secret=')===false) echo 'Bad oAuth Login:'.$response['body']; else return $this->oAuthRespToArr($response['body']);        
     }
-    function makeReq($url, $params, $type='GET'){
+    
+    public function to_header($params, $realm=null) { $first = true; prr($params);
+      if($realm) { $out = 'OAuth realm="' . nxssc_SigMethod_HMAC_SHA1::urlencode_rfc3986($realm) . '"'; $first = false; } else $out = 'OAuth'; $total = array();
+      foreach ($params as $k => $v) {
+        if (substr($k, 0, 5) != "oauth") continue; 
+        $out .= ($first) ? ' ' : ', '."\r"; $out .= nxssc_SigMethod_HMAC_SHA1::urlencode_rfc3986($k) . '="' . nxssc_SigMethod_HMAC_SHA1::urlencode_rfc3986($v) . '"';
+        $first = false;
+      } prr($out); return $out;
+    }
+    
+    function makeReq($url, $params='', $type='GET'){
       $args = array (
         'oauth_token' => $this->access_token,
-        'oauth_token_secret' => $this->access_secret,
         'oauth_consumer_key' => $this->consumer_key,        
         'oauth_timestamp' => time(),        
         'oauth_nonce' => $this->genRndString(),
@@ -192,12 +201,11 @@ class wpScoopITOAuth{
       $args['oauth_signature'] = $this->sign_method->sign2($req, $this->consumer_secret, $this->access_secret); 
       if (is_array($params)) { if (isset($params['tag']) && is_array($params['tag']) ) { $tags = $params['tag']; unset($params['tag']); $argsAddStr = '';  foreach ($tags as $tg) $argsAddStr .= '&tag='.urlencode($tg); }
           $params = nxssc_SigMethod_HMAC_SHA1::urlencode_rfc3986($params);   $args = array_merge($args, $params);
-      } $argsStr = ''; $argsT = array(); foreach ($args as $arN=>$arV){$argsT[] = $arN.'='.$arV;} $argsStr = implode('&', $argsT); 
-       
+      } $argsStr = ''; $argsT = array(); uksort($args, 'strcmp'); foreach ($args as $arN=>$arV){$argsT[] = $arN.'='.$arV;} $argsStr = implode('&', $argsT); 
       if ( $type=='GET') {  $url .= '?'.$argsStr;  $hdrsArr = $this->makeHTTPHeaders($url);  $ckArr = ''; // prr($url);
           $response = wp_remote_get($url, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr)); //prr($response);
-      } else { $hdrsArr = $this->makeHTTPHeaders($url, true); if (!empty($argsAddStr)) $argsStr .= $argsAddStr;
-          $response = wp_remote_post($url, array( 'timeout' => 45, 'redirection' => 0, 'body'=>$argsStr,  'headers' => $hdrsArr));// prr($argsStr); prr($argsT);   prr($response);
+      } else { $hdrsArr = $this->makeHTTPHeaders($url, true); if (!empty($argsAddStr)) $argsStr .= $argsAddStr; //prr($url);  prr($hdrsArr); prr($argsStr);  prr($argsT);
+          $response = wp_remote_post($url, array( 'timeout' => 45, 'redirection' => 0, 'body'=>$argsStr,  'headers' => $hdrsArr)); //prr($argsStr); prr($argsT);   prr($response);
       }
       if ( is_wp_error($response) ) return $response;
       $this->http_code = $response['response']['code']; $body = $response['body']; $body = maybe_unserialize($body); if (is_array($body)) return $body; else  return json_decode($body, true);   

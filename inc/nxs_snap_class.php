@@ -19,7 +19,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             $this->nxs_ntoptions = get_site_option($this->dbOptionsName);   $nxs_UPPath = 'nxs-snap-pro-upgrade';
             $pf = ABSPATH . 'wp-content/plugins/'.$nxs_UPPath.'/'.$nxs_UPPath.'.php'; if (file_exists($pf) && !function_exists('nxs_getInitAdd') ) require_once $pf;          
             if ($nxs_isWPMU && $blog_id>1) { global $wpdb;  switch_to_blog(1); //$dbMUOptions = get_option($this->dbOptionsName);  
-              $row = $wpdb->get_row('SELECT option_value from '.$wpdb->options.' WHERE option_name="NS_SNAutoPoster"'); if ( is_object( $row ) ) $dbMUOptions = maybe_unserialize($row->option_value);
+              $row = $wpdb->get_row("SELECT option_value from ".$wpdb->options." WHERE option_name='NS_SNAutoPoster'"); if ( is_object( $row ) ) $dbMUOptions = maybe_unserialize($row->option_value);
               if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($dbMUOptions); restore_current_blog(); 
               $dbOptions['lk'] = $dbMUOptions['lk']; $dbOptions['ukver'] = $dbMUOptions['ukver']; $dbOptions['uklch'] = $dbMUOptions['uklch']; $dbOptions['uk'] = $dbMUOptions['uk'];
             }            
@@ -99,6 +99,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['nxsHTSpace']))  $options['nxsHTSpace'] = $_POST['nxsHTSpace']; else $options['nxsHTSpace'] = "";
             if (isset($_POST['featImgLocPrefix']))  $options['featImgLocPrefix'] = $_POST['featImgLocPrefix'];
             if (isset($_POST['featImgLocArrPath']))  $options['featImgLocArrPath'] = $_POST['featImgLocArrPath'];
+            if (isset($_POST['featImgLocRemTxt']))  $options['featImgLocRemTxt'] = $_POST['featImgLocRemTxt'];
             
             if (isset($_POST['extDebug']))   $options['extDebug'] = $_POST['extDebug'];  else $options['extDebug'] = 0;
             if (isset($_POST['numLogRows']))  $options['numLogRows'] = $_POST['numLogRows'];
@@ -547,6 +548,13 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <br/>              
              <span style="font-size: 11px; margin-left: 1px;">[<?php _e('Optional', 'nxs_snap') ?>] <?php _e('If your custom field contain only the last part of the image path, please enter the prefix', 'nxs_snap') ?></span> 
               </div>
+              
+              <div class="itemDiv">
+             <b><?php _e('Custom field Image text to remove:', 'nxs_snap') ?></b> <input name="featImgLocRemTxt" style="width: 200px;" value="<?php if (isset($options['featImgLocRemTxt'])) _e(apply_filters('format_to_edit',$options['featImgLocRemTxt']), 'nxs_snap') ?>" /> 
+              <br/>              
+             <span style="font-size: 11px; margin-left: 1px;">[<?php _e('Optional', 'nxs_snap') ?>] <?php _e('If your custom field contain the last part of the image path that need to be removed, please enter it here', 'nxs_snap') ?></span> 
+              </div>
+              
            </div></div>    
            
             <!-- ##### Ext Debug/Report Settings ##### --> 
