@@ -8,8 +8,8 @@ if (!function_exists('CutFromTo')){ function CutFromTo($string, $from, $to){$fst
 if (!function_exists('nsx_doEncode')){ function nsx_doEncode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string);$keyLen = strlen($key); $j = 0; $hash = '';
   for ($i = 0; $i < $strLen; $i++) { $ordStr = ord(substr($string,$i,1)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= strrev(base_convert(dechex($ordStr + $ordKey),16,36));} return $hash;
 }}
-if (!function_exists('nsx_doDecode')){ function nsx_doDecode($string,$key='NSX') { $key = sha1($key); $strLen = strlen($string); $keyLen = strlen($key); $j = 0; $hash = ''; $strA = str_split($string, 2);
-  foreach($strA as $ordStr){ $ordStr = hexdec(base_convert(strrev($ordStr),36,16)); if ($j == $keyLen) $j = 0; $ordKey = ord(substr($key,$j,1)); $j++; $hash .= chr($ordStr - $ordKey);} return $hash;
+if (!function_exists('nsx_doDecode')){ function nsx_doDecode($string,$key='NSX') { $key = sha1($key); $keyLen = strlen($key); $hash = ''; $sX = str_split($string, 2560);
+  foreach($sX as $ss){$j=0; $sA=str_split($ss, 2); foreach($sA as $oS){$oS=hexdec(base_convert(strrev($oS),36,16)); if ($j==$keyLen) $j=0; $oK=ord(substr($key,$j,1)); $j++; $hash.=chr($oS-$oK);}} return $hash;
 }}
 if (!function_exists('nxs_decodeEntitiesFull')){ function nxs_decodeEntitiesFull($string, $quotes = ENT_COMPAT, $charset = 'utf-8') {
   return html_entity_decode(preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/', 'nxs_convertEntity', $string), $quotes, $charset); 
