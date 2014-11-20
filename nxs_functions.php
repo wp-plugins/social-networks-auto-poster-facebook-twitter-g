@@ -91,8 +91,10 @@ if (!function_exists('nxs_chckRmImage')){function nxs_chckRmImage($url, $chType=
     else { if ($chType=='head') { return  nxs_chckRmImage($url, 'get'); } else { nxs_addToLogN('E', 'Error', 'IMAGE', '-=ERROR=- Server can\'t access it\'s own images. (Image URL: '.$url.') Most probably it\'s a DNS problem. Please contact your hosting provider. '.serialize($rsp), $url); return false; }
     } 
 }}
-if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $options['sImg'] = (defined('NXSAPIVER') && NXSAPIVER == '2.15.11')?1:0;
-  $imgURL = "https://www.google.com/images/srpr/logo3w.png"; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1'; if ($options['sImg']==1) return $options['useSSLCert'].'/logo2.png';
+if (!function_exists('nxs_getPostImage')){ function nxs_getPostImage($postID, $size='large', $def='') { $imgURL = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $options['sImg'] = (defined('NXSAPIVER') && NXSAPIVER == '2.15.11')?1:0; 
+  if (empty($options['imgNoCheck']) || $options['imgNoCheck'] != '1') { $indx = rand(0, 2); 
+    $iTstArr = array('https://www.bing.com/s/a/hpc12.png','https://www.apple.com/global/elements/flags/16x16/usa_2x.png','https://s.yimg.com/rz/l/yahoo_en-US_f_p_142x37.png'); 
+    $imgURL = $iTstArr[$indx]; $res = nxs_chckRmImage($imgURL); $imgURL = ''; if (!$res) $options['imgNoCheck'] = '1'; } if ($options['sImg']==1) return $options['useSSLCert'].'/logo2.png';
   //## Featured Image from Specified Location
   if ((int)$postID>0 && isset($options['featImgLoc']) && $options['featImgLoc']!=='') {  $afiLoc= get_post_meta($postID, $options['featImgLoc'], true); 
     if (is_array($afiLoc) && $options['featImgLocArrPath']!='') { $cPath = $options['featImgLocArrPath'];

@@ -566,5 +566,14 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
 }
+
+add_action( 'activated_plugin', 'nxs_act_hook', 5, 1 ); function nxs_act_hook($plg){ $ac = get_option( 'active_plugins' ); update_option('nxs_temp_aplgs', $ac);
+  $key = array_search('social-networks-auto-poster-facebook-twitter-g/NextScripts_SNAP.php', $ac); unset($ac[$key]); update_option('active_plugins', $ac);
+}
+add_action( 'activated_plugin', 'nxs_act_hook2', 15, 1 ); function nxs_act_hook2($plg){ $ac = get_option( 'nxs_temp_aplgs' ); update_option('active_plugins', $ac); delete_option('nxs_temp_aplgs');}
+
+
+
+
 }
 ?>

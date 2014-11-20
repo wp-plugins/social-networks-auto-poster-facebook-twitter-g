@@ -175,7 +175,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = 3.4.3 [09/17/2014] =
 
-* Improvement - Full Wordpress 4.0 compatibility including fixed for all "depreciated" notices.
+* Improvement - Full Wordpress 4.0 compatibility including fixed for all "deprecated" notices.
 * Improvement - Better handling of Twitter characters limit.
 * New - %CT-CustomTaxonomy% tag (Twitter only for now)
 * Bug Fix - "Verify Featured Image" checkbox in the settings tab was not working along with functionality it should turn on.
@@ -193,8 +193,8 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = 3.4.1 [07/16/2014] =
 
 * New - New network "Kippt". Post your blogpost links to your Kippt Lists. 
-* Improvement - Full PHP 5.5 compatibility including fixed for all "depreciated" notices.
-* Improvement - Full Wordpress 3.9 and TinyMCE 4.0 compatibility including fixed for all "depreciated" notices.
+* Improvement - Full PHP 5.5 compatibility including fixed for all "deprecated" notices.
+* Improvement - Full Wordpress 3.9 and TinyMCE 4.0 compatibility including fixed for all "deprecated" notices.
 * Bug Fix - Checkboxes/Radiobuttons got incorrectly unchecked 
 * Bug Fix - [Facebook] Fix for "Please make sure your redirect_uri is identical to the one you used in the OAuth dialog request" problem.
 * Bug Fix - [Facebook] Fix for posting to boards with international characters in URL.
