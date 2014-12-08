@@ -9,9 +9,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
      echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>"; $gGet = array();     
      if (!empty($_SERVER['QUERY_STRING'])) parse_str($_SERVER['QUERY_STRING'], $gGet); elseif (!empty($_SERVER['argv'][0])) parse_str($_SERVER['argv'][0], $gGet); 
        else { $gGet = $_GET; prr($_GET); unset($gGet['post_type']);} prr($gGet);  unset($gGet['code']); unset($gGet['state']); prr($gGet);
-     $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); 
-     $fbo = $ntOpts[$ii]; $wprg = array('sslverify'=>false); $response = wp_remote_get('https://graph.facebook.com/nextscripts', $wprg); 
-     if( is_wp_error( $response) && isset($response->errors['http_request_failed']) && stripos($response->errors['http_request_failed'][0], 'SSL')!==false ) {  prr($response->errors); $wprg['sslverify'] = false; }
+     $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); $fbo = $ntOpts[$ii]; $wprg = array('sslverify'=>false); 
      if (isset($fbo['fbPgID'])){ echo "-="; prr($fbo);// die();
       $tknURL = 'https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&state=nxs-fb-'.$ii.'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['fbAppSec'].'&code='.$at;       
       $response  = wp_remote_get($tknURL, $wprg); prr($tknURL);      
@@ -496,14 +494,16 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
       
     //## Actual Post
-    $ntToPost = new nxs_class_SNAP_FB(); $ret = $ntToPost->doPostToNT($options, $message);
+    $ntToPost = new nxs_class_SNAP_FB(); $ret = $ntToPost->doPostToNT($options, $message); 
     //## Process Results
     if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
         else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
-        $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
+        $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); 
+          if (!empty($ret['log']) && !empty($ret['log']['Warning'])) nxs_addToLogN('W', 'Warning', $logNT, $ret['log']['Warning'], $extInfo);
+        }
     }
     //## Return Result
     if (!empty($ret['isPosted']) && $ret['isPosted']=='1') return 200; else return print_r($ret, true);     

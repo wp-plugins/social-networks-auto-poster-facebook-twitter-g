@@ -11,7 +11,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }
-    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); $wprg = array('sslverify'=>false); 
+    function doPostToNT($options, $message){ $badOut = array('Warning'=>'', 'Error'=>''); $wprg = array('sslverify'=>false); 
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (empty($options['fbAppAuthToken']) && empty($options['atpKey']) && empty($options['uName'])) { $badOut['Error'] = 'No Auth Token Found/Not configured'; return $badOut; }
@@ -52,6 +52,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
         if (empty($options['appsecret_proof'])) $options['appsecret_proof'] = hash_hmac('sha256', $options['fbAppPageAuthToken'], $options['fbAppSec']); 
         $mssg = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'post', 'message'=>$msg);
         if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';
+        if ($fbPostType=='A' && !(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $message['url']))) { 
+            $badOut['Warning'] = 'Unvalid URL: '.$message['url'].'| Will be posting as text message'; $fbPostType='T'; 
+        }
         if ($fbPostType=='A' || $fbPostType=='') {
           if (($attachType=='A' || $attachType=='S')) { $attArr = array('name' => $message['urlTitle'], 'caption' => $message['siteName'], 'link' =>$message['url'], 'description' => $message['urlDescr']); 
           $mssg = array_merge($mssg, $attArr); ; }
@@ -97,8 +100,8 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       if (empty($res['id'])) return print_r($res, true);
       //## All Good!
       $pgID = (isset($res['post_id']) && strpos($res['post_id'],'_')!==false)?$res['post_id']:$res['id']; $pgg = explode('_', $pgID); $postID = $pgg[1];
-      $pgURL = 'http://www.facebook.com/'.$options['pgID'].'/posts/'.$postID;
-      return array('isPosted'=>'1', 'postID'=>$pgID, 'postURL'=>$pgURL, 'pDate'=>date('Y-m-d H:i:s'));      
+      $pgURL = 'http://www.facebook.com/'.$options['pgID'].'/posts/'.$postID; 
+      return array('isPosted'=>'1', 'postID'=>$pgID, 'postURL'=>$pgURL, 'pDate'=>date('Y-m-d H:i:s'), 'log'=>$badOut);      
     }
 }}
 ?>

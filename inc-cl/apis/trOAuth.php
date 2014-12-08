@@ -20,9 +20,9 @@ class TumblrOAuth {
   /* Set up the API root URL. */
   public $host = "http://api.tumblr.com/v2/";
   /* Set timeout default. */
-  public $timeout = 30;
+  public $timeout = 45;
   /* Set connect timeout. */
-  public $connecttimeout = 30; 
+  public $connecttimeout = 45; 
   /* Verify SSL Cert. */
   public $ssl_verifypeer = FALSE;
   /* Respons format. */

@@ -65,11 +65,11 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR { var $ntInfo = ar
     </div> <?php 
   }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($bo){ $po = array('nName'=>'', 'doTR'=>'1', 'trURL'=>'', 'trPgID'=>'', 'trConsKey'=>'', 'trInclTags'=>'1', 'trInclCats'=>'0', 'cImgURL'=>'R', 'trConsSec'=>'', 'trPostType'=>'T', 'trDefImg'=>'', 'trOAuthTokenSecret'=>'', 'trAccessTocken'=>'', 'trMsgFormat'=>'<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\'%IMG%\'/></p><p>%FULLTEXT%</p></blockquote>', 'trMsgTFormat'=>'New Post has been published on %SITENAME%' );
+  function showNewNTSettings($bo){ $po = array('nName'=>'', 'doTR'=>'1', 'trURL'=>'', 'trPgID'=>'', 'trConsKey'=>'', 'trInclTags'=>'1', 'fillSrcURL'=>'1', 'useOrDate'=>'1', 'trInclCats'=>'0', 'cImgURL'=>'R', 'trConsSec'=>'', 'trPostType'=>'T', 'trDefImg'=>'', 'trOAuthTokenSecret'=>'', 'trAccessTocken'=>'', 'trMsgFormat'=>'<p>New Post has been published on %URL%</p><blockquote><p><strong>%TITLE%</strong></p><p><img src=\'%IMG%\'/></p><p>%FULLTEXT%</p></blockquote>', 'trMsgTFormat'=>'New Post has been published on %SITENAME%' );
   $po['ntInfo']= array('lcode'=>'tr'); $this->showNTSettings($bo, $po, true);}
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapSetPgURL; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); 
-    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
+    if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = '';  if (!isset($options['fillSrcURL'])) $options['fillSrcURL'] = '0'; if (!isset($options['useOrDate'])) $options['useOrDate'] = '1';
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['trMsgTFormat'])) $options['trMsgTFormat'] = '';  ?>
     <div id="doTR<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="tr[<?php echo $ii; ?>][apDoTR]" value="1" id="apDoNewTR<?php echo $ii; ?>" /> <?php } ?>
@@ -134,9 +134,18 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR { var $ntInfo = ar
                <?php nxs_doShowHint("apTRMsgFrmt".$ii); ?>
                
               
-              <p style="margin-bottom: 20px;margin-top: 5px;"><input value="1"  id="trInclTags" type="checkbox" name="tr[<?php echo $ii; ?>][trInclTags]"  <?php if ((int)$options['trInclTags'] == 1) echo "checked"; ?> /> 
+              <p style="margin-bottom: 20px;margin-top: 5px;">                                 
+              
+              <input value="1" type="checkbox" name="tr[<?php echo $ii; ?>][fillSrcURL]"  <?php if ((int)$options['fillSrcURL'] == 1) echo "checked"; ?> /> 
+              <strong>Fill "Source URL"</strong> Will fill Tumblr's "Source URL" with post URL or defined URL.
+              
+              <br/><input value="1" type="checkbox" name="tr[<?php echo $ii; ?>][useOrDate]"  <?php if ((int)$options['useOrDate'] == 1) echo "checked"; ?> /> 
+              <strong>Keep Original Post Date</strong> Will post to Tumblr with original date of the post 
+              
+              <br/><input value="1" type="checkbox" name="tr[<?php echo $ii; ?>][trInclTags]"  <?php if ((int)$options['trInclTags'] == 1) echo "checked"; ?> /> 
               <strong>Post with tags.</strong> Tags from the blogpost will be auto posted to Tumblr                                
-            <br/><input value="1"  id="trInclCats" type="checkbox" name="tr[<?php echo $ii; ?>][trInclCats]"  <?php if ((int)$options['trInclCats'] == 1) echo "checked"; ?> /> 
+              
+              <br/><input value="1" type="checkbox" name="tr[<?php echo $ii; ?>][trInclCats]"  <?php if ((int)$options['trInclCats'] == 1) echo "checked"; ?> /> 
               <strong>Post categories as tags.</strong> Categories from the blogpost will be auto posted to Tumblr as tags                                
             </p>
               
@@ -192,6 +201,9 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR { var $ntInfo = ar
                 if (isset($pval['apTRMsgFrmt']))    $options[$ii]['trMsgFormat'] = trim($pval['apTRMsgFrmt']);                                
                 if (isset($pval['apTRMsgTFrmt']))   $options[$ii]['trMsgTFormat'] = trim($pval['apTRMsgTFrmt']);   
                 if (isset($pval['trInclTags']))     $options[$ii]['trInclTags'] = $pval['trInclTags']; else $options[$ii]['trInclTags'] = 0;
+                if (isset($pval['fillSrcURL']))     $options[$ii]['fillSrcURL'] = $pval['fillSrcURL']; else $options[$ii]['fillSrcURL'] = 0;               
+                if (isset($pval['useOrDate']))      $options[$ii]['useOrDate'] = $pval['useOrDate']; else $options[$ii]['useOrDate'] = 0;               
+                
                 if (isset($pval['trInclCats']))     $options[$ii]['trInclCats'] = $pval['trInclCats']; else $options[$ii]['trInclCats'] = 0;
                 if (isset($pval['apTRPostType']))   $options[$ii]['trPostType'] = trim($pval['apTRPostType']);   
                 if (isset($pval['cImgURL']))        $options[$ii]['cImgURL'] = trim($pval['cImgURL']);   
@@ -319,7 +331,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
       $tggs = array();   
       if ($options['trInclTags']=='1'){ $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(',', $tggs); }        
       if ($options['trInclCats']=='1'){ $t = wp_get_post_categories($postID); foreach($t as $c){ $cat = get_category($c); $tggs[] = $cat->name; }  $tags = implode(',', $tggs); }    
-      $postDate = ($post->post_date_gmt!='0000-00-00 00:00:00'?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
+      $postDate = (($options['useOrDate']=='1' && $post->post_date_gmt!='0000-00-00 00:00:00')?$post->post_date_gmt:gmdate("Y-m-d H:i:s", strtotime($post->post_date)))." GMT";  //## Adds date to Tumblr post. Thanks to Kenneth Lecky
     
       if($options['trPostType']=='V') { $vids = nsFindVidsInPost($post); if (count($vids)>0) $ytUrl = $vids[0]; if (trim($ytUrl)=='') $options['trPostType']='T'; }
       if($options['trPostType']=='U') { $aud = nsFindAudioInPost($post); if (count($aud)>0) $aUrl = $aud[0]; if (trim($aUrl)=='') $options['trPostType']='T'; }
@@ -327,9 +339,7 @@ if (!function_exists("nxs_doPublishToTR")) { //## Second Function to Post to TR
         if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  if (trim($imgURL)=='') $options['trPostType']='T'; 
       }
       //## MyURL - URLToGo code
-      if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
-      if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
-      $gOptions = $plgn_NS_SNAutoPoster->nxs_options; $addURLParams = trim($gOptions['addURLParams']);  if($addURLParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addURLParams;               
+      $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];       
     }   
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'').' |'.$options['pType'];        
     //## Post             

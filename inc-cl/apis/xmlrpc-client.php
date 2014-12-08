@@ -36,6 +36,8 @@
  * @version    1.7.4 7th September 2010
  * @author     Simon Willison
  * @link       http://scripts.incutio.com/xmlrpc/ Site/manual
+ * 
+ * Modified Nov 2014 by NextScripts.com to provide SSL compatiblity. 
  */
 
 
@@ -592,6 +594,7 @@ class NXS_XMLRPC_Client
     var $server;
     var $port;
     var $path;
+    var $scheme;
     var $useragent;
     var $response;
     var $message = false;
@@ -607,7 +610,8 @@ class NXS_XMLRPC_Client
             // Assume we have been given a URL instead
             $bits = parse_url($server);
             $this->server = $bits['host'];
-            $this->port = isset($bits['port']) ? $bits['port'] : 80;
+            $this->scheme = isset($bits['scheme']) ? $bits['scheme'] : 'http';
+            $this->port = isset($bits['port']) ? $bits['port'] : ($bits['scheme']=='https'?443:80);
             $this->path = isset($bits['path']) ? $bits['path'] : '/';
 
             // Make absolutely sure we have a path
@@ -731,7 +735,7 @@ class NXS_XMLRPC_Client
         //Since 04Aug2004 (0.1.3) - Need to include the port (duh...)
         //Since 06Oct2004 (0.1.4) - Need to include the colon!!!
         //        (I swear I've fixed this before... ESP in live... But anyhu...)
-        $curl=curl_init('http://' . $this->server . ':' . $this->port . $this->path);
+        $curl=curl_init($this->scheme.'://' . $this->server . ':' . $this->port . $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
         curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.44 Safari/537.36"); 

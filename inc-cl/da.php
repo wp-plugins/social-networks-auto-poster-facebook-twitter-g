@@ -125,7 +125,7 @@ if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
   }  
   //#### Show Post->Edit Meta Box Settings
   function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; $nt = 'da'; $ntU = 'DA'; 
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDA', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapDA', true));  if (is_array($pMeta) && !empty($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
         $doDA = $ntOpt['doDA'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   
         $isAvailDA =  $ntOpt['daUName']!='' && $ntOpt['daPass']!='';   $daMsgFormat = htmlentities($ntOpt['daTextFormat'], ENT_COMPAT, "UTF-8");      $daMsgTFormat = htmlentities($ntOpt['daTitleFormat'], ENT_COMPAT, "UTF-8");      
 

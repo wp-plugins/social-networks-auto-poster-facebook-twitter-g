@@ -128,8 +128,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
     } return $options;
   }  
   //#### Show Post->Edit Meta Box Settings
-  function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; $nt = 'pn'; $ntU = 'PN'; 
-     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true));  if (is_array($pMeta)) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
+  function showEdPostNTSettings($ntOpts, $post){ global $nxs_plurl; $post_id = $post->ID; $nt = 'pn'; $ntU = 'PN'; //prr($ntOpts);
+     foreach($ntOpts as $ii=>$ntOpt)  { $pMeta = maybe_unserialize(get_post_meta($post_id, 'snapPN', true)); if (is_array($pMeta) && !empty($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]); 
         if (empty($ntOpt['imgToUse'])) $ntOpt['imgToUse'] = ''; if (empty($ntOpt['urlToUse'])) $ntOpt['urlToUse'] = '';
         $doPN = $ntOpt['doPN'] && (is_array($pMeta) || $ntOpt['catSel']!='1');   $imgToUse = $ntOpt['imgToUse'];  $urlToUse = $ntOpt['urlToUse'];  
         $isAvailPN =  $ntOpt['pnUName']!='' && $ntOpt['pnPass']!=''; $pnMsgFormat = htmlentities($ntOpt['pnMsgFormat'], ENT_COMPAT, "UTF-8");        
@@ -143,7 +143,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
                     if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 'nxs_snap') ?>" />
                     <?php } ?>
 
-                    <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['postURL']) ) {                         
+                    <?php  if (is_array($pMeta) && !empty($pMeta[$ii]) && isset($pMeta[$ii]['postURL']) ) {                         
                         ?> <span id="pstdPN<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
           <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['postURL']; ?>" target="_blank"><?php $nType="Pinterest"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
