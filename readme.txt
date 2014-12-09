@@ -167,6 +167,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.4.6 [12/09/2014] =
+
+* Bug Fix - fixed corrupted file from 3.4.5
+
 = 3.4.5 [12/08/2014] =
 
 * New [Tumblr] - New option: Set post date.
