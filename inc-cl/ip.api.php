@@ -27,16 +27,14 @@ if (!class_exists("nxs_class_SNAP_IP")) { class nxs_class_SNAP_IP {
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ipMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['ipMsgTFormat'], $message);      
-      $link = urlencode($message['url']); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000)); $tags = $message['tags'];
-      
-      if (!(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $link))) return 'Error: Unvalid URL: '.$message['url'];
-      
-      $apicall = "https://www.instapaper.com/api/add?red=api&url=$link&title=$desc&selection=$ext"; prr($apicall);
+      $link = urlencode($message['url']); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000)); $tags = $message['tags'];      
+      if (!(preg_match("@^(https?|ftp)://[^\s/$.?#].[^\s]*$@iS", $message['url']))) return 'Error: Unvalid URL: '.$message['url'];            
+      $apicall = "https://www.instapaper.com/api/add?red=api&url=$link&title=$desc&selection=$ext";
       $hdrsArr = $this->nxs_getIPHeaders($dusername.':'.$pass); $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );//  prr($cnt);
       
       if(is_wp_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); 
         $cnt = wp_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );}
-      }      prr($cnt);
+      } 
       if(is_wp_error($cnt)) $ret = 'Something went wrong - '.print_r($cnt, true);  else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'bookmark_id')!==false) return array('postID'=>CutFromTo($cnt['body'],'"bookmark_id": ','}'), 'isPosted'=>1, 'postURL'=>'IP', 'pDate'=>date('Y-m-d H:i:s'));
           else { $ret = "Error: "; if ( is_array($cnt) && $cnt['response']['code']=='401') $ret .= " Incorrect Username/Password "; else $ret .= print_r($cnt, true);  $ret .= $cnt['response']['message']; }
