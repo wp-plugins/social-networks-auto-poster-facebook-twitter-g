@@ -27,7 +27,7 @@ if (!class_exists("nxs_class_SNAP_GP")) { class nxs_class_SNAP_GP {
       $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];                   
       $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {  $badOut['Error'] = print_r($loginError, true)." - BAD USER/PASS"; return $badOut; } 
       if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($message['url']);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL; 
-      if (is_array($lnk) && $imgURL=='' && $message['noImg']===true) $lnk['img'] = ''; // prr($lnk); prr($message);
+      if (is_array($lnk) && $imgURL=='' && $message['noImg']===true) $lnk['img'] = ''; // prr($lnk); prr($message); die();
       if ($gpPostType=='I' && (!empty($message['videoURL']))) { $lnk['video'] = $message['videoURL']; } 
       if (!empty($options['gpPageID']) && empty($options['gpCommID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
         elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, $options['gpPageID'], $options['gpCommID'], $options['gpCCat']); else $ret = doPostToGooglePlus2($msg, $lnk); 

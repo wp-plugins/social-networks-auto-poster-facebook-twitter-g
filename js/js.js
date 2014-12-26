@@ -42,15 +42,15 @@ function nxs_updtRdBtn(idd){
 
 //## Functions
 function nxs_doResetPostSettings(pid){    
-  jQuery.post(ajaxurl,{action: 'nxs_delPostSettings', pid: pid, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}, function(j){ location.reload(); }, "html")     
+  jQuery.post(ajaxurl,{action: 'nxs_delPostSettings', pid: pid, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}, function(j){  window.location = window.location.href.split("#")[0]; }, "html")     
 }
 function nxs_expSettings(){
   jQuery.generateFile({ filename: 'nx-snap-settings.txt', content: jQuery('input#nxsSsPageWPN_wpnonce').val(), script: 'admin-ajax.php'});
 }
 // AJAX Functions
 function nxs_getPNBoards(u,p,ii){ jQuery("#pnLoadingImg"+ii).show();
-  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getBoards', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}, function(j){ var options = '';
-    jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
+  jQuery.post(ajaxurl,{u:u,p:p,ii:ii, nxs_mqTest:"'", action: 'getBoards', id: 0, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}, function(j){ 
+    if (j.indexOf("option")<1) alert(j); else jQuery("select#apPNBoard"+ii).html(j); jQuery("#pnLoadingImg"+ii).hide();
   }, "html")
 }
 function getGPCats(u,p,ii,c){ jQuery("#gpLoadingImg"+ii).show();
@@ -138,7 +138,7 @@ function doShowFillBlockX(blIDFrm){ jQuery('.clNewNTSets').hide(); jQuery('#do'+
             
 function doDelAcct(nt, blID, blName){  var answer = confirm("Remove "+blName+" account?");
   if (answer){ var data = { action: 'nsDN', id: 0, nt: nt, id: blID, _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}; 
-    jQuery.post(ajaxurl, data, function(response) { location.reload();  });
+    jQuery.post(ajaxurl, data, function(response) {  window.location = window.location.href.split("#")[0];  });
   }           
 }      
 

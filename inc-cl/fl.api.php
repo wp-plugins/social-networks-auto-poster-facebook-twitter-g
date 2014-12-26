@@ -22,6 +22,10 @@ text
 */
 $nxs_snapAPINts[] = array('code'=>'FL', 'lcode'=>'fl', 'name'=>'Flickr');
 
+if (!function_exists('curl_file_create')) {
+    function curl_file_create($filename, $mimetype = '', $postname = '') { return "@$filename;filename=" . ($postname ? $postname: basename($filename)) . ($mimetype ? ";type=$mimetype" : '');}
+}
+
 if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
     
     var $ntCode = 'FL';
@@ -29,15 +33,16 @@ if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
     
     function createFile($imgURL) {
       $remImgURL = urldecode($imgURL); $urlParced = pathinfo($remImgURL); $remImgURLFilename = $urlParced['basename']; 
-      $imgData = wp_remote_get($remImgURL); if (is_wp_error($imgData)) { $badOut['Error'] = print_r($imgData, true)." - ERROR"; return $badOut; }          
-      $imgData = $imgData['body'];
+      $imgData = wp_remote_get($remImgURL, array('timeout' => 45)); if (is_wp_error($imgData)) { $badOut['Error'] = print_r($imgData, true)." - ERROR"; return $badOut; }          
+      $cType = $imgData['content-type']; $imgData = $imgData['body'];
       $tmp=array_search('uri', @array_flip(stream_get_meta_data($GLOBALS[mt_rand()]=tmpfile())));  
       if (!is_writable($tmp)) return "Your temporary folder or file (file - ".$tmp.") is not witable. Can't upload images to Flickr";
       rename($tmp, $tmp.='.png'); register_shutdown_function(create_function('', "unlink('{$tmp}');"));       
       file_put_contents($tmp, $imgData); if (!$tmp) return 'You must specify a path to a file'; if (!file_exists($tmp)) return 'File path specified does not exist';
       if (!is_readable($tmp)) return 'File path specified is not readable';      
       //  $data['name'] = basename($tmp);
-      return "@$tmp";
+      $cfile = curl_file_create($tmp,$cType,'nxstmp'); return $cfile;
+      //  return "@$tmp";
       
     }
     

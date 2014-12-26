@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
 Requires at least: 3.4
-Tested up to: 4.0.0
-Stable tag: 3.4.5
+Tested up to: 4.1.0
+Stable tag: 3.4.7
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -14,12 +14,13 @@ Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, L
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, XING etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
 
-**ALL NEW SNAP for Wordpress Version 4 is coming soon...**
+**ALL NEW SNAP for Wordpress Version 4 is coming soon... **
+More V4 info: http://www.nextscripts.com/tag/v4/
 
-* **Latest version 3.4** - New networks - XING, Kippt, compatibility with WP 3.9, 4.0 and PHP 5.5. 
+* **Latest version 3.4** - New networks - XING, Kippt, compatibility with WP 3.9, 4.0, 4.1 and PHP 5.5. 
 * *Version 3.3* - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
 * *Version 3.0* - Auto-repost existing posts, autoposting query, select what image to use for autopost, "Custom URLs" for posts, New networks: App.net, Reddit and deviantart.com
-* *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Commnets, goo.gl and YOURLS support, ability to spin message text
+* *Version 2.7* - YouTube Support, FriendFeed support, Auto-import comments from Facebook and Twitter as Wordpress Comments, goo.gl and YOURLS support, ability to spin message text
 * *Version 2.6* - Better Interface, DreamWidth support, Instapaper support, ability to auto-import comments from social networks
 * *Version 2.5* - Export/Import Plugin settings, direct links to the published posts from the "Edit" page, ability to assign categories to each Social Network. LiveJournal Support.  
 * *Version 2.4* - "Image" posts for Facebook and Twitter, bit.ly support, Plurk Support
@@ -144,7 +145,7 @@ Facebook, Twitter, Tumblr, LinkedIn and others have a very good and powerful fre
 
 Free plugin does not support Wordpress Multisite. There is a separate "Pro for WPMU" plugin available for Wordpress Multisite. Please see more here: <a href="http://www.nextscripts.com/social-networks-auto-poster-pro-for-wordpress-compare-editions//">Compare Editions</a>
 
-= Can I use it just for Twitter (Facebook, LinkedIn, Delicious) or it requres all networks to be set? =
+= Can I use it just for Twitter (Facebook, LinkedIn, Delicious) or it requires all networks to be set? =
 
 Sure you can use it for just one or two networks.
 
@@ -154,7 +155,7 @@ Yes, it can. Specify page IDs in the settings, and it will post to pages.
 
 = Why it's not so easy to setup? Why do I need all those apps? There are other plugins (Jetpack Publicize, Linksalpha Network Publisher, etc ) that could do it much easier. =
 
-There is a major difference between SNAP and other auto-posting plugins. Plugin MUST use an "App" to make posts. if plugin doesn't ask you to create your own app, it will use an app set by plugin author. Yes, it's easier to setup but it means that with every post you make you will promote that plugin author to all your friends and followers. All those posts will be marked as "Shared via Wordpress.com" or "posted by Linksalpha". SNAP gives you an ability to setup your own apps and promote only yourself. We have a very detailed and illustrated setup instructions and our support can help you with that. We beleive that it's well worth to spend your time by setting it up, instead of doing free advertisement for somebody else.
+There is a major difference between SNAP and other auto-posting plugins. Plugin MUST use an "App" to make posts. if plugin doesn't ask you to create your own app, it will use an app set by plugin author. Yes, it's easier to setup but it means that with every post you make you will promote that plugin author to all your friends and followers. All those posts will be marked as "Shared via Wordpress.com" or "posted by Linksalpha". SNAP gives you an ability to setup your own apps and promote only yourself. We have a very detailed and illustrated setup instructions and our support can help you with that. We believe that it's well worth to spend your time by setting it up, instead of doing free advertisement for somebody else.
 
 Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked questions</a>
 
@@ -166,6 +167,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.7 [12/26/2014] =
+
+* Improvement - Wodrpress 4.1 Compatibility
+* Bug Fix - Flickr - "Invalid signature" problem.
+* Bug Fix - Sett - fix for "You need to provide a name" error.
+* Bug Fix - Some minor issues.
 
 = 3.4.6 [12/09/2014] =
 

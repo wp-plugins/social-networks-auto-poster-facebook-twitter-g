@@ -1045,7 +1045,7 @@ function nxs_rePoster(){ global $nxs_snapAvNts,$plgn_NS_SNAutoPoster, $nxs_rpst_
   } if ($hasChanged) { update_option($plgn_NS_SNAutoPoster->dbOptionsName, $options); $plgn_NS_SNAutoPoster->nxs_options = $options; }
 }
 
-function nxs_chckBrwsr() { $isOK = false; 
+function nxs_chckBrwsr() { $isOK = false; if (empty($_SERVER['HTTP_USER_AGENT'])) return true;
   if (preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;    if (preg_match('/Internet Explorer/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
   if (preg_match('/Firefox/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true; if (preg_match('/Opera/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
   if (preg_match('/Chrome/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;  if (preg_match('/Safari/i',$_SERVER['HTTP_USER_AGENT'])) $isOK = true;
@@ -1109,6 +1109,9 @@ function nxs_do_this_hourly() {  $options = get_option('NS_SNAutoPoster');
     }      
   } 
 }
+
+if (!function_exists('nxsClnCookies')){ function nxsClnCookies($ck) { $ckOut = array(); $t =time(); foreach ($ck as $c) { if ($c->value!='deleted' && $c->expires>$t) $ckOut[] = $c; } return $ckOut; }}
+
 //#### V3 new Query Poster
 function nxs_addToPostingQuery($postID){ global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
   $quPosts = maybe_unserialize(get_option('NSX_PostsQuery')); if (!is_array($quPosts)) $quPosts = array();  
