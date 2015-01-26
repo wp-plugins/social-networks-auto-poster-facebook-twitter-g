@@ -70,7 +70,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR { var $ntInfo = ar
   //#### Show Unit  Settings
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl,$nxs_snapSetPgURL; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); 
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = '';  if (!isset($options['fillSrcURL'])) $options['fillSrcURL'] = '0'; if (!isset($options['useOrDate'])) $options['useOrDate'] = '1';
-    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['trMsgTFormat'])) $options['trMsgTFormat'] = '';  ?>
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['trMsgTFormat'])) $options['trMsgTFormat'] = ''; //prr($options); ?>
     <div id="doTR<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" style="background-image: url(<?php echo $nxs_plurl; ?>img/tr-bg.png);  background-position:90% 10%;">   <input type="hidden" name="apDoSTR<?php echo $ii; ?>" value="0" id="apDoSTR<?php echo $ii; ?>" />                                     
     <?php if ($isNew) { ?> <input type="hidden" name="tr[<?php echo $ii; ?>][apDoTR]" value="1" id="apDoNewTR<?php echo $ii; ?>" /> <?php } ?>
     

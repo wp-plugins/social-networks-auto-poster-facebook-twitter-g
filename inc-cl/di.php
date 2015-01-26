@@ -198,15 +198,15 @@ if (!function_exists("nxs_doPublishToDI")) { //## Second Function to Post to DI
          nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'); return;
       }
     }     
-    if ($postID=='0') { echo "Testing ... <br/><br/>"; $link = home_url();  $options['diMsgFormat'] = 'Test Message from '.$link;  $options['diMsgTFormat'] = 'Test Link from '.$link; } else {  
-      $post = get_post($postID); if(!$post) return; $link = get_permalink($postID);
+    if (empty($postID)) { echo "Testing ... <br/><br/>"; $urlToGo = home_url();  $options['diMsgFormat'] = 'Test Message from '.$urlToGo;  $options['diMsgTFormat'] = 'Test Link from '.$urlToGo; } else {  
+      $post = get_post($postID); $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];       
       $options['diMsgFormat'] = nxs_decodeEntitiesFull(nsFormatMessage( $options['diMsgFormat'], $postID, $addParams)); $options['diMsgTFormat'] = nxs_decodeEntitiesFull(nsFormatMessage($options['diMsgTFormat'], $postID, $addParams));       
       nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 
     } 
     $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?$post->post_title:'');
     //## Create and Format message
     $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = (implode(',',$tggs)); $tags = str_replace(' ','+',$tags);    
-    $message = array('url'=>$link, 'surl'=>$link, 'siteName'=>$blogTitle, 'tags'=>$tags);    
+    $message = array('url'=>$urlToGo, 'surl'=>$urlToGo, 'siteName'=>$blogTitle, 'tags'=>$tags);    
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_DI(); $ret = $ntToPost->doPostToNT($options, $message);
     //## Process Results

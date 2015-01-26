@@ -356,6 +356,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
+           
     //## Process Results
     if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 

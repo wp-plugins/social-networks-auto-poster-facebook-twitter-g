@@ -562,8 +562,9 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Debug/Report Settings', 'nxs_snap') ?> </span> <br/>
  
              <div class="itemDiv">
-             <b><?php _e('How many log records keep?', 'nxs_snap') ?></b> <input name="numLogRows" style="width: 200px;" value="<?php if (isset($options['numLogRows'])) _e(apply_filters('format_to_edit',$options['numLogRows']), 'nxs_snap'); else echo "150"; ?>" /> 
+             <b><?php _e('How many log records show?', 'nxs_snap') ?></b> <input name="numLogRows" style="width: 200px;" value="<?php if (isset($options['numLogRows'])) _e(apply_filters('format_to_edit',$options['numLogRows']), 'nxs_snap'); else echo "250"; ?>" /> 
               </div>
+              <div class="itemDiv"><input value="1" name="dbg[cron]"  type="checkbox" <?php if (isset($options['dbg']['cron']) && (int)$options['dbg']['cron'] == 1) echo "checked"; ?> /> <?php _e('Log Cron Events', 'nxs_snap') ?> - <span style="font-size: 11px; margin-left: 1px;"><?php _e('All WP Cron requests will be logged. Please check this if you have any issues with scheduling, delayed postings, reposter, etc..', 'nxs_snap') ?> </span></div>
               
               <div class="itemDiv">
                <strong>Log/History Info Level</strong><select name="extDebug" id="extDebug">
@@ -571,6 +572,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                 <option <?php if (empty($options['extDebug'])) echo "selected" ?> value="0">Normal</option>              
                 <option <?php if (!empty($options['extDebug']) && $options['extDebug']=='1') echo "selected" ?> value ="1">Extended/Debug</option>
               </select> <br/>
+              
               <?php _e('Minimal', 'nxs_snap') ?> - <span style="font-size: 11px; margin-left: 1px;"><?php _e('Only important action info will be added to the log. "Debug", "Skipped", informational info will be ignored.', 'nxs_snap') ?> </span> <br/>
               <?php _e('Normal', 'nxs_snap') ?> - <span style="font-size: 11px; margin-left: 1px;"><?php _e('All info except extended debug queryies will be added to the log.', 'nxs_snap') ?> </span> <br/>
               <?php _e('Extended/Debug', 'nxs_snap') ?> - <span style="font-size: 11px; margin-left: 1px;"><?php _e('Advanced Setting. Extended debug Info will be added to the log.', 'nxs_snap') ?> </span> <br/>

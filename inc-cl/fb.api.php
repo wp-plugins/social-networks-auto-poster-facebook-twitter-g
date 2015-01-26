@@ -71,9 +71,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
               }
             }
           }        
-        } //$page_id = '1444414072467583';
-        //## Actual Post
-        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; // prr($destURL); 
+        } 
+        //## Actual Post                
+        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; // prr($destURL); //prr($args); //prr($mssg);
         $response = wp_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'sslverify'=>false, 'redirection' => 0, 'body' => $mssg)); 
       }
       //## Autopost.to

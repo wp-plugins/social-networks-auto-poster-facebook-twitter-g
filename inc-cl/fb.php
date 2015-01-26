@@ -24,10 +24,11 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Facebook User."; prr($res); die();} else {
         $user = json_decode($res['body'], true); if (empty($user)) {echo "Can't get Facebook User. JSON Error. "; prr($res); die();} else {
             if (!empty($user['id'])) {        echo "-= Got user: "; prr($user);
+            
+            if (stripos($fbo['fbURL'], '/groups/')!==false) { $fbo['destType'] = 'gr'; $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; } else {
+            
               $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-<br/>";          
-              if ( !is_numeric($page_id) && stripos($fbo['fbURL'], '/groups/')!=false) { //$fbPgIDR = wp_remote_get('nxs.php?g='.$fbo['fbURL']); // TODO - how to replace
-                $fbPgIDR = trim($fbPgIDR['body']); $page_id = $fbPgIDR!=''?$fbPgIDR:$page_id;
-              } 
+              
               $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  $fbo['destType'] = '';
               
               echo "-= Getting List of Pages =-<br/>";  
@@ -48,7 +49,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
                     if (!empty($token['access_token'])) { $fbo['fbAppPageAuthToken'] = $token['access_token']; } else { echo "Can't get Page Token. NO TOKEN RETURNED. Are you sure that user you are trying to authorize is an admin of the page? This message means user was authorized as profile, but page refused to return authorization token. This usually happens when user has <b>no rights</b> to post to that page. "; prr($res); die(); }
                   } 
               }
-              
+            }
             } else {echo "Can't get User. NO USER RETURNED. "; prr($res); die();}
         }
       }
@@ -478,7 +479,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       $msg = str_ireplace('&#039;',"'", $msg); $msg = str_ireplace('&039;',"'", $msg); $msg = str_ireplace('&#39;',"'", $msg); $msg = str_ireplace('<3','&lt;3', $msg); $msg = str_ireplace('<(','&lt;(', $msg);  //## FB Smiles FIX 2.            
       
       if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
-          if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = nsGetYTThumb($vids[0]); }
+          if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/e/'.$vids[0]; $imgURL = nsGetYTThumb($vids[0]); }
           if (strlen($vids[0])==8) { $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
             $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);
             if (!is_wp_error($json)) { $json = $json['body']; $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           

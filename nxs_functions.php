@@ -507,8 +507,8 @@ if (!function_exists('nxs_addToLogN')){ function nxs_addToLogN ($type, $action, 
   $nxDB = $wpdb->insert( $wpdb->prefix . "nxs_log", $logItem );  $lid = $wpdb->insert_id; $lid = $lid-$numLogRows;
   if ($lid>0) $wpdb->query( 'DELETE FROM '.$wpdb->prefix . 'nxs_log WHERE id<'.$lid );    
   
-  if ($type=='E') { $log = maybe_unserialize(get_option('NSX_LogToEmail')); if (!is_array($log)) $log = array(); $log[] = $logItem;
-         delete_option("NSX_LogToEmail"); add_option("NSX_LogToEmail", $log);
+  if ($type=='E' && (isset($options['errNotifEmailCB']) && (int)$options['errNotifEmailCB'] == 1 && isset($options['errNotifEmail']) && trim($options['errNotifEmail']) != '')) { 
+    $log = maybe_unserialize(get_option('NSX_LogToEmail')); if (!is_array($log)) $log = array(); $log[] = $logItem; delete_option("NSX_LogToEmail"); add_option("NSX_LogToEmail", $log, '', 'no');
   }
   
   // $nxsDBLog = get_option('NS_SNAutoPosterLog'); $nxsDBLog = maybe_unserialize($nxsDBLog); if(!is_array($nxsDBLog)) $nxsDBLog = array(); $nxsDBLog[] = $logItem; $nxsDBLog = array_slice($nxsDBLog, -150);  
@@ -684,41 +684,41 @@ if (!function_exists('nxs_doProcessTags')){ function nxs_doProcessTags($tags){ $
   return $tags;
 }}            
 if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $message, $addURLParams=''){ global $nxs_urlLen; $msg = nxs_doSpin($format);// prr($msg); prr($message);// Make "message default"
-  if (preg_match('%URL%', $msg)) { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
-  if (preg_match('%SURL%', $msg)) { 
+  if (preg_match('/%URL%/', $msg)) { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
+  if (preg_match('/%SURL%/', $msg)) { 
     if (isset($message['surl']) && $message['surl']!='') $url = $message['surl']; else { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; $url = nxs_mkShortURL($url); } 
     $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);
   }
-  if (preg_match('%IMG%', $msg)) { if (isset($message['imgURL']) && is_array($message['imgURL'])) { $imgURL = trim($message['imgURL']['large']); if ($imgURL=='') $imgURL = trim($message['imgURL']['medium']);   
+  if (preg_match('/%IMG%/', $msg)) { if (isset($message['imgURL']) && is_array($message['imgURL'])) { $imgURL = trim($message['imgURL']['large']); if ($imgURL=='') $imgURL = trim($message['imgURL']['medium']);   
       if ($imgURL=='') $imgURL = trim($message['imgURL']['original']); if ($imgURL=='') $imgURL = trim($message['imgURL']['thumb']);
     } elseif (!empty($message['imgURL'])) $imgURL = $message['imgURL']; else $imgURL = '';    $msg = str_ireplace("%IMG%", $imgURL, $msg); 
   }
-  if (preg_match('%IMGLARGE%', $msg)) $msg = str_ireplace("%IMG%", trim($message['imgURL']['large'], $msg));  
-  if (preg_match('%IMGMEDIUM%', $msg)) $msg = str_ireplace("%IMGMEDIUM%", trim($message['imgURL']['medium'], $msg));  
-  if (preg_match('%IMGTHUMB%', $msg)) $msg = str_ireplace("%IMGTHUMB%", trim($message['imgURL']['thumb'], $msg));  
-  if (preg_match('%IMGORIGINAL%', $msg)) $msg = str_ireplace("%IMGORIGINAL%", trim($message['imgURL']['original'], $msg));  
+  if (preg_match('/%IMGLARGE%/', $msg)) $msg = str_ireplace("%IMG%", trim($message['imgURL']['large'], $msg));  
+  if (preg_match('/%IMGMEDIUM%/', $msg)) $msg = str_ireplace("%IMGMEDIUM%", trim($message['imgURL']['medium'], $msg));  
+  if (preg_match('/%IMGTHUMB%/', $msg)) $msg = str_ireplace("%IMGTHUMB%", trim($message['imgURL']['thumb'], $msg));  
+  if (preg_match('/%IMGORIGINAL%/', $msg)) $msg = str_ireplace("%IMGORIGINAL%", trim($message['imgURL']['original'], $msg));  
   
-  if (preg_match('%ORID%', $msg)) $msg = str_ireplace("%ORID%", $message['orID'], $msg);  
-  if (preg_match('%TITLE%', $msg)) $msg = str_ireplace("%TITLE%", $message['title'], $msg);  
-  if (preg_match('%STITLE%', $msg)) { $title = substr($message['title'], 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
-  if (preg_match('%AUTHORNAME%', $msg)) $msg = str_ireplace("%AUTHORNAME%", $message['authorName'], $msg);
-  if (preg_match('%SITENAME%', $msg)) $msg = str_ireplace("%SITENAME%", $message['siteName'], $msg); 
+  if (preg_match('/%ORID%/', $msg)) $msg = str_ireplace("%ORID%", $message['orID'], $msg);  
+  if (preg_match('/%TITLE%/', $msg)) $msg = str_ireplace("%TITLE%", $message['title'], $msg);  
+  if (preg_match('/%STITLE%/', $msg)) { $title = substr($message['title'], 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
+  if (preg_match('/%AUTHORNAME%/', $msg)) $msg = str_ireplace("%AUTHORNAME%", $message['authorName'], $msg);
+  if (preg_match('/%SITENAME%/', $msg)) $msg = str_ireplace("%SITENAME%", $message['siteName'], $msg); 
   
-  if (preg_match('%ANNOUNCE%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%ANNOUNCE%", $sText, $msg); }
-  if (preg_match('%EXCERPT%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%EXCERPT%", $sText, $msg); }
-  if (preg_match('%RAWEXCERPT%', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%RAWEXCERPT%", $sText, $msg); }
+  if (preg_match('/%ANNOUNCE%/', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%ANNOUNCE%", $sText, $msg); }
+  if (preg_match('/%EXCERPT%/', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%EXCERPT%", $sText, $msg); }
+  if (preg_match('/%RAWEXCERPT%/', $msg)) { $sText =  trim($message['announce'])!=''?$message['announce']:nsTrnc($message['description'], 300, " ", "...");  $msg = str_ireplace("%RAWEXCERPT%", $sText, $msg); }
   
-  if (preg_match('%TEXT%', $msg)) $msg = str_ireplace("%TEXT%", $message['description'], $msg);     
-  if (preg_match('%FULLTEXT%', $msg)) $msg = str_ireplace("%FULLTEXT%", $message['description'], $msg);     
-  if (preg_match('%RAWTEXT%', $msg)) $msg = str_ireplace("%RAWTEXT%", $message['description'], $msg);     
+  if (preg_match('/%TEXT%/', $msg)) $msg = str_ireplace("%TEXT%", $message['description'], $msg);     
+  if (preg_match('/%FULLTEXT%/', $msg)) $msg = str_ireplace("%FULLTEXT%", $message['description'], $msg);     
+  if (preg_match('/%RAWTEXT%/', $msg)) $msg = str_ireplace("%RAWTEXT%", $message['description'], $msg);     
       
   
-  if (preg_match('%TAGS%', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%TAGS%", $tags['tags'], $msg); }
-  if (preg_match('%HTAGS%', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%HTAGS%", $tags['htags'], $msg); }
-  if (preg_match('%CATS%', $msg)) { $tags = nxs_doProcessTags($message['cats']);  $msg = str_ireplace("%CATS%", $tags['cats'], $msg); }
-  if (preg_match('%HCATS%', $msg)) { $tags = nxs_doProcessTags($message['hcats']);  $msg = str_ireplace("%HCATS%", $tags['hcats'], $msg); }
+  if (preg_match('/%TAGS%/', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%TAGS%", $tags['tags'], $msg); }
+  if (preg_match('/%HTAGS%/', $msg)) { $tags = nxs_doProcessTags($message['tags']);  $msg = str_ireplace("%HTAGS%", $tags['htags'], $msg); }
+  if (preg_match('/%CATS%/', $msg)) { $tags = nxs_doProcessTags($message['cats']);  $msg = str_ireplace("%CATS%", $tags['cats'], $msg); }
+  if (preg_match('/%HCATS%/', $msg)) { $tags = nxs_doProcessTags($message['hcats']);  $msg = str_ireplace("%HCATS%", $tags['hcats'], $msg); }
     
-  if (preg_match('%CF-[a-zA-Z0-9]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+  if (preg_match('/%CF-[a-zA-Z0-9]%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
         if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem = $message[$mGr]; $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
     } $msg = $mout; 
@@ -889,7 +889,7 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
      <?php _e('Older then', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOLDays]" style="width: 35px;" value="<?php  echo isset($options['rpstOLDays'])?$options['rpstOLDays']:'30'; ?>" />&nbsp;<?php _e('Days', 'nxs_snap'); ?>          
      <?php _e('and Newer then', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstNWDays]" style="width: 35px;" value="<?php  echo isset($options['rpstNWDays'])?$options['rpstNWDays']:'365'; ?>" />&nbsp;<?php _e('Days', 'nxs_snap'); ?>     
      </div>
-     <div id="riS<?php echo $nt; ?><?php echo $ii; ?>xd"  style="padding-left: 0px;<? if (isset($options['rpstType']) && $options['rpstType']=='1') echo "display:none;"; ?>"><b><?php _e('When finished', 'nxs_snap'); ?>:</b>       
+     <div id="riS<?php echo $nt; ?><?php echo $ii; ?>xd"  style="padding-left: 0px;<?php if (isset($options['rpstType']) && $options['rpstType']=='1') echo "display:none;"; ?>"><b><?php _e('When finished', 'nxs_snap'); ?>:</b>       
          <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="O" <?php if (empty($options['rpstStop']) || (isset($options['rpstStop']) && trim($options['rpstStop'])=='O')) echo "checked"; ?>  /> <?php _e('Auto Turn Reposting Off', 'nxs_snap') ?>
          &nbsp;&nbsp;&nbsp;
          <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="W" <?php if (isset($options['rpstStop']) && trim($options['rpstStop'])=='W') echo 'checked="cheXcked"'; ?> /> <?php _e('Wait for new posts', 'nxs_snap') ?>
@@ -1057,7 +1057,7 @@ function nxs_chckBrwsr() { $isOK = false; if (empty($_SERVER['HTTP_USER_AGENT'])
 if (!function_exists("nxs_psCron")) { function nxs_psCron() { if (!is_home() && !is_front_page()) return; if (nxs_chckBrwsr()==false) return;    
    //if (stripos($_SERVER["REQUEST_URI"], 'admin-ajax.php')!==false || stripos($_SERVER["REQUEST_URI"], 'cf_action')!==false || stripos($_SERVER["REQUEST_URI"], 'wp-cron.php')!==false) return;   
    $ltc = get_option('NSX_LastTChecked'); if (empty($ltc)) { add_option("NSX_LastTChecked", time()); return; } if (time()<$ltc+300) return;  $sh =_get_cron_array();  $itmsToPush = array();   
-   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
+   if (is_array($sh)) foreach ($sh as $evTime => $evDataX) if (is_array($evDataX)) foreach ($evDataX as $evFunc=>$evData) if (strpos($evFunc, 'ns_doPublishTo')!==false) { $chkTime = rand(360, 600); //$chkTime = rand(5, 7);
      if ($evTime>'1359495839' && $evTime<time()-$chkTime) $itmsToPush[] = array('time'=>$evTime);
    } if (count($itmsToPush)<1) return;  
    /*

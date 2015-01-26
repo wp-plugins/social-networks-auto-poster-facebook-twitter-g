@@ -147,7 +147,7 @@ if (!class_exists("nxs_snapClassFP")) { class nxs_snapClassFP { var $ntInfo = ar
                     
                 </td></tr>                
                 
-                <?php if (!$isAvail) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your <? echo $this->ntInfo['name']; ?> Account to AutoPost to <? echo $this->ntInfo['name']; ?></b></td></tr>
+                <?php if (!$isAvail) { ?><tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;"></th> <td><b>Setup your <?php echo $this->ntInfo['name']; ?> Account to AutoPost to <?php echo $this->ntInfo['name']; ?></b></td></tr>
                 <?php }  else { if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { $ntOpt['postTime'] = get_post_time('U', false, $post_id); nxs_doSMAS5($nt, $ii, $ntOpt); } ?>
                 
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 

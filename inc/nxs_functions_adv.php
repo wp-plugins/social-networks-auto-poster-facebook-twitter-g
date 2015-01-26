@@ -7,57 +7,57 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   $msg = str_replace('%TEXT%','%EXCERPT%',$msg); $msg = str_replace('%RAWEXTEXT%','%RAWEXCERPT%',$msg);
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
   $msg = nxs_doSpin($msg);
-  if (preg_match('%URL%', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
-  if (preg_match('%MYURL%', $msg)) { $url =  get_post_meta($postID, 'snap_MYURL', true); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%MYURL%", $url, $msg);}
-  if (preg_match('%SURL%', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; 
+  if (preg_match('/%URL%/', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
+  if (preg_match('/%MYURL%/', $msg)) { $url =  get_post_meta($postID, 'snap_MYURL', true); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%MYURL%", $url, $msg);}
+  if (preg_match('/%SURL%/', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; 
     $url = nxs_mkShortURL($url, $postID); $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);
   }
-  if (preg_match('%ORID%', $msg)) { $msg = str_ireplace("%ORID%", $postID, $msg); } 
-  if (preg_match('%IMG%', $msg)) { $imgURL = nxs_getPostImage($postID); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
-  if (preg_match('%TITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);  $msg = str_ireplace("%TITLE%", $title, $msg); }                    
-  if (preg_match('%FULLTITLE%', $msg)) { $title = apply_filters('the_title', nxs_doQTrans($post->post_title, $lng));  $msg = str_ireplace("%FULLTITLE%", $title, $msg); }                    
-  if (preg_match('%STITLE%', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
-  if (preg_match('%AUTHORNAME%', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
-  if (preg_match('%ANNOUNCE%', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng);     
+  if (preg_match('/%ORID%/', $msg)) { $msg = str_ireplace("%ORID%", $postID, $msg); } 
+  if (preg_match('/%IMG%/', $msg)) { $imgURL = nxs_getPostImage($postID); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
+  if (preg_match('/%TITLE%/', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);  $msg = str_ireplace("%TITLE%", $title, $msg); }                    
+  if (preg_match('/%FULLTITLE%/', $msg)) { $title = apply_filters('the_title', nxs_doQTrans($post->post_title, $lng));  $msg = str_ireplace("%FULLTITLE%", $title, $msg); }                    
+  if (preg_match('/%STITLE%/', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
+  if (preg_match('/%AUTHORNAME%/', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
+  if (preg_match('/%ANNOUNCE%/', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng);     
     $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
     if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[0]; }    
       else $postContent = nsTrnc($postContent, $options['anounTagLimit']);  $msg = str_ireplace("%ANNOUNCE%", $postContent, $msg);
   }  
-  if (preg_match('%EXCERPT%', $msg)) {      
+  if (preg_match('/%EXCERPT%/', $msg)) {      
     if ($post->post_excerpt!="") $excerpt = strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)))); 
       else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)))), 300, " ", "..."); 
     $msg = str_ireplace("%EXCERPT%", $excerpt, $msg);
   }  
-  if (preg_match('%RAWEXCERPT%', $msg)) {      
+  if (preg_match('/%RAWEXCERPT%/', $msg)) {      
     if ($post->post_excerpt!="") $excerpt = strip_tags(strip_shortcodes(nxs_doQTrans($post->post_excerpt, $lng))); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(nxs_doQTrans($post->post_content, $lng))), 300, " ", "..."); 
     $msg = str_ireplace("%RAWEXCERPT%", $excerpt, $msg);
   }
-  if (preg_match('%RAWEXCERPTHTML%', $msg)) { 
+  if (preg_match('/%RAWEXCERPTHTML%/', $msg)) { 
       if ($post->post_excerpt!="") $excerpt = strip_shortcodes(nxs_doQTrans($post->post_excerpt, $lng)); else $excerpt= nsTrnc(strip_tags(strip_shortcodes(nxs_doQTrans($post->post_content, $lng))), 300, " ", "..."); 
        $msg = str_ireplace("%RAWEXCERPTHTML%", $excerpt, $msg);
   }
-  if (preg_match('%TAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
+  if (preg_match('/%TAGS%/', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
     $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = implode(', ',$tggs); $msg = str_ireplace("%TAGS%", $tags, $msg);
   }
-  if (preg_match('%CATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $cats[] = str_ireplace('&','&amp;',$cat->name); } 
+  if (preg_match('/%CATS%/', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  foreach($t as $c){ $cat = get_category($c); $cats[] = str_ireplace('&','&amp;',$cat->name); } 
           $ctts = implode(', ',$cats); $msg = str_ireplace("%CATS%", $ctts, $msg);
   }
-  if (preg_match('%HCATS%', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
+  if (preg_match('/%HCATS%/', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
     foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ',$htS, str_replace('  ', ' ', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
     $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
   }  
-  if (preg_match('%HTAGS%', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
+  if (preg_match('/%HTAGS%/', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
     $tggs = array(); foreach ($t as $tagA){$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(nxs_ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));} 
     $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
   } 
-  if (preg_match('%CF-[a-zA-Z0-9_]%', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+  if (preg_match('/%CF-[a-zA-Z0-9_]%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
         if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem =  get_post_meta($postID, $mGr, true);  $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
     } $msg = $mout; 
   }  
-  if (preg_match('%FULLTEXT%', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
-  if (preg_match('%RAWTEXT%', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng); $msg = str_ireplace("%RAWTEXT%", $postContent, $msg);}
-  if (preg_match('%SITENAME%', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
+  if (preg_match('/%FULLTEXT%/', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
+  if (preg_match('/%RAWTEXT%/', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng); $msg = str_ireplace("%RAWTEXT%", $postContent, $msg);}
+  if (preg_match('/%SITENAME%/', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
   if (isset($ShownAds)) $ShownAds = $ShownAdsL; // FIX for the quick-adsense plugin
   return trim($msg);
 }}
