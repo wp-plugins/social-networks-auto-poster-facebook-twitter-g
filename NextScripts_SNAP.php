@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.8
+Version: 3.4.9
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2015  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.8' );  
+define( 'NextScripts_SNAP_Version' , '3.4.9' );  
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -196,7 +196,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
   if ($post->post_type == 'post' || ($options['useForPages']=='1' && $post->post_type == 'page') || (in_array($post->post_type, $nxsCPTSeld))) { 
     if ($isPost && $options['skipSecurity']!='1' && !current_user_can("make_snap_posts") && !current_user_can("manage_options")) { nxs_addToLogN('I', 'Skipped', '', 'Current user can\'t autopost - Post ID:('.$postID.')' ); return; }
     $postUser = $postArr->post_author; 
-    if ($options['skipSecurity']!='1' && !user_can( $postUser, "make_snap_posts" ) && !user_can( $postUser, "manage_options")){ nxs_addToLogN('I', 'Skipped', '', 'User ID '.$postUser.' can\'t autopost (see <a target="_blank" href="http://www.nextscripts.com/support-faq/#a17">FAQ #1.7</a>)  - Post ID:('.$postID.')' ); return; } 
+    if ($options['skipSecurity']!='1' && !user_can( $postUser, "make_snap_posts" ) && !user_can( $postUser, "manage_options")){ nxs_addToLogN('I', 'Skipped', '', '', 'User ID '.$postUser.' can\'t autopost (see <a target="_blank" href="http://www.nextscripts.com/support-faq/#a17">FAQ #1.7</a>)  - Post ID:('.$postID.')' ); return; } 
     if ($isPost) $plgn_NS_SNAutoPoster->NS_SNAP_SavePostMetaTags($postID); 
     if (function_exists('nxs_doSMAS2')) { nxs_doSMAS2($postArr, $type, $aj); return; } else {
     $options = $plgn_NS_SNAutoPoster->nxs_options;  $ltype=strtolower($type);

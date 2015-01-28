@@ -718,11 +718,14 @@ if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $mes
   if (preg_match('/%CATS%/', $msg)) { $tags = nxs_doProcessTags($message['cats']);  $msg = str_ireplace("%CATS%", $tags['cats'], $msg); }
   if (preg_match('/%HCATS%/', $msg)) { $tags = nxs_doProcessTags($message['hcats']);  $msg = str_ireplace("%HCATS%", $tags['hcats'], $msg); }
     
-  if (preg_match('/%CF-[a-zA-Z0-9]%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+  if (preg_match('/%+CF-[a-zA-Z0-9-_]+%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
         if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem = $message[$mGr]; $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
     } $msg = $mout; 
   }  
+  
+  
+  
   return trim($msg);
 }}
 //## Common Dialogs

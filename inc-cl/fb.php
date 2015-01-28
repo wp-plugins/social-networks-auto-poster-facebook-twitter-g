@@ -6,7 +6,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
   //#### Show Common Settings  
   function showGenNTSettings($ntOpts){ global $nxs_snapSetPgURL, $nxs_plurl; $ntInfo = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook', 'defNName'=>'dlUName', 'tstReq' => true);
     if ( isset($_GET['code']) && $_GET['code']!='' && isset($_GET['state']) && substr($_GET['state'], 0, 7) == 'nxs-fb-'){  $at = $_GET['code'];  $ii = str_replace('nxs-fb-','',$_GET['state']);
-     echo "-= This is normal technical authorization info that will dissapear (Unless you get some errors) =- <br/><br/><br/>"; $gGet = array();     
+     echo '-= This is normal technical authorization info that will dissapear. (Unless you get some errors. If you do get errors please check them at the <a target="_blank" href="http://www.nextscripts.com/support-faq/">FAQ Page</a>) =- <br/><br/><br/>'; $gGet = array();     
      if (!empty($_SERVER['QUERY_STRING'])) parse_str($_SERVER['QUERY_STRING'], $gGet); elseif (!empty($_SERVER['argv'][0])) parse_str($_SERVER['argv'][0], $gGet); 
        else { $gGet = $_GET; prr($_GET); unset($gGet['post_type']);} prr($gGet);  unset($gGet['code']); unset($gGet['state']); prr($gGet);
      $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); $fbo = $ntOpts[$ii]; $wprg = array('sslverify'=>false); 
@@ -23,18 +23,13 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       $res = wp_remote_get( "https://graph.facebook.com/me?".http_build_query($aacct, null, '&'), $wprg); 
       if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Facebook User."; prr($res); die();} else {
         $user = json_decode($res['body'], true); if (empty($user)) {echo "Can't get Facebook User. JSON Error. "; prr($res); die();} else {
-            if (!empty($user['id'])) {        echo "-= Got user: "; prr($user);
-            
-            if (stripos($fbo['fbURL'], '/groups/')!==false) { $fbo['destType'] = 'gr'; $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; } else {
-            
-              $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-<br/>";          
-              
-              $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  $fbo['destType'] = '';
-              
+          if (!empty($user['id'])) {        echo "-= Got user: "; prr($user);            
+            if (stripos($fbo['fbURL'], '/groups/')!==false) { $fbo['destType'] = 'gr'; $fbo['fbAppPageAuthToken'] = $fbo['fbAppAuthToken']; } else {            
+              $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-<br/>";                        
+              $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  $fbo['destType'] = '';              
               echo "-= Getting List of Pages =-<br/>";  
               $resP = wp_remote_get('https://graph.facebook.com/'.$user['id'].'/accounts?'.http_build_query($aacct, null, '&'), $wprg); prr($resP); $pages = json_decode($resP['body'], true);  prr($pages);
-              echo "-= Getting Page Token =-<br/>";  
-              
+              echo "-= Getting Page Token =-<br/>";                
               echo "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&');
               $res = wp_remote_get( "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&'), $wprg); prr($res);
               if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Page Token."; prr($res); die();} else {
@@ -423,7 +418,7 @@ if (!function_exists("nxs_rePostToFB_ajax")) { function nxs_rePostToFB_ajax() { 
       $fbpo =  get_post_meta($postID, 'snapFB', true); /* echo $postID."|"; echo $fbpo; */ $fbpo =  maybe_unserialize($fbpo); // prr($fbpo); 
       if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) ){ $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); } //prr($fbo);
       if (isset($_POST['ri']) && $_POST['ri']=='1') { nxs_getBackFBComments($postID, $fbo, $fbpo[$ii]); die(); } else {
-        $result = nxs_doPublishToFB($postID, $fbo); if ($result == '200') die("Your post has been successfully sent to FaceBook."); else die($result);
+        $result = nxs_doPublishToFB($postID, $fbo); if ($result == '200') die("Your post has been successfully sent to Facebook."); else die($result);
       }
     }    
   }

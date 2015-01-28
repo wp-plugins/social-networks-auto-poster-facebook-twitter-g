@@ -50,11 +50,20 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     $tggs = array(); foreach ($t as $tagA){$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(nxs_ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));} 
     $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
   } 
-  if (preg_match('/%CF-[a-zA-Z0-9_]%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
+  if (preg_match('/%+CF-[a-zA-Z0-9-_]+%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 
         if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr = CutFromTo($mms, '-', '%'); $cfItem =  get_post_meta($postID, $mGr, true);  $mms = str_ireplace("-".$mGr."%", $cfItem, $mms); } $mout .= $mms; 
     } $msg = $mout; 
   }  
+  $mm = array(); if (preg_match_all('/%H?CT-[a-zA-Z0-9_]+%/', $msg, $mm)) { $msgA = explode('%CT', str_ireplace("%HCT", "%CT", $msg)); $mout = ''; $i = 0;
+    foreach ($msgA as $mms) { 
+      if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false){ $h = strpos($mm[0][$i],'%HCT-')!==false; $i++; $mGr=CutFromTo($mms,'-','%'); $cfItem=wp_get_post_terms($postID,$mGr,array("fields"=>"names"));
+        if (is_nxs_error($cfItem)) {nxs_addToLogN('E', 'Error', 'MSG', '-=ERROR=- '.$mGr.'|'.print_r($cfItem, true), '');  $mms=str_ireplace("-".$mGr."%",'',$mms);   } else { $tggs = array(); 
+          foreach ($cfItem as $frmTag) {$tggs[] = ($h?'#':'').$frmTag; } $cfItem = implode(' ',$tggs); $mms=str_ireplace("-".$mGr."%",$cfItem,$mms);    
+        }
+      } $mout.=$mms;  
+    } $msg = $mout; 
+  }
   if (preg_match('/%FULLTEXT%/', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)); $msg = str_ireplace("%FULLTEXT%", $postContent, $msg);}                    
   if (preg_match('/%RAWTEXT%/', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng); $msg = str_ireplace("%RAWTEXT%", $postContent, $msg);}
   if (preg_match('/%SITENAME%/', $msg)) { $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $msg = str_ireplace("%SITENAME%", $siteTitle, $msg);}      
