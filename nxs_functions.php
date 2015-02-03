@@ -339,7 +339,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
         }); //  console.log( tValX );
         jQuery(".nxs_TG").each(function(index) { var cats = jQuery(this).val();  var catsA = cats.split(','); uqID = jQuery(this).attr('id'); uqID = uqID.replace("nxs_TG_", "do", "gi");
           // console.log( uqID ); console.log( JSON.stringify( catsA ) );
-        for(var ii in catsA) { var tgVal = jQuery.trim(catsA[ii]);
+        for(var ii in catsA) { var tgVal = jQuery.trim(catsA[ii]).toLowerCase();
           if (tgVal.indexOf("|")<1 && tgVal!="") tgVal = "post_tag|"+tgVal;
           if (tgVal!="" && jQuery.inArray(tgVal, tValX)>-1) {  jQuery('#'+uqID).attr('checked','checked'); }           
         }        

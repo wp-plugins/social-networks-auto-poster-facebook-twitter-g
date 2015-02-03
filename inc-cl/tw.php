@@ -354,6 +354,11 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $msg = str_replace('&amp;#8221;', '"', $msg); $msg = str_replace('&#8221;', '"', $msg); $msg = str_replace('#8221;', '"', $msg); $msg = str_replace('#8221', "'", $msg);
     $msg = str_replace('&amp;#8212;', '-', $msg); $msg = str_replace('&#8212;', '-', $msg); $msg = str_replace('#8212;', '-', $msg); $msg = str_replace('#8212', "-", $msg); 
     $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
+    
+    //## This meta field is created by the indieweb taxonomy plugin - by David Peach
+    $response = get_post_meta( $postID, 'response', true ); if (!empty($response)) { $reply_url = $response['url']; if (!empty($reply_url) && strpos($reply_url, 'twitter.com')) {
+      $explode_at_domain = explode('twitter.com/', $reply_url); $twitter_path = end($explode_at_domain); $exploded_path = explode('/', $twitter_path); $options['in_reply_to_id'] = end($exploded_path);          
+    }}    
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
            

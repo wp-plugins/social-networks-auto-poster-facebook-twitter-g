@@ -12,8 +12,8 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
     function postShare($tkn, $msg, $title='', $url='', $imgURL='', $dsc='') { $nURL = 'https://api.linkedin.com/v1/people/~/shares?format=json&oauth2_access_token='.$tkn;  
       $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
       $xml = '<?xml version="1.0" encoding="UTF-8"?><share><comment>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</comment>'.
-      ($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><submitted-url>'.$url.'</submitted-url><submitted-image-url>'.$imgURL.'</submitted-image-url><description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').
-        '<visibility><code>anyone</code></visibility></share>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      
+      ($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><submitted-url>'.$url.'</submitted-url>'.(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'').'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').
+        '<visibility><code>anyone</code></visibility></share>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      prr($xml);
       $wprg = array( 'method' => 'POST', 'headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $xml);  $wprg['sslverify'] = false;      
       $response  = wp_remote_post($nURL, $wprg); if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);      
       $post = json_decode($response['body'], true); return $post; 
@@ -22,7 +22,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
     function postToGroup($tkn, $msg, $title, $groupID, $url='', $imgURL='', $dsc='') { $nURL = 'https://api.linkedin.com/v1/groups/'.$groupID.'/posts?oauth2_access_token='.$tkn; 
       $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
       $xml = '<?xml version="1.0" encoding="UTF-8"?><post><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<summary>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</summary>'."\n".'
-        '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".'<submitted-image-url>'.$imgURL.'</submitted-image-url>'."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      
+        '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'')."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      
       $wprg = array( 'method' => 'POST', 'headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $xml);  $wprg['sslverify'] = false;      
       $response  = wp_remote_post($nURL, $wprg);if (is_wp_error($response) || $response['response']['code']!='201') return "ERROR: ".print_r($response, true);      
       return array('updateUrl'=>'https://www.linkedin.com/groups?home=&gid='.$groupID);
@@ -54,8 +54,8 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
         $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
         if ($options['liAttch']=='1') { $lnk['title'] = $message['urlTitle']; $lnk['postTitle'] = $msgT; $lnk['desc'] =  $message['urlDescr']; $lnk['url'] = $urlToGo; $lnk['img'] = $imgURL; }      
         $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];
-      } else { 
-        if (!empty($options['isV2'])) {  //## V2
+      } else {
+        if (!empty($options['isV2'])) { //## V2
           if ($options['grpID']!=''){
             try { if ($msgT == '') $msgT = ' '; 
               if($options['liAttch']=='1') $ret = $this->postToGroup($options['liAccessToken'], $msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
@@ -66,7 +66,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
             if($options['liAttch']=='1') $ret = $this->postShare($options['liAccessToken'], $msg, nsTrnc($msgT, 200), str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
               else $ret = $this->postShare($options['liAccessToken'], $msg);
           }  
-        } else { //## V1
+        } else {  //## V1
           require_once ('apis/liOAuth.php'); $linkedin = new nsx_LinkedIn($options['liAPIKey'], $options['liAPISec']);  $linkedin->oauth_verifier = $options['liOAuthVerifier'];
           $linkedin->request_token = new nsx_trOAuthConsumer($options['liOAuthToken'], $options['liOAuthTokenSecret'], 1);     
           $linkedin->access_token = new nsx_trOAuthConsumer($options['liAccessToken'], $options['liAccessTokenSecret'], 1);  
