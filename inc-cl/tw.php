@@ -226,7 +226,7 @@ if (!function_exists("nxs_rePostToTW_ajax")) {
 } 
 
 if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW 
-  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $img = ''; $imgURL = ''; global $plgn_NS_SNAutoPoster, $nxs_urlLen; $nxs_urlLen = 0;
+  function nxs_doPublishToTW($postID, $options){ $ntCd = 'TW'; $ntCdL = 'tw'; $ntNm = 'Twitter'; $imgData = ''; $imgURL = ''; global $plgn_NS_SNAutoPoster, $nxs_urlLen; $nxs_urlLen = 0;
     if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
     //$backtrace = debug_backtrace(); nxs_addToLogN('W', 'Error', $logNT, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToTW',  array($postID, $options));
@@ -243,14 +243,13 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url(); $uln = 0; $extInfo = ' | PostID: '.$postID;    
     if ($options['attchImg']=='1') { if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID);  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';  
       if(trim($imgURL)=='') $options['attchImg'] = 0; else { $imgURL = str_replace(' ', '%20', $imgURL);
-        $hdrsArr['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0'; $advSet=array('headers'=>$hdrsArr,'httpversion'=>'1.1','timeout'=>45,'sslverify'=>false);      
-        if( ini_get('allow_url_fopen') ) { if (@getimagesize($imgURL)!==false) { $img = wp_remote_get($imgURL, $advSet); 
-          if (is_nxs_error($img)) $options['attchImg'] = 0; else if ( (!empty($img['headers']['content-length'])) && (int)$img['headers']['content-length']<200) { $options['attchImg'] = 0; } else $img = $img['body']; } else $options['attchImg'] = 0; 
-        } else {  $img = wp_remote_get($imgURL,$advSet); if(is_nxs_error($img)) $options['attchImg'] = 0; elseif (isset($img['body'])&& trim($img['body'])!='') $img = $img['body'];  else $options['attchImg'] = 0; }         
-        if ($options['attchImg'] == 0) nxs_addToLogN('E', 'Error', $logNT, 'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($img, true), $extInfo);
-      }
-    } 
-    if ($options['attchImg']=='1' && $img!='') $twLim = 117; else $twLim = 140;     
+        $hdrsArr['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0'; $advSet=array('headers'=>$hdrsArr,'httpversion'=>'1.1','timeout'=>45,'sslverify'=>false);              
+        $imgData = wp_remote_get($imgURL, $advSet); 
+        if(is_wp_error($imgData) || empty($imgData['body']) || (!empty($imgData['headers']['content-length']) && (int)$imgData['headers']['content-length']<200)) { $options['attchImg'] = 0; 
+          nxs_addToLogN('E','Error',$logNT,'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($imgData, true), $extInfo); 
+        } else $imgData = $imgData['body']; 
+      }      
+    } if ($options['attchImg']=='1' && $imgData!='') $twLim = 117; else $twLim = 140;     
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
      else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));    
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType'];        
@@ -302,8 +301,10 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         if (preg_match('/%H?CT-[a-zA-Z0-9_]+%/', $twMsgFormat)) { $msgA = explode('%CT', str_ireplace("%HCT", "%CT", $twMsgFormat)); $mout = '';
           foreach ($msgA as $mms) { 
             if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false) { $mGr=CutFromTo($mms,'-','%'); $cfItem=wp_get_post_terms($postID,$mGr,array("fields" => "names"));  
-              if (is_nxs_error($cfItem)) {nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$mGr.'|'.print_r($cfItem, true), $extInfo);  } else { $tggs = array(); foreach ($cfItem as $frmTag) {$tggs[] = '#'.$frmTag; } $cfItem = implode(' ',$tggs);               
-                $twLim = $twLim - nxs_strLen($cfItem); $mms=str_ireplace("-".$mGr."%",$cfItem,$mms);               
+              if (is_nxs_error($cfItem)) {nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.$mGr.'|'.print_r($cfItem, true), $extInfo);  } else { $tggs = array(); 
+                foreach ($cfItem as $frmTag) { 
+                  $frmTag =  trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$frmTag)))))));  $tggs[] = '#'.$frmTag; 
+                } $cfItem = implode(' ',$tggs); $twLim = $twLim - nxs_strLen($cfItem); $mms=str_ireplace("-".$mGr."%",$cfItem,$mms);               
               }
             } $mout.=$mms; 
           } $twMsgFormat = $mout; 
@@ -353,7 +354,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $msg = str_replace('&amp;#8220;', '"', $msg); $msg = str_replace('&#8220;', '"', $msg); $msg = str_replace('#8220;', '"', $msg); $msg = str_replace('#8220', "'", $msg);
     $msg = str_replace('&amp;#8221;', '"', $msg); $msg = str_replace('&#8221;', '"', $msg); $msg = str_replace('#8221;', '"', $msg); $msg = str_replace('#8221', "'", $msg);
     $msg = str_replace('&amp;#8212;', '-', $msg); $msg = str_replace('&#8212;', '-', $msg); $msg = str_replace('#8212;', '-', $msg); $msg = str_replace('#8212', "-", $msg); 
-    $message = array('message'=>$msg, 'img'=>$img, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
+    $message = array('message'=>$msg, 'img'=>$imgData, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
     
     //## This meta field is created by the indieweb taxonomy plugin - by David Peach
     $response = get_post_meta( $postID, 'response', true ); if (!empty($response)) { $reply_url = $response['url']; if (!empty($reply_url) && strpos($reply_url, 'twitter.com')) {

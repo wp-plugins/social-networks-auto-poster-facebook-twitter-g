@@ -18,11 +18,27 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   if (preg_match('/%FULLTITLE%/', $msg)) { $title = apply_filters('the_title', nxs_doQTrans($post->post_title, $lng));  $msg = str_ireplace("%FULLTITLE%", $title, $msg); }                    
   if (preg_match('/%STITLE%/', $msg)) { $title = nxs_doQTrans($post->post_title, $lng);   $title = substr($title, 0, 115); $msg = str_ireplace("%STITLE%", $title, $msg); }                    
   if (preg_match('/%AUTHORNAME%/', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun );  $msg = str_ireplace("%AUTHORNAME%", $aun, $msg);}                    
+  if (preg_match('/%AUTHORTWNAME%/', $msg)) { $aun = $post->post_author;  $aun = get_the_author_meta('twitter', $aun );  $msg = str_ireplace("%AUTHORTWNAME%", $aun, $msg);}                    
   if (preg_match('/%ANNOUNCE%/', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng);     
     $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
     if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[0]; }    
-      else $postContent = nsTrnc($postContent, $options['anounTagLimit']);  $msg = str_ireplace("%ANNOUNCE%", $postContent, $msg);
+      else $postContent = nsTrnc($postContent, $options['anounTagLimit'], ' ', '');  $msg = str_ireplace("%ANNOUNCE%", $postContent, $msg);
   }  
+  if (preg_match('/%PANNOUNCE%/', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng));
+    $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
+    if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[0]; }    
+      else $postContent = nsTrnc($postContent, $options['anounTagLimit'], ' ', '');  $msg = str_ireplace("%PANNOUNCE%", $postContent, $msg);
+  } 
+  if (preg_match('/%ANNOUNCER%/', $msg)) { $postContent = nxs_doQTrans($post->post_content, $lng);     
+    $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
+    if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[1]; }    
+      else $postContent = str_replace(nsTrnc($postContent, $options['anounTagLimit'], ' ', ''), '', $postContent);  $msg = str_ireplace("%ANNOUNCER%", $postContent, $msg);
+  }  
+  if (preg_match('/%PANNOUNCER%/', $msg)) { $postContent = apply_filters('the_content', nxs_doQTrans($post->post_content, $lng));
+    $postContent = strip_tags(strip_shortcodes(str_ireplace('<!--more-->', '#####!--more--!#####', str_ireplace("&lt;!--more--&gt;", '<!--more-->', $postContent))));
+    if (stripos($postContent, '#####!--more--!#####')!==false) { $postContentEx = explode('#####!--more--!#####',$postContent); $postContent = $postContentEx[1]; }    
+      else $postContent = str_replace(nsTrnc($postContent, $options['anounTagLimit'], ' ', ''), '', $postContent);  $msg = str_ireplace("%PANNOUNCER%", $postContent, $msg);
+  } 
   if (preg_match('/%EXCERPT%/', $msg)) {      
     if ($post->post_excerpt!="") $excerpt = strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)))); 
       else $excerpt= nsTrnc(strip_tags(strip_shortcodes(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)))), 300, " ", "..."); 
@@ -59,7 +75,9 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
     foreach ($msgA as $mms) { 
       if (substr($mms, 0, 1)=='-' && stripos($mms, '%')!==false){ $h = strpos($mm[0][$i],'%HCT-')!==false; $i++; $mGr=CutFromTo($mms,'-','%'); $cfItem=wp_get_post_terms($postID,$mGr,array("fields"=>"names"));
         if (is_nxs_error($cfItem)) {nxs_addToLogN('E', 'Error', 'MSG', '-=ERROR=- '.$mGr.'|'.print_r($cfItem, true), '');  $mms=str_ireplace("-".$mGr."%",'',$mms);   } else { $tggs = array(); 
-          foreach ($cfItem as $frmTag) {$tggs[] = ($h?'#':'').$frmTag; } $cfItem = implode(' ',$tggs); $mms=str_ireplace("-".$mGr."%",$cfItem,$mms);    
+          foreach ($cfItem as $frmTag) { if ($h) $frmTag = trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(nxs_ucwords(str_ireplace('&','',str_ireplace('&amp;','',$frmTag)))))));
+              $tggs[] = ($h?'#':'').$frmTag; 
+          } $cfItem = implode(' ',$tggs); $mms=str_ireplace("-".$mGr."%",$cfItem,$mms);    
         }
       } $mout.=$mms;  
     } $msg = $mout; 
@@ -83,7 +101,9 @@ if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID, $add
   $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if ($myurl!='') $options['urlToUse'] = $myurl;
   if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['useFBGURLInfo'] = true; } else $options['urlToUse'] = get_permalink($postID);      
   $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; // $addURLParams = trim($gOptions['addURLParams']);  
-  if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams; return $options;
+  if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams;  $forceSURL = trim(get_post_meta($postID, '_snap_forceSURL', true));
+  if (empty($forceSURL)) $forceSURL = !empty($options['forceSURL']); else $forceSURL = $forceSURL =='1'; if (!empty($options['suUName'])) $forceSURL = false; //## SU does not allow Shorteners
+  if ($forceSURL) $options['urlToUse'] = nxs_mkShortURL($options['urlToUse'], $postID); return $options;
 }}
 
 if (!function_exists('nxs_showListRow')){function nxs_showListRow($ntParams) { $ntInfo = $ntParams['ntInfo']; $nxs_plurl = $ntParams['nxs_plurl']; $ntOpts = $ntParams['ntOpts'];  ?>

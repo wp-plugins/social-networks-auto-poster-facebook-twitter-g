@@ -456,7 +456,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?nxs_doQTrans($post->post_title, $lng):'').' |'.$options['pType'];
       if ($fbPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium'); // prr($options); echo "PP - ".$postID; prr($src);      
       if ($fbPostType=='I' || $fbPostType=='S') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);                  
-      if (($fbPostType=='A' || $fbPostType=='S')){
+      if ( ($fbPostType=='A' || $fbPostType=='S') && empty($options['useFBGURLInfo']) ){
         //## AUTO - Get Post Descr from SEO Plugins or make it.      
         if (trim($options['fbMsgAFrmt'])!='') {$dsc = nsFormatMessage($options['fbMsgAFrmt'], $postID, $addParams);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
@@ -482,7 +482,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       }}
       if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse'];  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = 'http://www.noimage.faketld';//$imgURL = 'http://cdn.gtln.us/img/t1x1.gif'; 
       
-      $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];       
+      $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];     
       $urlTitle = nxs_doQTrans($post->post_title, $lng);  $options['fbMsgFormat'] = $msg;    $urlTitle = strip_tags(strip_shortcodes($urlTitle));
     } 
     

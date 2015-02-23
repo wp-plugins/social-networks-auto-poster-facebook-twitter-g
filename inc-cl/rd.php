@@ -234,6 +234,7 @@ if (!function_exists("nxs_doPublishToRD")) { //## Second Function to Post to RD
       $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
       $logNT = '<span style="color:#800000">Reddit</span> - '.$options['nName'];      
       $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
+      $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName'])); 
       if ($options['pType']!='aj' && is_array($snap_ap) && (nxs_chArrVar($snap_ap[$ii], 'isPosted', '1') || nxs_chArrVar($snap_ap[$ii], 'isPrePosted', '1'))) {
         $snap_isAutoPosted = get_post_meta($postID, 'snap_isAutoPosted', true); if ($snap_isAutoPosted!='2') {  
            nxs_addToLogN('W', 'Notice', $logNT, '-=Duplicate=- Post ID:'.$postID, 'Already posted. No reason for posting duplicate'.' |'.$uqID); return;
@@ -246,7 +247,8 @@ if (!function_exists("nxs_doPublishToRD")) { //## Second Function to Post to RD
         $rdPostType = $options['postType']; 
         $options['rdTitleFormat'] = nsFormatMessage($options['rdTitleFormat'], $postID);  $options['rdTextFormat'] = nsFormatMessage($options['rdTextFormat'], $postID); // prr($msg); echo $postID;
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title;
-        $message = array('message'=>$options['rdTextFormat'], 'url'=>get_permalink($postID), 'title'=>$options['rdTitleFormat']);
+        $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];     
+        $message = array('message'=>$options['rdTextFormat'], 'url'=>$urlToGo, 'title'=>$options['rdTitleFormat']);
       }            
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_RD(); $ret = $ntToPost->doPostToNT($options, $message); // echo "~~~"; prr($ret); echo "+++";

@@ -36,14 +36,12 @@ if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
       $imgData = wp_remote_get($remImgURL, array('timeout' => 45)); if (is_wp_error($imgData)) { $badOut['Error'] = print_r($imgData, true)." - ERROR"; return $badOut; }          
       $cType = $imgData['content-type']; $imgData = $imgData['body'];
       $tmp=array_search('uri', @array_flip(stream_get_meta_data($GLOBALS[mt_rand()]=tmpfile())));  
-      if (!is_writable($tmp)) return "Your temporary folder or file (file - ".$tmp.") is not witable. Can't upload images to Flickr";
+      if (!is_writable($tmp))  { $badOut['Error'] = "Your temporary folder or file (file - ".$tmp.") is not witable. Can't upload images to Flickr"; return $badOut; }
       rename($tmp, $tmp.='.png'); register_shutdown_function(create_function('', "unlink('{$tmp}');"));       
-      file_put_contents($tmp, $imgData); if (!$tmp) return 'You must specify a path to a file'; if (!file_exists($tmp)) return 'File path specified does not exist';
-      if (!is_readable($tmp)) return 'File path specified is not readable';      
-      //  $data['name'] = basename($tmp);
-      $cfile = curl_file_create($tmp,$cType,'nxstmp'); return $cfile;
-      //  return "@$tmp";
-      
+      file_put_contents($tmp, $imgData); if (!$tmp) { $badOut['Error'] = 'You must specify a path to a file'; return $badOut; }  
+      if (!file_exists($tmp)) { $badOut['Error'] = 'File path specified does not exist'; return $badOut; } 
+      if (!is_readable($tmp)) { $badOut['Error'] = 'File path specified is not readable'; return $badOut; }
+      $cfile = curl_file_create($tmp,$cType,'nxstmp'); return $cfile;      
     }
     
     function doPost($options, $message){ if (!is_array($options)) return false; $out = array(); // return false;
@@ -60,15 +58,17 @@ if (!class_exists("nxs_class_SNAP_FL")) { class nxs_class_SNAP_FL {
       if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFrmt'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['msgTFrmt'], $message);
       //## Make Post            
-      if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  $postType = $options['postType'];       
+      if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  $postType = $options['postType'];      
+      
+      if (empty($imgURL)) { $badOut['Error'] = 'No Image. Flickr is an image-sharing network. You can\'t post to Flickr without image.'; return $badOut; }       
       
       require_once('apis/scOAuth.php');   $tum_oauth = new wpScoopITOAuth($options['appKey'], $options['appSec'], $options['accessToken'], $options['accessTokenSec']);
       $tum_oauth->baseURL = 'https://www.flickr.com/services'; $tum_oauth->request_token_path = '/oauth/request_token'; $tum_oauth->access_token_path = '/oauth/access_token';
       
-      $tags = $message['tags'];
+      $tags = $message['tags']; $postArr = array('title'=>$msgT, 'description'=>$text, 'tags'=>$tags, 'is_public'=>1, 'safety_level'=>1, 'content_type'=>1, 'hidden'=>1);        
+      $imgFile = $this->createFile($imgURL);  if (empty($imgFile) || is_array($imgFile)) { $badOut['Error'] = 'Image Error - '.print_r($imgFile, true); return $badOut; } 
       
-      $postArr = array('title'=>$msgT, 'description'=>$text, 'tags'=>$tags, 'is_public'=>1, 'safety_level'=>1, 'content_type'=>1, 'hidden'=>1);        
-      $imgFile = $this->createFile($imgURL); $phiID = $tum_oauth->flUploadPhoto($imgFile, $postArr); // prr($phiID);
+      $phiID = $tum_oauth->flUploadPhoto($imgFile, $postArr); // prr($phiID);
       
       if (!empty($phiID) && strpos($phiID, 'Problem: ')===false) {         
           $params = array ('format' => 'php_serial', 'method'=>'flickr.photosets.addPhoto', 'photo_id'=>$phiID, 'photoset_id'=>$options['setID']);

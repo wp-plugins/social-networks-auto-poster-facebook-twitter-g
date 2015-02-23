@@ -480,7 +480,7 @@ if (!function_exists('nxs_checkAddLogTable')){ function nxs_checkAddLogTable(){ 
   $installed_ver = get_option( "nxs_log_db_table_version" ); if ($installed_ver=='1.1') return true;
   $table_name = $wpdb->prefix . "nxs_log";
   $sql = "CREATE TABLE $table_name (
-    id mediumint(9) NOT NULL AUTO_INCREMENT,
+    id bigint(20) NOT NULL AUTO_INCREMENT,
     date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
     act VARCHAR(255) DEFAULT '' NOT NULL,
     nt VARCHAR(255) DEFAULT '' NOT NULL,
@@ -558,28 +558,38 @@ if (!function_exists("nxs_hideTip_ajax")) { function nxs_hideTip_ajax() {  check
 if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=''){ $rurl = '';  global $plgn_NS_SNAutoPoster;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
     if ($options['nxsURLShrtnr']=='B' && trim($options['bitlyUname']!='') && trim($options['bitlyAPIKey']!='')) {      
       $response  = wp_remote_get('http://api-ssl.bitly.com/v3/shorten?login='.$options['bitlyUname'].'&apiKey='.$options['bitlyAPIKey'].'&longUrl='.urlencode($url)); 
-      if (is_wp_error($response)) {  nxs_addToLog('bit.ly', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; }
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'bit.ly', '', '-=ERROR=- '.print_r($response, true));  return $url; }
       $rtr = json_decode($response['body'],true);
       if ($rtr['status_code']=='200') $rurl = $rtr['data']['url'];
     } //echo "###".$rurl;
     if ($options['nxsURLShrtnr']=='A' && trim($options['adflyUname']!='') && trim($options['adflyAPIKey']!='')) {      
       $response  = wp_remote_get('http://api.adf.ly/api.php?key='.$options['adflyAPIKey'].'&uid='.$options['adflyUname'].'&advert_type=int&domain='.$options['adflyDomain'].'&url='.urlencode($url));       
-      if (is_wp_error($response)) {  nxs_addToLog('adf.ly', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; }     
-      if ( $response['body']!='error')  $rurl = $response['body']; else {  nxs_addToLog('adf.ly', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; }
+      if (is_wp_error($response)) {   nxs_addToLogN('E', 'adf.ly', '', '-=ERROR=- '.print_r($response, true));  return $url; }     
+      if ( $response['body']!='error')  $rurl = $response['body']; else {  nxs_addToLogN('E', 'adf.ly', '', '-=ERROR=- '.print_r($response, true)); return $url; }
+    }
+    if ($options['nxsURLShrtnr']=='C' && trim($options['clkimAPIKey']!='')) {    
+      $response  = wp_remote_get('http://clk.im/api?api='.$options['clkimAPIKey'].'&url='.urlencode($url));
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'clk.im', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = json_decode($response['body'], true); //prr($r); die();
+      if (!is_array($r) || $r['error']!='0') { nxs_addToLogN('E', 'clk.im', '', '-=ERROR (JSON)=- '.print_r($response['body'], true)); return $url; } else $rurl = urldecode($r['short']);
+    }
+    if ($options['nxsURLShrtnr']=='P' && trim($options['postAPIKey']!='')) {      
+      $response  = wp_remote_get('http://po.st/api/shorten?longUrl='.urlencode($url).'&apiKey=t'.$options['postAPIKey']);       
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'po.st', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = json_decode($response['body'], true); 
+      if (!is_array($r) || $r['status_txt']!='OK') { nxs_addToLogN('E', 'po.st', '', '-=ERROR (JSON)=- '.print_r($response['body'], true)); return $url; } else $rurl = $r['short_url'];
     }
     if ($options['nxsURLShrtnr']=='W' && function_exists('wp_get_shortlink')) { global $post; $post = get_post($postID);  $rurl = wp_get_shortlink($postID, 'post'); }
     if ($options['nxsURLShrtnr']=='Y' && trim($options['YOURLSKey']!='') && trim($options['YOURLSURL']!='')) { $timestamp = time(); $signature = md5( $timestamp . $options['YOURLSKey'] ); 
       $flds = array('signature'=>$signature, 'action' => 'shorturl', 'url'=>$url, 'format'=>'json', 'timestamp'=>$timestamp);  
       $response  = wp_remote_post(($options['YOURLSURL']), array('body' => $flds)); 
-      if (is_wp_error($response)) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; } 
-      $rtr = json_decode($response['body'],true);  if (!is_array($rtr) || !isset($rtr['shorturl']) ) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; }      
+      if (is_wp_error($response)) {  nxs_addToLogN('E', 'goo.gl', '', '-=ERROR=- '.print_r($response, true)); return $url; } 
+      $rtr = json_decode($response['body'],true);  if (!is_array($rtr) || !isset($rtr['shorturl']) ) {   nxs_addToLogN('E', 'goo.gl', '', '-=ERROR=- '.print_r($response, true));  return $url; }      
       $rurl = $rtr['shorturl'];
     
     }   
     if ($options['nxsURLShrtnr']=='O' || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') {   
       $response  = wp_remote_post('https://www.googleapis.com/urlshortener/v1/url'.($options['gglAPIKey']!=''?'?key='.$options['gglAPIKey']:''), array('headers' => array('Content-Type'=>'application/json'), 'body' => '{"longUrl": "'.$url.'"}')); 
-      if (is_wp_error($response)) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; } 
-      $rtr = json_decode($response['body'],true); if (!is_array($rtr) || isset($rtr['error']) || !isset($rtr['id']) ) {  nxs_addToLog('goo.gl', 'E', '-=ERROR=- '.print_r($response, true), ''); return $url; }      
+      if (is_wp_error($response)) {   nxs_addToLogN('E', 'goo.gl', '', '-=ERROR=- '.print_r($response, true));  return $url; } 
+      $rtr = json_decode($response['body'],true); if (!is_array($rtr) || isset($rtr['error']) || !isset($rtr['id']) ) {   nxs_addToLogN('E', 'goo.gl', '', '-=ERROR=- '.print_r($response, true));  return $url; }      
       $rurl = $rtr['id'];
     }    
     //if ($rurl=='') { $response  = wp_remote_get('http://gd.is/gtq/'.$url); if ((is_array($response) && ($response['response']['code']=='200'))) $rurl = $response['body']; }
@@ -684,6 +694,7 @@ if (!function_exists('nxs_doProcessTags')){ function nxs_doProcessTags($tags){ $
   return $tags;
 }}            
 if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $message, $addURLParams=''){ global $nxs_urlLen; $msg = nxs_doSpin($format);// prr($msg); prr($message);// Make "message default"
+  $msgDef = array('title'=>'','announce'=>'','text'=>'','url'=>'','surl'=>'','urlDescr'=>'','urlTitle'=>'','imageURL' => array(),'videoCode'=>'','videoURL'=>'','siteName'=>'','tags'=>'','cats'=>'','authorName'=>'','orID'=>''); $message = array_merge($msgDef, $message);
   if (preg_match('/%URL%/', $msg)) { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
   if (preg_match('/%SURL%/', $msg)) { 
     if (isset($message['surl']) && $message['surl']!='') $url = $message['surl']; else { $url = $message['url']; if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; $url = nxs_mkShortURL($url); } 
@@ -729,8 +740,8 @@ if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $mes
   return trim($msg);
 }}
 //## Common Dialogs
-if (!function_exists('nxs_showImgToUseDlg')){ function nxs_showImgToUseDlg($nt, $ii, $imgToUse){ ?>
- <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Image(s) to use:', 'nxs_snap') ?></th>
+if (!function_exists('nxs_showImgToUseDlg')){ function nxs_showImgToUseDlg($nt, $ii, $imgToUse, $hide=false){ ?>
+ <tr id="altFormatIMG<?php echo $nt.$ii; ?>" style="<?php echo $hide?'display:none;':''; ?>"><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Image(s) to use:', 'nxs_snap') ?></th>
                   <td><input type="checkbox" class="isAutoImg" <?php if ($imgToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoImg-<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][isAutoImg]" value="A"/> <?php _e('Auto', 'nxs_snap'); ?>
                   <?php if ($imgToUse!='') { ?> <a onclick="nxs_clPrvImgShow('<?php echo $nt; ?><?php echo $ii; ?>');return false;" href="#"><?php _e('Show all', 'nxs_snap'); ?></a><br/>  
                     <div class="nxs_prevImagesDiv" id="nxs_<?php echo $nt; ?><?php echo $ii; ?>_idivD"><img class="nxs_prevImages" src="<?php echo $imgToUse; ?>"><div style="display:block;" class="nxs_checkIcon"><div class="media-modal-icon"></div></div></div>
@@ -745,7 +756,7 @@ if (!function_exists('nxs_showURLToUseDlg')){ function nxs_showURLToUseDlg($nt, 
                   
                     <div class="nxs_prevURLDiv" <?php if (trim($urlToUse)=='') { ?> style="display:none;"<?php } ?> id="isAutoURLFld-<?php echo $nt; ?><?php echo $ii; ?>">
                       &nbsp;&nbsp;&nbsp;<?php _e('URL:', 'nxs_snap') ?> <input size="90" type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][urlToUse]" value="<?php echo $urlToUse ?>" id="URLToUse-<?php echo $nt; ?><?php echo $ii; ?>" /> 
-                      <span><?php _e('This will trigger "Network will decide attachment info". Image and other settings will be ignored.', 'nxs_snap') ?></span>
+                      <br/><span><?php _e('This will trigger "Network will decide attachment info". Image and other settings will be ignored.', 'nxs_snap') ?></span>
                     </div>
                   
                 </td></tr> 

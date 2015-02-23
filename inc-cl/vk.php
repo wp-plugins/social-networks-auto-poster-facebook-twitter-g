@@ -315,9 +315,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $urlToGo = home_url(); $msg = 'Test Link from '.$urlToGo; } else { $post = get_post($postID); if(!$post) return;
         $options['msgFrmt'] = strip_tags(nsFormatMessage($options['msgFrmt'], $postID, $addParams)); 
         //## MyURL - URLToGo code
-        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl = trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
-        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
-        if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams; 
+        $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       }       
       $extInfo = ' | PostID: '.$postID." - ".(is_object($post)?$post->post_title:'').' |'.$options['pType'];    

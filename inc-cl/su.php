@@ -231,9 +231,7 @@ if (!function_exists("nxs_doPublishToSU")) { //## Second Function to Post to SU
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $urlToGo = home_url(); $options['suMsgFormat'] = 'Test Link from '.$urlToGo; } else { $post = get_post($postID); if(!$post) return;
       $options['suMsgFormat'] = nsFormatMessage($options['suMsgFormat'], $postID, $addParams); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
       //## MyURL - URLToGo code
-      if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl = trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
-      if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
-      if($addParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addParams;
+      $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];
     } 
     $dusername = $options['suUName']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
     if ($options['suInclTags']=='1') { $t = wp_get_post_tags($postID); $tggs = array(); foreach ($t as $tagA) {$tggs[] = $tagA->name;} $tags = urlencode(implode(',',$tggs)); $tags = str_replace(' ','+',$tags); } else $tags = '';

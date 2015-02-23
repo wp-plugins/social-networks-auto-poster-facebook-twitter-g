@@ -117,15 +117,23 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['adflyAPIKey'])) $options['adflyAPIKey'] = $_POST['adflyAPIKey']; 
             if (isset($_POST['adflyDomain'])) $options['adflyDomain'] = $_POST['adflyDomain']; 
             
-            
             if (isset($_POST['YOURLSKey'])) $options['YOURLSKey'] = $_POST['YOURLSKey']; 
-            if (isset($_POST['YOURLSURL'])) $options['YOURLSURL'] = $_POST['YOURLSURL'];             
+            if (isset($_POST['YOURLSURL'])) $options['YOURLSURL'] = $_POST['YOURLSURL'];
+            
+            if (isset($_POST['clkimAPIKey'])) $options['clkimAPIKey'] = $_POST['clkimAPIKey']; 
+            if (isset($_POST['postAPIKey'])) $options['postAPIKey'] = $_POST['postAPIKey'];             
             
             if (isset($_POST['gglAPIKey'])) $options['gglAPIKey'] = $_POST['gglAPIKey'];                         
             
             if ($options['nxsURLShrtnr']=='B' && (trim($_POST['bitlyAPIKey'])=='' || trim($_POST['bitlyAPIKey'])=='')) $options['nxsURLShrtnr'] = 'G';            
             if ($options['nxsURLShrtnr']=='Y' && (trim($_POST['YOURLSKey'])=='' || trim($_POST['YOURLSURL'])=='')) $options['nxsURLShrtnr'] = 'G';
             if ($options['nxsURLShrtnr']=='A' && (trim($_POST['adflyAPIKey'])=='' || trim($_POST['adflyAPIKey'])=='')) $options['nxsURLShrtnr'] = 'G';            
+            
+            if ($options['nxsURLShrtnr']=='C' && trim($_POST['clkimAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';
+            if ($options['nxsURLShrtnr']=='P' && trim($_POST['postAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';            
+            
+            if (isset($_POST['forceSURL']))   $options['forceSURL'] = 1;  else $options['forceSURL'] = 0;
+            
             
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
             if (isset($_POST['imgNoCheck']))   $options['imgNoCheck'] = 0;  else $options['imgNoCheck'] = 1;
@@ -412,11 +420,14 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            </div></div>    
      <!-- ##################### URL Shortener #####################-->
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('URL Shortener', 'nxs_snap') ?></h3></div>
-            <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;">Please use %SURL% in "Message Format" to get shortened urls. </span> <br/>
+            <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;">Please use %SURL% in "Message Format" to get shortened urls or check "Force Shortened Links". </span> <br/>
               <!-- <div class="itemDiv">
               <input type="radio" name="nxsURLShrtnr" value="G" <?php if (!isset($options['nxsURLShrtnr']) || $options['nxsURLShrtnr']=='' || $options['nxsURLShrtnr']=='G') echo 'checked="checked"'; ?> /> <b>gd.is</b> (Default) - fast, simple, free, no configuration nessesary.            
               </div> -->
               <div class="itemDiv">
+              
+     <input type="checkbox" name="forceSURL" value="1" <?php if (isset($options['forceSURL']) && $options['forceSURL']=='1') echo 'checked="checked"'; ?> /> <b><?php _e('Force Shortened Links', 'nxs_snap') ?></b>
+     <br/><br/>         
               <input type="radio" name="nxsURLShrtnr" value="O" <?php if (!isset($options['nxsURLShrtnr']) || (isset($options['nxsURLShrtnr']) && ($options['nxsURLShrtnr']=='O' || $options['nxsURLShrtnr']=='G'))) echo 'checked="checked"'; ?> /> <b>goo.gl</b>  - <i> Enter goo.gl <a target="_blank" href="https://developers.google.com/url-shortener/v1/getting_started#APIKey">API Key</a> below [Optional]</i><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;goo.gl&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="gglAPIKey" style="width: 20%;" value="<?php if (isset($options['gglAPIKey'])) _e(apply_filters('format_to_edit',$options['gglAPIKey']), 'nxs_snap') ?>" />
               </div>
@@ -424,11 +435,21 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <?php if (function_exists('wp_get_shortlink')) { ?><div class="itemDiv">
               <input type="radio" name="nxsURLShrtnr" value="W" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='W')  echo 'checked="checked"'; ?> /> <b>Wordpress Built-in Shortener</b> (wp.me if you use Jetpack)<br/> 
               </div><?php } ?>
-              
+              <!-- ## bitly ##-->
               <div class="itemDiv">
               <input type="radio" name="nxsURLShrtnr" value="B" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='B') echo 'checked="checked"'; ?> /> <b>bit.ly</b>  - <i>Enter bit.ly username and <a target="_blank" href="http://bitly.com/a/your_api_key">API Key</a> below</i><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly Username: <input name="bitlyUname" style="width: 20%;" value="<?php if (isset($options['bitlyUname'])) _e(apply_filters('format_to_edit',$options['bitlyUname']), 'nxs_snap') ?>" /><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="bitlyAPIKey" style="width: 20%;" value="<?php if (isset($options['bitlyAPIKey'])) _e(apply_filters('format_to_edit',$options['bitlyAPIKey']), 'nxs_snap') ?>" />
+              </div>
+              <!-- ## clk.im ##-->
+              <div class="itemDiv">
+              <input type="radio" name="nxsURLShrtnr" value="C" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='C') echo 'checked="checked"'; ?> /> <b>clk.im</b>  - <i>Enter clk.im <a target="_blank" href="http://clk.im/apikey">API Key</a> below. You can get API key from your clk.im page: <a target="_blank" href="http://clk.im/apikey">http://clk.im/apikey</a>. Please see the "Developers/Publishers" section on the right</i><br/>              
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clk.im&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="clkimAPIKey" style="width: 20%;" value="<?php if (isset($options['clkimAPIKey'])) _e(apply_filters('format_to_edit',$options['clkimAPIKey']), 'nxs_snap') ?>" />
+              </div>
+              <!-- ## po.st ##-->
+              <div class="itemDiv">
+              <input type="radio" name="nxsURLShrtnr" value="P" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='P') echo 'checked="checked"'; ?> /> <b>po.st</b>  - <i>Enter po.st <a target="_blank" href="https://re.po.st/partner/campaigns">API Key</a> below. You can get API key from your "Campaigns" page: <a target="_blank" href="https://re.po.st/partner/campaigns">https://re.po.st/partner/campaigns</a></i><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;po.st&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="postAPIKey" style="width: 20%;" value="<?php if (isset($options['postAPIKey'])) _e(apply_filters('format_to_edit',$options['postAPIKey']), 'nxs_snap') ?>" />
               </div>
               
               <div class="itemDiv">
@@ -792,7 +813,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")){ array_walk_recursive($NXS_POST, 'nsx_stripSlashes'); }  array_walk_recursive($NXS_POST, 'nsx_fixSlashes');  
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; //  echo "| NS_SNAP_SavePostMetaTags - ".$id." |";
           $post = get_post($id); if ($post->post_type=='revision' && $post->post_status=='inherit' && $post->post_parent!='0') return; // prr($NXS_POST);          
-          delete_post_meta($id, 'snap_MYURL'); add_post_meta($id, 'snap_MYURL', $NXS_POST["urlToUse"]);   delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            
+          if (empty($NXS_POST["useSURL"])) $NXS_POST["useSURL"] = '2'; delete_post_meta($id, '_snap_forceSURL'); add_post_meta($id, '_snap_forceSURL', $NXS_POST["useSURL"]);  
+          delete_post_meta($id, 'snap_MYURL'); add_post_meta($id, 'snap_MYURL', $NXS_POST["urlToUse"]);    delete_post_meta($id, 'snapEdIT'); add_post_meta($id, 'snapEdIT', '1' );            
           $snap_isAutoPosted = get_post_meta($id, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1' &&  $post->post_status=='future') { delete_post_meta($id, 'snap_isAutoPosted'); add_post_meta($id, 'snap_isAutoPosted', '2'); }
           foreach ($nxs_snapAvNts as $avNt) { // echo "--------------------------------------------";  prr($avNt);          
               if (isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0 && isset($NXS_POST[$avNt['lcode']]) && count($NXS_POST[$avNt['lcode']])>0) { $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); 
@@ -822,6 +844,9 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           <div style="text-align: left; font-size: 14px; " class="showURL">
           <div class="inside" style="border: 1px #E0E0E0 solid; padding: 5px;"><div id="postftfp">
           <b>URL to use for links, attachments and %MYURL%:&nbsp;</b>     <a href="#" onclick="nxs_doResetPostSettings('<?php echo $post_id; ?>'); return false;" style="float:right;">Reset all SNAP data</a>
+          <input type="checkbox" class="isAutoURL" <?php  $forceSURL = get_post_meta($post_id, '_snap_forceSURL', true); 
+            if (empty($forceSURL) && !empty($options['forceSURL']) || $forceSURL=='1') { ?>checked="checked"<?php } ?>  id="useSURL" name="useSURL" value="1"/> <?php _e('Shorten URL', 'nxs_snap'); ?>
+          &nbsp;&nbsp;&nbsp;  
           <input type="checkbox" class="isAutoURL" <?php $urlToUse = get_post_meta($post_id, 'snap_MYURL', true); 
             if ($urlToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoURL-" name="isAutoURL" value="A"/> <?php _e('Auto', 'nxs_snap'); ?> - <i><?php _e('Post URL will be used', 'nxs_snap'); ?></i>
                   
