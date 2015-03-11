@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.12
+Version: 3.4.14
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2015  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.12' );  
+define( 'NextScripts_SNAP_Version' , '3.4.14' );
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -91,7 +91,7 @@ if (!function_exists("nxs_getBrdsOrCats_ajax")) {
 
 
 if (!function_exists("nxs_delPostSettings_ajax")) { function nxs_delPostSettings_ajax(){ check_ajax_referer('nxsSsPageWPN'); global $nxs_snapAvNts; $pid = (int)$_POST['pid'];
-  foreach ($nxs_snapAvNts as $avNt) delete_post_meta($pid, 'snap'.strtoupper($avNt['code'])); 
+  foreach ($nxs_snapAvNts as $avNt) delete_post_meta($pid, 'snap'.strtoupper($avNt['code']));  delete_post_meta($pid, 'snap_isAutoPosted'); delete_post_meta($pid, 'snap_MYURL');
   echo "OK"; die();
 }}
 
@@ -209,19 +209,16 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
     $snap_isEdIT = get_post_meta($postID, 'snapEdIT', true); if ($snap_isEdIT!='1') { $doPost = true; $exclCats = maybe_unserialize($options['exclCats']); $postCats = wp_get_post_categories($postID);
        foreach ($postCats as $pCat) { if ( (is_array($exclCats)) && in_array($pCat, $exclCats)) $doPost = false; else {$doPost = true; break;}}
        if (!$doPost) { nxs_addToLogN('I', 'Skipped', '', 'Automated Post - Category Excluded - Post ID:('.$postID.')' ); return; }
-    }    
-      
+    }          
     foreach ($nxs_snapAvNts as $avNt) { 
-      if (count($options[$avNt['lcode']])>0) { $clName = 'nxs_snapClass'.$avNt['code']; 
+      if (isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0 ){ $clName = 'nxs_snapClass'.$avNt['code']; 
         if ($isPost && isset($NXS_POST[$avNt['lcode']])) $po = $NXS_POST[$avNt['lcode']]; else { $po =  get_post_meta($postID, 'snap'.$avNt['code'], true); $po =  maybe_unserialize($po);}       
         if (isset($po) && is_array($po)) $isPostMeta = true; else { $isPostMeta = false; $po = $options[$avNt['lcode']]; }
         delete_post_meta($postID, 'snap_isAutoPosted'); add_post_meta($postID, 'snap_isAutoPosted', '1');
-        $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }       
-        
-         
-        
-          if ($snap_isEdIT!='1') { $doPost = true; 
-            if ( $optMt['catSel']=='1' && trim($optMt['catSelEd'])!='' ) { $inclCats = explode(',',$optMt['catSelEd']); foreach ($postCats as $pCat) { if (!in_array($pCat, $inclCats)) $doPost = false; else {$doPost = true; break;}} 
+        $optMt = $options[$avNt['lcode']][0]; if ($isPostMeta) { $ntClInst = new $clName(); $optMt = $ntClInst->adjMetaOpt($optMt, $po[0]); }               
+        if ($snap_isEdIT!='1') { $doPost = true; 
+            if ( $optMt['catSel']=='1' && trim($optMt['catSelEd'])!='' ) { $inclCats = explode(',',$optMt['catSelEd']); 
+              foreach ($postCats as $pCat) { if (!in_array($pCat, $inclCats)) $doPost = false; else {$doPost = true; break;}} 
               if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Automated Post]  - Individual Category Excluded - Post ID:('.$postID.')' ); continue; }
             }
             //## Get tags
@@ -232,16 +229,10 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
                   if (!in_array(strtolower($dd[1]), $postCust[$dd[0]])) $doPost = false; else {$doPost = true; break;}
                 } else if (!in_array(strtolower($iTag), $postTags)) $doPost = false; else {$doPost = true; break;}              
               }
-              //nxs_addToLogN('I', 'Plus 1', '', ' + Post ID:( '.$postID.' - '.print_r($postTags, true).')' );
-            
-              //foreach ($postTags as $pCat) { if (!in_array(strtolower($pCat), $inclTags)) $doPost = false; else {$doPost = true; break;}} 
               if (!$doPost) { nxs_addToLogN('I', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '[Automated Post]  - Tag Excluded - Post ID:('.$postID.') - Included Tags: '.$optMt['tagsSel'].' | Post Tags: '.print_r($postTags, true)." | ".print_r($postCust, true) ); continue; }
             }
-          }        
-          
-          
-          
-          if ($optMt['do'.$avNt['code']]=='1') { $optMt['ii'] = 0;  
+        }        
+        if ($optMt['do'.$avNt['code']]=='1') { $optMt['ii'] = 0;  
             if ($publtype=='A' && ($optMt['nMin']>0 || $optMt['nHrs']>0 || $optMt['nTime']!='')) $publtype='S';        
             if ($publtype=='S') { if (isset($optMt['nHrs']) && isset($optMt['nMin']) && ($optMt['nHrs']>0 || $optMt['nMin']>0) ) { $delay = $optMt['nMin']*60+$optMt['nHrs']*3600;
                 nxs_addToLogN('I', 'Delayed', $avNt['name'].' ('.$optMt['nName'].')', 'Post has been delayed for '.$delay.' Seconds ('.($optMt['nHrs']>0?$optMt['nHrs'].' Hours':'')." ".($optMt['nMin']>0?$optMt['nMin'].' Minutes':'').')' );
@@ -251,9 +242,9 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
               wp_schedule_single_event($optMt['timeToRun'],'ns_doPublishTo'.$avNt['code'], $args); 
                 nxs_addToLogN('BI', 'Scheduled', $avNt['name'].' ('.$optMt['nName'].') for '.$optMt['timeToRun']."(".date_i18n('Y-m-d H:i:s', $optMt['timeToRun'] + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS )).")", ' PostID:('.$postID.')' );
             } else { $fname = 'nxs_doPublishTo'.$avNt['code']; $fname($postID, $optMt); }
-          } else { nxs_addToLogN('GR', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '-=[Unchecked Account]=- - PostID:'.$postID.'' ); }
-        }                   
-      } } } else { nxs_addToLogN('I', 'Skipped', '', 'Excluded Post Type: '.$post->post_type.' (Post ID: '.$postID.')| NOT IN ('.print_r($nxsCPTSeld, true).')| ALL ('.print_r($post_types, true).')' ); return; }
+        } else { nxs_addToLogN('GR', 'Skipped', $avNt['name'].' ('.$optMt['nName'].')', '-=[Unchecked Account]=- - PostID:'.$postID.'' ); }
+      }                   
+    } } } else { nxs_addToLogN('I', 'Skipped', '', 'Excluded Post Type: '.$post->post_type.' (Post ID: '.$postID.')| NOT IN ('.print_r($nxsCPTSeld, true).')| ALL ('.print_r($post_types, true).')' ); return; }
    if ($isS) restore_current_blog(); 
 }} 
 
@@ -268,7 +259,6 @@ if (!function_exists("ns_add_settings_link")) { function ns_add_settings_link($l
     return $links;
 }}
 //## Actions and filters    
-
 if (!function_exists("nxs_adminInitFunc")) { function nxs_adminInitFunc(){ global $plgn_NS_SNAutoPoster, $nxs_snapThisPageUrl, $pagenow, $nxs_isWPMU; 
   $nxs_snapThisPageUrl = nxs_get_admin_url().($pagenow=='admin.php'?'network/':'').$pagenow.'?page=NextScripts_SNAP.php'; 
   if (function_exists('nxs_getInitUCheck') && (isset($plgn_NS_SNAutoPoster))) { $options = $plgn_NS_SNAutoPoster->nxs_options; if (is_array($options) && count($options)>1) nxs_getInitUCheck($options);  } 

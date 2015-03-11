@@ -22,6 +22,7 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
     }
     function nxs_doCheckSU(){ global $nxs_suCkArray; $hdrsArr = $this->nxs_getSUHeaders('https://www.stumbleupon.com/submit'); $ckArr = $nxs_suCkArray;   
       $response = wp_remote_get('http://www.stumbleupon.com/submit', array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));   
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
       $response['body'] = htmlentities($response['body'], ENT_COMPAT, "UTF-8"); // $response['body'] = htmlentities($response['body']);  prr($response);  die();
       if (isset($response['headers']['location']) && $response['headers']['location']=='/submit/visitor') return 'Bad Saved Login';  
       if ( $response['response']['code']=='200' && stripos($response['body'], 'Add a New Page')!==false){     
@@ -30,7 +31,7 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
       return false;  
     }
     function nxs_doConnectToSU($u, $p){ global $nxs_suCkArray; $hdrsArr = $this->nxs_getSUHeaders('https://www.stumbleupon.com/', false, false); //   echo "LOGGIN";
-      $response = wp_remote_get('https://www.stumbleupon.com/login', array('headers' => $hdrsArr)); $p = substr($p, 0, 16);
+      $response = wp_remote_get('https://www.stumbleupon.com/login', array('headers' => $hdrsArr)); $p = substr($p, 0, 16);      
       if (is_wp_error($response)) { nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($response, true), ''); return "Connection ERROR. Please see log";}
       $contents = $response['body']; $ckArr = $response['cookies']; //$response['body'] = htmlentities($response['body']);  prr($response);    die();       
       $frmTxt = CutFromTo($contents, '<form id="login-form"','</form>'); $md = array(); $flds  = array();  $mids = '';// prr($frmTxt); 
@@ -52,7 +53,7 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
     function nxs_doPostToSU($msg, $lnk, $cat, $tags, $nsfw=false){ global $nxs_suCkArray; $r2 = wp_remote_get($lnk); 
       $hdrsArr = $this->nxs_getSUHeaders('https://www.stumbleupon.com/submit', false, false); $ckArr = $nxs_suCkArray;   
       $response = wp_remote_get('https://www.stumbleupon.com/submit', array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr, 'cookies' => $ckArr));   
-      $ckArr2 = nxsMergeArraysOV($ckArr, $response['cookies']); //$nxs_suCkArray = $ckArr;
+      if (is_wp_error($response)) return "Connection ERROR. ".print_r($response, true);   $ckArr2 = nxsMergeArraysOV($ckArr, $response['cookies']); //$nxs_suCkArray = $ckArr;
   
       $contents = $response['body']; //$response['body'] = htmlentities($response['body']);  prr($response);   
       //$ckArr = nxsMergeArraysOV($ckArr, $response['cookies']);  
@@ -64,20 +65,20 @@ if (!class_exists("nxs_class_SNAP_SU")) { class nxs_class_SNAP_SU {
       } $flds['url'] = $lnk; $flds['review'] = $msg; $flds['tags'] = $cat; $flds['nsfw'] = $nsfw?'true':'false'; $flds['user-tags'] = $tags;  $flds['_output'] = 'Json';  $flds['_method'] = 'create';  $flds['language'] = 'EN'; 
     
       $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
-      $resp = json_decode($r2['body'], true); 
+      if (is_wp_error($r2)) return "Connection ERROR. ".print_r($r2, true);  $resp = json_decode($r2['body'], true); 
   
       if ( isset($resp['_reason']) && is_array($resp['_reason']) && count($resp['_reason'])>0 && stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
         $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr)); 
-        $resp = json_decode($r2['body'], true);
+        if (is_wp_error($r2)) return "Connection ERROR. ".print_r($r2, true);$resp = json_decode($r2['body'], true);
       }
   
       if (stripos($resp['_error'], 'Invalid token')!==false) { // In case we got the Wrong Cookies
         $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
-        $resp = json_decode($r2['body'], true);
+        if (is_wp_error($r2)) return "Connection ERROR. ".print_r($r2, true); $resp = json_decode($r2['body'], true);
     
         if (stripos($resp['_reason'][0]['message'], 'Failed to add URL')!==false) { sleep(5);
           $r2 = wp_remote_post('https://www.stumbleupon.com/submit', array('method' => 'POST', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $flds, 'cookies' => $ckArr2)); 
-          $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLogN('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
+          if (is_wp_error($r2)) return "Connection ERROR. ".print_r($r2, true); $resp = json_decode($r2['body'], true); // prr($flds);  prr($resp); //nxs_addToLogN('SU', 'E', '-=DBG=- '.print_r($resp, true)." - #####", $extInfo);
         }    
       } 
   

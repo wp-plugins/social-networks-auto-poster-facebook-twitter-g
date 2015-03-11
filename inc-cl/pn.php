@@ -202,7 +202,7 @@ if (!function_exists("nxs_rePostToPN_ajax")) {
 
 if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
   function nxs_doPublishToPN($postID, $options){ global $nxs_gCookiesArr, $plgn_NS_SNAutoPoster; $ntCd = 'PN'; $ntCdL = 'pn'; $ntNm = 'Pinterest';   $price = ''; 
-    if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
+    if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true)); if (empty($options['ck'])) $options['ck'] = '';
     // $backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), ''); 
     //if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToPN',  array($postID, $options)); 
     $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName'])); 

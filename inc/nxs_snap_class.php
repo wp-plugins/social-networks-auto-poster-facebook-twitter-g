@@ -133,7 +133,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if ($options['nxsURLShrtnr']=='P' && trim($_POST['postAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';            
             
             if (isset($_POST['forceSURL']))   $options['forceSURL'] = 1;  else $options['forceSURL'] = 0;
-            
+                       
+            if (isset($_POST['brokenCntFilters']))   $options['brokenCntFilters'] = 1;  else $options['brokenCntFilters'] = 0;
             
             if (isset($_POST['nsOpenGraph']))   $options['nsOpenGraph'] = $_POST['nsOpenGraph']; else $options['nsOpenGraph'] = 0;                
             if (isset($_POST['imgNoCheck']))   $options['imgNoCheck'] = 0;  else $options['imgNoCheck'] = 1;
@@ -244,6 +245,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                     <div id="fbSelCatsGLB" class="categorydivInd" style="padding-left: 15px; background-color: #fff;"> 
        <a href="#" onclick="nxs_chAllCatsL(1, 'fbSelCatsGLB'); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCatsL(0, 'fbSelCatsGLB'); return false;">UnCheck all</a>
           <div id="category-all" class="tabs-panel"> <input type="hidden" id="tmpCatSelNT" name="tmpCatSelNT" value="" />
+          <?php $num_cats  = wp_count_terms('category'); if ($num_cats>1000) echo "Sorry, You have too many categories - (".$num_cats.') to show the list. Please use "Tags and Custom Taxonomies" field with category|category_slug format'; else { ?>
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
                 <?php                 
                      $args = array( 'descendants_and_self' => 0, 'selected_cats' => '', 'taxonomy' => 'category', 'checked_ontop' => false); if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); 
@@ -254,7 +256,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
                      } 
                      */               
                 ?>
-            </ul>
+            </ul> <?php } ?>
           </div>  
        </div>    <div class="submitX"><input type="button" id="" class="button-primary" name="btnSelCats" onclick="nxs_doSetSelCats( jQuery('#tmpCatSelNT').val() ); jQuery('#showCatSel').bPopup().close();" value="Select Categories" /></div>
            </div>
@@ -406,14 +408,15 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <a href="#" onclick="nxs_chAllCats(1); return false;">Check all</a> &nbsp;|&nbsp; <a href="#" onclick="nxs_chAllCats(0); return false;">UnCheck all</a>
 
  <div id="taxonomy-category" class="categorydiv">
-        <div id="category-all" class="tabs-panel"><input type='hidden' name='post_category[]' value='0' />
+        <div id="category-all" class="tabs-panel"><input type='hidden' name='post_category[]' value='0' /> 
+        <?php $num_cats  = wp_count_terms('category'); if ($num_cats>1000) echo "Sorry, You have too many categories - ".$num_cats; else { ?>
             <ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-                <?php if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';
+                <?php if(isset($options['exclCats'])) $pk = maybe_unserialize($options['exclCats']); else $pk = '';  
                   if (is_array($pk) && count($pk)>0 ) $selCats = array_diff($category_ids, $pk); else $selCats = $category_ids;            
                   $args = array( 'descendants_and_self' => 0, 'selected_cats' => $selCats, 'taxonomy' => 'category', 'checked_ontop' => false);    
                   if (function_exists('wp_terms_checklist')) wp_terms_checklist(0, $args ); 
                 ?>
-            </ul>
+            </ul> <?php } ?>
         </div>  
     </div>
               </div>              
@@ -581,6 +584,13 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <!-- ##### Ext Debug/Report Settings ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Debug/Report Settings', 'nxs_snap') ?></h3></div>
              <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;"><?php _e('Debug/Report Settings', 'nxs_snap') ?> </span> <br/>
+ 
+             <div class="itemDiv">
+              <input value="1" id="brokenCntFilters" name="brokenCntFilters"  type="checkbox" <?php if (isset($options['brokenCntFilters']) && (int)$options['brokenCntFilters'] == 1) echo "checked"; ?> /> 
+              <strong>My Content Filters (<i>apply_filters('the_content'</i>) are broken, don't use them</strong>
+               - <span style="font-size: 11px; margin-left: 1px;"><?php _e('Some third party plugin break content filters. Check this if some networks do not post silently(without any errors in the log). This will make %EXCERPT% work as %RAWEXCERPT%, %FULLTEXT% as %RAWTEXT%, etc... ', 'nxs_snap') ?></span>               
+              <br/>                             
+              </div> 
  
              <div class="itemDiv">
              <b><?php _e('How many log records show?', 'nxs_snap') ?></b> <input name="numLogRows" style="width: 200px;" value="<?php if (isset($options['numLogRows'])) _e(apply_filters('format_to_edit',$options['numLogRows']), 'nxs_snap'); else echo "250"; ?>" /> 

@@ -65,9 +65,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     if ((int)$options['fbAttch']==0 && empty($options['postType'])) $options['postType'] = 'T';  
     if (!isset($plgn_NS_SNAutoPoster)) $gOptions = array(); else $gOptions = $plgn_NS_SNAutoPoster->nxs_options;  
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
-    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['fbMsgAFrmt'])) $options['fbMsgAFrmt'] = ''; 
-    if (!isset($options['riComments'])) $options['riComments'] = '';  if (!isset($options['riCommentsAA'])) $options['riCommentsAA'] = ''; 
-    if (!isset($options['useFBGURLInfo'])) $options['useFBGURLInfo'] = ''; 
+    if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['msgDAFrmt'])) $options['msgDAFrmt'] = ''; 
+    if (!isset($options['msgTAFrmt'])) $options['msgTAFrmt'] = ''; if (!isset($options['riComments'])) $options['riComments'] = '';  if (!isset($options['riCommentsAA'])) $options['riCommentsAA'] = ''; 
+    
     ?> 
     <div id="doFB<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">   <input type="hidden" name="apDoSFB<?php echo $ii; ?>" value="0" id="apDoSFB<?php echo $ii; ?>" />                                
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
@@ -101,18 +101,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     <div id="fbChooseSRVB0" class="fbChooseSRVC" style="padding-left:15px; display: <?php if ($isNew || !empty($options['fbAppID'])) echo 'block'; else echo 'none'; ?>;">  
       <div style="width:100%;"><strong>Facebook App ID:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppID]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
       <div style="width:100%;"><strong>Facebook App Secret:</strong> </div><input name="fb[<?php echo $ii; ?>][apFBAppSec]" id="apFBAppSec" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
-    </div>
-    <div id="fbChooseSRVB1" class="fbChooseSRVC" style="padding-left:15px; display: <?php if (!empty($options['atpKey'])) echo 'block'; else echo 'none'; ?>;">  
-      <div style="width:100%;"><strong>Autopost.to Key:</strong> </div><input name="fb[<?php echo $ii; ?>][atpKey]" id="apFBAppID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['atpKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
-    </div>
-    <div id="fbChooseSRVB2" class="fbChooseSRVC" style="padding-left:15px; display: <?php if (!empty($options['uName'])) echo 'block'; else echo 'none'; ?>;">  
-      <?php if(!function_exists('doPostToFacebook')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
-            <b><?php _e('NextScritps Facebook API Library not found. Please upgrade plugin to "Pro" to get it.', 'nxs_snap'); ?></b>
-      <?php } else { ?>      
-      <div style="width:100%;"><strong><?php echo $nType; ?> Login/Email:</strong> </div><input name="<?php echo $nt; ?>[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-      <div style="width:100%;"><strong><?php echo $nType; ?> Password:</strong> </div><input name="<?php echo $nt; ?>[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>  
-      <?php } ?>
-    </div>
+    </div>    
     <br/><br/>
     <div id="altFormat">
       <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apFBMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apFBMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
@@ -123,41 +112,61 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
       <div style="width:100%;"><strong style="font-size: 16px;" id="altFormatText">Post Type:</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>X');" onmouseover="showPopShAtt('<?php echo $ii; ?>X', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)  </div>                      
 <div style="margin-left: 10px;">
         
-        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
+        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> onchange="if (jQuery(this).is(':checked')) jQuery('.nxsDivFBPostTypeOpts<?php echo $ii; ?>').hide();"/> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
         
-        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
-          <div style="width:100%; margin-left: 15px;"><strong><?php _e('Upload Images to', 'nxs_snap'); ?>:&nbsp;</strong> 
-             <input value="2" id="apFBImgUplAPP<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBImgUpl]" <?php if ((int)$options['imgUpl'] == 2) echo "checked"; ?> /> <?php _e('App Album', 'nxs_snap'); ?> .. <?php _e('or', 'nxs_snap'); ?> ..                                  
+        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('.nxsDivFBPostTypeOpts<?php echo $ii; ?>').hide(); jQuery('#nxsDivFBImgUplOpts<?php echo $ii; ?>').show();}"/> <?php _e('Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
+          <div style="width:100%; margin-left: 15px;<?php if (empty($options['postType']) || $options['postType'] != 'I') echo "display:none;"; ?>" id="nxsDivFBImgUplOpts<?php echo $ii; ?>" class="nxsDivFBPostTypeOpts<?php echo $ii; ?>" ><strong><?php _e('Upload Images to', 'nxs_snap'); ?>:&nbsp;</strong> 
+             <input value="2" id="apFBImgUplAPP<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBImgUpl]" <?php if ((int)$options['imgUpl'] == 2) echo "checked"; ?> /> <?php _e('App Album', 'nxs_snap'); ?> 
              <input value="1" id="apFBImgUplTML<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBImgUpl]" <?php if ((int)$options['imgUpl'] != 2) echo "checked"; ?> /> 
               <?php _e('Timeline', 'nxs_snap'); ?> &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>I');" onmouseover="showPopShAtt('<?php echo $ii; ?>I', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)      
           </div>        
         
-        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Text Post with "attached" link', 'nxs_snap'); ?><br/>
+        <input type="radio" name="fb[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('.nxsDivFBPostTypeOpts<?php echo $ii; ?>').hide(); jQuery('#nxsDivFBAttchLinkOpts<?php echo $ii; ?>').show();}" /> <?php _e('Text Post with "attached" link', 'nxs_snap'); ?><br/>
 
-<div style="width:100%; margin-left: 15px;"><strong><?php _e('Link attachment type', 'nxs_snap'); ?>:&nbsp;</strong> <input value="2"  id="apFBAttchShare<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBAttch]" <?php if ((int)$options['fbAttch'] == 2) echo "checked"; ?> /> 
-                <?php _e('Share a link to your blogpost', 'nxs_snap'); ?> .. <?php _e('or', 'nxs_snap'); ?> ..                                  
-               <input value="1"  id="apFBAttch<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBAttch]"  <?php if ((int)$options['fbAttch'] == 1) echo "checked"; ?> /> 
-              <?php _e('Attach your blogpost', 'nxs_snap'); ?> &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)      
-    <div style="margin-bottom: 5px; margin-left: 10px; "><input value="1"  id="apFBAttchAsVid" type="checkbox" name="fb[<?php echo $ii; ?>][apFBAttchAsVid]"  <?php if (isset($options['fbAttchAsVid']) && (int)$options['fbAttchAsVid'] == 1) echo "checked"; ?> />    <strong><?php _e('If post has video use it as an attachment thumbnail.', 'nxs_snap'); ?></strong> <i><?php _e('Video will be used for an attachment thumbnail instead of featured image. Only Youtube is supported at this time.', 'nxs_snap'); ?></i>
-    <br/></div>
-    
-     <input value="1" id="useFBGURLInfo<?php echo $ii; ?>" <?php if (!empty($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').hide(); }else jQuery('#useFBGURLInfoDiv<?php echo $ii; ?>').show();" type="checkbox" name="fb[<?php echo $ii; ?>][useFBGURLInfo]"/> <strong><?php _e('Let Facebook fill the link info', 'nxs_snap'); ?></strong>
-     <i> - <?php _e('Recommended. Facebook will automatically take attached/shared link info from OG: tags or other sources.', 'nxs_snap'); ?> </i><br/>
-     
-     <div id="useFBGURLInfoDiv<?php echo $ii; ?>" style="<?php if (trim($options['useFBGURLInfo'])=='' || $options['useFBGURLInfo']=='1') echo "display:none;"; ?>" >&nbsp;&nbsp;&nbsp;     
-    
-      <strong><?php _e('Attachment Text Format', 'nxs_snap'); ?>:</strong><br/> 
-      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <input value="1"  id="apFBMsgAFrmtA<?php echo $ii; ?>" <?php if (trim($options['fbMsgAFrmt'])=='') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#apFBMsgAFrmtDiv<?php echo $ii; ?>').hide(); jQuery('#apFBMsgAFrmt<?php echo $ii; ?>').val(''); }else jQuery('#apFBMsgAFrmtDiv<?php echo $ii; ?>').show();" type="checkbox" name="fb[<?php echo $ii; ?>][apFBMsgAFrmtA]"/> <strong><?php _e('Auto', 'nxs_snap'); ?></strong>
-      <i> - <?php _e('Recommended. Info from SEO Plugins will be used, then post excerpt, then post text', 'nxs_snap'); ?> </i><br/>
-      <div id="apFBMsgAFrmtDiv<?php echo $ii; ?>" style="<?php if ($options['fbMsgAFrmt']=='') echo "display:none;"; ?>" >&nbsp;&nbsp;&nbsp; <?php _e('Set your own format', 'nxs_snap'); ?>:<input name="fb[<?php echo $ii; ?>][apFBMsgAFrmt]" id="apFBMsgAFrmt<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['fbMsgAFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/></div>
-      
-      </div>
+<div id="nxsDivFBAttchLinkOpts<?php echo $ii; ?>" class="nxsDivFBPostTypeOpts<?php echo $ii; ?>" style="width:100%; margin-left: 15px; line-height: 22px;<?php if (!empty($options['postType']) && $options['postType'] != 'A') echo "display:none;"; ?>">
+<?php //prr($options);
+ if (empty($options['atchUse'])) $options['atchUse'] = 'F';  
+ if (!empty($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') $options['atchUse'] = 'F'; 
+ if (isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='0') $options['atchUse'] = 'A'; 
+ if (!empty($options['fbMsgAFrmt']) && empty($options['msgDAFrmt'])) { $options['msgDAFrmt'] = $options['fbMsgAFrmt']; $options['msgTAFrmt'] = '%TITLE%'; }
+ if (!empty($options['fbMsgAFrmt'])) $options['atchUse'] = 'M'; 
+ if (isset($options['fbAttchAsVid']) && $options['fbAttchAsVid'] == '1') $options['fbAttchAsVid'] = 'A'; 
+ if (empty($options['fbAttchAsVid'])) $options['fbAttchAsVid'] = 'N'; 
+
+ ?>
+        <strong><?php _e('Link attachment type', 'nxs_snap'); ?>:&nbsp;</strong> <input value="2"  id="apFBAttchShare<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBAttch]" <?php if ((int)$options['fbAttch'] == 2) echo "checked"; ?> /><?php _e('Share a link to your blogpost', 'nxs_snap'); ?>&nbsp;&nbsp;&nbsp;
+          <input value="1"  id="apFBAttch<?php echo $ii; ?>" type="radio" name="fb[<?php echo $ii; ?>][apFBAttch]"  <?php if ((int)$options['fbAttch'] == 1) echo "checked"; ?> /> 
+          <?php _e('Attach your blogpost', 'nxs_snap'); ?>&nbsp;&nbsp;
+          &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>');" onmouseover="showPopShAtt('<?php echo $ii; ?>', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)
+          <br/>
+        <strong><?php _e('What should fill attachment info:', 'nxs_snap'); ?>&nbsp;</strong> 
+          <input value="F" type="radio" name="fb[<?php echo $ii; ?>][atchUse]" <?php if ($options['atchUse'] == 'F') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#apFBMsgAFrmtDiv<?php echo $ii; ?>').hide(); jQuery('#nxsRBVidThumb<?php echo $ii; ?>').prop('disabled', true); }"/><?php _e('Facebook', 'nxs_snap'); ?>&nbsp;&nbsp;&nbsp;
+          <input value="A" type="radio" name="fb[<?php echo $ii; ?>][atchUse]" <?php if ($options['atchUse'] == 'A') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#apFBMsgAFrmtDiv<?php echo $ii; ?>').hide(); jQuery('#nxsRBVidThumb<?php echo $ii; ?>').prop('disabled', false);}"/><?php _e('Plugin/API', 'nxs_snap'); ?>&nbsp;&nbsp;&nbsp;
+          <input value="M" type="radio" name="fb[<?php echo $ii; ?>][atchUse]" <?php if ($options['atchUse'] == 'M') echo "checked"; ?> onchange="if (jQuery(this).is(':checked')) { jQuery('#apFBMsgAFrmtDiv<?php echo $ii; ?>').show(); jQuery('#nxsRBVidThumb<?php echo $ii; ?>').prop('disabled', false);}"/><?php _e('Set your own', 'nxs_snap'); ?>&nbsp;&nbsp;
+          &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>Fill');" onmouseover="showPopShAtt('<?php echo $ii; ?>Fill', event);" onclick="return false;" class="underdash" href="#"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)<br/>
+          
+          <div id="apFBMsgAFrmtDiv<?php echo $ii; ?>" style="<?php if ($options['atchUse'] != 'M') echo "display:none;"; ?>" >
+      &nbsp;&nbsp;&nbsp; <?php _e('Attachment Title Format', 'nxs_snap'); ?>:<input name="fb[<?php echo $ii; ?>][msgTAFrmt]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['msgTAFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+      &nbsp;&nbsp;&nbsp; <?php _e('Attachment Text Format', 'nxs_snap'); ?>:<input name="fb[<?php echo $ii; ?>][msgDAFrmt]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['msgDAFrmt'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+          </div>          
+            
+        <strong><?php _e('If post has a video:', 'nxs_snap'); ?>&nbsp;</strong> 
+          <input value="N" type="radio" name="fb[<?php echo $ii; ?>][fbAttchAsVid]" <?php if ($options['fbAttchAsVid'] == 'N') echo 'checked="checked"'; ?> /><?php _e('Do nothing', 'nxs_snap'); ?>&nbsp;&nbsp;&nbsp;
+          <input value="A" id="nxsRBVidThumb<?php echo $ii; ?>" <?php if ($options['atchUse'] == 'F') echo "disabled"; ?>  type="radio" name="fb[<?php echo $ii; ?>][fbAttchAsVid]" <?php if ($options['fbAttchAsVid'] == 'A') echo 'checked="checked"'; ?> /><?php _e('Use as thumbnail', 'nxs_snap'); ?>&nbsp;&nbsp;&nbsp;
+          <input value="V" type="radio" name="fb[<?php echo $ii; ?>][fbAttchAsVid]" <?php if ($options['fbAttchAsVid'] == 'V') echo 'checked="checked"'; ?> /> 
+          <?php _e('Attach Video(!)', 'nxs_snap'); ?>&nbsp;&nbsp;
+          &lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>Video');" onmouseover="showPopShAtt('<?php echo $ii; ?>Video', event);" onclick="return false;" class="underdash" href="#"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)
+          <br/>   
+       
       
 </div><br/></div>
   
 <div class="popShAtt" style="z-index: 9999; width: 350px;" id="popShAtt<?php echo $ii; ?>I"><h3><?php _e('Where to upload Images', 'nxs_snap'); ?></h3> <b><?php _e('(App Album)', 'nxs_snap'); ?></b> <?php _e('Facebook automatically creates an album for your app. Images will be grouped there as in any regular album.', 'nxs_snap'); ?>  <br/><br/><b><?php _e('(Timeline)', 'nxs_snap'); ?></b> <?php _e('Images will be posted to the special "Wall/Timeline" album and won\'t be grouped. "Wall/Timeline" album must exist. It\'s created when first image posted to timeline manually.', 'nxs_snap'); ?></div>  
 <div class="popShAtt" style="z-index: 9999" id="popShAtt<?php echo $ii; ?>"><h3><?php _e('Two ways of attaching post on Facebook', 'nxs_snap'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/fb2wops.png" width="600" height="257" alt="<?php _e('Two ways of attaching post on Facebook', 'nxs_snap'); ?>"/></div>
 <div class="popShAtt" style="z-index: 9999" id="popShAtt<?php echo $ii; ?>X"><h3><?php _e('Facebook Post Types', 'nxs_snap'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/fbPostTypesDiff6.png" width="600" height="398" alt="<?php _e('Facebook Post Types', 'nxs_snap'); ?>"/></div>
+
+<div class="popShAtt" style="z-index: 9999; width: 350px;" id="popShAtt<?php echo $ii; ?>Fill"><h3><?php _e('What should fill attachment info', 'nxs_snap'); ?></h3> <b><?php _e('(Facebook)', 'nxs_snap'); ?></b> <?php _e('Recommended. Facebook will automatically take attached/shared link info from OG: tags or other sources.', 'nxs_snap'); ?>  <br/><br/><b><?php _e('(Pluign/API)', 'nxs_snap'); ?></b> <?php _e('Plugin will generate attachment title and description using info from SEO Plugins, then post excerpt, then post text and title.', 'nxs_snap'); ?><br/><br/><b><?php _e('(Set your own)', 'nxs_snap'); ?></b> <?php _e('Set the format by yourself using message formatting tags', 'nxs_snap'); ?></div>  
+<div class="popShAtt" style="z-index: 9999; width: 350px;" id="popShAtt<?php echo $ii; ?>Video"><h3><?php _e('If post has a video', 'nxs_snap'); ?></h3> <b><?php _e('(Do Nothing)', 'nxs_snap'); ?></b> <?php _e('Plugin is not going to do anything specific about video', 'nxs_snap'); ?>  <br/><br/><b><?php _e('(Use as thumbnail)', 'nxs_snap'); ?></b> <?php _e('Video thumbnail will be used as attachment image. Please note - <b>it won\'t be playable.</b> This option is not compatible with "What should fill attachment info: Facebook"', 'nxs_snap'); ?><br/><br/><b><?php _e('(Attach video page to the Facebook post)', 'nxs_snap'); ?></b> <?php _e('If you choose this, YouTube or Vimeo page will be attached to the Facebook post as <b>playable thumbnail</b>. Please note! <b>There will be no link to your site.</b> Please use %URL% in the message format if you need a backlink', 'nxs_snap'); ?></div>  
 
 
 
@@ -242,14 +251,21 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
         
         if (isset($pval['postType']))     $options[$ii]['postType'] = trim($pval['postType']);
         if (isset($pval['apFBAttch']))      $options[$ii]['fbAttch'] = $pval['apFBAttch']; else $options[$ii]['fbAttch'] = 0;
-        if (isset($pval['apFBAttchAsVid'])) $options[$ii]['fbAttchAsVid'] = $pval['apFBAttchAsVid']; else $options[$ii]['fbAttchAsVid'] = 0;
+        if (isset($pval['fbAttchAsVid'])) $options[$ii]['fbAttchAsVid'] = $pval['fbAttchAsVid']; else $options[$ii]['fbAttchAsVid'] = 0;
+        if (isset($pval['atchUse']))     $options[$ii]['atchUse'] = trim($pval['atchUse']);
+        
+        if ($options[$ii]['atchUse']=='F' && $options[$ii]['fbAttchAsVid'] = 'A') $options[$ii]['fbAttchAsVid'] = 'N';
         
         if (isset($pval['apFBImgUpl']))     $options[$ii]['imgUpl'] = $pval['apFBImgUpl']; else $options[$ii]['imgUpl'] = 0;
         
         if (isset($pval['apFBMsgFrmt']))    $options[$ii]['fbMsgFormat'] = trim($pval['apFBMsgFrmt']); 
-        if (isset($pval['apFBMsgAFrmt']))    $options[$ii]['fbMsgAFrmt'] = trim($pval['apFBMsgAFrmt']); 
         
-        if (isset($pval['useFBGURLInfo']))     $options[$ii]['useFBGURLInfo'] = $pval['useFBGURLInfo']; else $options[$ii]['useFBGURLInfo'] = 0;     
+        
+        if (isset($pval['msgTAFrmt']))    $options[$ii]['msgTAFrmt'] = trim($pval['msgTAFrmt']); 
+        if (isset($pval['msgDAFrmt']))    $options[$ii]['msgDAFrmt'] = trim($pval['msgDAFrmt']); 
+        
+        if (isset($options[$ii]['useFBGURLInfo'])) unset($options[$ii]['useFBGURLInfo']);
+        if (isset($options[$ii]['fbMsgAFrmt'])) unset($options[$ii]['fbMsgAFrmt']);
         
         if (isset($pval['riComments']))      $options[$ii]['riComments'] = $pval['riComments']; else $options[$ii]['riComments'] = 0;
         if (isset($pval['riCommentsAA']))    $options[$ii]['riCommentsAA'] = $pval['riCommentsAA']; else $options[$ii]['riCommentsAA'] = 0;
@@ -434,6 +450,15 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     //## Some Common stuff 
     if (empty($options['postType']) && !empty($options['fbPostType'])) { $options['postType'] = $options['fbPostType']; unset($options['fbPostType']); } //## Compatibility with v <3.2
     if (empty($options['postType']) && !empty($options['PostType'])) { $pt = $options['PostType']; unset($options['PostType']); $options['postType'] = $pt; } //## Compatibility with v <3.2
+    //## Compatibility with v <3.4.15
+    if (empty($options['atchUse'])) $options['atchUse'] = 'F';  
+    if (!empty($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') $options['atchUse'] = 'F'; 
+    if (isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='0') $options['atchUse'] = 'A'; 
+    if (!empty($options['fbMsgAFrmt'])) $options['atchUse'] = 'M'; 
+    if (!empty($options['fbMsgAFrmt']) && empty($options['msgDAFrmt'])) { $options['msgDAFrmt'] = $options['fbMsgAFrmt']; $options['msgTAFrmt'] = '%TITLE%'; }
+    if (isset($options['fbAttchAsVid']) && $options['fbAttchAsVid'] == '1') $options['fbAttchAsVid'] = 'A';    
+    if (empty($options['fbAttchAsVid'])) $options['fbAttchAsVid'] = 'N'; 
+    
     $ii = $options['ii']; if (!isset($options['pType'])) $options['pType'] = 'im'; if ($options['pType']=='sh') sleep(rand(1, 10)); 
     $logNT = '<span style="color:#0000FF">Facebook</span> - '.$options['nName'];
     $snap_ap = get_post_meta($postID, 'snap'.$ntCd, true); $snap_ap = maybe_unserialize($snap_ap);     
@@ -456,14 +481,16 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       $extInfo = ' | PostID: '.$postID." - ".(isset($post) && is_object($post)?nxs_doQTrans($post->post_title, $lng):'').' |'.$options['pType'];
       if ($fbPostType=='A') $imgURL = nxs_getPostImage($postID, 'medium'); // prr($options); echo "PP - ".$postID; prr($src);      
       if ($fbPostType=='I' || $fbPostType=='S') $imgURL = nxs_getPostImage($postID, 'full'); // prr($options); echo "PP - ".$postID; prr($src);                  
-      if ( ($fbPostType=='A' || $fbPostType=='S') && empty($options['useFBGURLInfo']) ){
+      if ( ($fbPostType=='A' || $fbPostType=='S') && $options['atchUse']!='F' ){
         //## AUTO - Get Post Descr from SEO Plugins or make it.      
-        if (trim($options['fbMsgAFrmt'])!='') {$dsc = nsFormatMessage($options['fbMsgAFrmt'], $postID, $addParams);} else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
+        if ($options['atchUse']=='M') {$dsc = nsFormatMessage($options['msgDAFrmt'], $postID, $addParams); $urlTitle = nsFormatMessage($options['msgTAFrmt'], $postID, $addParams);  } 
+        else { if (function_exists('aioseop_mrt_fix_meta') && $dsc=='')  $dsc = trim(get_post_meta($postID, '_aioseop_description', true)); 
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_opengraph-description', true));  
           if (function_exists('wpseo_admin_init') && $dsc=='') $dsc = trim(get_post_meta($postID, '_yoast_wpseo_metadesc', true));      
-          if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_excerpt, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
-          if ($dsc=='') $dsc = trim(apply_filters('the_content', nxs_doQTrans($post->post_content, $lng)));  if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
-          if ($dsc=='') $dsc = get_bloginfo('description'); 
+          if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_excerpt, $lng)); 
+          if ($dsc=='') $dsc = trim(nxs_doQTrans($post->post_content, $lng));  
+          global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options;if (empty($gOptions['brokenCntFilters'])) $dsc = apply_filters('the_content', $dsc);
+          if ($dsc=='') $dsc = get_bloginfo('description'); $urlTitle = nxs_doQTrans($post->post_title, $lng);
         }      
         $dsc = strip_tags(strip_shortcodes($dsc)); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
       }
@@ -473,17 +500,24 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       $msg = strip_tags($msg); $msg = nxs_decodeEntitiesFull($msg);       
       $msg = str_ireplace('&#039;',"'", $msg); $msg = str_ireplace('&039;',"'", $msg); $msg = str_ireplace('&#39;',"'", $msg); $msg = str_ireplace('<3','&lt;3', $msg); $msg = str_ireplace('<(','&lt;(', $msg);  //## FB Smiles FIX 2.            
       
-      if ($isAttachVidFB=='1') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
-          if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/e/'.$vids[0]; $imgURL = nsGetYTThumb($vids[0]); }
-          if (strlen($vids[0])==8) { $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
+      if ($isAttachVidFB=='V') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
+          if (strlen($vids[0])==11) $options['urlToUse'] = 'http://youtu.be/'.$vids[0];
+          if (strlen($vids[0])==8) $options['urlToUse'] = 'https://vimeo.com/'.$vids[0];
+      }}
+      
+      if ($isAttachVidFB=='A') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
+          if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = nsGetYTThumb($vids[0]); }
+          if (strlen($vids[0])==8) { // $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
+            $vidURL = 'https://f.vimeocdn.com/p/flash/moogaloop/6.0.37/moogaloop.swf?autoplay=1&clip_id='.$vids[0];
             $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);
-            if (!is_wp_error($json)) { $json = $json['body']; $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           
+            if (!is_wp_error($json)) { $json = $json['body'];  $json = str_replace('/**/','',$json);
+            $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           
           }
       }}
       if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse'];  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = 'http://www.noimage.faketld';//$imgURL = 'http://cdn.gtln.us/img/t1x1.gif'; 
       
       $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];     
-      $urlTitle = nxs_doQTrans($post->post_title, $lng);  $options['fbMsgFormat'] = $msg;    $urlTitle = strip_tags(strip_shortcodes($urlTitle));
+      $options['fbMsgFormat'] = $msg;   if (!empty($urlTitle)) $urlTitle = strip_tags(strip_shortcodes($urlTitle));
     } 
     
     $message = array('url'=>$urlToGo, 'urlTitle'=>$urlTitle, 'urlDescr'=>$dsc, 'imageURL'=>$imgURL, 'videoURL'=>$vidURL, 'siteName'=>$blogTitle);     //   prr($message); die();

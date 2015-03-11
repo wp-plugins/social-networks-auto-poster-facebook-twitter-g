@@ -262,8 +262,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         $noRepl = preg_replace('/%H?C(F|T)-[a-zA-Z0-9_]+%/', '', $noRepl); $twLim = $twLim - nxs_strLen($noRepl);// prr($noRepl);
         
         $pTitle = nxs_doQTrans($post->post_title);
-        if ($post->post_excerpt!="") $exrText = nxs_doQTrans($post->post_excerpt); else $exrText= nxs_doQTrans($post->post_content);  $pText = apply_filters('the_content', $exrText);        
-        $pRawText = nxs_doQTrans($post->post_content);  $pFullText = apply_filters('the_content', $pRawText); 
+        if ($post->post_excerpt!="") $exrText = nxs_doQTrans($post->post_excerpt); else $exrText= nxs_doQTrans($post->post_content); 
+        $pText = (empty($gOptions['brokenCntFilters']))?apply_filters('the_content', $exrText):$exrText;      
+        $pRawText = nxs_doQTrans($post->post_content); $pFullText = (empty($gOptions['brokenCntFilters']))?apply_filters('the_content', $pRawText):$pRawText;    
         if (stripos($twMsgFormat, '%TAGS%')!==false || stripos($twMsgFormat, '%HTAGS%')!==false) {
           $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
           $tggs = array(); foreach ($t as $tagA) { $frmTag =  trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));

@@ -64,7 +64,9 @@ if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=
   foreach ($matches[0] as $match) {  
      $output2 = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"<>&?/ ]{11})%i', $match, $matches2 ); if ($output2 === false){return false;} 
      foreach ($matches2[1] as $match2) {  $match2 = trim($match2); if (strlen($match2)==11) $postVids[] = $match2;} 
-     $output3 = preg_match_all( '/^http:\/\/(www\.)?vimeo\.com\/(clip\:)?(\d+).*$/', $match, $matches3 );  if ($output3 === false){return false;} 
+     $output3 = preg_match_all( '/^https?:\/\/(www\.)?vimeo\.com\/(clip\:)?(\d+).*$/', $match, $matches3 );  if ($output3 === false){return false;} 
+     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
+     $output3 = preg_match_all( '#https?://(player\.)?vimeo\.com(/video)?/(\d+)#i', $match, $matches3 );  if ($output3 === false){return false;} 
      foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
   } $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
 }}
@@ -200,7 +202,7 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     }
     
     jQuery(document).on('change', '.isAutoURL', function( e ) {    var tId = e.target.id; var tIdN = tId.replace("isAutoURL-", "");
-       if (jQuery('#'+tId).is(":checked")) jQuery('#isAutoURLFld-'+tIdN).hide(); else { jQuery('#isAutoURLFld-'+tIdN).show(); }
+       if (jQuery('#'+tId).is(":checked")) { jQuery('#isAutoURLFld-'+tIdN).hide(); jQuery('#URLToUse-'+tIdN).val(''); } else { jQuery('#isAutoURLFld-'+tIdN).show(); }
     });    
     jQuery(document).on('change', '.isAutoImg', function( e ) {   
         nxs_updateGetImgs( e );
@@ -540,10 +542,9 @@ if (!function_exists('nxs_addPostingDelaySelV3')){function nxs_addPostingDelaySe
  
 
 if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){ $txt = str_ireplace('<3','&lt;3', $txt); $txt = str_ireplace('<(','&lt;(', $txt); //$txt = preg_replace('/\[caption\s[^\]]*\]/', '', $txt);
-    $txt = preg_replace('/\[caption[\s]{0,}(.*?)\][\s]{0,}(<a[\s]{0,}.*?<\/a>)[\s]{0,}(.*?)\[\/caption\]/ims', '<p $1> $2 <snap class="wpimgcaption">$3</snap> </p>', $txt); // WP Image with Caption fix
-    if (!function_exists("qtrans_split") || strpos($txt, '<!--:')===false ) return $txt; else {
-        $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta);
-    }
+  $txt = preg_replace('/\[caption[\s]{0,}(.*?)\][\s]{0,}(<a[\s]{0,}.*?<\/a>)[\s]{0,}(.*?)\[\/caption\]/ims', '<p $1> $2 <snap class="wpimgcaption">$3</snap> </p>', $txt); // WP Image with Caption fix
+  if (function_exists("qtrans_split") && strpos($txt, '<!--:')===false ) { $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }
+  if (function_exists("qtranxf_split") && (strpos($txt, '<!--:')===false || strpos($txt, '[:')===false) ){ $tta = qtranxf_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }    
 }}
 
 if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, $selLng){  
@@ -573,7 +574,7 @@ if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=
       if (!is_array($r) || $r['error']!='0') { nxs_addToLogN('E', 'clk.im', '', '-=ERROR (JSON)=- '.print_r($response['body'], true)); return $url; } else $rurl = urldecode($r['short']);
     }
     if ($options['nxsURLShrtnr']=='P' && trim($options['postAPIKey']!='')) {      
-      $response  = wp_remote_get('http://po.st/api/shorten?longUrl='.urlencode($url).'&apiKey=t'.$options['postAPIKey']);       
+      $response  = wp_remote_get('http://po.st/api/shorten?longUrl='.urlencode($url).'&apiKey='.$options['postAPIKey']);       
       if (is_wp_error($response)) { nxs_addToLogN('E', 'po.st', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = json_decode($response['body'], true); 
       if (!is_array($r) || $r['status_txt']!='OK') { nxs_addToLogN('E', 'po.st', '', '-=ERROR (JSON)=- '.print_r($response['body'], true)); return $url; } else $rurl = $r['short_url'];
     }

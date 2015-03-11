@@ -15,7 +15,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['gpCCatsList'])) $options['gpCCatsList'] = '';  ?>
             <div id="doGP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" >     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
-            <?php if(!function_exists('doPostToGooglePlus') || (defined('d1') && d1==1)) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
+            <?php if(!class_exists('nxsAPI_GP') || (defined('d1') && d1==1)) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b><?php _e('Google+ API Library not found', 'nxs_snap'); ?></b>
              <br/><br/> <?php _e('Google+ doesn\'t have a built-in API for automated posts yet.', 'nxs_snap'); ?> <br/><?php _e('The current <a target="_blank" href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can\'t be used for posting.  <br/><br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Google+.', 'nxs_snap'); ?></span></div>
             <?php return; }; ?>            
@@ -224,7 +224,7 @@ if (!function_exists("nxs_rePostToGP_ajax")) {
 if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
   function nxs_doPublishToGP($postID, $options){ $ntCd = 'GP'; $ntCdL = 'gp'; $ntNm = 'Google+';   global $plgn_NS_SNAutoPoster; $ytCode = ''; $imgURL = '';
       if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
-      if (!function_exists('doPostToGooglePlus') || (defined('d1') && d1==1)) { nxs_addToLogN('E', 'Error', $ntCd, '-=ERROR=- No G+ API Lib Detected', ''); return "No G+ API Lib Detected";}
+      if (!class_exists('nxsAPI_GP') || (defined('d1') && d1==1)) { nxs_addToLogN('E', 'Error', $ntCd, '-=ERROR=- No G+ API Lib Detected', ''); return "No G+ API Lib Detected";}
       $addParams = nxs_makeURLParams(array('NTNAME'=>$ntNm, 'NTCODE'=>$ntCd, 'POSTID'=>$postID, 'ACCNAME'=>$options['nName']));
       if (empty($options['imgToUse'])) $options['imgToUse'] = ''; if (empty($options['imgSize'])) $options['imgSize'] = '';
       

@@ -28,7 +28,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       
       if ($fbPostType!='I' && $fbPostType!='T') { $url = $message['url']; $flds = array('id'=>$url, 'scrape'=>'true'); sleep(2); }            
       //## Get URL info.      
-      if ($fbPostType!='I' && $fbPostType!='T' && isset($options['useFBGURLInfo']) && $options['useFBGURLInfo']=='1') { 
+      if ($fbPostType!='I' && $fbPostType!='T' && !empty($options['atchUse']) && $options['atchUse'] == 'F') { 
         $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds, 'sslverify'=>false ));      
         if (is_wp_error($response)) $badOut['Error'] = print_r($response, true)." - ERROR"; else { $response = json_decode($response['body'], true);     //  prr($response);     die();
             if (!empty($response['description'])) $message['urlDescr'] = $response['description'];  if (!empty($response['title'])) $message['urlTitle'] =  $response['title'];
@@ -39,8 +39,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['fbMsgFormat'], $message); 
       $imgURL = nxs_getImgfrOpt($message['imageURL']); $fbWhere = 'feed'; 
       $attachType = $options['attachType']; if ($attachType=='1') $attachType = 'A'; else $attachType = 'S';
-      if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A'; 
-      
+      if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A';      
       if (stripos($options['fbURL'], '/groups/')!=false) $options['destType'] == 'gr';
       
       if (!empty($options['destType']) && $options['destType'] == 'pr') $page_id = $options['fbAppAuthUser']; else $page_id = $options['pgID'];        
@@ -54,12 +53,12 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
         if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';
         if ($fbPostType=='A' && !(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $message['url']))) { 
             $badOut['Warning'] = 'Unvalid URL: '.$message['url'].'| Will be posting as text message'; $fbPostType='T'; 
-        }
+        } 
         if ($fbPostType=='A' || $fbPostType=='') {
           if (($attachType=='A' || $attachType=='S')) { $attArr = array('name' => $message['urlTitle'], 'caption' => $message['siteName'], 'link' =>$message['url'], 'description' => $message['urlDescr']); 
           $mssg = array_merge($mssg, $attArr); ; }
           if ($attachType=='A') $mssg['actions'] = json_encode(array('name' => $message['siteName'], 'link' =>$message['url']));        
-          if (trim($imgURL)!='') $mssg['picture'] = $imgURL;  if (trim($message['videoURL'])!='') $mssg['source'] = $message['videoURL'];        
+          if (trim($imgURL)!='') $mssg['picture'] = $imgURL;  //if (trim($message['videoURL'])!='') $mssg['source'] = $message['videoURL'];        
         } elseif ($fbPostType=='I') { /* $facebook->setFileUploadSupport(true); */ $fbWhere = 'photos'; $mssg['url'] = $imgURL; 
           if ($options['imgUpl']=='T') { //## Try to Post to TImeline
             $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  
@@ -73,17 +72,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
           }        
         } 
         //## Actual Post                
-        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; // prr($destURL); //prr($args); //prr($mssg);
+        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere;  // prr($destURL); //prr($args);      prr($mssg);
         $response = wp_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'sslverify'=>false, 'redirection' => 0, 'body' => $mssg)); 
-      }
-      //## Autopost.to
-      if (!empty($options['atpKeyZZZZZZZ'])) { $toGo = array('g'=>$msg, 'o'=>$options, 'm'=>$message); $toGo = base64_encode(serialize($toGo));
-        $toGo = array('nxsremotepost' => $toGo); 
-        $response = wp_remote_post( 'http://autopost.to/post/', array( 'method' => 'POST', 'httpversion' => '1.1', 'sslverify'=>false, 'timeout' => 45, 'redirection' => 0, 'body' => $toGo)); 
-        if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);
-        
-        prr($response['body']); die();
-      }
+      }     
       
       if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);
       $res = json_decode($response['body'], true); if (empty($res)) return "JSON ERROR: ".print_r($response, true);

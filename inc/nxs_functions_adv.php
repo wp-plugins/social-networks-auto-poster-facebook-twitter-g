@@ -1,8 +1,11 @@
 <?php
 if (!function_exists("nxs_settings_save")) {function nxs_settings_save($options) { update_option('NS_SNAutoPoster',$options); }}
 //## Format Message
-if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID, $addURLParams='', $lng=''){ global $ShownAds, $plgn_NS_SNAutoPoster, $nxs_urlLen; $post = get_post($postID); $options = $plgn_NS_SNAutoPoster->nxs_options; 
-  if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = '';
+if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postID, $addURLParams='', $lng=''){ global $ShownAds, $plgn_NS_SNAutoPoster, $nxs_urlLen; 
+  $post = get_post($postID); $options = $plgn_NS_SNAutoPoster->nxs_options;   
+  if (!empty($options['brokenCntFilters'])) { $msg = str_replace('%FULLTITLE%','%TITLE%',$msg); $msg = str_replace('%PANNOUNCE%','%ANNOUNCE%',$msg); $msg = str_replace('%PANNOUNCER%','%ANNOUNCER%',$msg); 
+    $msg = str_replace('%EXCERPT%','%RAWEXCERPT%',$msg);  $msg = str_replace('%FULLTEXT%','%RAWTEXT%',$msg);  
+  } if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = '';
   // if ($addURLParams=='' && $options['addURLParams']!='') $addURLParams = $options['addURLParams'];
   $msg = str_replace('%TEXT%','%EXCERPT%',$msg); $msg = str_replace('%RAWEXTEXT%','%RAWEXCERPT%',$msg);
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
@@ -99,7 +102,7 @@ if (!function_exists("nxs_ucwords")){ function nxs_ucwords($str) { if (function_
 if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID, $addURLParams='') { global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
   if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true));
   $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if ($myurl!='') $options['urlToUse'] = $myurl;
-  if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['useFBGURLInfo'] = true; } else $options['urlToUse'] = get_permalink($postID);      
+  if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['atchUse'] = 'F'; } else $options['urlToUse'] = get_permalink($postID);      
   $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; // $addURLParams = trim($gOptions['addURLParams']);  
   if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams;  $forceSURL = trim(get_post_meta($postID, '_snap_forceSURL', true));
   if (empty($forceSURL)) $forceSURL = !empty($options['forceSURL']); else $forceSURL = $forceSURL =='1'; if (!empty($options['suUName'])) $forceSURL = false; //## SU does not allow Shorteners
