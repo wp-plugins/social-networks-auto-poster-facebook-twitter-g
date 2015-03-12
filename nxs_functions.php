@@ -541,10 +541,11 @@ if (!function_exists('nxs_addPostingDelaySelV3')){function nxs_addPostingDelaySe
 }}
  
 
-if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){ $txt = str_ireplace('<3','&lt;3', $txt); $txt = str_ireplace('<(','&lt;(', $txt); //$txt = preg_replace('/\[caption\s[^\]]*\]/', '', $txt);
+if (!function_exists("nxs_doQTrans")) { function nxs_doQTrans($txt, $lng=''){ if (!function_exists("qtrans_split") && !function_exists("qtranxf_split")) return $txt; 
+  $txt = str_ireplace('<3','&lt;3', $txt); $txt = str_ireplace('<(','&lt;(', $txt); //$txt = preg_replace('/\[caption\s[^\]]*\]/', '', $txt);
   $txt = preg_replace('/\[caption[\s]{0,}(.*?)\][\s]{0,}(<a[\s]{0,}.*?<\/a>)[\s]{0,}(.*?)\[\/caption\]/ims', '<p $1> $2 <snap class="wpimgcaption">$3</snap> </p>', $txt); // WP Image with Caption fix
-  if (function_exists("qtrans_split") && strpos($txt, '<!--:')===false ) { $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }
-  if (function_exists("qtranxf_split") && (strpos($txt, '<!--:')===false || strpos($txt, '[:')===false) ){ $tta = qtranxf_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }    
+  if (function_exists("qtrans_split") && strpos($txt, '<!--:')!==false ) { $tta = qtrans_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }
+  if (function_exists("qtranxf_split") && (strpos($txt, '<!--:')!==false || strpos($txt, '[:')!==false) ){ $tta = qtranxf_split($txt); if ($lng!='') return $tta[$lng]; else return reset($tta); }    
 }}
 
 if (!function_exists('nxs_addQTranslSel')){function nxs_addQTranslSel($nt, $ii, $selLng){  
