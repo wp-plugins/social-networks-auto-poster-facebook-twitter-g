@@ -310,14 +310,9 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
             } $mout.=$mms; 
           } $twMsgFormat = $mout; 
         } 
-        
         $twMsgFormat = str_ireplace("  ", " ", $twMsgFormat);
-        
-        
         if (stripos($twMsgFormat, '%TITLE%')!==false) { if (stripos($pTitle, '.co.uk')!==false) $twLim = $twLim - 14;
            if (stripos($pTitle, '.com')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.net')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.org')!==false) $twLim = $twLim - 16;
-           
-        
            
            $pTitle = html_entity_decode(strip_tags($pTitle), ENT_NOQUOTES, 'UTF-8'); //$ttlTwLim = $twLim-20;                      
            $ttlTwLim = $twLim;
@@ -347,8 +342,8 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
         }          
         if (stripos($twMsgFormat, '%RAWTEXT%')!==false) {
            $pRawText = nsTrnc(strip_tags($pRawText), $twLim); $twMsgFormat = str_ireplace("%RAWTEXT%", $pRawText, $twMsgFormat); $twLim = $twLim - nxs_strLen($pRawText);
-        }              
-        $msg = nsFormatMessage($twMsgFormat, $postID, $addParams);         
+        }  
+        $msg = nsFormatMessage($twMsgFormat, $postID, $addParams); 
     } 
     $msg = str_replace('&amp;#039;', "'", $msg);  $msg = str_replace('&#039;', "'", $msg);  $msg = str_replace('#039;', "'", $msg);  $msg = str_replace('#039', "'", $msg);
     $msg = str_replace('&amp;#8217;', "'", $msg); $msg = str_replace('&#8217;', "'", $msg); $msg = str_replace('#8217;', "'", $msg); $msg = str_replace('#8217', "'", $msg);
@@ -360,7 +355,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     //## This meta field is created by the indieweb taxonomy plugin - by David Peach
     $response = get_post_meta( $postID, 'response', true ); if (!empty($response)) { $reply_url = $response['url']; if (!empty($reply_url) && strpos($reply_url, 'twitter.com')) {
       $explode_at_domain = explode('twitter.com/', $reply_url); $twitter_path = end($explode_at_domain); $exploded_path = explode('/', $twitter_path); $options['in_reply_to_id'] = end($exploded_path);          
-    }}    
+    }}  
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
            

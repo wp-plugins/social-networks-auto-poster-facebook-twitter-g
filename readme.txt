@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
 Requires at least: 3.4
 Tested up to: 4.1.1
-Stable tag: 3.4.15
+Stable tag: 3.4.16
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -168,6 +168,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.16 [03/26/2015] =
+
+* New/Bug Fix - [Critical] Facebook API 2.3 Compatibility. Usage of API 2.3 was causing "ERROR(#200) The user hasn't authorized the application to perform this action"
+* New - New URL Shortener - x.co
+* New - Facebook videos are now supported for Facebook Video posts in addition to YouTube and Vimeo.
+* Notice - FriendFeed has been shut down permanently. It has been removed from SNAP.
+* Notice - DeviantArt API is being extremely unstable and buggy on their side for the last several months. Until further notice DeviantArt connector is provided "as is". Please use it on your own risk. 
 
 = 3.4.15 [03/12/2015] =
 

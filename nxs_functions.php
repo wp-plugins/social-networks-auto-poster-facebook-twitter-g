@@ -65,10 +65,17 @@ if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=
      $output2 = preg_match_all( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"<>&?/ ]{11})%i', $match, $matches2 ); if ($output2 === false){return false;} 
      foreach ($matches2[1] as $match2) {  $match2 = trim($match2); if (strlen($match2)==11) $postVids[] = $match2;} 
      $output3 = preg_match_all( '/^https?:\/\/(www\.)?vimeo\.com\/(clip\:)?(\d+).*$/', $match, $matches3 );  if ($output3 === false){return false;} 
-     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
+     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8 || strlen($match3)==9) $postVids[] = $match3;} 
      $output3 = preg_match_all( '#https?://(player\.)?vimeo\.com(/video)?/(\d+)#i', $match, $matches3 );  if ($output3 === false){return false;} 
-     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8) $postVids[] = $match3;} 
-  } $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
+     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==8 || strlen($match3)==9) $postVids[] = $match3;}      
+     $output3 = preg_match_all( '#https?://(www\.)?facebook\.com/video\.php\?v=(\d+)#i', $match, $matches3 ); if ($output3 === false){return false;} 
+     foreach ($matches3[2] as $match3) {  $match3 = trim($match3); if (strlen($match3)==15) $postVids[] = $match3;} 
+     $output3 = preg_match_all( '#https?://(www\.)?facebook\.com/video/embed(/)?\?video_id=(\d+)#i', $match, $matches3 ); if ($output3 === false){return false;} 
+     foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==15) $postVids[] = $match3;} 
+  }   $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
+  
+  https://www.facebook.com/video/embed?video_id=938730299494218
+  
 }}
 if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(nxs_strLen($string) <= $limit) return $string; if(nxs_strLen($pad) >= $limit) return ''; $string = nxs_substr($string, 0, $limit-nxs_strLen($pad)); 
   $brLoc = strripos($string, $break);  if ($brLoc===false) return $string.$pad; else return nxs_substr($string, 0, $brLoc).$pad; 
@@ -325,7 +332,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
   jQuery(document).ready(function() {    nxs_doTabs();
     //## Check for excluded Tags    
     var nxs_curTagsValue = []; jQuery('.the-tags').each(function() {if (jQuery(this).val()!='') nxs_curTagsValue[jQuery(this).attr('id')] = jQuery(this).val(); });
-    jQuery(function () { setTimeout(nxs_checkTagsChangesX, 0.1); });
+    jQuery(function () { setTimeout(nxs_checkTagsChangesX, 50); });
     
     function nxs_checkTagsChangesX() { var isChanged = false; var nxs_isLocked = jQuery('#nxsLockIt').val(); if (nxs_isLocked=='1') return;
       jQuery('.the-tags').each(function() {       
@@ -346,7 +353,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
           if (tgVal!="" && jQuery.inArray(tgVal, tValX)>-1) {  jQuery('#'+uqID).attr('checked','checked'); }           
         }        
         });
-      } setTimeout(nxs_checkTagsChangesX, 0.1);
+      } setTimeout(nxs_checkTagsChangesX, 50);
     }
     
   });
@@ -574,6 +581,12 @@ if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=
       if (is_wp_error($response)) { nxs_addToLogN('E', 'clk.im', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = json_decode($response['body'], true); //prr($r); die();
       if (!is_array($r) || $r['error']!='0') { nxs_addToLogN('E', 'clk.im', '', '-=ERROR (JSON)=- '.print_r($response['body'], true)); return $url; } else $rurl = urldecode($r['short']);
     }
+    if ($options['nxsURLShrtnr']=='X' && trim($options['xcoAPIKey']!='')) {    
+      $response  = wp_remote_get('http://api.x.co/Squeeze.svc/text/'.$options['xcoAPIKey'].'?url='.urlencode($url)); 
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'x.co', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = $response['body'];
+      if (empty($r) || stripos($r, 'http://')===false) { nxs_addToLogN('E', 'x.co', '', '-=ERROR (RES)=- '.print_r($r, true)); return $url; } else $rurl = $r;
+    }
+    
     if ($options['nxsURLShrtnr']=='P' && trim($options['postAPIKey']!='')) {      
       $response  = wp_remote_get('http://po.st/api/shorten?longUrl='.urlencode($url).'&apiKey='.$options['postAPIKey']);       
       if (is_wp_error($response)) { nxs_addToLogN('E', 'po.st', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = json_decode($response['body'], true); 

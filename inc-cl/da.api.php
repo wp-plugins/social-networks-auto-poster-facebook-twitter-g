@@ -26,7 +26,7 @@ if (!function_exists("doConnectToDeviantART")) { function doConnectToDeviantART(
 if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = '';  var $debug = false;
     function headers($ref, $org='', $post=false, $aj=false){  $hdrsArr = array(); 
  $hdrsArr['Cache-Control']='max-age=0'; $hdrsArr['Connection']='keep-alive'; $hdrsArr['Referer']=$ref;
- $hdrsArr['User-Agent']='Mozilla/5.0 (iPad; CPU OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53';
+ $hdrsArr['User-Agent']=': Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.39 Safari/537.36';
  if($post==true) $hdrsArr['Content-Type']='application/x-www-form-urlencoded'; 
  if($aj==true) $hdrsArr['X-Requested-With']='XMLHttpRequest'; 
  if ($org!='') $hdrsArr['Origin']=$org; 
@@ -39,6 +39,7 @@ if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = ''
         if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR https://www.deviantart.com is not accessible. "; return $badOut; }  
         $ck2 =  $rep['cookies']; for($i=0;$i<count($ck);$i++) if ($ck[$i]->name=='userinfo') $ck[$i]->value = urlencode($ck2[0]->value);  $this->ck = $ck;
         if (is_nxs_error($rep)) return false; $contents = $rep['body']; //if ($this->debug) prr($contents);
+        $mh = CutFromTo($rep['body'], '$(\'#logoutme\').submit();">', 'data-ga_click_event'); $mh = CutFromTo($mh, 'href="', '"'); $this->mh = $mh;
         return stripos($contents, 'https://www.deviantart.com/users/logout')!==false;
       } else return false;
     }
@@ -56,7 +57,8 @@ if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = ''
           if (isset($response['headers']['location']) && stripos($response['headers']['location'], 'wrong-password')!==false  ) {  $badOut = "Wrong Password - ERROR"; return $badOut; }  
           if (isset($response['headers']['location']) && ( $response['headers']['location']=='http://www.deviantart.com' || $response['headers']['location']=='https://www.deviantart.com/users/loggedin')) { 
             $hdrsArr = $this->headers('http://www.deviantart.com'); $rep = wp_remote_get( 'http://www.deviantart.com', array( 'headers' => $hdrsArr, 'httpversion' => '1.1', 'cookies' => $ck));// die();  prr($rep);     
-            if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR  Login 3"; return $badOut; } $mh = CutFromTo($rep['body'], 'Your Account</b><br><a href="', '"'); $mh = str_ireplace('/journal/', '', $mh);
+            if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR  Login 3"; return $badOut; } 
+            $mh = CutFromTo($rep['body'], '$(\'#logoutme\').submit();">', 'data-ga_click_event'); $mh = CutFromTo($mh, 'href="', '"');
             $ck2 =  $rep['cookies']; for($i=0;$i<count($ck);$i++) if ($ck[$i]->name=='userinfo') $ck[$i]->value = urlencode($ck2[0]->value);  $this->ck = $ck; $this->mh = $mh; return false;
           } else  $badOut = print_r($response, true)." - ERROR  Login 4"; return $badOut; 
         } else { if ($this->debug) echo "[DA] Saved Data is OK;<br/>\r\n"; return false; }
@@ -71,14 +73,23 @@ if (!class_exists('nxsAPI_DA')){class nxsAPI_DA{ var $ck = array(); var $mh = ''
       $flds['game'] = ''; $flds['book'] = ''; $flds['food'] = ''; $flds['movie'] = ''; $flds['drink'] = ''; $flds['flip'] = '0'; $flds['featured'] = '1'; 
       $flds['portal'] = '1'; $flds['skinlabel'] = 'No+skin'; $flds['jheader'] = ''; $flds['jcss'] = ''; $flds['jfooter'] = '';       
       $ck2 =  $rep['cookies']; for($i=0;$i<count($ck);$i++) if ($ck[$i]->name=='userinfo') $ck[$i]->value = urlencode($ck2[0]->value);       
-      $fldsOut = $flds;  $ckk = array(); for($i=0;$i<count($ck);$i++)  if ($ck[$i]->name=='userinfo' || $ck[$i]->name=='auth') $ckk[] = $ck[$i]; $ck = $ckk; sleep(16); //## Important.      
-      $hdrsArr = $this->headers($mh.'/journal/?edit', $mh, true); $advSets = array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'body' => $fldsOut, 'cookies' => $ck); 
-      $response = wp_remote_post($mh.'/journal/?edit', $advSets); // prr($advSets); prr($response);
+      $fldsOut = http_build_query ($flds); $fldsOut = str_replace('No%2Bskin','No+skin',$fldsOut); $ckk = array(); for($i=0;$i<count($ck);$i++)  
+      if ($ck[$i]->name=='userinfo' || $ck[$i]->name=='auth') {$ckk[] = $ck[$i]; if ($ck[$i]->name=='userinfo') $ui = $ck[$i]->value; } $ck = $ckk; sleep(6); //## Important.      
+      $pid = CutFromTo($contents, '"pageviewID":"','"'); $iid = CutFromTo($contents, '"requestid":"','"');      
+      $dflds = array('ui'=>$ui,'pid'=>$pid, 'iid'=>$iid.'-i7ex4avh-1.0','t'=>'json'); $dfldsq = http_build_query($dflds);      
+      $dfldsq1 = 'ui='.$ui.'&c%5B%5D=%22Stash%22%2C%22create_journal%22%2C%5B%2235020854%22%2C%22'.urlencode($flds['subject']).'%22%2C%22'.urlencode($flds['subject']).'%22%2C%22-1%22%2C%7B%7D%5D&pid='.$pid.'&iid='.$iid.'-i7exlgzv-1.0&t=json';      
+      $hdrsArr = $this->headers($mh.'/journal/?edit', $mh, true); $advSets = array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'headers' => $hdrsArr, 'cookies' => $ck);       
+      $advSets['body'] = $dfldsq1; $rep = wp_remote_post($mh.'/global/difi/?', $advSets); //prr($mh.'/global/difi/?');  prr($advSets);       prr($rep); 
+      if (is_wp_error($rep)) {  $badOut = print_r($rep, true)." - ERROR DFI 1"; return $badOut; } $cnt = $rep['body']; 
+      if (stripos($cnt, '"status":"SUCCESS"')===false || stripos($cnt, '"args":["')===false) {  $badOut = print_r($cnt, true)." - ERROR DFI 1.1"; return $badOut; } else $npid = CutFromTo($cnt, '"args":["','"');
+      $dfldsq2 = 'ui='.$ui.'&c%5B%5D=%22Deviation%22%2C%22DeleteSingle%22%2C%5B%'.$npid.'%22%2C%221%22%5D&pid='.$pid.'&iid='.$iid.'-i7exlgzv-1.0&t=json';
+      $advSets['body'] = $dfldsq2; $rep = wp_remote_post($mh.'/global/difi/?', $advSets); // sleep(6); //## Important.      //prr($advSets); prr($rep); die();
+      $advSets['body'] = $fldsOut; $response = wp_remote_post($mh.'/journal/?edit', $advSets); //prr($mh.'/journal/?edit');  prr($advSets); prr($response);
       if ($response['response']['code']=='200' && stripos($response['body'],'field_error')!==false) { $eRRMsg = CutFromTo($response['body'],'field_error', '</div>');  $eRRMsg = trim(strip_tags(CutFromTo($eRRMsg."|GGG|",'>', '|GGG|')));
            $badOut = "POST Error: ".$eRRMsg; return $badOut;
       }      
       if ($response['response']['code']=='302') { $hdrsArr = $this->headers($mh);
-          $rep = wp_remote_get(  $mh.'/journal/', array( 'headers' => $hdrsArr, 'cookies' => $ck)); 
+          $rep = wp_remote_get( $mh.'/journal/', array( 'headers' => $hdrsArr, 'cookies' => $ck)); 
           $daNewPostURL = CutFromTo($rep['body'], 'a data-deviationid="', '</a>'); $daNewPostURL = CutFromTo($daNewPostURL, 'href="', '"'); $daNewPostID = CutFromTo($rep['body'], 'a data-deviationid="', '"');          
          return array('postID'=>$daNewPostID, 'isPosted'=>1, 'postURL'=>$daNewPostURL, 'pDate'=>date('Y-m-d H:i:s'));          
       } else { $badOut .= 'Somethibng is not right';

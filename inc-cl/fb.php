@@ -183,7 +183,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
             <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'].(!empty($options['fbAppAuthUserName'])?" - ".$options['fbAppAuthUserName']:''), ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <br/><?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&scope=publish_actions,manage_pages,user_photos,user_groups&state=<?php echo 'nxs-fb-'.$ii; ?>&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL));?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&scope=publish_actions,manage_pages,publish_pages,user_posts,user_photos,user_groups&state=<?php echo 'nxs-fb-'.$ii; ?>&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
           <?php } } ?>
@@ -502,19 +502,24 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
       
       if ($isAttachVidFB=='V') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
           if (strlen($vids[0])==11) $options['urlToUse'] = 'http://youtu.be/'.$vids[0];
-          if (strlen($vids[0])==8) $options['urlToUse'] = 'https://vimeo.com/'.$vids[0];
+          if (strlen($vids[0])==8 || strlen($vids[0])==9) $options['urlToUse'] = 'https://vimeo.com/'.$vids[0];
+          if (strlen($vids[0])==15) $options['urlToUse'] = 'https://www.facebook.com/video.php?v='.$vids[0];
       }}
       
-      if ($isAttachVidFB=='A') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) { 
+      if ($isAttachVidFB=='A') {$vids = nsFindVidsInPost($post, false); if (count($vids)>0) {
           if (strlen($vids[0])==11) { $vidURL = 'http://www.youtube.com/v/'.$vids[0]; $imgURL = nsGetYTThumb($vids[0]); }
-          if (strlen($vids[0])==8) { // $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
+          if (strlen($vids[0])==8 || strlen($vids[0])==9) { // $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
             $vidURL = 'https://f.vimeocdn.com/p/flash/moogaloop/6.0.37/moogaloop.swf?autoplay=1&clip_id='.$vids[0];
             $apiURL = "http://vimeo.com/api/v2/video/".$vids[0].".json?callback=showThumb"; $json = wp_remote_get($apiURL);
             if (!is_wp_error($json)) { $json = $json['body'];  $json = str_replace('/**/','',$json);
             $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           
           }
+          if (strlen($vids[0])==15) { // $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
+            $vidURL = 'https://www.facebook.com/video.php?v='.$vids[0]; $apiURL = "https://graph.facebook.com/".$vids[0]; $json = wp_remote_get($apiURL);
+            if (!is_wp_error($json)) { $json = $json['body']; $json = json_decode($json, true); $frmts = $json['format']; $imgURL = array_pop($frmts); $imgURL = $imgURL['picture'];  }           
+          }
       }}
-      if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse'];  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = 'http://www.noimage.faketld';//$imgURL = 'http://cdn.gtln.us/img/t1x1.gif'; 
+      if (!empty($options['imgToUse'])) $imgURL = $options['imgToUse'];  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = 'http://www.noimage.faketld';//$imgURL = 'http://cdn.gtln.us/img/t1x1.gif'; 
       
       $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];     
       $options['fbMsgFormat'] = $msg;   if (!empty($urlTitle)) $urlTitle = strip_tags(strip_shortcodes($urlTitle));
@@ -526,7 +531,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_FB(); $ret = $ntToPost->doPostToNT($options, $message); 
     //## Process Results
-    if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
+    if (!is_array($ret) || !isset($ret['isPosted']) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
       if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 

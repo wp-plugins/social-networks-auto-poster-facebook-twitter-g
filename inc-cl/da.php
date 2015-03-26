@@ -1,6 +1,6 @@
 <?php    
 //## NextScripts deviantART Connection Class
-$nxs_snapAvNts[] = array('code'=>'DA', 'lcode'=>'da', 'name'=>'deviantART');
+$nxs_snapAvNts[] = array('code'=>'DA', 'lcode'=>'da', 'name'=>'deviantART (!)');
 
 if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
   //#### Show Common Settings
@@ -37,6 +37,8 @@ if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
             <div id="doDA<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" value="0" id="apDoS<?php echo $ntU.$ii; ?>" />
+            
+            <div style="color:red;padding:5px;margin:5px; border: 1px solid darkred;">DeviantArt API is being extremely unstable and buggy on their side for the last several months. Until further notice DeviantArt connector is provided "as is". Please use it on your own risk. This may cause numerous of different issues including disapering posts, broken accounts, messed up posts, etc...<br/></div>
             
             <?php if(!function_exists('doConnectToDeviantART')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
             <b><?php _e('deviantART API Library not found', 'nxs_snap'); ?></b>
@@ -215,11 +217,8 @@ if (!function_exists("nxs_doPublishToDA")) { //## Second Function to Post to DA
       $ntToPost = new nxs_class_SNAP_DA(); $ret = $ntToPost->doPostToNT($options, $message); // echo "~~~"; prr($ret); echo "+++";
       //## Save Session
       if (empty($options['ck'])) $options['ck'] = '';
-      if (!empty($ret) && is_array($ret) && !empty($ret['ck']) && !empty($ret['ck']) && serialize($ret['ck'])!=$options['ck']) { global $plgn_NS_SNAutoPoster;  $gOptions = $plgn_NS_SNAutoPoster->nxs_options; // prr($gOptions['pn']);
-        if (isset($options['ii']) && $options['ii']!=='')  { $gOptions[$ntCdL][$options['ii']]['ck'] = serialize($ret['ck']);   $gOptions[$ntCdL][$options['ii']]['mh'] = serialize($ret['mh']); update_option('NS_SNAutoPoster', $gOptions);  }        
-        else foreach ($gOptions[$ntCdL] as $ii=>$gpn) { $result = array_diff($options, $gpn);
-          if (!is_array($result) || count($result)<1) { $gOptions[$ntCdL][$ii]['ck'] = serialize($ret['ck']);  $gOptions[$ntCdL][$options['ii']]['mh'] = serialize($ret['mh']); $plgn_NS_SNAutoPoster->nxs_options = $gOptions; update_option('NS_SNAutoPoster', $gOptions); break; }
-        }        
+      if (!empty($ret) && is_array($ret) && !empty($ret['ck']) && !empty($ret['ck']) && serialize($ret['ck'])!=$options['ck']) { $options['ck'] = serialize($ret['ck']); $options['mh'] = serialize($ret['mh']);
+        if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)) { $nxs_gOptions['da'][$ii] = $options; nxs_settings_save($nxs_gOptions); }
       } 
       //## Process Results
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 

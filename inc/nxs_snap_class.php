@@ -120,6 +120,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['YOURLSKey'])) $options['YOURLSKey'] = $_POST['YOURLSKey']; 
             if (isset($_POST['YOURLSURL'])) $options['YOURLSURL'] = $_POST['YOURLSURL'];
             
+            
+            if (isset($_POST['xcoAPIKey'])) $options['xcoAPIKey'] = $_POST['xcoAPIKey']; 
             if (isset($_POST['clkimAPIKey'])) $options['clkimAPIKey'] = $_POST['clkimAPIKey']; 
             if (isset($_POST['postAPIKey'])) $options['postAPIKey'] = $_POST['postAPIKey'];             
             
@@ -131,6 +133,8 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             
             if ($options['nxsURLShrtnr']=='C' && trim($_POST['clkimAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';
             if ($options['nxsURLShrtnr']=='P' && trim($_POST['postAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';            
+            if ($options['nxsURLShrtnr']=='X' && trim($_POST['xcoAPIKey'])=='') $options['nxsURLShrtnr'] = 'G';            
+            
             
             if (isset($_POST['forceSURL']))   $options['forceSURL'] = 1;  else $options['forceSURL'] = 0;
                        
@@ -443,6 +447,12 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <input type="radio" name="nxsURLShrtnr" value="B" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='B') echo 'checked="checked"'; ?> /> <b>bit.ly</b>  - <i>Enter bit.ly username and <a target="_blank" href="http://bitly.com/a/your_api_key">API Key</a> below</i><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly Username: <input name="bitlyUname" style="width: 20%;" value="<?php if (isset($options['bitlyUname'])) _e(apply_filters('format_to_edit',$options['bitlyUname']), 'nxs_snap') ?>" /><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="bitlyAPIKey" style="width: 20%;" value="<?php if (isset($options['bitlyAPIKey'])) _e(apply_filters('format_to_edit',$options['bitlyAPIKey']), 'nxs_snap') ?>" />
+              </div>
+              
+              <!-- ## x.co ##-->
+              <div class="itemDiv">
+              <input type="radio" name="nxsURLShrtnr" value="X" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='X') echo 'checked="checked"'; ?> /> <b>x.co</b>  - <i>Enter x.co <a target="_blank" href="http://app.x.co/Settings.aspx">API Key</a> below. You can get API key from your x.co settings page: <a target="_blank" href="http://app.x.co/Settings.aspx">http://app.x.co/Settings.aspx</a>.</i><br/>              
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x.co&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="xcoAPIKey" style="width: 20%;" value="<?php if (isset($options['xcoAPIKey'])) _e(apply_filters('format_to_edit',$options['xcoAPIKey']), 'nxs_snap') ?>" />
               </div>
               <!-- ## clk.im ##-->
               <div class="itemDiv">

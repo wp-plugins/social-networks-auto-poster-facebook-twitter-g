@@ -11,10 +11,10 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
   $msg = nxs_doSpin($msg);
   if (preg_match('/%URL%/', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
-  if (preg_match('/%MYURL%/', $msg)) { $url =  get_post_meta($postID, 'snap_MYURL', true); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%MYURL%", $url, $msg);}
+  if (preg_match('/%MYURL%/', $msg)) { $url =  get_post_meta($postID, 'snap_MYURL', true); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%MYURL%", $url, $msg);}// prr($msg);
   if (preg_match('/%SURL%/', $msg)) { $url = get_permalink($postID); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams; 
     $url = nxs_mkShortURL($url, $postID); $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);
-  }
+  } 
   if (preg_match('/%ORID%/', $msg)) { $msg = str_ireplace("%ORID%", $postID, $msg); } 
   if (preg_match('/%IMG%/', $msg)) { $imgURL = nxs_getPostImage($postID); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
   if (preg_match('/%TITLE%/', $msg)) { $title = nxs_doQTrans($post->post_title, $lng); $msg = str_ireplace("%TITLE%", $title, $msg); }                    
@@ -101,7 +101,7 @@ if (!function_exists("nxs_ucwords")){ function nxs_ucwords($str) { if (function_
 
 if (!function_exists("nxs_getURL")){ function nxs_getURL($options, $postID, $addURLParams='') { global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
   if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true));
-  $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if ($myurl!='') $options['urlToUse'] = $myurl;
+  $ssl = (!empty($gOptions['ht']) && $gOptions['ht'] == ord('h')); if (!empty($myurl)) $options['urlToUse'] = $myurl;
   if ((isset($options['urlToUse']) && trim($options['urlToUse'])!='') || $ssl) { $options['atchUse'] = 'F'; } else $options['urlToUse'] = get_permalink($postID);      
   $options['urlToUse'] = $ssl?$gOptions['useSSLCert']:$options['urlToUse']; // $addURLParams = trim($gOptions['addURLParams']);  
   if($addURLParams!='') $options['urlToUse'] .= (strpos($options['urlToUse'],'?')!==false?'&':'?').$addURLParams;  $forceSURL = trim(get_post_meta($postID, '_snap_forceSURL', true));
@@ -124,7 +124,7 @@ if (!function_exists('nxs_showListRow')){function nxs_showListRow($ntParams) { $
               <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && ((isset($pbo['catSel']) && (int)$pbo['catSel'] == 1)||(!empty($pbo['tagsSel'])))) { ?> <input type="radio" id="rbtn<?php echo $ntInfo['lcode'].$indx; ?>" value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" checked="checked" onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);" /> <?php } else { ?>
                 <input value="0" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="hidden" />             
                 <input value="1" name="<?php echo $ntInfo['lcode']; ?>[<?php echo $indx; ?>][apDo<?php echo $ntInfo['code']; ?>]" type="checkbox" <?php if ((int)$pbo['do'.$ntInfo['code']] == 1 && $pbo['catSel']!='1') echo "checked"; ?> />             
-              <?php } ?>            
+              <?php } ?>       
               <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
               <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
               <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
