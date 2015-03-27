@@ -72,10 +72,7 @@ if (!function_exists('nsFindVidsInPost')){function nsFindVidsInPost($post, $raw=
      foreach ($matches3[2] as $match3) {  $match3 = trim($match3); if (strlen($match3)==15) $postVids[] = $match3;} 
      $output3 = preg_match_all( '#https?://(www\.)?facebook\.com/video/embed(/)?\?video_id=(\d+)#i', $match, $matches3 ); if ($output3 === false){return false;} 
      foreach ($matches3[3] as $match3) {  $match3 = trim($match3); if (strlen($match3)==15) $postVids[] = $match3;} 
-  }   $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;
-  
-  https://www.facebook.com/video/embed?video_id=938730299494218
-  
+  }   $postVids = array_unique($postVids); if (isset($ShownAds)) $ShownAds = $ShownAdsL; return $postVids;  
 }}
 if (!function_exists('nsTrnc')){ function nsTrnc($string, $limit, $break=" ", $pad=" ...") { if(nxs_strLen($string) <= $limit) return $string; if(nxs_strLen($pad) >= $limit) return ''; $string = nxs_substr($string, 0, $limit-nxs_strLen($pad)); 
   $brLoc = strripos($string, $break);  if ($brLoc===false) return $string.$pad; else return nxs_substr($string, 0, $brLoc).$pad; 
