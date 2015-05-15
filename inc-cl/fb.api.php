@@ -70,9 +70,9 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
               }
             }
           }        
-        } 
+        }         
         //## Actual Post                
-        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere;  // prr($destURL); //prr($args);   prr($mssg); //die();
+        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; //  prr($destURL); prr($args);   prr($mssg); //die();
         $response = wp_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 45, 'sslverify'=>false, 'redirection' => 0, 'body' => $mssg)); 
       }     
       

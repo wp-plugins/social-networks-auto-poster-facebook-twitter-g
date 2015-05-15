@@ -189,6 +189,26 @@ if (!function_exists("nxs_cron_check")){function nxs_cron_check() { if (stripos(
   update_option("NXS_cronCheck", $cronCheckArray);    
 }}}
 
+function nxs_show_noLibWrn($msg){ ?> <div style="border: 2px solid darkred; padding: 25px 15px 15px 15px; margin: 3px; background-color: #fffaf0;"> 
+            <span style="font-size: 16px; color:darkred;"><?php echo $msg ?></span>&nbsp;<a href="http://www.nextscripts.com/faq/third-party-libraries-autopost-google-pinterest/" target="_blank">More info about third party libraries.</a><br/><hr/> <div style="font-size: 16px; color:#005800; font-weight: bold; margin-top: 12px; margin-bottom: 7px;">You can get API library from NextScripts.</div>
+            <div style="padding-bottom: 5px;"><a href="http://www.nextscripts.com/snap-api/">SNAP API Libarary</a> adds autoposting to:</div> <span class="nxs_txtIcon nxs_ti_gp">Google+</span>, <span class="nxs_txtIcon nxs_ti_pn">Pinterest</span>, <span class="nxs_txtIcon nxs_ti_rd">Reddit</span>, <span class="nxs_txtIcon nxs_ti_bg">Blogger</span>,&nbsp;&nbsp;<span class="nxs_txtIcon nxs_ti_yt">YouTube</span>,&nbsp;&nbsp;<span class="nxs_txtIcon nxs_ti_fp">Flipboard</span>, <span class="nxs_txtIcon nxs_ti_li">LinkedIn Company Pages and Groups</span><br><br>          
+            All NextScripts SNAP API libraries are included in the  <a href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts/" target="_blank">"Pro" (Multiaccount) Edition of the SNAP plugin</a>. Pro version upgrade adds the ability to configure more then one account for each social network and some addidional features.<br><br>
+            <div align="center"><a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts/#getit" class="NXSButton" id="nxs_snapUPG">Get SNAP Pro Plugin with SNAP API</a></div>
+            <div style="font-size: 10px; margin-top: 20px;">*If you already have API, please follow instructions from the readme.txt file.</div>
+          </div> <?php 
+}
+
+if (!function_exists("nxs_save_glbNtwrks")) { function nxs_save_glbNtwrks($nt, $ii, $ntOptsOrVal, $field='', $networks='')  { if (empty($networks)) {
+    if (class_exists('NS_SNAutoPoster')) { global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) $plgn_NS_SNAutoPoster = new nxs_SNAP(); $networks = $plgn_NS_SNAutoPoster->nxs_options; } 
+      elseif (function_exists("nxs_settings_open")) $networks = nxs_settings_open();
+  } if(!empty($field)) $networks[$nt][$ii][$field] = $ntOptsOrVal; else $networks[$nt][$ii] = $ntOptsOrVal; nxs_save_ntwrksOpts($networks);   
+  if (isset($plgn_NS_SNAutoPoster)) $plgn_NS_SNAutoPoster->nxs_options = $networks;
+}}
+
+if (!function_exists("nxs_save_ntwrksOpts")) { function nxs_save_ntwrksOpts($networks) { if (function_exists('nxs_settings_save')) nxs_settings_save($networks);
+  if (function_exists('get_option')) { if (!empty($networks)) update_option('NS_SNAutoPoster', $networks);  }    
+}}
+
 function nxs_toolbar_link_to_mypage( $wp_admin_bar ) {
     $args = array(
         'id'    => 'snap-post',

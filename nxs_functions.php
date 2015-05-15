@@ -30,7 +30,7 @@ if (!function_exists('nxs_decodeEntities')){function nxs_decodeEntities($text) {
     $text= preg_replace('/&#x([a-f0-9]+);/mei',"chr(0x\\1)",$text);  #hex notation
     return $text;
 }}
-if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  $postImgs = array();
+if (!function_exists('nsFindImgsInPost')){function nsFindImgsInPost($post, $advImgFnd=false) { global $ShownAds; if (isset($ShownAds)) $ShownAdsL = $ShownAds;  $postImgs = array(); if (!is_object($post)) return;
   if ($advImgFnd) $postCntEx = apply_filters('the_content', $post->post_excerpt); else $postCntEx = $post->post_excerpt;   
   if ($advImgFnd) $postCnt = apply_filters('the_content', $post->post_content); else $postCnt = $post->post_content; 
   $postCnt = $postCntEx.$postCnt;
@@ -244,7 +244,7 @@ if (!function_exists("jsPostToSNAP")) { function jsPostToSNAP() {  global $nxs_s
     <?php
   }
 }
-if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster; 
+if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { global $nxs_snapAvNts, $nxs_snapThisPageUrl, $plgn_NS_SNAutoPoster, $nxs_plurl; 
    if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
 ?>
             
@@ -442,6 +442,11 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
 #nxsDivWrap .postbox .description {vertical-align: middle; color: #ACACAC;}  
 
 .submitX {padding-top: 7px; padding-bottom: 5px;}
+
+.nxs_txtIcon { margin: 0px; padding-left: 20px; background-repeat: no-repeat;} .nxs_ti_gp {background-image: url('<?php echo $nxs_plurl; ?>img/gp16.png');} 
+            .nxs_ti_li {background-image: url('<?php echo $nxs_plurl; ?>img/li16.png');}  .nxs_ti_rd {background-image: url('<?php echo $nxs_plurl; ?>img/rd16.png');} 
+            .nxs_ti_fp {background-image: url('<?php echo $nxs_plurl; ?>img/fp16.png');}  .nxs_ti_yt {background-image: url('<?php echo $nxs_plurl; ?>img/yt16.png');} 
+            .nxs_ti_bg {background-image: url('<?php echo $nxs_plurl; ?>img/bg16.png');}  .nxs_ti_pn {background-image: url('<?php echo $nxs_plurl; ?>img/pn16.png');} 
 </style>
 <?php }}
 

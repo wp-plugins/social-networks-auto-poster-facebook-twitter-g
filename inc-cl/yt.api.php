@@ -14,18 +14,17 @@ if (!class_exists("nxs_class_SNAP_YT")) { class nxs_class_SNAP_YT {
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>'');
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
-      if (!isset($options['ytUName']) || trim($options['ytPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }            
+      if (!isset($options['ytUName']) || trim($options['ytPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }   $email = $options['ytUName'];         
       $pass = substr($options['ytPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ytPass'], 5)):$options['ytPass'];                   
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['ytMsgFormat'], $message); 
-      
-      $loginError = doConnectToGooglePlus2($options['ytUName'], $pass, 'YT'); if ($loginError!==false) return "BAD USER/PASS - ".$loginError; 
-      
-      $ret = doPostToYouTube($msg, $options['ytPageID'], $message['videoURL'], $options['ytGPPageID']); //prr($ret);
-      if ($ret=='OK') $ret = array("code"=>"OK", "post_id"=>'');
-      if ( (!is_array($ret)) && $ret!='OK') {  $badOut['Error'] .= 'Something went wrong - NO PID '.print_r($ret, true);  } 
-        else return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'));        
-      return $badOut;      
+            
+      $nt = new nxsAPI_GP(); if(!empty($options['ck'])) $nt->ck = $options['ck'];  $nt->debug = false;  $loginError = $nt->connect($email, $pass, 'YT');     
+      if (!$loginError){          
+         $result = $nt -> postYT($msg, $options['ytPageID'], $message['videoURL'], $options['ytGPPageID']);
+      } else {  $badOut['Error'] = "Login/Connection Error: ". print_r($loginError, true); return $badOut; }       
+      if (is_array($result) && $result['isPosted']=='1') nxs_save_glbNtwrks('yt', $options['ii'], $nt->ck, 'ck');
+      return $result;  
    }    
 }}
 ?>

@@ -36,11 +36,9 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
   function showNTSettings($ii, $options, $isNew=false){  global $nxs_plurl; $nt = $options['ntInfo']['lcode']; $ntU = strtoupper($nt); 
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['ytGPPageID'])) $options['ytGPPageID'] = '';  ?>
-            <div id="doYT<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSYT<?php echo $ii; ?>" value="0" id="apDoSYT<?php echo $ii; ?>" />             
-            <?php if(!function_exists('doPostToGooglePlus')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
-            <b><?php _e('YouTube API Library not found', 'nxs_snap'); ?></b>
-             <br/><br/> <?php _e('YouTube doesn\'t have a built-in API for automated posts yet.', 'nxs_snap'); ?> <br/><?php _e('The current <a target="_blank" href="http://developers.google.com/+/api/">YouTube API</a> is "Read Only" and can\'t be used for posting.  <br/><br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting"><b>API Library Module</b></a> to be able to publish your content to YouTube.', 'nxs_snap'); ?></span></div>
-            <?php return; }; ?>            
+            <div id="doYT<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSYT<?php echo $ii; ?>" value="0" id="apDoSYT<?php echo $ii; ?>" />            
+            <?php if(!function_exists('doPostToGooglePlus')) {                
+                 nxs_show_noLibWrn('YouTube API Library module NOT found.<br/><br/><span style="color:black;">YouTube does not have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to YouTube.</span>'); echo "</div>"; return; }; ?>            
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/yt16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/youtube-social-networks-auto-poster-wordpress-setup-installation/"><?php $nType="YouTube"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
             <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="yt[<?php echo $ii; ?>][nName]" id="ytnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
@@ -185,7 +183,7 @@ if (!function_exists("nxs_rePostToYT_ajax")) {
     foreach ($options['yt'] as $ii=>$two) if ($ii==$_POST['nid']) {   $two['ii'] = $ii; $two['pType'] = 'aj'; //if ($two['ytPageID'].$two['ytUName']==$_POST['nid']) {  
       $ytpo =  get_post_meta($postID, 'snapYT', true); $ytpo =  maybe_unserialize($ytpo);// prr($ytpo);
       if (is_array($ytpo) && isset($ytpo[$ii]) && is_array($ytpo[$ii])){ $ntClInst = new nxs_snapClassYT(); $two = $ntClInst->adjMetaOpt($two, $ytpo[$ii]); } 
-      $result = nxs_doPublishToYT($postID, $two); if ($result == 200) die("Successfully sent your post to YouTube."); else die($result);        
+      $result = nxs_doPublishToYT($postID, $two); if ($result === 200) die("Successfully sent your post to YouTube."); else die($result);        
     }    
   }
 }  
@@ -223,9 +221,9 @@ if (!function_exists("nxs_doPublishToYT")) { //## Second Function to Post to G+
       } else {  // ## All Good - log it.
         if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
           else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
-      }
+      } 
       //## Return Result
-      if ($ret['isPosted']=='1') return 200; else return print_r($ret, true);       
+      if (is_array($ret) && !empty($ret['isPosted']) && $ret['isPosted']=='1') return 200; else return print_r($ret, true);       
   } 
 }  
 ?>

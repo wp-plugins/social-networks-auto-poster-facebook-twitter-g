@@ -1,6 +1,6 @@
 <?php    
 //## NextScripts Reddit Connection Class
-if(function_exists('doConnectToRD')) { $nxs_snapAvNts[] = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit'); }
+$nxs_snapAvNts[] = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit');
 
 if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {  
   //#### Show Common Settings
@@ -38,11 +38,8 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['rdSubReddit'])) $options['rdSubReddit'] = ''; ?>
             <div id="doRD<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSRD<?php echo $ii; ?>" value="0" id="apDoSRD<?php echo $ii; ?>" />      
             
-            <?php if(!function_exists('doConnectToRD')) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
-            <b><?php _e('Reddit API Library not found', 'nxs_snap'); ?></b>
-             <br/><br/> <?php _e('Reddit doesn\'t have a built-in API for automated posts yet.', 'nxs_snap'); ?> <br/><?php _e('<br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/reddit-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Reddit.', 'nxs_snap'); ?></span></div>
-            <?php return; }; ?>  
-            
+            <?php if(!function_exists('doConnectToRD')) {                
+                 nxs_show_noLibWrn('Reddit API Library module NOT found.<br/><br/><span style="color:black;">Reddit does not have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Reddit.</span>'); echo "</div>"; return; }; ?>              
                                
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/rd16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-reddit-social-networks-auto-poster-wordpress/"><?php $nType="Reddit"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             

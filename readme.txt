@@ -2,17 +2,17 @@
 
 Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
-Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, FriendFeed, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
+Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
 Requires at least: 3.4
-Tested up to: 4.1.1
-Stable tag: 3.4.16
+Tested up to: 4.2.2
+Stable tag: 3.4.17
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
 
 == Description ==
 
-**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, FriendFeed, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, XING etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
+**This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, XING etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
 
 **ALL NEW SNAP for Wordpress Version 4 is coming soon...**
 
@@ -38,7 +38,6 @@ More V4 info: http://www.nextscripts.com/tag/v4/
 * **Facebook** - Autopost to your profile, business page, community page, or Facebook group page. Ability to attach your blogpost to Facebook post. Ability to make "Image" posts.
 * **Flickr** - Autopost images to your photostream and/or sets. Tags are supported. 
 * **Flipboard** (*with third party API library*) - post to your magazines.
-* **FriendFeed** - Autopost to your account. Ability to attach Image to posts.
 * **Instapaper** - Auto-submit bookmark to your account. 
 * **Google+** (*with third party API library*) - Autopost to your profile, business page or community. Ability to attach your blogpost to Google+ post. Ability to make "Image" posts.
 * **Kippt** - Auto-submit links to your blogpost to your Kippt list.
@@ -168,6 +167,16 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.17 [05/15/2015] =
+
+* New/Improvement - Wordpress 4.2.2 compatibility.
+* New/Bug Fix - [Critical] LinkedIn (May 2015) Principal API changes compatibility. Fixes all posting and authorization issues. 
+* [LinkedIn] [Breaking change] Groups are no longer supported via native LinkedIn API. 
+* [LinkedIn] New, more clear LinkedIn configuration interface. 
+* [LinkedIn] New post type: Image. (NextScripts API ONLY). (Profile and Company pages ONLY).
+* [Flickr] Flickr can post latitude and longitude info from post meta fields geo_latitude and geo_longitude. Thanks to petermolnar for the code. 
+* Improvement - Performance and stability improvements for all Google services - Google+, Blogger, YouTube
 
 = 3.4.16 [03/26/2015] =
 

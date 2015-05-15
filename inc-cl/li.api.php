@@ -13,7 +13,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
       $xml = '<?xml version="1.0" encoding="UTF-8"?><share><comment>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</comment>'.
       ($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title><submitted-url>'.$url.'</submitted-url>'.(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'').'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').
-        '<visibility><code>anyone</code></visibility></share>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      prr($xml);
+        '<visibility><code>anyone</code></visibility></share>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';   //   prr($xml);
       $wprg = array( 'method' => 'POST', 'headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $xml);  $wprg['sslverify'] = false;      
       $response  = wp_remote_post($nURL, $wprg); if (is_wp_error($response) || empty($response['body'])) return "ERROR: ".print_r($response, true);      
       $post = json_decode($response['body'], true); return $post; 
@@ -22,7 +22,7 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
     function postToGroup($tkn, $msg, $title, $groupID, $url='', $imgURL='', $dsc='') { $nURL = 'https://api.linkedin.com/v1/groups/'.$groupID.'/posts?oauth2_access_token='.$tkn; 
       $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
       $xml = '<?xml version="1.0" encoding="UTF-8"?><post><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<summary>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</summary>'."\n".'
-        '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'')."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      
+        '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'')."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description><category>discussion</category></content><category>discussion</category>':'').'</post>'; $hdrsArr = array();  $hdrsArr['Content-Type']='application/xml';      
       $wprg = array( 'method' => 'POST', 'headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $xml);  $wprg['sslverify'] = false;      
       $response  = wp_remote_post($nURL, $wprg);if (is_wp_error($response) || $response['response']['code']!='201') return "ERROR: ".print_r($response, true);      
       return array('updateUrl'=>'https://www.linkedin.com/groups?home=&gid='.$groupID);
@@ -41,7 +41,8 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['liMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['liMsgFormatT'], $message);         
-      if ($options['liAttch']=='1') { 
+      if(empty($options['postType'])) { if ((int)$options['liAttch'] == 1 || $isNew) $options['postType'] = 'A';}
+      if ( $options['postType'] == 'A' || $options['postType'] == 'I') { 
         if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';  if (preg_match("/noImg.\.png/i", $imgURL)) $imgURL = '';           
         if (!empty($message['urlDescr'])) $dsc = $message['urlDescr']; else $dsc = $msg;          
         $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nxs_html_to_utf8($dsc);  $dsc = nsTrnc($dsc, 300);        
@@ -51,19 +52,22 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
       if (function_exists("doConnectToLinkedIn") && $options['ulName']!='' && $options['uPass']!='') {
         $dusername = $options['ulName']; $pass = (substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass']); // ??? Do we need that??????
         $auth = doConnectToLinkedIn($options['ulName'], $options['uPass'], $options['ii']); if ($auth!=false) { $badOut['Error'] .= "|Auth Error - ".$auth;  return $badOut; }
-        $to = $options['uPage']!=''?$options['uPage']:'http://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
-        if ($options['liAttch']=='1') { $lnk['title'] = $message['urlTitle']; $lnk['postTitle'] = $msgT; $lnk['desc'] =  $message['urlDescr']; $lnk['url'] = $urlToGo; $lnk['img'] = $imgURL; }      
-        $ret = doPostToLinkedIn($msg, $lnk, $to); $liPostID = $options['uPage'];
+        $to = $options['uPage']!=''?$options['uPage']:'https://www.linkedin.com/home'; $lnk = array(); $msg = str_ireplace('&nbsp;',' ',$msg);  $msg = nsTrnc(strip_tags($msg), 700);
+        if ($options['postType'] == 'A'){ $lnk['title']=$message['urlTitle']; $lnk['postTitle'] = $msgT; $lnk['desc'] =  $message['urlDescr']; $lnk['url'] = $urlToGo; $lnk['img'] = $imgURL; $lnk['postType'] = 'A';}
+        if ($options['postType'] == 'I'){ $lnk['title'] = ''; $lnk['postTitle'] = ''; $lnk['desc'] =  ''; $lnk['url'] = $imgURL; $lnk['img'] = $imgURL; $lnk['postType'] = 'I'; $lnk['postTitle'] = $msgT;}              
+        if ($options['postType'] == 'T'){ $lnk['postTitle'] = $msgT;  $lnk['postType'] = 'T'; }
+        global $nxs_gCookiesArr; $li = new nxsAPI_LI(); $li->debug = false; if (!empty($nxs_gCookiesArr)) $li->ck = $nxs_gCookiesArr; $ret = $li->post($msg, $lnk, $to); 
+        if (is_array($ret) && !empty($ret['isPosted'])) return $ret; $liPostID = $options['uPage'];
       } else {
         if (!empty($options['isV2'])) { //## V2
           if ($options['grpID']!=''){
             try { if ($msgT == '') $msgT = ' '; 
-              if($options['liAttch']=='1') $ret = $this->postToGroup($options['liAccessToken'], $msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
+              if( $options['postType'] == 'A') $ret = $this->postToGroup($options['liAccessToken'], $msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
                 else $ret = $this->postToGroup($options['liAccessToken'], $msg, $msgT, $options['grpID']); 
               $liPostID= 'http://www.linkedin.com/groups?gid='.$options['grpID'];
             } catch (Exception $o){ $ret="ERROR: ".print_r($o, true); }        
           } else { //echo $msg ."|". nsTrnc($msgT, 200) ."|". $urlToGo ."|". $imgURL ."|". $dsc;
-            if($options['liAttch']=='1') $ret = $this->postShare($options['liAccessToken'], $msg, nsTrnc($msgT, 200), str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
+            if($options['postType'] == 'A') $ret = $this->postShare($options['liAccessToken'], $msg, nsTrnc($msgT, 200), str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
               else $ret = $this->postShare($options['liAccessToken'], $msg);
           }  
         } else {  //## V1
@@ -73,12 +77,12 @@ if (!class_exists("nxs_class_SNAP_LI")) { class nxs_class_SNAP_LI {
           $msg = nsTrnc($msg, 700); //prr($urlToGo);  $urlToGo = urlencode($urlToGo);   prr($urlToGo); die();
           if ($options['grpID']!=''){
             try{ if ($msgT == '') $msgT = ' '; 
-              if($options['liAttch']=='1') $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
+              if($options['postType'] == 'A') $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID'], str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); 
                 else $ret = $linkedin->postToGroup($msg, $msgT, $options['grpID']); 
               $liPostID= 'http://www.linkedin.com/groups?gid='.$options['grpID']; if ($ret=='201') $ret = array('updateUrl'=>$liPostID);
             } catch (Exception $o){ $ret="ERROR: ".print_r($o, true); }        
           } else { //echo $msg ."|". nsTrnc($msgT, 200) ."|". $urlToGo ."|". $imgURL ."|". $dsc;
-            try{ if($options['liAttch']=='1') $ret = $linkedin->postShare($msg, nsTrnc($msgT, 200), str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); else $ret = $linkedin->postShare($msg); } catch (Exception $o){ $ret="ERROR:".print_r($o, true); }             
+            try{ if($options['postType'] == 'A') $ret = $linkedin->postShare($msg, nsTrnc($msgT, 200), str_replace('&', '&amp;', $urlToGo), $imgURL, $dsc); else $ret = $linkedin->postShare($msg); } catch (Exception $o){ $ret="ERROR:".print_r($o, true); }             
           }  
         }        
         if ($liPostID=='') $liPostID = $options['liUserInfo'];        

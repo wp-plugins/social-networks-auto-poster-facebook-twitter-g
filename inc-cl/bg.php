@@ -195,15 +195,14 @@ if (!function_exists("nxs_rePostToBG_ajax")) { function nxs_rePostToBG_ajax() { 
       foreach ($options['bg'] as $ii=>$po) if ($ii==$_POST['nid']) {   $po['ii'] = $ii; $po['pType'] = 'aj';
       $mpo =  get_post_meta($postID, 'snapBG', true); $mpo =  maybe_unserialize($mpo);       
       if (is_array($mpo) && isset($mpo[$ii]) && is_array($mpo[$ii]) ){ $ntClInst = new nxs_snapClassBG(); $po = $ntClInst->adjMetaOpt($po, $mpo[$ii]); } 
-      $result = nxs_doPublishToBG($postID, $po);  if ($result == 200) { $options['bg'][$ii]['bgOK']=1;  update_option('NS_SNAutoPoster', $options); }
-      
+      $result = nxs_doPublishToBG($postID, $po);  if ($result === 200) nxs_save_glbNtwrks('bg', $ii, 1, 'bgOK');       
       if ($result == 200) die("Successfully sent your post to Blogger."); else die($result);
     }    
   }
 }
 
 if (!function_exists("nxs_doPublishToBG")) { //## Second Function to Post to BG
-  function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';  if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true));
+  function nxs_doPublishToBG($postID, $options){ $ntCd = 'BG'; $ntCdL = 'bg'; $ntNm = 'Blogger';  if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true)); 
     //$backtrace = debug_backtrace(); nxs_addToLogN('W', 'Enter', $ntCd, 'I am here - '.$ntCd."|".print_r($backtrace, true), '');  
    // if (isset($options['timeToRun'])) wp_unschedule_event( $options['timeToRun'], 'nxs_doPublishToBG',  array($postID, $options));
     $blogTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); if ($blogTitle=='') $blogTitle = home_url();     

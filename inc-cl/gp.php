@@ -2,6 +2,22 @@
 //## NextScripts Facebook Connection Class
 $nxs_snapAvNts[] = array('code'=>'GP', 'lcode'=>'gp', 'name'=>'Google+');
 
+
+function nxs_CptCheckGP($o){ session_id("nxs-temp-gpcpt"); session_start(); $sess = unserialize($_SESSION['nxs-temp-gpcpt']);
+ if (!empty($_POST['c'])) { $ck = $sess['c']; $flds = $sess['f']; 
+    $flds['recaptcha_response_field'] = $_POST['c']; $liObj = new nxsAPI_GP();   $hdrsArr = $liObj->headers('https://www.youtube.com/', 'https://www.youtube.com', 'POST', false);
+    $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck, 'body' => $flds);  prr($advSet);
+    $rep = nxs_remote_post('https://www.youtube.com/das_captcha', $advSet); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $contents2 = $rep['body'];    prr($rep); 
+    if (stripos($contents2, 'id="error-box"')!==false) { echo 'The verification code was invalid or has timed out. Please try again.'; die(); }    
+    if (stripos($contents2, 'The verification code was invalid')!==false) { echo 'The verification code was invalid or has timed out. Please try again.'; die(); }    
+    if ($rep['response']['code']=='303' && !empty($rep['headers']['location']) ) { echo "OK. You are In";      
+      $hdrsArr = $liObj->headers('http://www.youtube.com', 'https://www.youtube.com');  $ck = $rep['cookies'];    
+      $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'cookies' => $ck); // prr($advSet);
+      $rep = nxs_remote_get($rep['headers']['location'], $advSet); prr($ck); if (is_nxs_error($rep)) {  $badOut = print_r($rep, true)." - ERROR"; return $badOut; }  $ck = $rep['cookies'];   
+    }
+ } 
+}
+
 if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   //#### Show Common Settings
   function showGenNTSettings($ntOpts){  global $nxs_plurl; $ntInfo = array('code'=>'GP', 'lcode'=>'gp', 'name'=>'Google+', 'defNName'=>'gpUName', 'tstReq' => false); 
@@ -15,10 +31,9 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = ''; if (!isset($options['gpCCatsList'])) $options['gpCCatsList'] = '';  ?>
             <div id="doGP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" >     <input type="hidden" name="apDoSGP<?php echo $ii; ?>" value="0" id="apDoSGP<?php echo $ii; ?>" />             
-            <?php if(!class_exists('nxsAPI_GP') || (defined('d1') && d1==1)) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
-            <b><?php _e('Google+ API Library not found', 'nxs_snap'); ?></b>
-             <br/><br/> <?php _e('Google+ doesn\'t have a built-in API for automated posts yet.', 'nxs_snap'); ?> <br/><?php _e('The current <a target="_blank" href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can\'t be used for posting.  <br/><br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/google-plus-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Google+.', 'nxs_snap'); ?></span></div>
-            <?php return; }; ?>            
+            <?php if(!class_exists('nxsAPI_GP') || (defined('d1') && d1==1)) {
+                 nxs_show_noLibWrn('Google+ API Library module NOT found.<br/><br/><span style="color:black;">Google+ does not have a free native API for automated posts yet. The current <a target="_blank" href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can\'t be used for posting.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Google+.</span>'); echo "</div>"; return; }; 
+             ?>                      
             <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"><?php $nType="Google+"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             
             <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>

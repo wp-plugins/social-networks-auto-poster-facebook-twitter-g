@@ -32,6 +32,13 @@ if (!class_exists("NS_SNAutoPoster")) {
             $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
             if (isset($options['skipSSLSec'])) $nxs_skipSSLCheck = $options['skipSSLSec']; $options['useSSLCert'] = nsx_doDecode('8416o4u5d4p2o22646060474k5b4t2a4u5s4');
             if(!empty($options['K1']) && $options['K1']=='1') $options = array('isMA'=>false);
+            
+            
+            $liGRP = 0; foreach ($options['li'] as $lii) if (!empty($lii['grpID'])) $liGRP++;
+            if ($liGRP>0) {
+              function nxs_noLiGrps() { global $nxs_snapThisPageUrl; echo '<div class="error"><p><b>Message from NextScripts SNAP Plugin for Wordpress</b></p><p><a target="_blank" href="https://developer.linkedin.com/support/developer-program-transition">LinkedIn has discontinued support for groups</a> from it\'s free native API. You have  LinkedIn group accounts configured. Please <a href="'.$nxs_snapThisPageUrl.'">switch those accounts to NextScipts API</a></p></div>'; } add_action( 'admin_notices', 'nxs_noLiGrps' );
+            }
+            
             return $options;
         }
   
@@ -234,10 +241,10 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            } ?>
            </select>           
            <div id="nsx_addNT">
-             <?php foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName(); 
+             <?php  foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName(); 
              if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) { $ntClInst->showNewNTSettings(0); } else { 
                  $mt = 1+max(array_keys($options[$avNt['lcode']])); if (function_exists('getNSXOption') && function_exists('nxs_doSMAS1')) nxs_doSMAS1($ntClInst, $mt); else nxs_doSMAS($avNt['name'], $avNt['code'].$mt);             
-             }} ?>           
+             }}  ?>           
            </div>
            
            </div>
@@ -316,7 +323,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               
               <input type="checkbox" name="quLimit" value="1" <?php if (isset($options['quLimit']) && $options['quLimit']=='1') echo 'checked="checked"'; ?> /> <b><?php _e('Limit autoposting speed', 'nxs_snap') ?></b> - <i><?php _e('Recommended for busy sites with a lot of new posts.', 'nxs_snap') ?> </i><br/> 
               <div style="margin-left: 10px;">
-              Do not autopost more then one post per network every <input name="quDays" style="width: 24px;" value="<?php echo isset($options['quDays'])?$options['quDays']:'0'; ?>" /> Days,&nbsp;&nbsp;
+              Do not autopost more than one post per network every <input name="quDays" style="width: 24px;" value="<?php echo isset($options['quDays'])?$options['quDays']:'0'; ?>" /> Days,&nbsp;&nbsp;
               <input name="quHrs" style="width: 24px;" value="<?php echo isset($options['quHrs'])?$options['quHrs']:'0'; ?>" /> Hours,&nbsp;&nbsp;
               <input name="quMins" style="width: 24px;" value="<?php echo isset($options['quMins'])?$options['quMins']:'3'; ?>" /> Minutes.
                 <div style="margin-left: 10px;">
@@ -850,7 +857,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
           // prr($_POST);
         }
         
-        function NS_SNAP_AddPostMetaTags() { global $post, $nxs_snapAvNts, $plgn_NS_SNAutoPoster; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; if (!is_object($post)) $post = get_post($post_id);
+        function NS_SNAP_AddPostMetaTags() { global $post, $nxs_snapAvNts, $plgn_NS_SNAutoPoster; $post_id = $post; if (is_object($post_id))  $post_id = $post_id->ID; 
+          if (!is_object($post) || empty($post->post_status)) $post = get_post($post_id);
           if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
           ?>
           <style type="text/css">div#popShAtt {display: none; position: absolute; width: 600px; padding: 10px; background: #eeeeee; color: #000000; border: 1px solid #1a1a1a; font-size: 90%; }

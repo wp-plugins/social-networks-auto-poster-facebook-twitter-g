@@ -39,7 +39,7 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
       if (stripos($result,'tag:blogger.com')!==false) { $postID = CutFromTo($result, " rel='alternate' type='text/html' href='", "'"); return array("code"=>"OK", "post_id"=>$postID); } else return array("code"=>"ERR", "error"=>$result); 
     }
     
-    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); //prr($message); prr($options);
+    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); // prr($message);  prr($options);
       //## Check API Lib
       //if (!function_exists('doConnectToBlogger')) if (file_exists('apis/postToGooglePlus.php')) require_once ('apis/postToGooglePlus.php'); elseif (file_exists('/home/_shared/deSrc.php')) require_once ('/home/_shared/deSrc.php');       
       //## Check settings
@@ -58,8 +58,14 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
       $msg = str_replace("\r\n","\n", $msg); $msg = str_replace("\n\r","\n", $msg); $msg = str_replace("\r","\n", $msg); $msg = str_replace("\n","<br/>", $msg);  
       //## Make Post
       $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID']; // prr($msgT); prr($msg); die();
-      if (function_exists("doConnectToBlogger")) { $auth = doConnectToBlogger($email, $pass); if ($auth!==false) $ret = $auth; else $ret = doPostToBlogger($blogID, $msgT, $msg, $tags); } 
-       else { $auth = $this->nsBloggerGetAuth($email, $pass); if ($auth===false) $ret = 'Incorrect Username/Password'; else { 
+      if (function_exists("doConnectToBlogger")) {           
+          $nt = new nxsAPI_GP(); if(!empty($options['ck'])) $nt->ck = $options['ck'];  $nt->debug = false;  $loginError = $nt->connect($email, $pass, 'BG');     
+          if (!$loginError){          
+             $result = $nt -> postBG($blogID, $msgT, $msg, $tags);// prr($result); 
+          } else {  $badOut['Error'] = "Login/Connection Error: ". print_r($loginError, true); return $badOut; }       
+          if (is_array($result) && $result['isPosted']=='1') nxs_save_glbNtwrks('bg', $options['ii'], $nt->ck, 'ck');
+          return $result;         
+      } else { $auth = $this->nsBloggerGetAuth($email, $pass); if ($auth===false) $ret = 'Incorrect Username/Password'; else { 
         if (is_array($auth))  $ret = $auth['error']; else { 
          $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = $this->nsBloggerNewPost($auth, $blogID, $msgT, $msg);
         }

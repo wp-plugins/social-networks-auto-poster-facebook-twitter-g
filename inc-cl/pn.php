@@ -17,13 +17,9 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
     if (!isset($options['nHrs'])) $options['nHrs'] = 0; if (!isset($options['nMin'])) $options['nMin'] = 0;  if (!isset($options['catSel'])) $options['catSel'] = 0;  if (!isset($options['catSelEd'])) $options['catSelEd'] = ''; 
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
              <div id="doPN<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSPN<?php echo $ii; ?>" value="0" id="apDoSPN<?php echo $ii; ?>" />         
-             
-             <?php if (!function_exists('doPostToPinterest') || (defined('d1') && d1==1)) {?><span style="color:#580000; font-size: 16px;"><br/><br/>
-            <b>Pinterest API Library not found</b>
-             <br/><br/> Pinterest doesn't have a built-in API for automated posts yet.  <br/><br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/pinterest-automated-posting"><b>API Library Module</b></a> to be able to publish your content to Pinterest.</span></div>
-            
-            <?php return; }; ?>
-             
+             <?php if (!function_exists('doPostToPinterest') || (defined('d1') && d1==1)) {                 
+                 nxs_show_noLibWrn('Pinterest API Library module NOT found.<br/><br/><span style="color:black;">Pinterest doesn\'t have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Pinterest.</span>'); echo "</div>"; return; }; 
+             ?>             
            
             <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/"><?php $nType="Pinterest"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
             <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>

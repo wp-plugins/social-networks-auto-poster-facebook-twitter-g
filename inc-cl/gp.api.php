@@ -24,15 +24,19 @@ if (!class_exists("nxs_class_SNAP_GP")) { class nxs_class_SNAP_GP {
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['gpMsgFormat'], $message); // Make "message default"
       if ($gpPostType=='I' || $gpPostType=='A') { if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = ''; } 
             
-      $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];                   
-      $loginError = doConnectToGooglePlus2($email, $pass);  if ($loginError!==false) {  $badOut['Error'] = print_r($loginError, true)." - BAD USER/PASS"; return $badOut; } 
-      if ($gpPostType=='I') $lnk = array(); if ($gpPostType=='A') $lnk = doGetGoogleUrlInfo2($message['url']);  if (is_array($lnk) && $imgURL!='') $lnk['img'] = $imgURL; 
-      if (is_array($lnk) && $imgURL=='' && $message['noImg']===true) $lnk['img'] = ''; // prr($lnk); prr($message); die();
-      if ($gpPostType=='I' && (!empty($message['videoURL']))) { $lnk['video'] = $message['videoURL']; } 
-      if (!empty($options['gpPageID']) && empty($options['gpCommID'])) {  $to = $options['gpPageID']; $ret = doPostToGooglePlus2($msg, $lnk, $to);} 
-        elseif (!empty($options['gpCommID'])) $ret = doPostToGooglePlus2($msg, $lnk, $options['gpPageID'], $options['gpCommID'], $options['gpCCat']); else $ret = doPostToGooglePlus2($msg, $lnk); 
-      if ( (!is_array($ret)) && $ret!='OK') { $badOut['Error'] = print_r($ret, true); } else { return array('isPosted'=>'1',  'postID'=>$ret['post_id'], 'postURL'=>'https://plus.google.com/'.$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')); }
-      return $badOut;
+      $email = $options['gpUName'];  $pass = substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'];    
+      
+      $nt = new nxsAPI_GP(); if(!empty($options['ck'])) $nt->ck = $options['ck'];  $nt->debug = false;  $loginError = $nt->connect($email, $pass);     
+      if (!$loginError){ 
+         if ($gpPostType=='A') $lnk = $message['url']; elseif ($gpPostType=='I') { $lnk = array(); if ($imgURL!='') $lnk['img'] = $imgURL;  if ($imgURL=='' && $message['noImg']===true) $lnk['img'] = '';
+            if (!empty($message['videoURL'])) $lnk['video'] = $message['videoURL']; 
+         } $pageID = ''; $comPgID = ''; $comPGCatID = '';
+         if (!empty($options['gpPageID']) && empty($options['gpCommID']))  $pageID = $options['gpPageID']; 
+         if (!empty($options['gpCommID'])) {$comPgID = $options['gpCommID']; $comPGCatID = $options['gpCCat'];}
+         $result = $nt -> postGP($msg, $lnk, $pageID, $comPgID, $comPGCatID);
+      } else {  $badOut['Error'] = "Login/Connection Error: ". print_r($loginError, true); return $badOut; }       
+      if (is_array($result) && $result['isPosted']=='1') nxs_save_glbNtwrks('gp', $options['ii'], $nt->ck, 'ck');
+      return $result;
     }
     
 }}

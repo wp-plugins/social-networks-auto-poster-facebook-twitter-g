@@ -9,7 +9,7 @@ Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2015  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.16' );
+define( 'NextScripts_SNAP_Version' , '3.4.17' );
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -38,7 +38,7 @@ if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET
   nxs_cURLTest("https://www.facebook.com/", "HTTPS to Facebook", 'id="facebook"');
   nxs_cURLTest("https://graph.facebook.com/nextscripts", "HTTPS to API (Graph) Facebook", '270851199672443');  
   nxs_cURLTest("https://www.linkedin.com/", "HTTPS to LinkedIn", 'rel="canonical" href="https://www.linkedin.com/"');
-  nxs_cURLTest("https://twitter.com/", "HTTPS to Twitter", '<link rel="canonical" href="https://twitter.com/">');
+  nxs_cURLTest("https://twitter.com/", "HTTPS to Twitter", '<link rel="canonical" href="https://twitter.com');
   nxs_cURLTest("https://www.pinterest.com/", "HTTPS to Pinterest", 'content="Pinterest"');
   nxs_cURLTest("http://www.livejournal.com/", "HTTP to LiveJournal", '1999 LiveJournal');  
   die('Done');
@@ -308,7 +308,7 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;
     $ogSN = '<meta property="og:site_name" content="'.get_bloginfo('name').'" />'."\r\n";
     $ogLoc = strtolower(esc_attr(get_locale())); if (strlen($ogLoc)==2) $ogLoc .= "_".strtoupper($ogLoc);
     $ogLoc = '<meta property="og:locale" content="'.$ogLoc.'" />'."\r\n"; $iss = is_home();  
-    $ogType = is_singular()?'article':'website'; if($vidsFromPost == false) $ogType = '<meta property="og:type" content="'.esc_attr(apply_filters('nxsog_type', $ogType)).'" />'."\r\n";                  
+    $ogType = is_singular()?'article':'website'; if(empty($vidsFromPost)) $ogType = '<meta property="og:type" content="'.esc_attr(apply_filters('nxsog_type', $ogType)).'" />'."\r\n";                  
         
     if (is_home() || is_front_page()) $ogUrl = get_bloginfo( 'url' ); else $ogUrl = 'http' . (is_ssl() ? 's' : '') . "://".$_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $ogUrl = '<meta property="og:url" content="'.esc_url( apply_filters( 'nxsog_url', $ogUrl ) ) . '" />' . "\r\n";
@@ -320,17 +320,16 @@ function nxs_ogtgCallback($content){ global $post, $plgn_NS_SNAutoPoster;
       echo '<meta property="og:video:height" content="360" />'."\n";
       echo '<meta property="og:image" content="http://i2.ytimg.com/vi/'.$vidsFromPost[0].'/mqdefault.jpg" />'."\n";
       echo '<meta property="og:type" content="video" />'."\n"; 
-    } */
-    
-      
-      $imgURL = nxs_getPostImage($post->ID, 'full', $options['ogImgDef']); if (!empty($imgURL)) $ogimgs[] = $imgURL;
-      $imgsFromPost = nsFindImgsInPost($post, (int)$options['advFindOGImg']==1);           
-      if ($imgsFromPost !== false && is_singular() && is_array($ogimgs) && is_array($imgsFromPost))  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
+    } */    
+      if (is_object($post)) { $imgURL = nxs_getPostImage($post->ID, 'full', $options['ogImgDef']); if (!empty($imgURL)) $ogimgs[] = $imgURL;
+        $imgsFromPost = nsFindImgsInPost($post, (int)$options['advFindOGImg']==1);           
+        if ($imgsFromPost !== false && is_singular() && is_array($ogimgs) && is_array($imgsFromPost))  $ogimgs = array_merge($ogimgs, $imgsFromPost);       
+      }
     }       
     //## Add default image to the endof the array
     if ( count($ogimgs)<1 && isset($options['ogImgDef']) && $options['ogImgDef']!='') $ogimgs[] = $options['ogImgDef']; 
     //## Output og:image tags
-    if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  $ogImgsOut = '<meta property="og:image" content="'.esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\r\n"; 
+    $ogImgsOut = ''; if (!empty($ogimgs) && is_array($ogimgs)) foreach ($ogimgs as $ogimage)  $ogImgsOut .= '<meta property="og:image" content="'.esc_url(apply_filters('ns_ogimage', $ogimage)).'" />'."\r\n"; 
     $ogOut  = "\r\n".$ogSN.$ogT.$ogD.$ogType.$ogUrl.$ogLoc.$ogImgsOut;
   } $content = str_ireplace('<!-- ## NXSOGTAGS ## -->', $ogOut, $content); 
   return $content;
@@ -444,6 +443,7 @@ if (!function_exists("nxs_snapAjax")) { function nxs_snapAjax() { check_ajax_ref
   }
   if ($_POST['nxsact']=='getNewPostDlg') nxs_showNewPostForm($options);
   if ($_POST['nxsact']=='doNewPost') nxs_doNewNPPost($options);
+  if ($_POST['nxsact']=='nxsCptCheckGP') nxs_CptCheckGP($options);
   die();
 }}
 
