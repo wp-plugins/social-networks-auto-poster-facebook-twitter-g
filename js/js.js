@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
   //jQuery( "input[onchange^='nxs_doShowWarning']" ).prop("indeterminate", true).css( "-webkit-appearance", "checkbox" );  
   //jQuery( "input[onchange^='nxs_doShowWarning']" ).prop("indeterminate", true).css("background", "#D0D0D0").css("border-color", "#999");    
   //## Submit Serialized Form - avoid Max.Vars limit.
-  jQuery('#nsStFormMisc').submit(function() { var dataA = jQuery('#nsStForm').serialize(); jQuery('#nxsMainFromElementAccts').val(dataA); });
+  jQuery('#nsStFormMisc').submit(function() { var dataA = jQuery('#nsStForm').serialize(); jQuery('#nxsMainFromElementAccts').val(dataA); jQuery('#_wpnonce').val(jQuery('input#nxsSsPageWPN_wpnonce').val()); });
   jQuery('#nsStForm').submit(function() { jQuery('#nsStFormMisc').submit(); return false; });  
   var nxs_isPrevirew = false;   
   jQuery('#post-preview').click(function(event) { nxs_isPrevirew = true; });  

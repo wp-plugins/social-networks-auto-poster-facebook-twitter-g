@@ -31,14 +31,12 @@ if (!class_exists("NS_SNAutoPoster")) {
             $options['isMU'] = function_exists('showSNAP_WPMU_OptionsPageExt') && isset($options['lk']) && isset($options['uk']) && $options['uk']!='';   
             $options['isMUx'] = function_exists('showSNAP_WPMU_OptionsPageExtX') && isset($options['lk']) && isset($options['uk']) && $options['uk']!=''; //  prr($options);
             if (isset($options['skipSSLSec'])) $nxs_skipSSLCheck = $options['skipSSLSec']; $options['useSSLCert'] = nsx_doDecode('8416o4u5d4p2o22646060474k5b4t2a4u5s4');
-            if(!empty($options['K1']) && $options['K1']=='1') $options = array('isMA'=>false);
+            if(!empty($options['K1']) && $options['K1']=='1') $options = array('isMA'=>false);            
             
-            
-            $liGRP = 0; foreach ($options['li'] as $lii) if (!empty($lii['grpID'])) $liGRP++;
+            $liGRP = 0; if (!empty($options) && !empty($options['li'])) foreach ($options['li'] as $lii) if (!empty($lii['grpID'])) $liGRP++;
             if ($liGRP>0) {
               function nxs_noLiGrps() { global $nxs_snapThisPageUrl; echo '<div class="error"><p><b>Message from NextScripts SNAP Plugin for Wordpress</b></p><p><a target="_blank" href="https://developer.linkedin.com/support/developer-program-transition">LinkedIn has discontinued support for groups</a> from it\'s free native API. You have  LinkedIn group accounts configured. Please <a href="'.$nxs_snapThisPageUrl.'">switch those accounts to NextScipts API</a></p></div>'; } add_action( 'admin_notices', 'nxs_noLiGrps' );
-            }
-            
+            }            
             return $options;
         }
   
@@ -89,7 +87,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             } 
           }
           //## Save Settings
-          if (isset($_POST['nxsMainFromElementAccts']) || isset($_POST['nxsMainFromSupportFld'])) { 
+          if (isset($_POST['nxsMainFromElementAccts']) || isset($_POST['nxsMainFromSupportFld'])) { check_ajax_referer('nxsSsPageWPN'); 
             if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")) {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes'); 
             //## Load Networks Settings update_NS_SNAutoPoster_settings
             $acctsInfoPost = $_POST['nxsMainFromElementAccts']; unset($_POST['nxsMainFromElementAccts']);  $acctsInfo = array();  
@@ -293,7 +291,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     
     <div id="nsx_tab2" class="nsx_tab_content">  <script type="text/javascript">setTimeout( function(){ document.getElementById( "nsStFormMisc" ).reset();},5);</script>
     <form method="post" id="nsStFormMisc" action="<?php echo $nxs_snapThisPageUrl?>">    <input type="hidden" name="nxsMainFromElementAccts" id="nxsMainFromElementAccts" value="" />
-       <input type="hidden" name="nxsMainFromSupportFld" id="nxsMainFromSupportFld" value="1" />
+       <input type="hidden" name="_wpnonce" id="_wpnonce" value="" /> <input type="hidden" name="nxsMainFromSupportFld" id="nxsMainFromSupportFld" value="1" />
      <!-- ##################### OTHER #####################-->            
 
      <!-- How to make auto-posts? --> 

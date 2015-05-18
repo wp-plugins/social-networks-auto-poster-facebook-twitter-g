@@ -81,7 +81,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
         $postArr = array('owner_id'=>$options['pgIntID'], 'access_token'=>$options['vkAppAuthToken'], 'from_group'=>'1', 'message'=>$msg, 'attachment'=>$atts);
         $response = wp_remote_post($postUrl, array('body' => $postArr)); 
         if ( is_wp_error($response) || (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { 
-           $badOut['Error'] .= 'Error: '. print_r($response['body'], true);
+           $badOut['Error'] .= 'Error: '. print_r($response, true);
         } else { $respJ = json_decode($response['body'], true);  $ret = $options['pgIntID'].'_'.$respJ['response']['post_id'];   }
           
       }                                
