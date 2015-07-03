@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
 Requires at least: 3.4
 Tested up to: 4.2.2
-Stable tag: 3.4.18
+Stable tag: 3.4.19
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -167,6 +167,14 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.19 [07/02/2015] =
+
+* New/Bug Fix - [Critical] Support for Blogger oAuth 2.0 API. Blogger(Google) has discontinued support for "ClientLogin" authentication method that SNAP was using for several years. All Blogger accounts must be removed and re-added with oAuth 2.0 authentication method. (Free Plugin Only) 
+* Improvement - Improved "Filter by tags" feature.
+* Bug Fix - Fix for Fatal error: Cannot redeclare nxs_noLiGrps() 
+* [XING] Improved connection stability.
+* [Instapapper] fix for broken URL parameters.
 
 = 3.4.18 [05/18/2015] =
 

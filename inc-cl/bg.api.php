@@ -10,41 +10,14 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
     function doPost($options, $message){ if (!is_array($options)) return false; 
       foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
-    }
-    
-    function nsBloggerGetAuth($email, $pass) { $pass = urlencode($pass);
-      $ch = curl_init("https://www.google.com/accounts/ClientLogin?Email=$email&Passwd=$pass&service=blogger&accountType=GOOGLE");    
-      $headers = array(); $headers[] = 'Accept: text/html, application/xhtml+xml, */*'; 
-      $headers[] = 'Connection: Keep-Alive'; $headers[] = 'Accept-Language: en-us'; 
-      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-      curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)");
-      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,10); curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-      curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1);
-      global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      $result = curl_exec($ch); $resultArray = curl_getinfo($ch); $errmsg = curl_error($ch); 
-      if (trim($errmsg)!=='' || (is_array($resultArray) && $resultArray['http_code']!='200')) return array('result'=>'Error', 'error'=>"Error: ".$resultArray['http_code']." | Invalid Login ".$errmsg);
-      curl_close($ch); $arr = explode("=",$result); $token = $arr[3]; if (trim($token)=='') return false; else return $token;
-    }
-    function nsBloggerNewPost($auth, $blogID, $title, $text) {$text = str_ireplace('allowfullscreen','', $text); $title = utf8_decode(strip_tags($title)); 
-      $text = preg_replace('/<object\b[^>]*>(.*?)<\/object>/is', "", $text);  $text = preg_replace('/<iframe\b[^>]*>(.*?)<\/iframe>/is', "", $text); $text = utf8_decode($text); 
-    
-      $postText = '<entry xmlns="http://www.w3.org/2005/Atom"><title type="text">'.$title.'</title><content type="xhtml">'.$text.'</content></entry>'; //prr($postText);
-      $ch = curl_init("https://www.blogger.com/feeds/$blogID/posts/default"); 
-      $headers = array("Content-type: application/atom+xml", "Content-Length: ".strlen($postText), "Authorization: GoogleLogin auth=".$auth, $postText);
-      curl_setopt($ch, CURLOPT_UNRESTRICTED_AUTH, 1);  curl_setopt($ch, CURLOPT_POST, true);  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-      curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0)");
-      curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1); curl_setopt($ch, CURLINFO_HEADER_OUT, true); 
-      global $nxs_skipSSLCheck; if ($nxs_skipSSLCheck===true) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      $result = curl_exec($ch); curl_close($ch); 
-      if (stripos($result,'tag:blogger.com')!==false) { $postID = CutFromTo($result, " rel='alternate' type='text/html' href='", "'"); return array("code"=>"OK", "post_id"=>$postID); } else return array("code"=>"ERR", "error"=>$result); 
-    }
+    }    
     
     function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); // prr($message);  prr($options);
       //## Check API Lib
       //if (!function_exists('doConnectToBlogger')) if (file_exists('apis/postToGooglePlus.php')) require_once ('apis/postToGooglePlus.php'); elseif (file_exists('/home/_shared/deSrc.php')) require_once ('/home/_shared/deSrc.php');       
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }   
-      if (!isset($options['bgUName']) || trim($options['bgPass'])=='') { $badOut['Error'] = 'Not Configured'; return $badOut; }      
+      if ( (!isset($options['bgUName']) || empty($options['bgPass'])) && empty($options['AccessToken'])) { $badOut['Error'] = 'Not Configured'; return $badOut; }      
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['bgMsgFormat'], $message); 
       if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['bgMsgTFormat'], $message); 
@@ -54,22 +27,34 @@ if (!class_exists("nxs_class_SNAP_BG")) { class nxs_class_SNAP_BG {
         $msg = preg_replace('/<br(.*?)\/?>/','<br$1/>',$msg);   $msg = preg_replace('/<img(.*?)\/?>/','<img$1/>',$msg);
         require ('apis/htmlNumTable.php');  if (is_array($HTML401NamedToNumeric)) { $msg = strtr($msg, $HTML401NamedToNumeric); $msgT = strtr($msgT, $HTML401NamedToNumeric); }
       }    
-      $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg);      
+      $msg = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $msg); $msg = preg_replace('/<!--(.*)-->/Uis', "", $msg);  $nxshf = new NXS_HtmlFixer(); $nxshf->debug = false; $msg = $nxshf->getFixedHtml($msg);     
       $msg = str_replace("\r\n","\n", $msg); $msg = str_replace("\n\r","\n", $msg); $msg = str_replace("\r","\n", $msg); $msg = str_replace("\n","<br/>", $msg);  
       //## Make Post
       $email = $options['bgUName'];  $pass = substr($options['bgPass'], 0, 5)=='b4d7s'?nsx_doDecode(substr($options['bgPass'], 5)):$options['bgPass']; $blogID = $options['bgBlogID']; // prr($msgT); prr($msg); die();
-      if (function_exists("doConnectToBlogger")) {           
+      if (class_exists('nxsAPI_GP') && !empty($options['bgUName']) && empty($options['APIKey'])) {           
           $nt = new nxsAPI_GP(); if(!empty($options['ck'])) $nt->ck = $options['ck'];  $nt->debug = false;  $loginError = $nt->connect($email, $pass, 'BG');     
           if (!$loginError){          
              $result = $nt -> postBG($blogID, $msgT, $msg, $tags);// prr($result); 
           } else {  $badOut['Error'] = "Login/Connection Error: ". print_r($loginError, true); return $badOut; }       
           if (is_array($result) && $result['isPosted']=='1') nxs_save_glbNtwrks('bg', $options['ii'], $nt->ck, 'ck');
           return $result;         
-      } else { $auth = $this->nsBloggerGetAuth($email, $pass); if ($auth===false) $ret = 'Incorrect Username/Password'; else { 
-        if (is_array($auth))  $ret = $auth['error']; else { 
-         $msgT = str_ireplace('&amp;', '&', $msgT); $msgT = utf8_encode(str_ireplace('&', '&amp;', $msgT)); $msg = utf8_encode($msg); $ret = $this->nsBloggerNewPost($auth, $blogID, $msgT, $msg);
-        }
-      }} 
+      } else { 
+        //## Refresh token
+        if (function_exists('get_option')) $currTime = time() + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ); else  $currTime = time();
+        if ($options['AccessTokenExp']<$currTime){
+          $tknURL = 'https://www.googleapis.com/oauth2/v3/token?refresh_token='.$options['RefreshToken'].'&client_id='.$options['APIKey'].'&client_secret='.$options['APISec'].'&grant_type=refresh_token';
+          $response  = wp_remote_post($tknURL); $resp = json_decode($response['body'], true); $options['AccessToken'] = $resp['access_token']; $options['AccessTokenExp'] = $currTime + $resp['expires_in'];
+          nxs_save_glbNtwrks('bg', $options['ii'], $resp['access_token'], 'AccessTokenExp'); nxs_save_glbNtwrks('bg', $options['ii'], $options['AccessTokenExp'], 'AccessTokenExp');   
+          //nxs_addToLogN('S', 'Test', $logNT, 'Token Refreshed '.date('Y-m-d H:i:s',$options['AccessTokenExp'])."|".$tknURL.$options['AccessToken'].print_r($response, true));
+        } 
+        //## Post
+        $post = array("kind"=>"blogger#post", "blog"=>array("id"=>$blogID), "title"=> $msgT,  "content" => $msg ); $post = json_encode($post); // prr($post);        
+        $hdrsArr = array('Content-Type'=>'application/json'); $advSet = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => 45, 'redirection' => 0, 'body' => $post);         
+        $tknURL = 'https://www.googleapis.com/blogger/v3/blogs/'.$blogID.'/posts?access_token='.$options['AccessToken'].''; $ret = ''; $response  = wp_remote_post($tknURL, $advSet); //prr($tknURL); prr($response);      
+        if ((is_object($response) && isset($response->errors))) $badOut['Error'] = print_r($response, true); else $ret = json_decode($response['body'], true);  //prr($ret);
+        if (is_array($ret) && !empty($ret['id'])) return array('postID'=>$ret['id'], 'isPosted'=>1, 'postURL'=>$ret['url'], 'pDate'=>date('Y-m-d H:i:s')); 
+          else { $badOut['Error'].= "Error: ".print_r($ret, true); return $badOut;}        
+      } 
       //## Return      
       if (is_array($ret) && $ret['post_id']!='') {
          return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s'));          

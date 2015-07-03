@@ -198,9 +198,7 @@ if (!function_exists("nxs_doPublishToIP")) { //## Second Function to Post to IP
       }                   
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $urlToGo = home_url();  $options['ipMsgTFormat'] = 'Test Link from '.$urlToGo; } else { $post = get_post($postID); if(!$post) return;       
         //## MyURL - URLToGo code
-        if (!isset($options['urlToUse']) || trim($options['urlToUse'])=='') $myurl =  trim(get_post_meta($postID, 'snap_MYURL', true)); if ($myurl!='') $options['urlToUse'] = $myurl;
-        if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') { $urlToGo = $options['urlToUse']; $options['useFBGURLInfo'] = true; } else $urlToGo = get_permalink($postID);      
-        $gOptions = $plgn_NS_SNAutoPoster->nxs_options; $addURLParams = trim($gOptions['addURLParams']);  if($addURLParams!='') $urlToGo .= (strpos($urlToGo,'?')!==false?'&':'?').$addURLParams; 
+        $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse']; 
       
         $options['ipMsgTFormat'] = nsFormatMessage($options['ipMsgTFormat'], $postID, $addParams);  $options['ipMsgFormat'] = nsFormatMessage($options['ipMsgFormat'], $postID, $addParams); 
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1')); 

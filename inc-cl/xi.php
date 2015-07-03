@@ -4,7 +4,7 @@ $nxs_snapAvNts[] = array('code'=>'XI', 'lcode'=>'xi', 'name'=>'XING');
 
 if (!class_exists("nxs_snapClassXI")) { class nxs_snapClassXI { var $ntInfo = array('code'=>'XI', 'lcode'=>'xi', 'name'=>'XING', 'defNName'=>'', 'tstReq' => true);
   //#### Show Common Settings
-  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL;  $ntInfo = $this->ntInfo;
+  function showGenNTSettings($ntOpts){  global $nxs_plurl, $nxs_snapSetPgURL,  $nxs_gOptions;  $ntInfo = $this->ntInfo;
     if ( isset($_GET['auth']) && $_GET['auth']==$ntInfo['lcode']){ require_once('apis/scOAuth.php'); $options = $ntOpts[$_GET['acc']];
               
               $consumer_key = $options['appKey']; $consumer_secret = $options['appSec'];
@@ -19,8 +19,8 @@ if (!class_exists("nxs_snapClassXI")) { class nxs_snapClassXI { var $ntInfo = ar
 
               prr($tum_oauth); prr($options); //die();
               
-              switch ($tum_oauth->http_code) { case 201: case 200: $url = 'https://api.xing.com/v1/authorize?oauth_token='.$options['oAuthToken']; 
-                $optionsG = get_option('NS_SNAutoPoster'); $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
+              switch ($tum_oauth->http_code) { case 201: case 200: $url = 'https://api.xing.com/v1/authorize?oauth_token='.$options['oAuthToken'];                 
+                if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)){$nxs_gOptions[$ntInfo['lcode']][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions);}
                 echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$url.'"</script>'; break; 
                 default: echo '<br/><b style="color:red">Could not connect to XING. Refresh the page or try again later.</b>'; die();
               }
@@ -39,8 +39,8 @@ if (!class_exists("nxs_snapClassXI")) { class nxs_snapClassXI { var $ntInfo = ar
               $tum_oauth = new wpScoopITOAuth($consumer_key, $consumer_secret, $options['accessToken'], $options['accessTokenSec']);               
               $uinfo = $tum_oauth->makeReq('https://api.xing.com/v1/users/me', ''); prr($uinfo);
               if (is_array($uinfo) && isset($uinfo['users']) && isset($uinfo['users'][0]) && is_array($uinfo['users'][0])) { $uinfo = $uinfo['users'][0]; $options['appPGUserName'] = $uinfo['page_name'];
-                $options['appAppUserName'] = $uinfo['display_name']."(".$uinfo['page_name'].")"; $options['appAppUserID'] = $uinfo['id']; $optionsG = get_option('NS_SNAutoPoster'); 
-                $optionsG[$ntInfo['lcode']][$_GET['acc']] = $options;  update_option('NS_SNAutoPoster', $optionsG);
+                $options['appAppUserName'] = $uinfo['display_name']."(".$uinfo['page_name'].")"; $options['appAppUserID'] = $uinfo['id']; 
+                if (function_exists('get_option')) $nxs_gOptions = get_option('NS_SNAutoPoster'); if(!empty($nxs_gOptions)){$nxs_gOptions[$ntInfo['lcode']][$_GET['acc']] = $options; nxs_settings_save($nxs_gOptions);}               
               } //prr($options); die();
               if (!empty($options['appAppUserID'])) {  echo '<br/><br/>All good?! Redirecting ..... <script type="text/javascript">window.location = "'.$nxs_snapSetPgURL.'"</script>'; break;  die();}
                 else die("<span style='color:red;'>ERROR: Authorization Error: <span style='color:darkred; font-weight: bold;'>".print_r($uinfo, true)."</span></span>");              

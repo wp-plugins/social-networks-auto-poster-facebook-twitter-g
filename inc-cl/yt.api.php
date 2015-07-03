@@ -21,7 +21,7 @@ if (!class_exists("nxs_class_SNAP_YT")) { class nxs_class_SNAP_YT {
             
       $nt = new nxsAPI_GP(); if(!empty($options['ck'])) $nt->ck = $options['ck'];  $nt->debug = false;  $loginError = $nt->connect($email, $pass, 'YT');     
       if (!$loginError){          
-         $result = $nt -> postYT($msg, $options['ytPageID'], $message['videoURL'], $options['ytGPPageID']);
+         $result = $nt -> postYT($msg, $options['ytPageID'], $message['videoURL'], $options['ytGPPageID']); 
       } else {  $badOut['Error'] = "Login/Connection Error: ". print_r($loginError, true); return $badOut; }       
       if (is_array($result) && $result['isPosted']=='1') nxs_save_glbNtwrks('yt', $options['ii'], $nt->ck, 'ck');
       return $result;  

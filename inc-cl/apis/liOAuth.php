@@ -34,7 +34,7 @@ class nsx_LinkedIn {
     $consumer = $this->consumer;
     $request = nsx_trOAuthRequest::from_consumer_and_token($consumer, NULL, "GET", $this->request_token_path);
     $request->set_parameter("oauth_callback", $this->oauth_callback);
-    $request->sign_request($this->signature_method, $consumer, NULL); // prr($request);
+    $request->sign_request($this->signature_method, $consumer, NULL); // prr($request); die();
     $headers = Array();
     $url = $request->to_url(); // echo "^^^^^";  prr($url); 
     $response = $this->httpRequest($url, $headers, "GET"); //prr($response); 
@@ -67,7 +67,7 @@ class nsx_LinkedIn {
   function getProfile($resource = "~") {
     $profile_url = $this->base_url . "/v1/people/" . $resource;
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "GET", $profile_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
+    $request->sign_request($this->signature_method, $this->consumer, $this->access_token); // prr($request); prr($profile_url); die();
     $auth_header = $request->to_header("https://api.linkedin.com"); # this is the realm
     # This PHP library doesn't generate the header correctly when a realm is not specified.
     # Make sure there is a space and not a comma after OAuth
@@ -81,9 +81,6 @@ class nsx_LinkedIn {
     $response = $this->httpRequest($profile_url, $auth_header, "GET");
     return $response;
   }
-  
-  
-
 
   function postShare($msg, $title='', $url='', $imgURL='', $dsc='') { $status_url = $this->base_url . "/v1/people/~/shares";  
     $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
@@ -98,21 +95,7 @@ class nsx_LinkedIn {
     return $response;
   }
   
-  function postToGroup($msg, $title, $groupID, $url='', $imgURL='', $dsc='') { $status_url = $this->base_url . "/v1/groups/".$groupID."/posts";  //$debug = true;
-    $dsc =  nxs_decodeEntitiesFull(strip_tags($dsc));  $msg = strip_tags(nxs_decodeEntitiesFull($msg));  $title =  nxs_decodeEntitiesFull(strip_tags($title));
-    $xml = '<?xml version="1.0" encoding="UTF-8"?><post><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<summary>'.htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8").'</summary>'."\n".'
-    '.($url!=''?'<content><title>'.htmlspecialchars($title, ENT_NOQUOTES, "UTF-8").'</title>'."\n".'<submitted-url>'.$url.'</submitted-url>'."\n".(!empty($imgURL)?'<submitted-image-url>'.$imgURL.'</submitted-image-url>':'')."\n".'<description>'.htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8").'</description></content>':'').'</post>';
-    // prr($xml);
-    $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
-    $auth_header = $request->to_header("https://api.linkedin.com");
-    //if ($debug) 
-    //echo $auth_header . "\n"; 
-    $response = $this->httpRequest($status_url, $auth_header, "POST", $xml); //prr($response);
-    return $response;
-  }
-  
-  function setStatus($status) {
+    function setStatus($status) {
     $status_url = $this->base_url . "/v1/people/~/current-status";
     //echo "Setting status...\n";
     $xml = "<current-status>" . htmlspecialchars($status, ENT_NOQUOTES, "UTF-8") . "</current-status>";
@@ -126,35 +109,7 @@ class nsx_LinkedIn {
     $response = $this->httpRequest($status_url, $auth_header, "PUT", $xml); // prr($response);
     return $response;
   }
-  
-  # Parameters should be a query string starting with "?"
-  # Example search("?count=10&start=10&company=LinkedIn");
-  function search($parameters) {
-    $search_url = $this->base_url . "/v1/people/" . $parameters;
-    echo "Performing search for: " . $parameters . "\n";
-    $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "GET", $search_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
-    $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) {
-      echo $request->get_signature_base_string() . "\n";
-      echo $auth_header . "\n";
-    }
-    $response = $this->httpRequest($search_url, $auth_header, "GET");
-    return $response;
-  }
-
-  function getCurrentShare($parameters='') { 
-    $search_url = $this->base_url . "/v1/people/~/current-share";    
-    $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "GET", $search_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
-    $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) {
-      echo $request->get_signature_base_string() . "\n";
-      echo $auth_header . "\n";
-    }
-    $response = $this->httpRequest($search_url, $auth_header, "GET");
-    return $response;
-  }
+   
   
   function httpRequest($url, $auth_header, $method, $body = NULL) { // $this->debug = true; //if (!is_array($auth_header)) $auth_header = array($auth_header);
     if (!is_array($auth_header)) $auth_header = array($auth_header); 

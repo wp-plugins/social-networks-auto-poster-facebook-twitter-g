@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.18
+Version: 3.4.19
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2015  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.18' );
+define( 'NextScripts_SNAP_Version' , '3.4.19' );
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -36,7 +36,7 @@ if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET
   nxs_cURLTest("https://www.google.com/intl/en/contact/", "HTTPS to Google", "Mountain View, CA");
   nxs_cURLTest("https://www.facebook.com/", "HTTPS to Facebook", 'id="facebook"');
   nxs_cURLTest("https://graph.facebook.com/nextscripts", "HTTPS to API (Graph) Facebook", '270851199672443');  
-  nxs_cURLTest("https://www.linkedin.com/", "HTTPS to LinkedIn", 'rel="canonical" href="https://www.linkedin.com/"');
+  nxs_cURLTest("https://www.linkedin.com/nhome/", "HTTPS to LinkedIn", 'rel="canonical" href="https://www.linkedin.com/');
   nxs_cURLTest("https://twitter.com/", "HTTPS to Twitter", '<link rel="canonical" href="https://twitter.com');
   nxs_cURLTest("https://www.pinterest.com/", "HTTPS to Pinterest", 'content="Pinterest"');
   nxs_cURLTest("http://www.livejournal.com/", "HTTP to LiveJournal", '1999 LiveJournal');  
@@ -97,7 +97,7 @@ if (!function_exists("nxs_delPostSettings_ajax")) { function nxs_delPostSettings
 if (!function_exists("nsGetGPCats_ajax")) { 
   function nsGetGPCats_ajax() { global $nxs_gCookiesArr; check_ajax_referer('nxsSsPageWPN'); global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
   if (get_magic_quotes_gpc() || $_POST['nxs_mqTest']=="\'") { $_POST['u'] = stripslashes($_POST['u']);  $_POST['p'] = stripslashes($_POST['p']);} $_POST['p'] = trim($_POST['p']); $u = trim($_POST['u']);  
-   $loginError = doConnectToGooglePlus2($_POST['u'],  substr($_POST['p'], 0, 5)=='g9c1a'?nsx_doDecode(substr($_POST['p'], 5)):$_POST['p'] );  if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
+   $loginError = doConnectToGooglePlus2($_POST['u'],  substr($_POST['p'], 0, 5)=='g9c1a'?nsx_doDecode(substr($_POST['p'], 5)):$_POST['p'] ); if ($loginError!==false) {echo $loginError; return "BAD USER/PASS";} 
    $gGPCCats = doGetCCatsFromGooglePlus($_POST['c']);  $options['gp'][$_POST['ii']]['gpCCatsList'] = base64_encode($gGPCCats);
    if (is_array($options)) update_option('NS_SNAutoPoster', $options); echo $gGPCCats; die();
   }
@@ -224,7 +224,7 @@ if (!function_exists("nxs_snapPublishTo")) { function nxs_snapPublishTo($postArr
             if (!empty($optMt['tagsSel'])) { $inclTags = explode(',',strtolower($optMt['tagsSel'])); $postTags = wp_get_post_tags( $postID, array( 'fields' => 'slugs' ) ); $postCust = array();
               //## Get all custom post types
               foreach ($inclTags as $iTag){ 
-                if (strpos($iTag,'|')!==false){ $dd=explode('',$itag); if (empty($postCust[$dd[0]])) $postCust[$dd[0]]=wp_get_object_terms($postID,$dd[0],array('fields'=>'slugs')); 
+                if (strpos($iTag,'|')!==false){ $dd=explode('|',$itag); if (empty($postCust[$dd[0]])) $postCust[$dd[0]]=wp_get_object_terms($postID,$dd[0],array('fields'=>'slugs')); 
                   if (!in_array(strtolower($dd[1]), $postCust[$dd[0]])) $doPost = false; else {$doPost = true; break;}
                 } else if (!in_array(strtolower($iTag), $postTags)) $doPost = false; else {$doPost = true; break;}              
               }
@@ -556,15 +556,6 @@ if (isset($plgn_NS_SNAutoPoster)) { //## Actions
       if (function_exists('nxs_add_style')) add_action( 'admin_footer', 'nxs_add_style' );  
       if (function_exists('nxs_saveSiteSets_ajax')) add_action('wp_ajax_nxs_saveSiteSets', 'nxs_saveSiteSets_ajax');
   }
-}
-
-add_action( 'activated_plugin', 'nxs_act_hook', 5, 1 ); function nxs_act_hook($plg){ $ac = get_option( 'active_plugins' ); update_option('nxs_temp_aplgs', $ac);
-  $key = array_search('social-networks-auto-poster-facebook-twitter-g/NextScripts_SNAP.php', $ac); unset($ac[$key]); update_option('active_plugins', $ac);
-}
-add_action( 'activated_plugin', 'nxs_act_hook2', 15, 1 ); function nxs_act_hook2($plg){ $ac = get_option( 'nxs_temp_aplgs' ); update_option('active_plugins', $ac); delete_option('nxs_temp_aplgs');}
-
-
-
-
+ }
 }
 ?>
