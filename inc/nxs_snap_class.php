@@ -37,7 +37,7 @@ if (!class_exists("NS_SNAutoPoster")) {
             if ($liGRP>0) {
               if (!function_exists("nxs_noLiGrps")) { function nxs_noLiGrps() { global $nxs_snapThisPageUrl; echo '<div class="error"><p><b>Message from NextScripts SNAP Plugin for Wordpress</b></p><p><a target="_blank" href="https://developer.linkedin.com/support/developer-program-transition">LinkedIn has discontinued support for groups</a> from it\'s free native API. You have  LinkedIn group accounts configured. Please switch those accounts to NextScipts API or remove them</p></div>'; } add_action( 'admin_notices', 'nxs_noLiGrps' ); }
             } 
-            $bgFree = 0; if ( (!class_exists('nxsAPI_GPX')) && !empty($options) && !empty($options['bg']) ) foreach ($options['bg'] as $lii) if (!empty($lii['bgUName']) && empty($lii['APIKey'])) $bgFree++;
+            $bgFree = 0; if ( (!class_exists('nxsAPI_GP')) && !empty($options) && !empty($options['bg']) ) foreach ($options['bg'] as $lii) if (!empty($lii['bgUName']) && empty($lii['APIKey'])) $bgFree++;
             if ($bgFree>0) {
               if (!function_exists("nxs_noBGFree")) { function nxs_noBGFree() { global $nxs_snapThisPageUrl; echo '<div class="error"><p><b>Message from NextScripts SNAP Plugin for Wordpress</b></p><p><a target="_blank" href="https://developers.google.com/identity/protocols/AuthForInstalledApps">Blogger has discontinued support for "ClientLogin"</a> authentication method that SNAP was using for several years.   You have Blogger accounts configured. Please either remove those accounts and re-setup with oAuth authentication method or get <a href="'.$nxs_snapThisPageUrl.'">Premium NextScipts API</a></p></div>'; } add_action( 'admin_notices', 'nxs_noBGFree' ); }
             }           
