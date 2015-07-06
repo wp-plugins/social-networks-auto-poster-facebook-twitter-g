@@ -42,8 +42,6 @@ if (!class_exists("nxs_class_SNAP_TW")) { class nxs_class_SNAP_TW {
       if (!empty($options['in_reply_to_id'])) $params_array['in_reply_to_status_id'] = $options['in_reply_to_id'];      
       if ($options['attchImg']!=false && $img!='') $code = $tmhOAuth -> request('POST', 'https://api.twitter.com/1.1/statuses/update_with_media.json', $params_array, true, true);    
         else $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), $params_array); //prr($msg);
-      
-      
         
       if ( $code=='403' && stripos($tmhOAuth->response['response'], 'User is over daily photo limit')!==false && $options['attchImg']!=false && $img!='') { 
          $badOut['Error'] .= "User is over daily photo limit. Will post without image\r\n"; $code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' =>$msg));

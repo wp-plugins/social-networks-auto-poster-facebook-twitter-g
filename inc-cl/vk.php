@@ -313,7 +313,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
       }
       
       if ($postID=='0') { echo "Testing ... <br/><br/>"; $urlToGo = home_url(); $msg = 'Test Link from '.$urlToGo; } else { $post = get_post($postID); if(!$post) return;
-        $options['msgFrmt'] = strip_tags(nsFormatMessage($options['msgFrmt'], $postID, $addParams)); 
+        $options['msgFrmt'] = nxs_decodeEntitiesFull(strip_tags(nsFormatMessage($options['msgFrmt'], $postID, $addParams))); 
         //## MyURL - URLToGo code
         $options = nxs_getURL($options, $postID, $addParams); $urlToGo = $options['urlToUse'];
         nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));
@@ -344,7 +344,7 @@ if (!function_exists("nxs_doPublishToVK")) { //## Second Function to Post to VK
         }  $dsc = strip_tags($dsc); $dsc = nxs_decodeEntitiesFull($dsc); $dsc = nsTrnc($dsc, 900, ' ');
       } else $dsc = '';
       
-      $message = array('siteName'=>$blogTitle, 'url'=>$urlToGo, 'imageURL'=>$imgURL, 'videoURL'=>$vidURL, 'urlTitle'=>nxs_doQTrans($post->post_title, $lng), 'urlDescr'=>$dsc);    
+      $message = array('siteName'=>$blogTitle, 'url'=>$urlToGo, 'imageURL'=>$imgURL, 'videoURL'=>$vidURL, 'urlTitle'=>nxs_decodeEntitiesFull(nxs_doQTrans($post->post_title, $lng)), 'urlDescr'=>$dsc);    
       //## Actual Post
       $ntToPost = new nxs_class_SNAP_VK(); $ret = $ntToPost->doPostToNT($options, $message);
       //## Check Phone Req Return            

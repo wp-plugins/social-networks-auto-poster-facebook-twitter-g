@@ -41,7 +41,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
         }
       }
     }
-    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); global $nxs_vkCkArray;
+    function doPostToNT($options, $message){ $badOut = array('pgID'=>'', 'isPosted'=>0, 'pDate'=>date('Y-m-d H:i:s'), 'Error'=>''); global $nxs_vkCkArray; //prr($message); die();
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (empty($options['imgSize'])) $options['imgSize'] = '';
@@ -50,7 +50,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
       //## Format
       if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['msgFrmt'], $message); $urlToGo = (!empty($message['url']))?$message['url']:'';
       
-      $postType = $options['postType'];  //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
+      $postType = $options['postType']; //$link = urlencode($link); $desc = urlencode(substr($msg, 0, 500));      
   
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
       $msgOpts = array(); $msgOpts['uid'] =  $options['vkPgID']; // if ($link!='') $msgOpts['link'] = $link;            
@@ -67,7 +67,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
         }  //       prr($loginError);
         if ($loginError!==false) { if (stripos($loginError, 'Phone verification required:')!==false) return $loginError; else return "ERROR - BAD USER/PASS - ".print_r($loginError, true); }
         //## Post        
-        $msgOpts['url'] = $urlToGo; $msgOpts['urlTitle'] = $message['urlTitle']; $msgOpts['urlDesc'] = $message['urlDescr']; $msgOpts['imgURL'] = $imgURL; 
+        $msgOpts['url'] = $urlToGo; $msgOpts['urlTitle'] = $message['urlTitle']; $msgOpts['urlDesc'] = $message['urlDescr']; $msgOpts['imgURL'] = $imgURL; //prr($msgOpts);
         $ret = nxs_doPostToVK($msg, $options['url'], $msgOpts);   
         if (is_array($ret) && !empty($ret['code']) && $ret['code']=='OK') return array('postID'=>$ret['post_id'], 'isPosted'=>1, 'postURL'=>'http://vk.com/wall'.$ret['post_id'], 'pDate'=>date('Y-m-d H:i:s')); 
           else $badOut .= 'ERROR: '.print_r($ret, true);

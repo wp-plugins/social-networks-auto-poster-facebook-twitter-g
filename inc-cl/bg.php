@@ -190,7 +190,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG { var $ntInfo = ar
  //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = $this->ntInfo['code'];
     foreach ($post as $ii => $pval){// prr($pval);
-      if ( (!empty($pval['APISec']) && !empty($pval['APIKey'])) || (!empty($pval['apBGUName']) && !empty($pval['apBGPass'])) ) { if (!isset($options[$ii])) $options[$ii] = array();
+      if ( (!empty($pval['APISec']) && !empty($pval['APIKey'])) || (!empty($pval['bgUName']) && !empty($pval['bgPass'])) ) { if (!isset($options[$ii])) $options[$ii] = array();
         
                 if (isset($pval['apDoBG']))   $options[$ii]['doBG'] = $pval['apDoBG']; else $options[$ii]['doBG'] = 0;
                 
@@ -198,8 +198,8 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG { var $ntInfo = ar
                 if ($options[$ii]['catSel']=='1' && trim($pval['catSelEd'])!='') $options[$ii]['catSelEd'] = trim($pval['catSelEd']); else $options[$ii]['catSelEd'] = '';
                 
                 if (isset($pval['nName']))       $options[$ii]['nName'] = trim($pval['nName']);
-                if (isset($pval['apBGUName']))   $options[$ii]['bgUName'] = trim($pval['apBGUName']);
-                if (isset($pval['apBGPass']))    $options[$ii]['bgPass'] = 'b4d7s'.nsx_doEncode($pval['apBGPass']); else $options[$ii]['bgPass'] = '';
+                if (isset($pval['bgUName']))   $options[$ii]['bgUName'] = trim($pval['bgUName']);
+                if (isset($pval['bgPass']))    $options[$ii]['bgPass'] = 'b4d7s'.nsx_doEncode($pval['bgPass']); else $options[$ii]['bgPass'] = '';
                 
                 if (isset($pval['APIKey']))   $options[$ii]['APIKey'] = trim($pval['APIKey']);
                 if (isset($pval['APISec']))   $options[$ii]['APISec'] = trim($pval['APISec']);

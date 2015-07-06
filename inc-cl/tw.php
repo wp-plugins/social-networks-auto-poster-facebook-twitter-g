@@ -216,7 +216,7 @@ if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments(
 if (!function_exists("nxs_rePostToTW_ajax")) {
   function nxs_rePostToTW_ajax() { check_ajax_referer('nxsSsPageWPN');  $postID = $_POST['id']; $options = get_option('NS_SNAutoPoster');  
     foreach ($options['tw'] as $ii=>$nto) if ($ii==$_POST['nid']) {   $nto['ii'] = $ii;  $nto['pType'] = 'aj';
-      $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo);
+      $twpo =  get_post_meta($postID, 'snapTW', true); $twpo =  maybe_unserialize($twpo); // prr($ii); prr($nto); prr($twpo); die();
       if (is_array($twpo) && isset($twpo[$ii]) && is_array($twpo[$ii]) && isset($twpo[$ii]['SNAPformat']) ) { $ntClInst = new nxs_snapClassTW(); $nto = $ntClInst->adjMetaOpt($nto, $twpo[$ii]);}       
       if (isset($_POST['ri']) && $_POST['ri']=='1') { $twList = nxs_getBackTWCommentsList($nto);  nxs_getBackTWComments($postID, $nto, $twpo[$ii], $twList); die(); } else {
         $result = nxs_doPublishToTW($postID, $nto); if ($result == 200) {$options['tw'][$ii]['twOK']=1;  update_option('NS_SNAutoPoster', $options); } if ($result == 200) die("Successfully sent your post to Twitter."); else die($result);
@@ -249,7 +249,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
           nxs_addToLogN('E','Error',$logNT,'Could not get image ('.$imgURL.'), will post without it - Error:'.print_r($imgData, true), $extInfo); 
         } else $imgData = $imgData['body']; 
       }      
-    } if ($options['attchImg']=='1' && $imgData!='') $twLim = 117; else $twLim = 140;     
+    } if ($options['attchImg']=='1' && $imgData!='') $twLim = 117; else $twLim = 140;    
     if ($postID=='0') { echo "Testing ... <br/><br/>"; $msg = 'Test Post from '.nsTrnc($blogTitle, $twLim - 24)." - ".rand(1, 155); $uln = nxs_strLen($msg);}  
      else{ $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['twMsgFormat'];  nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPrePosted'=>'1'));    
         $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType'];        
@@ -350,12 +350,15 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     $msg = str_replace('&amp;#8220;', '"', $msg); $msg = str_replace('&#8220;', '"', $msg); $msg = str_replace('#8220;', '"', $msg); $msg = str_replace('#8220', "'", $msg);
     $msg = str_replace('&amp;#8221;', '"', $msg); $msg = str_replace('&#8221;', '"', $msg); $msg = str_replace('#8221;', '"', $msg); $msg = str_replace('#8221', "'", $msg);
     $msg = str_replace('&amp;#8212;', '-', $msg); $msg = str_replace('&#8212;', '-', $msg); $msg = str_replace('#8212;', '-', $msg); $msg = str_replace('#8212', "-", $msg); 
+    
+    $msg = nxs_decodeEntitiesFull($msg);
+    
     $message = array('message'=>$msg, 'img'=>$imgData, 'urlLength'=>$nxs_urlLen);  $options['twMsgFormat'] = $msg;  
     
     //## This meta field is created by the indieweb taxonomy plugin - by David Peach
     $response = get_post_meta( $postID, 'response', true ); if (!empty($response)) { $reply_url = $response['url']; if (!empty($reply_url) && strpos($reply_url, 'twitter.com')) {
       $explode_at_domain = explode('twitter.com/', $reply_url); $twitter_path = end($explode_at_domain); $exploded_path = explode('/', $twitter_path); $options['in_reply_to_id'] = end($exploded_path);          
-    }}  
+    }}  //prr($options);
     //## Actual Post
     $ntToPost = new nxs_class_SNAP_TW(); $ret = $ntToPost->doPostToNT($options, $message);
            
