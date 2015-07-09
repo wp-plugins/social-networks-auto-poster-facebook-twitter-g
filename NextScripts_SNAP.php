@@ -4,12 +4,12 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: Next Scripts
-Version: 3.4.20
+Version: 3.4.21
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2015  Next Scripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.4.20' );
+define( 'NextScripts_SNAP_Version' , '3.4.21' );
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -35,7 +35,7 @@ if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET
   nxs_cURLTest("http://www.google.com/intl/en/contact/", "HTTP to Google", "Mountain View, CA");
   nxs_cURLTest("https://www.google.com/intl/en/contact/", "HTTPS to Google", "Mountain View, CA");
   nxs_cURLTest("https://www.facebook.com/", "HTTPS to Facebook", 'id="facebook"');
-  nxs_cURLTest("https://graph.facebook.com/nextscripts", "HTTPS to API (Graph) Facebook", '270851199672443');  
+  nxs_cURLTest("https://graph.facebook.com/", "HTTPS to API (Graph) Facebook", 'get');  
   nxs_cURLTest("https://www.linkedin.com/nhome/", "HTTPS to LinkedIn", 'rel="canonical" href="https://www.linkedin.com/');
   nxs_cURLTest("https://twitter.com/", "HTTPS to Twitter", '<link rel="canonical" href="https://twitter.com');
   nxs_cURLTest("https://www.pinterest.com/", "HTTPS to Pinterest", 'content="Pinterest"');
@@ -413,7 +413,7 @@ function nxs_doNewNPPost($options){ global $nxs_snapAvNts, $nxs_plurl; $postResu
       $message['pText'] = $_POST['mText'];   $message['pTitle'] = $_POST['mTitle'];
       //## Get URL info
       if (!empty($_POST['mLink']) && substr($_POST['mLink'], 0, 4)=='http') { $message['url'] = $_POST['mLink'];            
-        $flds = array('id'=>$message['url'], 'scrape'=>'true');      $response =  wp_remote_post('http://graph.facebook.com', array('body' => $flds)); 
+        $flds = array('id'=>$message['url'], 'scrape'=>'true');      $response =  wp_remote_post('https://graph.facebook.com/v2.3/', array('body' => $flds)); 
         if (is_wp_error($response)) $badOut['Error'] = print_r($response, true)." - ERROR"; else { $response = json_decode($response['body'], true);  
           if (!empty($response['description'])) $message['urlDescr'] = $response['description'];  if (!empty($response['title'])) $message['urlTitle'] =  $response['title'];
           if (!empty($response['site_name'])) $message['siteName'] = $response['site_name'];

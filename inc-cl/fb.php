@@ -11,16 +11,17 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
        else { $gGet = $_GET; prr($_GET); unset($gGet['post_type']);} prr($gGet);  unset($gGet['code']); unset($gGet['state']); prr($gGet);
      $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); $fbo = $ntOpts[$ii]; $wprg = array('sslverify'=>false); 
      if (isset($fbo['fbPgID'])){ echo "-="; prr($fbo);// die();
-      $tknURL = 'https://graph.facebook.com/oauth/access_token?client_id='.$fbo['fbAppID'].'&state=nxs-fb-'.$ii.'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['fbAppSec'].'&code='.$at;       
-      $response  = wp_remote_get($tknURL, $wprg); prr($tknURL);      
-      if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }
-      parse_str($response['body'], $params);  $at = $params['access_token'];  prr($response); prr($params);
-      $response  = wp_remote_get('https://graph.facebook.com/oauth/access_token?client_secret='.$fbo['fbAppSec'].'&client_id='.$fbo['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at, $wprg); 
-      if ((is_object($response) && isset($response->errors))) { prr($response); die();}
-      parse_str($response['body'], $params); $at = $params['access_token']; $fbo['fbAppAuthToken'] = $at; 
+      $tknURL = 'https://graph.facebook.com/v2.3/oauth/access_token?client_id='.$fbo['fbAppID'].'&state=nxs-fb-'.$ii.'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['fbAppSec'].'&code='.$at;       
+      $response  = wp_remote_get($tknURL, $wprg); echo "<br/>TKN URL: "; prr($tknURL);   
+      if ( (is_object($response) && (isset($response->errors))) || (is_array($response) && stripos($response['body'],'"error":')!==false )) { prr($response); die(); }      
+      if (substr($response['body'],0,1)=='{') $params = json_decode($response['body'], true); else parse_str($response['body'], $params);  
+      $at = $params['access_token']; echo "<br/>TKN PARAMS: "; prr($params); echo "<br/>TKN RESP: "; prr($response);  
+      $response  = wp_remote_get('https://graph.facebook.com/v2.3/oauth/access_token?client_secret='.$fbo['fbAppSec'].'&client_id='.$fbo['fbAppID'].'&grant_type=fb_exchange_token&fb_exchange_token='.$at, $wprg); 
+      if ((is_object($response) && isset($response->errors))) {  prr($response); die();}
+      if (substr($response['body'],0,1)=='{') $params = json_decode($response['body'], true); else parse_str($response['body'], $params);  $at = $params['access_token']; $fbo['fbAppAuthToken'] = $at; 
       $appsecret_proof = hash_hmac('sha256', $fbo['fbAppAuthToken'], $fbo['fbAppSec']); 
       $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  
-      $res = wp_remote_get( "https://graph.facebook.com/me?".http_build_query($aacct, null, '&'), $wprg); 
+      $uurl = "https://graph.facebook.com/v2.3/me?".http_build_query($aacct, null, '&'); prr($uurl); $res = wp_remote_get( $uurl, $wprg); 
       if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Facebook User."; prr($res); die();} else {
         $user = json_decode($res['body'], true); if (empty($user)) {echo "Can't get Facebook User. JSON Error. "; prr($res); die();} else {
           if (!empty($user['id'])) {        echo "-= Got user: "; prr($user);            
@@ -28,10 +29,10 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
               $page_id = $fbo['fbPgID']; echo "-= Authorizing Page =-<br/>";                        
               $aacct = array('access_token'=>$fbo['fbAppAuthToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get');  $fbo['destType'] = '';              
               echo "-= Getting List of Pages =-<br/>";  
-              $resP = wp_remote_get('https://graph.facebook.com/'.$user['id'].'/accounts?'.http_build_query($aacct, null, '&'), $wprg); prr($resP); $pages = json_decode($resP['body'], true);  prr($pages);
+              $resP = wp_remote_get('https://graph.facebook.com/v2.3/'.$user['id'].'/accounts?'.http_build_query($aacct, null, '&'), $wprg); prr($resP); $pages = json_decode($resP['body'], true);  prr($pages);
               echo "-= Getting Page Token =-<br/>";                
-              echo "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&');
-              $res = wp_remote_get( "https://graph.facebook.com/$page_id?fields=access_token&".http_build_query($aacct, null, '&'), $wprg); prr($res);
+              echo "https://graph.facebook.com/v2.3/$page_id?fields=access_token&".http_build_query($aacct, null, '&');
+              $res = wp_remote_get( "https://graph.facebook.com/v2.3/$page_id?fields=access_token&".http_build_query($aacct, null, '&'), $wprg); prr($res);
               if (is_wp_error($res) || empty($res['body'])) {  echo "Can't get Page Token."; prr($res); die();} else {
                   $token = json_decode($res['body'], true); if (empty($token)) {echo "Can't get Page Token. JSON Error. "; prr($res); die();} else {
                     if (!empty($token['error'])) if (!empty($token['error']['message'])) { $errMsg = $token['error']['message'];
@@ -73,7 +74,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
     <?php if ($isNew) { ?>    <input type="hidden" name="fb[<?php echo $ii; ?>][apDoFB]" value="1" id="apDoNewFB<?php echo $ii; ?>" /> <?php } ?>
     
      <div class="nsx_iconedTitle" style="float: right; max-width: 342px; text-align: right; background-image: url(<?php echo $nxs_plurl; ?>img/fb16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/facebook-social-networks-auto-poster-setup-installation"><?php $nType="Facebook"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a><br/>
-     <span style="font-size: 10px;"><?php _e('Please use in your Facebook App:', 'nxs_snap'); ?> <br/> URL: <em style="font-size: 10px; color:#CB4B16;"><?php echo $_SERVER["REQUEST_SCHEME"] ?>://<?php echo $_SERVER["SERVER_NAME"] ?></em> <br/>Domain: <em style="font-size: 10px; color:#CB4B16;"><?php echo $_SERVER["SERVER_NAME"] ?></em> </span>
+     <span style="font-size: 10px;"><?php _e('Please use in your Facebook App:', 'nxs_snap'); ?> <br/> URL: <em style="font-size: 10px; color:#CB4B16;"><?php echo !empty($_SERVER["REQUEST_SCHEME"])?$_SERVER["REQUEST_SCHEME"]:'http'; ?>://<?php echo $_SERVER["SERVER_NAME"] ?></em> <br/>Domain: <em style="font-size: 10px; color:#CB4B16;"><?php echo $_SERVER["SERVER_NAME"] ?></em> </span>
      
      </div>
     
@@ -183,7 +184,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
             <?php } else { if(isset($options['fbAppAuthUser']) && $options['fbAppAuthUser']>0) { ?>
             <?php _e('Your Facebook Account has been authorized.', 'nxs_snap'); ?> User ID: <?php _e(apply_filters('format_to_edit', htmlentities($options['fbAppAuthUser'].(!empty($options['fbAppAuthUserName'])?" - ".$options['fbAppAuthUserName']:''), ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>.
             <br/><?php _e('You can', 'nxs_snap'); ?> Re- <?php } ?>            
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&scope=publish_actions,manage_pages,publish_pages,user_posts,user_photos,user_groups&state=<?php echo 'nxs-fb-'.$ii; ?>&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL));?>">Authorize Your Facebook Account</a> 
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<?php echo trim($options['fbAppID']);?>&scope=publish_actions,manage_pages,publish_pages,user_posts,user_photos&state=<?php echo 'nxs-fb-'.$ii; ?>&redirect_uri=<?php echo trim(urlencode($nxs_snapSetPgURL));?>">Authorize Your Facebook Account</a> 
             <?php if (!isset($options['fbAppAuthUser']) || $options['fbAppAuthUser']<1) { ?> <div class="blnkg">&lt;=== <?php _e('Authorize your account', 'nxs_snap'); ?> ===</div> 
             <br/><br/><i> <?php _e('If you get Facebook message:', 'nxs_snap'); ?> <b>"Error. An error occurred. Please try again later."</b> or <b>"Error 191"</b>  <?php _e('please make sure that domain name in your Facebook App matches your website domain exactly. Please note that www. and non www. versions are different domains.', 'nxs_snap'); ?></i> <?php }?>
           <?php } } ?>
@@ -389,13 +390,13 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB {
 if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { $ci = 0;  if (empty($options['fbAppPageAuthToken'])) return;    
     $options['appsecret_proof'] = hash_hmac('sha256', $options['fbAppPageAuthToken'], $options['fbAppSec']);    $wprg = array('sslverify'=>false);  
     $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  $ptype =  get_post_type( $postID ); 
-    $res = wp_remote_get( "https://graph.facebook.com/".$po['pgID']."/comments?filter=toplevel&limit=250&".http_build_query($aacct, null, '&'), $wprg); 
+    $res = wp_remote_get( "https://graph.facebook.com/v2.3/".$po['pgID']."/comments?filter=toplevel&limit=250&".http_build_query($aacct, null, '&'), $wprg); 
     if (is_wp_error($res) || empty($res['body'])) $badOut['Error'] = ' [ERROR] '.print_r($res, true); else { //prr($res);
     $ret = json_decode($res['body'], true); if (empty($ret)) $badOut['Error'] .= "JSON ERROR: ".print_r($res, true); else { //   prr($ret);    
       $impCmnts = get_post_meta($postID, 'snapImportedFBComments', true); if (!is_array($impCmnts)) $impCmnts = array(); //prr($impCmnts);   
       if (is_array($ret) && is_array($ret['data'])) foreach ($ret['data'] as $comment){ $cid = $comment['id']; if (trim($cid)=='') continue;
       if (!in_array('fbxcw'.$cid, $impCmnts)) {  
-          $res = wp_remote_get( "https://graph.facebook.com/".$comment['from']['id']."?".http_build_query($aacct, null, '&'), $wprg); $authData = json_decode($res['body'], true);
+          $res = wp_remote_get( "https://graph.facebook.com/v2.3/".$comment['from']['id']."?".http_build_query($aacct, null, '&'), $wprg); $authData = json_decode($res['body'], true);
           
           if ($ptype=='topic'){ $my_post = array('post_title' => '', 'post_content' => $comment['message'], 'post_status' => 'publish', 'post_parent' => $postID, 'post_author' => 0, 'post_type' => 'reply');
               $wpCid = wp_insert_post($my_post); add_post_meta($wpCid, '_bbp_anonymous_name', $comment['from']['name']); $fid = get_post_meta($postID, '_bbp_forum_id', true);
@@ -408,10 +409,10 @@ if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments(
           } $ci++; $impCmnts[$wpCid] = 'fbxcw'.$cid; 
       } else $wpCid = array_search('fbxcw'.$cid, $impCmnts);      
             
-      $res = wp_remote_get( "https://graph.facebook.com/".$cid."/comments?".http_build_query($aacct, null, '&'), $wprg); $replRet = json_decode($res['body'], true);
+      $res = wp_remote_get( "https://graph.facebook.com/v2.3/".$cid."/comments?".http_build_query($aacct, null, '&'), $wprg); $replRet = json_decode($res['body'], true);
       if (is_array($replRet) && is_array($replRet['data'])) foreach ($replRet['data'] as $rComment){ $rCid = $rComment['id']; 
         if (trim($rCid)!='' && !in_array('fbxcw'.$rCid, $impCmnts)) {  // prr($impCmnts);
-          $res = wp_remote_get( "https://graph.facebook.com/".$rComment['from']['id']."?".http_build_query($aacct, null, '&'), $wprg); $authData = json_decode($res['body'], true);
+          $res = wp_remote_get( "https://graph.facebook.com/v2.3/".$rComment['from']['id']."?".http_build_query($aacct, null, '&'), $wprg); $authData = json_decode($res['body'], true);
           if ($ptype=='topic'){ $my_post = array('post_title' => '', 'post_content' => $rComment['message'], 'post_status' => 'publish', 'post_parent' => $postID, 'post_author' => 0, 'post_type' => 'reply');
               $wpCid = wp_insert_post($my_post); add_post_meta($wpCid, '_bbp_anonymous_name', $rComment['from']['name']); $fid = get_post_meta($postID, '_bbp_forum_id', true);
               add_post_meta($wpCid, '_bbp_anonymous_email', $rComment['from']['id'].'@facebook.com'); add_post_meta($wpCid, '_bbp_anonymous_website', 'http://www.facebook.com/'.$rComment['from']['id']);
@@ -528,7 +529,7 @@ if (!function_exists("nxs_doPublishToFB")) { //## Second Function to Post to FB
             $json = str_replace('showThumb(','',$json); $json = str_replace('])',']',$json);  $json = json_decode($json, true); $imgURL = $json[0]['thumbnail_large']; }           
           }
           if (strlen($vids[0])==15) { // $vidURL = 'https://secure.vimeo.com/moogaloop.swf?clip_id='.$vids[0].'&autoplay=1';            
-            $vidURL = 'https://www.facebook.com/video.php?v='.$vids[0]; $apiURL = "https://graph.facebook.com/".$vids[0]; $json = wp_remote_get($apiURL);
+            $vidURL = 'https://www.facebook.com/video.php?v='.$vids[0]; $apiURL = "https://graph.facebook.com/v2.3/".$vids[0]; $json = wp_remote_get($apiURL);
             if (!is_wp_error($json)) { $json = $json['body']; $json = json_decode($json, true); $frmts = $json['format']; $imgURL = array_pop($frmts); $imgURL = $imgURL['picture'];  }           
           }
       }}

@@ -663,8 +663,8 @@ if (!function_exists("nxs_postNewComment")) { function nxs_postNewComment($cmnt,
   if ( $cmnt['comment_approved'] != 'spam' && $cmnt['comment_approved']>1 ) return $cmnt['comment_approved'];  else  $cmntID = wp_insert_comment($cmnt); 
   if (empty($cmntID)) {  nxs_addToLogN('E', 'Error', 'Comments', '-=ERROR=-', print_r($cmnt, true)); return; }
   
-  if ( 'spam' !== $cmnt['comment_approved'] ) { if ( '0' == $cmnt['comment_approved'] ) wp_notify_moderator($cmntID); $post = &get_post($cmnt['comment_post_ID']);
-    if ( get_option('comments_notify') && $cmnt['comment_approved'] && ( ! isset( $cmnt['user_id'] ) || $post->post_author != $cmnt['user_id'] ) ) wp_notify_postauthor($cmntID, isset( $cmnt['comment_type'] ) ? $cmnt['comment_type'] : '' );  
+  if ( 'spam' !== $cmnt['comment_approved'] ) { if ( '0' == $cmnt['comment_approved'] ) wp_notify_moderator($cmntID); $post = get_post($cmnt['comment_post_ID']);
+    if ( get_option('comments_notify') && $cmnt['comment_approved'] && ( ! isset( $cmnt['user_id'] ) || $post->post_author != $cmnt['user_id'] ) ) wp_notify_postauthor($cmntID);  
     global $wpdb, $dsq_api;
     if (isset($dsq_api) && is_object($post)) { $plugins_url = str_replace( 'social-networks-auto-poster-facebook-twitter-g/', '', plugin_dir_path( __FILE__ )); require_once( $plugins_url.'disqus-comment-system/export.php'); 
     if (function_exists('dsq_export_wp')) {
@@ -693,9 +693,8 @@ function nxs_wp_allow_comment($commentdata) { global $wpdb; extract($commentdata
 
 if (!function_exists("ns_get_avatar")) { function ns_get_avatar($avatar, $id_or_email, $size=96, $default='', $alt='') { 
     if ( is_object($id_or_email) ) { 
-      if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'facebook.com')!==false) { $fbuID = str_ireplace('@facebook.com','',$id_or_email->comment_author_email);
-        $avatar = "<img alt='{$id_or_email->comment_author}' src='https://graph.facebook.com/$fbuID/picture' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
-      }
+      if ($id_or_email->comment_agent=='SNAP' && stripos($id_or_email->comment_author_url, 'facebook.com')!==false) { $fbuID = str_ireplace('@facebook.com','',$id_or_email->comment_author_email);        
+        $avatar = "<img alt='{$id_or_email->comment_author}' src='https://graph.facebook.com/v2.3/$fbuID/picture' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";              }
       if (stripos($id_or_email->comment_agent, 'SNAP||')!==false && stripos($id_or_email->comment_author_url, 'twitter.com')!==false) { $fbuID = str_ireplace('SNAP||','',$id_or_email->comment_agent);
         $avatar = "<img alt='{$id_or_email->comment_author}' src='{$fbuID}' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";        
       }
@@ -784,7 +783,7 @@ function nxs_cURLTestCode($url){
   $out = 'There is a problem with cURL. You need to contact your server admin or hosting provider. Here is the PHP code to reproduce the problem:<br/><pre style="color:#005800">&lt;?php '."\r\n".' $ch = curl_init(); '."\r\n".' curl_setopt($ch, CURLOPT_URL, "'.$url.'"); '."\r\n".' curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); '."\r\n".' curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); '."\r\n".' curl_setopt($ch, CURLOPT_TIMEOUT, 10); '."\r\n".' curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); '."\r\n".' $response = curl_exec($ch); '."\r\n".' $errmsg = curl_error($ch); '."\r\n".' $cInfo = curl_getinfo($ch); '."\r\n".' curl_close($ch); '."\r\n".' print_r($errmsg); '."\r\n".' print_r($cInfo); '."\r\n".' print_r($response); '."\r\n".'?&gt;</pre>'; return $out; 
 }
 function nxs_cURLTest($url, $msg, $testText){ echo "<br/>--== Test Requested ... ".$url."<br/>";  $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); 
-  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"); 
+  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.39 Safari/537.36"); 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); curl_setopt($ch, CURLOPT_TIMEOUT, 10); curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
   $response = curl_exec($ch); $errmsg = curl_error($ch); $cInfo = curl_getinfo($ch); curl_close($ch); echo "Testing ... ".$url." - ".$cInfo['url']."<br/>";
   if (stripos($response, $testText)!==false) echo "....".$msg." - OK<br/>"; else { echo "....<b style='color:red;'>".$msg." - Problem</b><br/>"; prr($response); prr($errmsg); prr($cInfo); echo nxs_cURLTestCode($url);  }
