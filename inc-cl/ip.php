@@ -52,7 +52,7 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
     
             
             <div style="width:100%;"><strong>Instapaper Username:</strong> </div><input name="ip[<?php echo $ii; ?>][apIPUName]" id="apIPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit',htmlentities($options['ipUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Instapaper Password:</strong> </div><input name="ip[<?php echo $ii; ?>][apIPPass]" id="apIPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ipPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ipPass'], 5)):$options['ipPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Instapaper Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="ip[<?php echo $ii; ?>][apIPPass]" id="apIPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ipPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ipPass'], 5)):$options['ipPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="ip[<?php echo $ii; ?>][apDoIP]" value="1" id="apDoNewIP<?php echo $ii; ?>" /> <?php } ?>
             <br/>            

@@ -132,15 +132,12 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG { var $ntInfo = ar
                  
         <div class="subDiv" id="sub<?php echo $ii; ?>DivN" style="display: block;">            
           <div style="width:100%;"><strong>Your Blogger Username/Email:</strong> </div><input name="bg[<?php echo $ii; ?>][bgUName]" style="width: 70%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['bgUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
-          <div style="width:100%;"><strong>Your Blogger Password:</strong> </div><input type="password" name="bg[<?php echo $ii; ?>][bgPass]" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['bgPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+          <div style="width:100%;"><strong>Your Blogger Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" type="password" name="bg[<?php echo $ii; ?>][bgPass]" style="width: 75%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['bgPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
           
             </div>          
             <?php } else { nxs_show_noLibWrn('"NextScripts API Library for Blogger" is NOT installed'); } ?>           
         </div>
-          
              <br/><hr/>   
-             
-  
            <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apBGTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div> 
               
               <input name="bg[<?php echo $ii; ?>][apBGMsgTFrmt]" id="apBGMsgTFrmt" style="width: 50%;" value="<?php if ($options['bgMsgTFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['bgMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); else echo "%TITLE%"; ?>" onfocus="mxs_showFrmtInfo('apBGTMsgFrmt<?php echo $ii; ?>');" /><?php nxs_doShowHint("apBGTMsgFrmt".$ii); ?><br/>

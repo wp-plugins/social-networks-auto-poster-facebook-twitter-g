@@ -53,7 +53,7 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
     
     
             <div style="width:100%;"><br/><strong>LiveJournal Username:</strong> </div><input name="lj[<?php echo $ii; ?>][apLJUName]" id="apLJUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ljUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>LiveJournal Password:</strong> </div><input name="lj[<?php echo $ii; ?>][apLJPass]" id="apLJPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ljPass'], 5)):$options['ljPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>LiveJournal Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="lj[<?php echo $ii; ?>][apLJPass]" id="apLJPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ljPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ljPass'], 5)):$options['ljPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <div style="width:100%;"><br/><strong>Blog/Community URL or ID:</strong> Please specify the Blog or Community URL or ID. <i>Use this only if you are posting NOT to your own journal. </i></div> 
             <input name="lj[<?php echo $ii; ?>][commID]" id="commID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['commID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                

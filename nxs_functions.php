@@ -447,6 +447,8 @@ background:#f1f1f1;background-image:-webkit-gradient(linear,left bottom,left top
             .nxs_ti_li {background-image: url('<?php echo $nxs_plurl; ?>img/li16.png');}  .nxs_ti_rd {background-image: url('<?php echo $nxs_plurl; ?>img/rd16.png');} 
             .nxs_ti_fp {background-image: url('<?php echo $nxs_plurl; ?>img/fp16.png');}  .nxs_ti_yt {background-image: url('<?php echo $nxs_plurl; ?>img/yt16.png');} 
             .nxs_ti_bg {background-image: url('<?php echo $nxs_plurl; ?>img/bg16.png');}  .nxs_ti_pn {background-image: url('<?php echo $nxs_plurl; ?>img/pn16.png');} 
+            
+input[readonly]{ background-color:white; }            
 </style>
 <?php }}
 
@@ -587,6 +589,12 @@ if (!function_exists("nxs_mkShortURL")) { function nxs_mkShortURL($url, $postID=
       $response  = wp_remote_get('http://api.x.co/Squeeze.svc/text/'.$options['xcoAPIKey'].'?url='.urlencode($url)); 
       if (is_wp_error($response)) { nxs_addToLogN('E', 'x.co', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = $response['body'];
       if (empty($r) || stripos($r, 'http://')===false) { nxs_addToLogN('E', 'x.co', '', '-=ERROR (RES)=- '.print_r($r, true)); return $url; } else $rurl = $r;
+    }
+    
+    if ($options['nxsURLShrtnr']=='U') {    
+      $flds = array('a'=>'add', 'url'=>$url); $response  = wp_remote_post('http://u.to/', array('body' => $flds)); 
+      if (is_wp_error($response)) { nxs_addToLogN('E', 'u.to', '', '-=ERROR (SYS)=- '.print_r($response, true)); return $url; }  $r = $response['body'];
+      if (empty($r) || stripos($r, "#shurlout').val('")===false) { nxs_addToLogN('E', 'x.co', '', '-=ERROR (RES)=- '.print_r($r, true)); return $url; } else $rurl = CutFromTo($r,"#shurlout').val('","'");
     }
     
     if ($options['nxsURLShrtnr']=='P' && trim($options['postAPIKey']!='')) {      

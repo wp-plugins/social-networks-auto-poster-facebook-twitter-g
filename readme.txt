@@ -168,6 +168,12 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.4.22 [08/20/2015] =
+
+* New - New URL Shortener - u.to - Simple and anonymous use only. No accounts, no stats.
+* Bug Fix - Workaround for annoying Google Chrome "auto-fill" issue casing "ghost" accounts to be added on each "Settings Save" 
+* Bug Fix - Some minor code improvements. 
+
 = 3.4.21 [07/09/2015] =
 
 * New/Bug Fix - [Urgent][Critical] Facebook API 2.4 Compatibility. Usage of API 2.4 was causing "Invalid Scopes: user_groups" and other problems breaking autoposting to Facebook. 

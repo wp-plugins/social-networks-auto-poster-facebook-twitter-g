@@ -54,7 +54,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
     
             
             <div style="width:100%;"><strong>StumbleUpon Username:</strong> </div><input name="su[<?php echo $ii; ?>][apSUUName]" id="apSUUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['suUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>StumbleUpon Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="su[<?php echo $ii; ?>][apSUPass]" id="apSUPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['suPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['suPass'], 5)):$options['suPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="su[<?php echo $ii; ?>][apDoSU]" value="1" id="apDoNewSU<?php echo $ii; ?>" /> <?php } ?>
             <br/>            

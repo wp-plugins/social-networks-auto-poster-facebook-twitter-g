@@ -88,7 +88,7 @@ if (!class_exists("nxs_snapClassVK")) { class nxs_snapClassVK {
     <div style="width:100%; margin-left: 15px;">
       <?php if( function_exists("nxs_doPostToVK")) { ?>    
          <div style="width:100%;"><strong>vKontakte(VK) Email:</strong> </div><input name="vk[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['uName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
-         <div style="width:100%;"><strong>vKontakte(VK) Password:</strong> </div><input name="vk[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />    
+         <div style="width:100%;"><strong>vKontakte(VK) Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="vk[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />    
          <?php if( isset($options['vkPhReq'])) { if (empty($options['vkPh'])) $options['vkPh'] =''; ?>     
            <div style="width:100%;"><strong>vKontakte(VK) Phone Number (<?php _e(apply_filters('format_to_edit', htmlentities($options['vkPhReq'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>) :</strong> </div><input name="vk[<?php echo $ii; ?>][vkPh]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['vkPh'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
          <?php } ?>

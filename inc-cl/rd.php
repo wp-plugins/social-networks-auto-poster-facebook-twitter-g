@@ -57,7 +57,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
       
             
             <div style="width:100%;"><strong>Reddit Username:</strong> </div><input name="rd[<?php echo $ii; ?>][uName]" id="apRDUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             
             <div style="width:100%;"><strong>Subreddit ID:</strong>                         
             Please <a href="#" onclick="nxs_getBrdsOrCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDPass<?php echo $ii; ?>').val(), 'rd' , '<?php echo $ii; ?>', 'rdSubReddit'); return false;">click here to retrieve your subreddits</a>

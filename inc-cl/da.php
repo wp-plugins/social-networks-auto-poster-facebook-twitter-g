@@ -61,7 +61,7 @@ if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
       
             
             <div style="width:100%;"><strong>deviantART Username or Email:</strong> </div><input name="da[<?php echo $ii; ?>][uName]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['daUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>deviantART Password:</strong> </div><input name="da[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['daPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['daPass'], 5)):$options['daPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                            
+            <div style="width:100%;"><strong>deviantART Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="da[<?php echo $ii; ?>][uPass]" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['daPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['daPass'], 5)):$options['daPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                            
             <br/> 
             
             <div id="altFormat" style="">

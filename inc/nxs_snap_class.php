@@ -15,9 +15,9 @@ if (!class_exists("NS_SNAutoPoster")) {
         function getAPOptions() { global $nxs_isWPMU, $blog_id; $dbMUOptions = array();  
             //## Some Default Values            
             //$options = array('nsOpenGraph'=>1);            
-            $dbOptions = get_option($this->dbOptionsName);  $dbOptions['ver'] = 306; 
-            $this->nxs_ntoptions = get_site_option($this->dbOptionsName);   $nxs_UPPath = 'nxs-snap-pro-upgrade';
-            $pf = ABSPATH . 'wp-content/plugins/'.$nxs_UPPath.'/'.$nxs_UPPath.'.php'; if (file_exists($pf) && !function_exists('nxs_getInitAdd') ) require_once $pf;          
+            $dbOptions = get_option($this->dbOptionsName);  $dbOptions['ver'] = 306;  $this->nxs_ntoptions = get_site_option($this->dbOptionsName); $nxs_UPPath = 'nxs-snap-pro-upgrade'; 
+            $dir = plugin_dir_path( __FILE__ ); $dir = explode('social-networks-auto-poster-facebook-twitter-g', $dir); $dir = $dir[0]; 
+            $pf = $dir.$nxs_UPPath.'/'.$nxs_UPPath.'.php'; if (file_exists($pf) && !function_exists('nxs_getInitAdd') ) require_once $pf;          
             if ($nxs_isWPMU && $blog_id>1) { global $wpdb;  switch_to_blog(1); //$dbMUOptions = get_option($this->dbOptionsName);  
               $row = $wpdb->get_row("SELECT option_value from ".$wpdb->options." WHERE option_name='NS_SNAutoPoster'"); if ( is_object( $row ) ) $dbMUOptions = maybe_unserialize($row->option_value);
               if (function_exists('nxs_getInitAdd')) nxs_getInitAdd($dbMUOptions); restore_current_blog(); 
@@ -235,7 +235,8 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
 <div class="nsx_tab_container">
 
     <div id="nsx_tab1" class="nsx_tab_content">
-    <form method="post" id="nsStForm" action="">    
+    <form method="post" id="nsStForm" action=""> <input style="display:none" type="text" name="nxs_fk_UserName" id="nxs_FakeUserNameToBePreFilledByChrome"/>
+    <input style="display:none" name="nxs_fk_password" type="password" id="nxs_FakePasswordToBePreFilledByChrome"/>
     <a href="#" class="NXSButton" id="nxs_snapAddNew">Add new account</a> <div class="nxsInfoMsg"><img style="position: relative; top: 8px;" alt="Arrow" src="<?php echo $nxs_plurl; ?>img/arrow_l_green_c1.png"/> You can add Facebook, Twitter, Google+, Pinterest, LinkedIn, Tumblr, Blogger/Blogspot, Delicious, etc accounts</div><br/><br/>
           <div id="nxs_spPopup"><span class="nxspButton bClose"><span>X</span></span>Add New Network: <select onchange="doShowFillBlockX(this.value);" id="nxs_ntType"><option value =""></option>
            <?php foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) $mt=0; else $mt = 1+max(array_keys($options[$avNt['lcode']]));
@@ -295,6 +296,9 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
     
     <div id="nsx_tab2" class="nsx_tab_content">  <script type="text/javascript">setTimeout( function(){ document.getElementById( "nsStFormMisc" ).reset();},5);</script>
     <form method="post" id="nsStFormMisc" action="<?php echo $nxs_snapThisPageUrl?>">    <input type="hidden" name="nxsMainFromElementAccts" id="nxsMainFromElementAccts" value="" />
+    
+    
+    
        <input type="hidden" name="_wpnonce" id="_wpnonce" value="" /> <input type="hidden" name="nxsMainFromSupportFld" id="nxsMainFromSupportFld" value="1" />
      <!-- ##################### OTHER #####################-->            
 
@@ -456,6 +460,11 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <input type="radio" name="nxsURLShrtnr" value="B" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='B') echo 'checked="checked"'; ?> /> <b>bit.ly</b>  - <i>Enter bit.ly username and <a target="_blank" href="http://bitly.com/a/your_api_key">API Key</a> below</i><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly Username: <input name="bitlyUname" style="width: 20%;" value="<?php if (isset($options['bitlyUname'])) _e(apply_filters('format_to_edit',$options['bitlyUname']), 'nxs_snap') ?>" /><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bit.ly&nbsp;&nbsp;API Key:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="bitlyAPIKey" style="width: 20%;" value="<?php if (isset($options['bitlyAPIKey'])) _e(apply_filters('format_to_edit',$options['bitlyAPIKey']), 'nxs_snap') ?>" />
+              </div>
+              
+              <!-- ## u.to ##-->
+              <div class="itemDiv">
+                <input type="radio" name="nxsURLShrtnr" value="U" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='U') echo 'checked="checked"'; ?> /> <b>u.to</b>  <i>Simple and anonymous (no accounts, no stats) use only, No additional configuration required.
               </div>
               
               <!-- ## x.co ##-->

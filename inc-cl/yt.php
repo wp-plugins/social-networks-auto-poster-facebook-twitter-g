@@ -54,7 +54,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
     
             
             <div style="width:100%;"><strong>YouTube(Google) Username:</strong> </div><input name="yt[<?php echo $ii; ?>][apYTUName]" id="apYTUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>YouTube(Google) Password:</strong> </div><input name="yt[<?php echo $ii; ?>][apYTPass]" id="apYTPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ytPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ytPass'], 5)):$options['ytPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>YouTube(Google) Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="yt[<?php echo $ii; ?>][apYTPass]" id="apYTPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ytPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ytPass'], 5)):$options['ytPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
             <p><div style="width:100%;"><strong>YouTube Channel Page URL:</strong> 
             
             </div><input name="yt[<?php echo $ii; ?>][apYTPage]" id="apYTPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
