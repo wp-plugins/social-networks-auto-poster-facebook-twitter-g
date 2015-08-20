@@ -99,8 +99,8 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = $this->ntInfo['code'];
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apPNUName']) && $pval['apPNUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apPNUName']) && !empty($pval['apPNPass'])){ if (!isset($options[$ii])) $options[$ii] = array();      
         if (isset($pval['apDoPN']))   $options[$ii]['doPN'] = $pval['apDoPN']; else $options[$ii]['doPN'] = 0;
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apPNUName']))   $options[$ii]['pnUName'] = trim($pval['apPNUName']);

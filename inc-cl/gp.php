@@ -116,8 +116,8 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){  $code = 'GP'; $lcode = 'gp'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apGPUName']) && $pval['apGPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apGPUName']) && !empty($pval['apGPPass'])){ if (!isset($options[$ii])) $options[$ii] = array();      
         if (isset($pval['apGPUName']))   $options[$ii]['gpUName'] = trim($pval['apGPUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apGPPass']))    $options[$ii]['gpPass'] = 'n5g9a'.nsx_doEncode($pval['apGPPass']); else $options[$ii]['gpPass'] = '';  

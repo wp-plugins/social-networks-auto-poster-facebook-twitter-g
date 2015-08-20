@@ -102,7 +102,8 @@ if (!class_exists("nxs_snapClassDI")) { class nxs_snapClassDI {
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'DI'; $lcode = 'di'; 
     foreach ($post as $ii => $pval){ 
-      if (isset($pval['apDIUName']) && $pval['apDIUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+      
+      if (!empty($pval['apDIUName']) && !empty($pval['apDIPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDIUName']))   $options[$ii]['diUName'] = trim($pval['apDIUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apDIPass']))    $options[$ii]['diPass'] = 'n5g9a'.nsx_doEncode($pval['apDIPass']); else $options[$ii]['diPass'] = '';  

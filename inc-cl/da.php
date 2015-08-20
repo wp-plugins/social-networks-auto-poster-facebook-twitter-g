@@ -104,7 +104,7 @@ if (!class_exists("nxs_snapClassDA")) { class nxs_snapClassDA {
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'DA'; $lcode = 'da'; 
     foreach ($post as $ii => $pval){ 
-      if (isset($pval['uName']) && $pval['uName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+      if (!empty($pval['uName']) && !empty($pval['uPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['uName']))   $options[$ii]['daUName'] = trim($pval['uName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['uPass']))    $options[$ii]['daPass'] = 'n5g9a'.nsx_doEncode($pval['uPass']); else $options[$ii]['daPass'] = '';  

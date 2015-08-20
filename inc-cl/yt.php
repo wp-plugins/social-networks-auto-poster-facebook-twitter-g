@@ -94,8 +94,8 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'YT'; $lcode = 'yt'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apYTUName']) && $pval['apYTUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apYTUName']) && !empty($pval['apYTPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apYTUName']))   $options[$ii]['ytUName'] = trim($pval['apYTUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apYTPass']))    $options[$ii]['ytPass'] = 'n5g9a'.nsx_doEncode($pval['apYTPass']); else $options[$ii]['ytPass'] = '';  

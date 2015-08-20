@@ -106,8 +106,8 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'VB'; $lcode = 'vb'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apVBUName']) && $pval['apVBUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apVBUName']) && !empty($pval['apVBPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apVBUName']))   $options[$ii]['vbUName'] = trim($pval['apVBUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apVBPass']))    $options[$ii]['vbPass'] = 'n5g9a'.nsx_doEncode($pval['apVBPass']); else $options[$ii]['vbPass'] = '';  

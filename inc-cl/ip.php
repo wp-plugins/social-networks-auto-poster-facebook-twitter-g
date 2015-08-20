@@ -93,8 +93,8 @@ if (!class_exists("nxs_snapClassIP")) { class nxs_snapClassIP {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'IP'; $lcode = 'ip'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apIPUName']) && $pval['apIPUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apIPUName']) && !empty($pval['apIPPass'])){ if (!isset($options[$ii])) $options[$ii] = array();      
         if (isset($pval['apIPUName']))   $options[$ii]['ipUName'] = trim($pval['apIPUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apIPPass']))    $options[$ii]['ipPass'] = 'n5g9a'.nsx_doEncode($pval['apIPPass']); else $options[$ii]['ipPass'] = '';  

@@ -103,8 +103,8 @@ if (!class_exists("nxs_snapClassLJ")) { class nxs_snapClassLJ {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'LJ'; $lcode = 'lj'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apLJUName']) && $pval['apLJUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();        
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apLJUName']) && !empty($pval['apLJPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);  
         if (isset($pval['ljSrv']))   $options[$ii]['ljSrv'] = trim($pval['ljSrv']); if ($options[$ii]['ljSrv']=='DW') $server = 'dreamwidth.org'; else $server = 'livejournal.com';      
         if (isset($pval['apLJUName']))   $options[$ii]['ljUName'] = trim($pval['apLJUName']);  $options[$ii]['ljURL'] = 'http://'.$options[$ii]['ljUName'].".".$server;

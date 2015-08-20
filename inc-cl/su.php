@@ -106,8 +106,8 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'SU'; $lcode = 'su'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apSUUName']) && $pval['apSUUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apSUUName']) && !empty($pval['apSUPass'])){ if (!isset($options[$ii])) $options[$ii] = array();      
       
         $isUPChanged = ((isset($pval['apSUPass']) && isset($options[$ii]['suPass']) && 'n5g9a'.nsx_doEncode($pval['apSUPass'])!=$options[$ii]['suPass']) || !isset($options[$ii]['suPass'])) ||  
            ((isset($pval['apSUUName']) && isset($options[$ii]['suUName']) && $pval['apSUUName']!=$options[$ii]['suUName']) || !isset($options[$ii]['suUName']));

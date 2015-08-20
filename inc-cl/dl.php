@@ -93,8 +93,8 @@ if (!class_exists("nxs_snapClassDL")) { class nxs_snapClassDL {
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){$code = 'DL'; $lcode = 'dl'; 
-    foreach ($post as $ii => $pval){ 
-      if (isset($pval['apDLUName']) && $pval['apDLUName']!=''){ if (!isset($options[$ii])) $options[$ii] = array();
+    foreach ($post as $ii => $pval){       
+      if (!empty($pval['apDLUName']) && !empty($pval['apDLPass'])){ if (!isset($options[$ii])) $options[$ii] = array();
         if (isset($pval['apDLUName']))   $options[$ii]['dlUName'] = trim($pval['apDLUName']);
         if (isset($pval['nName']))          $options[$ii]['nName'] = trim($pval['nName']);
         if (isset($pval['apDLPass']))    $options[$ii]['dlPass'] = 'n5g9a'.nsx_doEncode($pval['apDLPass']); else $options[$ii]['dlPass'] = '';  
