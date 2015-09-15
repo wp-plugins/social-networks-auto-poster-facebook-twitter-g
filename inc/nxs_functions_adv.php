@@ -5,7 +5,8 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   $post = get_post($postID); $options = $plgn_NS_SNAutoPoster->nxs_options;   
   if (!empty($options['brokenCntFilters'])) { $msg = str_replace('%FULLTITLE%','%TITLE%',$msg); $msg = str_replace('%PANNOUNCE%','%ANNOUNCE%',$msg); $msg = str_replace('%PANNOUNCER%','%ANNOUNCER%',$msg); 
     $msg = str_replace('%EXCERPT%','%RAWEXCERPT%',$msg);  $msg = str_replace('%FULLTEXT%','%RAWTEXT%',$msg);  
-  } if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = '';
+  } if (!empty($options['nxsHTSpace'])) $htS = $options['nxsHTSpace']; else $htS = ''; 
+  if (!empty($options['nxsHTSepar'])) $htSep = $options['nxsHTSepar']; else $htSep = ', '; $htSep = str_replace('_',' ',$htSep); $htSep = str_replace('c',',',$htSep);
   // if ($addURLParams=='' && $options['addURLParams']!='') $addURLParams = $options['addURLParams'];
   $msg = str_replace('%TEXT%','%EXCERPT%',$msg); $msg = str_replace('%RAWEXTEXT%','%RAWEXCERPT%',$msg);
   $msg = stripcslashes($msg); if (isset($ShownAds)) $ShownAdsL = $ShownAds; // $msg = htmlspecialchars(stripcslashes($msg)); 
@@ -63,11 +64,11 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   }
   if (preg_match('/%HCATS%/', $msg)) { $t = wp_get_post_categories($postID); $cats = array();  
     foreach($t as $c){ $cat = get_category($c);  $cats[] = "#".trim(str_replace(' ',$htS, str_replace('  ', ' ', trim(str_ireplace('&','',str_ireplace('&amp;','',$cat->name)))))); } 
-    $ctts = implode(', ',$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
+    $ctts = implode($htSep,$cats); $msg = str_ireplace("%HCATS%", $ctts, $msg);
   }  
   if (preg_match('/%HTAGS%/', $msg)) { $t = wp_get_object_terms($postID, 'product_tag'); if ( empty($t) || is_wp_error($pt) || !is_array($t) ) $t = wp_get_post_tags($postID);
     $tggs = array(); foreach ($t as $tagA){$tggs[] = "#".trim(str_replace(' ', $htS, preg_replace('/[^a-zA-Z0-9\p{L}\p{N}\s]/u', '', trim(nxs_ucwords(str_ireplace('&','',str_ireplace('&amp;','',$tagA->name)))))));} 
-    $tags = implode(', ',$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
+    $tags = implode($htSep,$tggs); $msg = str_ireplace("%HTAGS%", $tags, $msg);
   } 
   if (preg_match('/%+CF-[a-zA-Z0-9-_]+%/', $msg)) { $msgA = explode('%CF', $msg); $mout = '';
     foreach ($msgA as $mms) { 

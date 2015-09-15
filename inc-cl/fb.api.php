@@ -84,6 +84,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
               else $badOut['Error'] .= " [ERROR] (invalid app_id) Authorization Error. <br/>\r\n<br/>\r\n Possible Reasons: <br/>\r\n 1. Your app is not authorized. Please go to the Plugin Settings - Facebook and authorize it.<br/>\r\n 2. The current authorized user have no rights to post to the specified page. Please login to Facebook as the correct user and Re-Authorize the Plugin.<br/>\r\n 3. You clicked 'Skip' or unchecked the 'Manage Pages' or 'Post on your behalf' permissions when Authorization wizard asked you. Please Re-Authorize the Plugin<br/>\r\n"; 
         }
         if (stripos($res['error']['message'], 'Some of the aliases you requested do not exist')!==false) $badOut['Error'] .= '| Please check what do you have in the "Facebook URL" field.';
+        if (stripos($res['error']['message'], 'Unsupported post request')!==false) $badOut['Error'] .= "<br/>\r\n".'| Are you posting to a secret group? Please see: <a href="http://gd.is/fbe2">http://gd.is/fbe2</a>';
         if (stripos($res['error']['message'], 'The target user has not authorized this action')!==false) $badOut['Error'] .= '| Please Authorize the plugin from the plugin settings Page - Facebook.';
         
         return $badOut;          

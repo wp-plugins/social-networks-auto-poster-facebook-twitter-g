@@ -4,8 +4,8 @@ Contributors: NextScripts
 Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, tumblr, blogger, blogspot, blogpost, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Kippt, xing
 Requires at least: 3.4
-Tested up to: 4.2.2
-Stable tag: 3.4.21
+Tested up to: 4.3.1
+Stable tag: 3.4.23
 License: GPLv2 or later
 
 Automatically re-publishes blogposts to Facebook, Twitter, Google+, Pinterest, LinkedIn, Blogger, Tumblr, Delicious, Plurk, etc profiles and/or pages
@@ -167,6 +167,13 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 4. Google+: Types of Post 
 
 == Changelog ==
+
+= 3.4.23 [09/15/2015] =
+
+* New - Wordpress 4.3.1 Compatibility
+* New - New setting - How to separate hashtags.
+* New/Bug Fix [Facebook] Support for new automatic page naming structure (pagename-pageID, example: https://www.facebook.com/nextscripts-270851199672443/). It was causing #803 error. 
+* FYI - Facebook no longer allows posting to secret groups if you are not an admin. It is causing "Unsupported post request" error. More info: http://gd.is/fbe2
 
 = 3.4.22 [08/20/2015] =
 

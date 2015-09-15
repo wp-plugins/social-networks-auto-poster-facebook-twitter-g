@@ -106,6 +106,7 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             if (isset($_POST['featImgLoc']))  $options['featImgLoc'] = $_POST['featImgLoc'];            
             if (isset($_POST['anounTagLimit']))  $options['anounTagLimit'] = $_POST['anounTagLimit'];                        
             if (isset($_POST['nxsHTSpace']))  $options['nxsHTSpace'] = $_POST['nxsHTSpace']; else $options['nxsHTSpace'] = "";
+            if (isset($_POST['nxsHTSepar']))  $options['nxsHTSepar'] = $_POST['nxsHTSepar']; else $options['nxsHTSepar'] = "c_";
             if (isset($_POST['featImgLocPrefix']))  $options['featImgLocPrefix'] = $_POST['featImgLocPrefix'];
             if (isset($_POST['featImgLocArrPath']))  $options['featImgLocArrPath'] = $_POST['featImgLocArrPath'];
             if (isset($_POST['featImgLocRemTxt']))  $options['featImgLocRemTxt'] = $_POST['featImgLocRemTxt'];
@@ -544,7 +545,15 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <option <?php if (!empty($options['nxsHTSpace']) && $options['nxsHTSpace']=='-') echo "selected" ?> value ="-">- (Dash)</option>
               </select>
               </div>              
-           </div></div> 
+              <?php _e('How to separate hashtags', 'nxs_snap') ?> </span> <br/>
+              <div class="itemDiv">
+              <b><?php _e('Separate hashtags with ', 'nxs_snap') ?></b> <select name="nxsHTSepar" id="nxsHTSepar">
+              <option <?php if (!empty($options['nxsHTSepar']) && $options['nxsHTSepar']=='_') echo "selected" ?> value ="_">[ ] Space</option>
+              <option <?php if (empty($options['nxsHTSepar']) || $options['nxsHTSepar']=='c_') echo "selected" ?> value="c_">[, ] Comma and Space</option>
+              <option <?php if (!empty($options['nxsHTSepar']) && $options['nxsHTSepar']=='c') echo "selected" ?> value ="c">[,] Comma</option>              
+              </select>
+              </div>              
+           </div>
            
             <!-- ##### ANOUNCE TAG ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('%ANNOUNCE% tag settings', 'nxs_snap') ?></h3></div>
