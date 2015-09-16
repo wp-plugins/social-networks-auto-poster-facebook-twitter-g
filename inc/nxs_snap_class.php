@@ -465,7 +465,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               
               <!-- ## u.to ##-->
               <div class="itemDiv">
-                <input type="radio" name="nxsURLShrtnr" value="U" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='U') echo 'checked="checked"'; ?> /> <b>u.to</b>  <i>Simple and anonymous (no accounts, no stats) use only, No additional configuration required.
+                <input type="radio" name="nxsURLShrtnr" value="U" <?php if (isset($options['nxsURLShrtnr']) && $options['nxsURLShrtnr']=='U') echo 'checked="checked"'; ?> /> <b>u.to</b>  <i>Simple and anonymous (no accounts, no stats) use only, No additional configuration required.</i>
               </div>
               
               <!-- ## x.co ##-->
@@ -553,7 +553,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
               <option <?php if (!empty($options['nxsHTSepar']) && $options['nxsHTSepar']=='c') echo "selected" ?> value ="c">[,] Comma</option>              
               </select>
               </div>              
-           </div>
+           </div></div>
            
             <!-- ##### ANOUNCE TAG ##### --> 
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('%ANNOUNCE% tag settings', 'nxs_snap') ?></h3></div>
