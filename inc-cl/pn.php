@@ -21,22 +21,22 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
                  nxs_show_noLibWrn('Pinterest API Library module NOT found.<br/><br/><span style="color:black;">Pinterest doesn\'t have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Pinterest.</span>'); echo "</div>"; return; }; 
              ?>             
            
-            <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/"><?php $nType="Pinterest"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <div id="doPN<?php echo $ii; ?>Div" style="margin-left: 10px;"> <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress/"><?php $nType="Pinterest"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input name="pn[<?php echo $ii; ?>][nName]" id="pnnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
             <?php echo nxs_addQTranslSel('pn', $ii, $options['qTLng']); ?>
             
              <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
     
                   
-            <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Pinterest Email:</strong> </div><input name="pn[<?php echo $ii; ?>][apPNUName]" id="apPNUName<?php echo $ii; ?>" class="apPNUName<?php echo $ii; ?>"  style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnUName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />                
+            <div style="width:100%;"><strong>Pinterest Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="pn[<?php echo $ii; ?>][apPNPass]" id="apPNPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['pnPass'], 0, 5)=='g9c1a'?nsx_doDecode(substr($options['pnPass'], 5)):$options['pnPass'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  <br/>                
 
                 <strong>Clickthrough URL:</strong> 
 <p style="margin-bottom: 20px;margin-top: 5px;">
@@ -46,7 +46,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
 
             <div style="width:100%;"><strong>Default Image to Pin:</strong> 
             <p style="font-size: 11px; margin: 0px;">If your post does not have any images this will be used instead.</p>
-            </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            </div><input name="pn[<?php echo $ii; ?>][apPNDefImg]" id="apPNDefImg" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['pnDefImg'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /> 
             <br/><br/>            
             
             <div style="width:100%;"><strong>Board:</strong> 
@@ -62,21 +62,21 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
             
             <br/><br/>            
             
-            <div style="margin-bottom: 5px; margin-left: 0px; "><input value="1"  id="isAttachVid" type="checkbox" name="pn[<?php echo $ii; ?>][isAttachVid]"  <?php if (isset($options['isAttachVid']) && (int)$options['isAttachVid'] == 1) echo "checked"; ?> />    <strong><?php _e('If post has a video use it instead of image', 'nxs_snap'); ?></strong> <i><?php _e('Video will be pinned instead of featured image. Only Youtube is supported at this time.', 'nxs_snap'); ?></i>
+            <div style="margin-bottom: 5px; margin-left: 0px; "><input value="1"  id="isAttachVid" type="checkbox" name="pn[<?php echo $ii; ?>][isAttachVid]"  <?php if (isset($options['isAttachVid']) && (int)$options['isAttachVid'] == 1) echo "checked"; ?> />    <strong><?php _e('If post has a video use it instead of image', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong> <i><?php _e('Video will be pinned instead of featured image. Only Youtube is supported at this time.', 'social-networks-auto-poster-facebook-twitter-g'); ?></i>
     <br/></div>
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong>  <a href="#" id="apPNMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>             
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong>  <a href="#" id="apPNMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>             
               </div>
               
-               <textarea cols="150" rows="3" id="pn<?php echo $ii; ?>SNAPformat" name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#pn<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"><?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap');  else echo "%TITLE% - %URL%"; ?></textarea>
+               <textarea cols="150" rows="3" id="pn<?php echo $ii; ?>SNAPformat" name="pn[<?php echo $ii; ?>][apPNMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#pn<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"><?php if ($options['pnMsgFormat']!='') _e(apply_filters('format_to_edit', htmlentities($options['pnMsgFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g');  else echo "%TITLE% - %URL%"; ?></textarea>
               
               <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?>
             </div><br/>    
             <?php if ($isNew) { ?> <input type="hidden" name="pn[<?php echo $ii; ?>][apDoPN]" value="1" id="apDoNewPN<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['pnPass']!='') { ?>
             
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('PN', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>         
+            <b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('PN', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a>         
             <?php } ?>
             
             </div>
@@ -91,7 +91,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
     </div>   <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" /></div>
             
             </div>
   </div>
@@ -135,13 +135,13 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
       <?php if (!empty($ntOpt['tagsSelX'])) { ?>  <input type="hidden" class="nxs_TG" id="nxs_TG_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['tagsSelX']; ?>" /> <?php } ?>
       <?php if ($isAvailPN) { ?><input class="nxsGrpDoChb" value="1" id="doPN<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="pn[<?php echo $ii; ?>][doPN]" <?php if ((int)$doPN == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="pn[<?php echo $ii; ?>][doPN]" value="<?php echo $doPN;?>"> <?php } ?> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 'nxs_snap') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/pn16.png);">Pinterest - <?php _e('publish to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailPN) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;"  type="button" class="button" name="rePostToPN_repostButton" id="rePostToPN_button" value="<?php _e('Repost to Pinterest', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
                     <?php } ?>
 
                     <?php  if (is_array($pMeta) && !empty($pMeta[$ii]) && isset($pMeta[$ii]['postURL']) ) {                         
                         ?> <span id="pstdPN<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['postURL']; ?>" target="_blank"><?php $nType="Pinterest"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['postURL']; ?>" target="_blank"><?php $nType="Pinterest"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -154,7 +154,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>pn" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>                
                 </td></tr> <?php } ?>
                 
                 <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Select Board</th>
@@ -166,7 +166,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN { var $ntInfo = ar
             </select></td>
                 </tr> 
                               
-                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Text Message Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Text Message Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td>                
                 <textarea cols="150" rows="1" id="pn<?php echo $ii; ?>SNAPformat" name="pn[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#pn<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apPNMsgFrmt<?php echo $ii; ?>');"><?php echo $pnMsgFormat; ?></textarea>
                 <?php nxs_doShowHint("apPNMsgFrmt".$ii); ?></td></tr>                
@@ -240,7 +240,7 @@ if (!function_exists("nxs_doPublishToPN")) { //## Second Function to Post to G+
     if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
       if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
-      if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+      if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
         else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'postURL'=>$ret['postURL'], 'pDate'=>date('Y-m-d H:i:s'))); 
         $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>';  nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     } //prr($ret);

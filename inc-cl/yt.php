@@ -9,7 +9,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
       <div class="nxs_box_header"> 
         <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
           <?php $cbo = count($ntOpts); ?> 
-          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'social-networks-auto-poster-facebook-twitter-g'); echo ")"; ?></div><?php } ?>
         </div>
       </div>
       <div class="nxs_box_inside">
@@ -22,9 +22,9 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
            <?php } ?>
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
-            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
-          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
-          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+            <strong><?php  _e('Auto-publish to', 'social-networks-auto-poster-facebook-twitter-g'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'social-networks-auto-poster-facebook-twitter-g'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>
           </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div><?php // $pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
         }?>
       </div>
@@ -39,37 +39,37 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
             <div id="doYT<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSYT<?php echo $ii; ?>" value="0" id="apDoSYT<?php echo $ii; ?>" />            
             <?php if(!function_exists('doPostToGooglePlus')) {                
                  nxs_show_noLibWrn('YouTube API Library module NOT found.<br/><br/><span style="color:black;">YouTube does not have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to YouTube.</span>'); echo "</div>"; return; }; ?>            
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/yt16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/youtube-social-networks-auto-poster-wordpress-setup-installation/"><?php $nType="YouTube"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/yt16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/instructions/youtube-social-networks-auto-poster-wordpress-setup-installation/"><?php $nType="YouTube"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="yt[<?php echo $ii; ?>][nName]" id="ytnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input name="yt[<?php echo $ii; ?>][nName]" id="ytnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
             <?php echo nxs_addQTranslSel('yt', $ii, $options['qTLng']); ?>
             
               <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
             
-            <div style="width:100%;"><strong>YouTube(Google) Username:</strong> </div><input name="yt[<?php echo $ii; ?>][apYTUName]" id="apYTUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>YouTube(Google) Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="yt[<?php echo $ii; ?>][apYTPass]" id="apYTPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ytPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ytPass'], 5)):$options['ytPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>YouTube(Google) Username:</strong> </div><input name="yt[<?php echo $ii; ?>][apYTUName]" id="apYTUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytUName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />                
+            <div style="width:100%;"><strong>YouTube(Google) Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="yt[<?php echo $ii; ?>][apYTPass]" id="apYTPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['ytPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['ytPass'], 5)):$options['ytPass'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  <br/>                
             <p><div style="width:100%;"><strong>YouTube Channel Page URL:</strong> 
             
-            </div><input name="yt[<?php echo $ii; ?>][apYTPage]" id="apYTPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            </div><input name="yt[<?php echo $ii; ?>][apYTPage]" id="apYTPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytPageID'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /> 
             <br/><br/>
             
             <p><div style="width:100%;"><i style="color: gray;"><strong >Google+ Page ID:</strong>&nbsp;Fill this only if you are posting to youTube as your Google+ page. Please leave this empty otherwise.</i>
             
-            </div><input name="yt[<?php echo $ii; ?>][ytGPPageID]" id="ytGPPageID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytGPPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            </div><input name="yt[<?php echo $ii; ?>][ytGPPageID]" id="ytGPPageID" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['ytGPPageID'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /> 
             <br/><br/>
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apYTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apYTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> (<a href="#" id="apYTMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apYTMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)
               </div>
               
-              <textarea cols="150" rows="3" id="yt<?php echo $ii; ?>SNAPformat" name="yt[<?php echo $ii; ?>][apYTMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#yt<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apYTMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post: %TITLE% - %URL%", 'nxs_snap'); else _e(apply_filters('format_to_edit', htmlentities($options['ytMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              <textarea cols="150" rows="3" id="yt<?php echo $ii; ?>SNAPformat" name="yt[<?php echo $ii; ?>][apYTMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#yt<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apYTMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post: %TITLE% - %URL%", 'social-networks-auto-poster-facebook-twitter-g'); else _e(apply_filters('format_to_edit', htmlentities($options['ytMsgFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?></textarea>
               
               <?php nxs_doShowHint("apYTMsgFrmt".$ii); ?>
             </div><br/>          
@@ -77,7 +77,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
             <?php if ($isNew) { ?> <input type="hidden" name="yt[<?php echo $ii; ?>][apDoYT]" value="1" id="apDoNewYT<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['ytPass']!='') { ?>
             
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('YT', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>              <?php } 
+            <b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('YT', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a>              <?php } 
             ?></div>
             <?php /* ######################## Advanced Tab ####################### */ ?>
    <?php if (!$isNew) { ?>   <div id="nsx<?php echo $nt.$ii ?>_tab2" class="nsx_tab_content">
@@ -90,7 +90,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
     </div>     <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'YT'; $lcode = 'yt'; 
@@ -129,14 +129,14 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
       <?php if ($isAvailYT) { ?><input class="nxsGrpDoChb" value="1" id="doYT<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="yt[<?php echo $ii; ?>][doYT]" <?php if ((int)$doYT == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="yt[<?php echo $ii; ?>][doYT]" value="<?php echo $doYT;?>"> <?php } ?> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/yt16.png);">YouTube - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailYT) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToYT_repostButton" id="rePostToYT_button" value="<?php _e('Repost to YouTube', 'nxs_snap') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/yt16.png);">YouTube - <?php _e('publish to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailYT) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToYT_repostButton" id="rePostToYT_button" value="<?php _e('Repost to YouTube', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
                     <?php } ?>
                     
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { 
                         
                         ?> <span id="pstdYT<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a style="font-size: 10px;" href="<?php echo $ntOpt['ytPageID']; ?>" target="_blank"><?php $nType="YouTube"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a style="font-size: 10px;" href="<?php echo $ntOpt['ytPageID']; ?>" target="_blank"><?php $nType="YouTube"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -149,11 +149,11 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT {
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>yt" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>                
                 </td></tr> <?php } ?>
                 
                 
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td>
                 
                  <?php if (1==1) { ?>
@@ -219,7 +219,7 @@ if (!function_exists("nxs_doPublishToYT")) { //## Second Function to Post to G+
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
-        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
           else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       } 
       //## Return Result

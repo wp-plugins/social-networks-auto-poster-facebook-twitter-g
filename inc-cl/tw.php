@@ -19,30 +19,30 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     
     <div id="doTW<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>" >   <input type="hidden" name="apDoSTW<?php echo $ii; ?>" value="0" id="apDoSTW<?php echo $ii; ?>" />      
     
-     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/"><?php $nType="Twitter"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+     <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-twitter-social-networks-auto-poster-wordpress/"><?php $nType="Twitter"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
     
-    <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input type="text" name="tw[<?php echo $ii; ?>][nName]" id="twnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+    <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input type="text" name="tw[<?php echo $ii; ?>][nName]" id="twnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
     <?php echo nxs_addQTranslSel('tw', $ii, $options['qTLng']); ?>
     <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/tw-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
-    <div class="nxs_tls_lbl"><strong>Your Twitter URL:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWURL]" id="apTWURL" style="width: 40%;border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
-    <div class="nxs_tls_lbl"><strong>Your Twitter API Key:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWConsKey]" id="apTWConsKey" style="width: 40%; border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twConsKey'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  
-    <div class="nxs_tls_lbl"><strong>Your Twitter API Secret:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWConsSec]" id="apTWConsSec" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twConsSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
-    <div class="nxs_tls_lbl"><strong>Your Access Token:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWAccToken]" id="apTWAccToken" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twAccToken'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
-    <div class="nxs_tls_lbl"><strong>Your Access Token Secret:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWAccTokenSec]" id="apTWAccTokenSec" style="width: 40%;" value="<?php  _e(apply_filters('format_to_edit', htmlentities($options['twAccTokenSec'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+    <div class="nxs_tls_lbl"><strong>Your Twitter URL:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWURL]" id="apTWURL" style="width: 40%;border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twURL'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />
+    <div class="nxs_tls_lbl"><strong>Your Twitter API Key:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWConsKey]" id="apTWConsKey" style="width: 40%; border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twConsKey'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  
+    <div class="nxs_tls_lbl"><strong>Your Twitter API Secret:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWConsSec]" id="apTWConsSec" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twConsSec'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />
+    <div class="nxs_tls_lbl"><strong>Your Access Token:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWAccToken]" id="apTWAccToken" style="width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['twAccToken'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />
+    <div class="nxs_tls_lbl"><strong>Your Access Token Secret:</strong> </div><input type="text" name="tw[<?php echo $ii; ?>][apTWAccTokenSec]" id="apTWAccTokenSec" style="width: 40%;" value="<?php  _e(apply_filters('format_to_edit', htmlentities($options['twAccTokenSec'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />
     <?php if ($isNew) { ?> <input type="hidden" name="tw[<?php echo $ii; ?>][apDoTW]" value="1" id="apDoNewTW<?php echo $ii; ?>" /> <?php } ?>
     <br/><br/>
-    <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$options['attchImg'] == 1) echo "checked"; ?> /> <strong><?php _e('Attach Image to Twitter Post', 'nxs_snap'); ?></strong></p>
+    <p style="margin: 0px;"><input value="1"  id="apLIAttch" type="checkbox" name="tw[<?php echo $ii; ?>][attchImg]"  <?php if ((int)$options['attchImg'] == 1) echo "checked"; ?> /> <strong><?php _e('Attach Image to Twitter Post', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong></p>
     <br/>
-    <strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong><br/>
+    <strong id="altFormatText"><?php _e('Message text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong><br/>
     
-    <textarea cols="150" rows="3" id="tw<?php echo $ii; ?>SNAPformat" name="tw[<?php echo $ii; ?>][apTWMsgFrmt]"  style="width:51%;max-width: 610px;" onfocus="jQuery('#tw<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"><?php _e(apply_filters('format_to_edit', htmlentities($options['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?></textarea>    <?php nxs_doShowHint("apTWMsgFrmt".$ii); ?> 
+    <textarea cols="150" rows="3" id="tw<?php echo $ii; ?>SNAPformat" name="tw[<?php echo $ii; ?>][apTWMsgFrmt]"  style="width:51%;max-width: 610px;" onfocus="jQuery('#tw<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"><?php _e(apply_filters('format_to_edit', htmlentities($options['twMsgFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?></textarea>    <?php nxs_doShowHint("apTWMsgFrmt".$ii); ?> 
     
     
      <?php nxs_doShowHint("apTWMsgFrmt".$ii, '<br/><br/><b>%TAGS% and %CATS% will be posted as hashtags. <br/>Please remember that Twitter takes only 140 characters.</b>'); ?>
@@ -50,7 +50,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
   
                
     <?php if($options['twAccTokenSec']!='') { ?> 
-      <br/><br/><b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <?php if (!isset($options['twOK']) || $options['twOK']!='1') { ?> <div class="blnkg">=== Submit Test Post to Complete ===&gt;</div> <?php } ?> <a href="#" class="NXSButton" onclick="testPost('TW', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s' , 'nxs_snap'), $nType); ?></a> <br/>
+      <br/><br/><b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <?php if (!isset($options['twOK']) || $options['twOK']!='1') { ?> <div class="blnkg">=== Submit Test Post to Complete ===&gt;</div> <?php } ?> <a href="#" class="NXSButton" onclick="testPost('TW', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s' , 'social-networks-auto-poster-facebook-twitter-g'), $nType); ?></a> <br/>
       <?php }?>
       
       
@@ -61,16 +61,16 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
    <?php nxs_showCatTagsCTFilters($nt, $ii, $options); 
          nxs_addPostingDelaySelV3($nt, $ii, $options['nHrs'], $options['nMin'], $options['nDays']);  ?>    
     
-   <div class="nxs_tls_cpt"><?php _e('Auto Import of Replies and Mentions:', 'nxs_snap'); ?></div>
+   <div class="nxs_tls_cpt"><?php _e('Auto Import of Replies and Mentions:', 'social-networks-auto-poster-facebook-twitter-g'); ?></div>
    <div class="nxs_tls_bd">
-   <div class="nxs_tls_sbInfo"><?php _e('Plugin could grab Replies and Mentions from Twitter and import them as Wordpress Comments', 'nxs_snap'); ?></div>
+   <div class="nxs_tls_sbInfo"><?php _e('Plugin could grab Replies and Mentions from Twitter and import them as Wordpress Comments', 'social-networks-auto-poster-facebook-twitter-g'); ?></div>
    <?php if ( !empty($gOptions['riActive']) && $gOptions['riActive'] == '1' ) { ?>
-   <input value="1" id="riC<?php echo $ii; ?>" <?php if (trim($options['riComments'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riComments]"/> <b><?php _e('Import Twitter Replies', 'nxs_snap'); ?></b>
+   <input value="1" id="riC<?php echo $ii; ?>" <?php if (trim($options['riComments'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riComments]"/> <b><?php _e('Import Twitter Replies', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
    <br/>
-   <input value="1" id="riCM<?php echo $ii; ?>" <?php if (trim($options['riCommentsM'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riCommentsM]"/> <b><?php _e('Import Twitter Mentions', 'nxs_snap'); ?></b>
+   <input value="1" id="riCM<?php echo $ii; ?>" <?php if (trim($options['riCommentsM'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riCommentsM]"/> <b><?php _e('Import Twitter Mentions', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
    <br/> 
-   <input value="1" id="riCA<?php echo $ii; ?>" <?php if (trim($options['riCommentsAA'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riCommentsAA]"/> <b><?php _e('Auto-approve imported comments', 'nxs_snap'); ?></b>
-   <?php } else { echo "<br/>"; _e('Please activate the "Comments Import" from SNAP Settings Tab', 'nxs_snap'); } ?>   
+   <input value="1" id="riCA<?php echo $ii; ?>" <?php if (trim($options['riCommentsAA'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][riCommentsAA]"/> <b><?php _e('Auto-approve imported comments', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
+   <?php } else { echo "<br/>"; _e('Please activate the "Comments Import" from SNAP Settings Tab', 'social-networks-auto-poster-facebook-twitter-g'); } ?>   
    </div>
    
   <?php nxs_showRepostSettings($nt, $ii, $options); ?>
@@ -79,9 +79,9 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
     </div><br/>      
      
       <div class="submitX nxclear" style="padding-bottom: 0px;"> 
-      <input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" />
+      <input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
       <?php /*
-      <input type="button" id="svBtn<?php echo $nt.$ii ?>" onclick="nxs_svSet('<?php echo $nt; ?>', '<?php echo $ii; ?>')" class="button-primary" value="<?php _e('Update Settings', 'nxs_snap') ?>" />
+      <input type="button" id="svBtn<?php echo $nt.$ii ?>" onclick="nxs_svSet('<?php echo $nt; ?>', '<?php echo $ii; ?>')" class="button-primary" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
       <div id="nxsSaveLoadingImg<?php echo $nt.$ii; ?>" class="doneMsg">Saving.....</div> <div id="doneMsg<?php echo $nt.$ii; ?>" class="doneMsg">Done</div>
       */ ?>
     </div>
@@ -129,16 +129,16 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
       <?php if (!empty($ntOpt['tagsSelX'])) { ?>  <input type="hidden" class="nxs_TG" id="nxs_TG_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['tagsSelX']; ?>" /> <?php } ?>
       <?php if ($isAvailTW) { ?><input class="nxsGrpDoChb" value="1" id="doTW<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="tw[<?php echo $ii; ?>][doTW]" <?php if ((int)$doTW == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="tw[<?php echo $ii; ?>][doTW]" value="<?php echo $doTW;?>"> <?php } ?> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - <?php _e('autopost to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/tw16.png);">Twitter - <?php _e('autopost to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)
       </div></th><td><?php //## Only show RePost button if the post is "published"
       if ($post->post_status == "publish" && $isAvailTW) { ?>
-                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 'nxs_snap') ?>" />
+                    <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToTW_repostButton" id="rePostToTW_button" value="<?php _e('Repost to Twitter', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
     
     <?php if ($ntOpt['riComments']=='1' && (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) && $pMeta[$ii]['pgID']!='' ) ) { ?>
-       <input alt="<?php echo $ii; ?>" style="float: right; " onclick="return false;" type="button" class="button" name="riToTW_repostButton" id="riToTW_button" value="<?php _e('Import Replies/Mentions from Twitter', 'nxs_snap') ?>" />
+       <input alt="<?php echo $ii; ?>" style="float: right; " onclick="return false;" type="button" class="button" name="riToTW_repostButton" id="riToTW_button" value="<?php _e('Import Replies/Mentions from Twitter', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
     <?php }  } ?>
                     <?php  if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID'])) { ?> <span style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a id="pstdTW<?php echo $ii; ?>" style="font-size: 10px;" href="<?php echo $ntOpt['twURL'].'/status/'.$pMeta[$ii]['pgID'];  ?>" target="_blank"><?php $nType="Twitter"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a id="pstdTW<?php echo $ii; ?>" style="font-size: 10px;" href="<?php echo $ntOpt['twURL'].'/status/'.$pMeta[$ii]['pgID'];  ?>" target="_blank"><?php $nType="Twitter"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                 </td></tr>
                 
@@ -150,10 +150,10 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW {
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="tw[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>tw" type="checkbox" name="tw[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> /> 
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>
                 </td></tr> <?php } ?>
                 
-                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Message Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Message Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td><textarea cols="150" rows="2" id="tw<?php echo $ii; ?>SNAPformat" name="tw[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#tw<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apTWMsgFrmt<?php echo $ii; ?>');"><?php echo $twMsgFormat ?></textarea>                
                 </td></tr>
                 
@@ -210,7 +210,7 @@ if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments(
       }
     }}
     delete_post_meta($postID, 'snapImportedComments'); add_post_meta($postID, 'snapImportedComments', $impCmnts ); 
-    if ( isset($_POST['id']) && $_POST['id']!='') printf( _n('%d comment has been imported.', '%d comments has been imported.', $ci, 'nxs_snap'), $ci );
+    if ( isset($_POST['id']) && $_POST['id']!='') printf( _n('%d comment has been imported.', '%d comments has been imported.', $ci, 'social-networks-auto-poster-facebook-twitter-g'), $ci );
 }}
 
 if (!function_exists("nxs_rePostToTW_ajax")) {
@@ -366,7 +366,7 @@ if (!function_exists("nxs_doPublishToTW")) { //## Second Function to Post to TW
     if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
     } else {  // ## All Good - log it.
-      if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+      if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
         else  { nxs_addToRI($postID); nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
         $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>';  nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
     }

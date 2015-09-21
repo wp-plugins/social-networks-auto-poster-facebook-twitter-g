@@ -34,31 +34,31 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <?php if(!class_exists('nxsAPI_GP') || (defined('d1') && d1==1)) {
                  nxs_show_noLibWrn('Google+ API Library module NOT found.<br/><br/><span style="color:black;">Google+ does not have a free native API for automated posts yet. The current <a target="_blank" href="http://developers.google.com/+/api/">Google+ API</a> is "Read Only" and can\'t be used for posting.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Google+.</span>'); echo "</div>"; return; }; 
              ?>                      
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"><?php $nType="Google+"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-google-plus-social-networks-auto-poster-wordpress/"><?php $nType="Google+"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input name="gp[<?php echo $ii; ?>][nName]" id="gpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
             <?php echo nxs_addQTranslSel('gp', $ii, $options['qTLng']); ?>
     <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
     
             
-            <div style="width:100%;"><strong>Google+ Login Email:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
-            <p><div style="width:100%;"><strong>Google+ Page ID (Optional - for Google+ Pages Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or community', 'nxs_snap'); ?></b>):</strong> 
-            <p style="font-size: 11px; margin: 0px;">For example if URL of your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. <b><?php _e('Leave Empty to publish to your profile or community.', 'nxs_snap'); ?></b></p>
-            </div><input name="gp[<?php echo $ii; ?>][apGPPage]" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpPageID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /> 
+            <div style="width:100%;"><strong>Google+ Login Email:</strong> </div><input name="gp[<?php echo $ii; ?>][apGPUName]" id="apGPUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpUName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />                
+            <div style="width:100%;"><strong>Google+ Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="gp[<?php echo $ii; ?>][apGPPass]" id="apGPPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['gpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['gpPass'], 5)):$options['gpPass'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  <br/>                
+            <p><div style="width:100%;"><strong>Google+ Page ID (Optional - for Google+ Pages Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or community', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>):</strong> 
+            <p style="font-size: 11px; margin: 0px;">For example if URL of your page is https://plus.google.com/u/0/b/117008619877691455570/ your Page ID is: 117008619877691455570. <b><?php _e('Leave Empty to publish to your profile or community.', 'social-networks-auto-poster-facebook-twitter-g'); ?></b></p>
+            </div><input name="gp[<?php echo $ii; ?>][apGPPage]" id="apGPPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpPageID'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /> 
             <br/>
-            <p><div style="width:100%;"><strong>Google+ Community ID (Optional - for Google+ Communities Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or page', 'nxs_snap'); ?></b>):</strong> 
-            <p style="font-size: 11px; margin: 0px;">For example if URL of your Community is https://plus.google.com/communities/100396001601096060160 your Page ID is: 100396001601096060160. <b><?php _e('Leave Empty to publish to your profile or page', 'nxs_snap'); ?>.</b></p>
-            </div><input name="gp[<?php echo $ii; ?>][gpCommID]" id="gpCommID<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpCommID'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />&nbsp;&nbsp;
+            <p><div style="width:100%;"><strong>Google+ Community ID (Optional - for Google+ Communities Only. <b style="color: #580000;"> <?php _e('Leave Empty to publish to your profile or page', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>):</strong> 
+            <p style="font-size: 11px; margin: 0px;">For example if URL of your Community is https://plus.google.com/communities/100396001601096060160 your Page ID is: 100396001601096060160. <b><?php _e('Leave Empty to publish to your profile or page', 'social-networks-auto-poster-facebook-twitter-g'); ?>.</b></p>
+            </div><input name="gp[<?php echo $ii; ?>][gpCommID]" id="gpCommID<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['gpCommID'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />&nbsp;&nbsp;
             <a href="#" onclick="getGPCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apGPUName<?php echo $ii; ?>').val(), jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apGPPass<?php echo $ii; ?>').val(), '<?php echo $ii; ?>', jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#gpCommID<?php echo $ii; ?>').val()); return false;">
-            <?php _e('Retrieve Categories and Page Names', 'nxs_snap'); ?>
+            <?php _e('Retrieve Categories and Page Names', 'social-networks-auto-poster-facebook-twitter-g'); ?>
             </a>
           <div style="padding-left: 15px; width:100%;"><strong>Community Category:</strong>
             <img id="gpLoadingImg<?php echo $ii; ?>" style="display: none;" src='<?php echo $nxs_plurl; ?>img/ajax-loader-sm.gif' />
@@ -73,29 +73,29 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
             <br/><br/>
             
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="apGPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Message text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> (<a href="#" id="apGPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)
               </div>
               
-              <textarea cols="150" rows="3" id="gp<?php echo $ii; ?>SNAPformat" name="gp[<?php echo $ii; ?>][apGPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#gp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'nxs_snap'); else _e(apply_filters('format_to_edit', htmlentities($options['gpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              <textarea cols="150" rows="3" id="gp<?php echo $ii; ?>SNAPformat" name="gp[<?php echo $ii; ?>][apGPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#gp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apGPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'social-networks-auto-poster-facebook-twitter-g'); else _e(apply_filters('format_to_edit', htmlentities($options['gpMsgFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?></textarea>
               
               <?php nxs_doShowHint("apGPMsgFrmt".$ii); ?>
             </div><br/>          
             
-             <div style="width:100%;"><strong id="altFormatText">Post Type:</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)  </div>                      
+             <div style="width:100%;"><strong id="altFormatText">Post Type:</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)  </div>                      
 <div style="margin-left: 10px;">
         <?php if(!isset($options['postType']) || $options['postType']=='') {
             if ((int)$options['imgPost'] == 1) $options['postType'] = 'I';
             if ((int)$options['gpAttch'] == 1 || $isNew) $options['postType'] = 'A';
         } ?>
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('just text message', 'nxs_snap'); ?></i><br/>                    
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Google+ Image Post', 'nxs_snap'); ?> - <i><?php _e('big image with text message', 'nxs_snap'); ?></i><br/>
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Add blogpost to Google+ message as an attachment', 'nxs_snap'); ?><br/>
-<div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap'); ?>"/></div>
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'social-networks-auto-poster-facebook-twitter-g'); ?> - <i><?php _e('just text message', 'social-networks-auto-poster-facebook-twitter-g'); ?></i><br/>                    
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($options['postType'] == 'I') echo 'checked="checked"'; ?> /> <?php _e('Google+ Image Post', 'social-networks-auto-poster-facebook-twitter-g'); ?> - <i><?php _e('big image with text message', 'social-networks-auto-poster-facebook-twitter-g'); ?></i><br/>
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Add blogpost to Google+ message as an attachment', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/>
+<div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'social-networks-auto-poster-facebook-twitter-g'); ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'social-networks-auto-poster-facebook-twitter-g'); ?>"/></div>
    </div><br/>
             <?php if ($isNew) { ?> <input type="hidden" name="gp[<?php echo $ii; ?>][apDoGP]" value="1" id="apDoNewGP<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['gpPass']!='') { ?>
             
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('GP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>              <?php } 
+            <b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('GP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a>              <?php } 
             ?>
             
              </div>
@@ -110,7 +110,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
     </div>  <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div> </div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" /></div> </div>
             
             <?php
   }
@@ -156,14 +156,14 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
       <?php if ($isAvailGP) { ?><input class="nxsGrpDoChb" value="1" id="doGP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="gp[<?php echo $ii; ?>][doGP]" <?php if ((int)$doGP == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="gp[<?php echo $ii; ?>][doGP]" value="<?php echo $doGP;?>"> <?php } ?> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);">Google+ - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailGP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 'nxs_snap') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/gp16.png);">Google+ - <?php _e('publish to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailGP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToGP_repostButton" id="rePostToGP_button" value="<?php _e('Repost to Google+', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
                     <?php } ?>
                     
                     <?php  if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { 
                         
                         ?> <span id="pstdGP<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a style="font-size: 10px;" href="https://plus.google.com/<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Google+"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a style="font-size: 10px;" href="https://plus.google.com/<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Google+"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -172,24 +172,24 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
                 <?php } else { if ($post->post_status != "publish" && function_exists('nxs_doSMAS5') ) { $ntOpt['postTime'] = get_post_time('U', false, $post_id); nxs_doSMAS5($nt, $ii, $ntOpt); } 
                 
                 if (((int)$doGP == 1) && $post->post_status == "publish" && isset($ntOpt['timeToRun']) && $ntOpt['timeToRun'] > time()) { ?> <tr><th style="text-align:left; color: purple;" colspan="2">
-                ===&gt;&gt;&gt;&gt;&nbsp;<?php _e('Autopost has been schedulled for', 'nxs_snap') ?> <?php echo date('F j, Y, g:i a', $ntOpt['timeToRun']) ?></th> <?php } ?>
+                ===&gt;&gt;&gt;&gt;&nbsp;<?php _e('Autopost has been schedulled for', 'social-networks-auto-poster-facebook-twitter-g') ?> <?php echo date('F j, Y, g:i a', $ntOpt['timeToRun']) ?></th> <?php } ?>
                 
                 <?php if ($ntOpt['rpstOn']=='1') { ?> 
                 
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>gp" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>                
                 </td></tr> <?php } ?>
                 
-                <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Post Type:', 'nxs_snap') ?> <br/>
-                (<a id="showShAtt" style="font-weight: normal" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'nxs_snap'); ?></a>)
+                <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Post Type:', 'social-networks-auto-poster-facebook-twitter-g') ?> <br/>
+                (<a id="showShAtt" style="font-weight: normal" onmouseout="hidePopShAtt('<?php echo $ii; ?>XG');" onmouseover="showPopShAtt('<?php echo $ii; ?>XG', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)
                 </th><td>     
         
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($gpPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap') ?>  - <i><?php _e('just text message', 'nxs_snap') ?></i><br/>       
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($gpPostType == 'I') echo 'checked="checked"'; ?> onchange="jQuery('#altFormatIMG<?php echo $nt.$ii;?>').show();" /> <?php _e('Post to Google+ as "Image post"', 'nxs_snap') ?> - <i><?php _e('big image with text message', 'nxs_snap') ?></i><br/>             
-        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($gpPostType) || $gpPostType == '' || $gpPostType == 'A') echo 'checked="checked"'; ?> onchange="jQuery('#altFormatIMG<?php echo $nt.$ii;?>').hide();" /><?php _e('Text Post with "attached" blogpost', 'nxs_snap') ?>
-        <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'nxs_snap') ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'nxs_snap') ?>"/></div>
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="T" <?php if ($gpPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'social-networks-auto-poster-facebook-twitter-g') ?>  - <i><?php _e('just text message', 'social-networks-auto-poster-facebook-twitter-g') ?></i><br/>       
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="I" <?php if ($gpPostType == 'I') echo 'checked="checked"'; ?> onchange="jQuery('#altFormatIMG<?php echo $nt.$ii;?>').show();" /> <?php _e('Post to Google+ as "Image post"', 'social-networks-auto-poster-facebook-twitter-g') ?> - <i><?php _e('big image with text message', 'social-networks-auto-poster-facebook-twitter-g') ?></i><br/>             
+        <input type="radio" name="gp[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($gpPostType) || $gpPostType == '' || $gpPostType == 'A') echo 'checked="checked"'; ?> onchange="jQuery('#altFormatIMG<?php echo $nt.$ii;?>').hide();" /><?php _e('Text Post with "attached" blogpost', 'social-networks-auto-poster-facebook-twitter-g') ?>
+        <div class="popShAtt" id="popShAtt<?php echo $ii; ?>XG"><h3><?php _e('Google+ Post Types', 'social-networks-auto-poster-facebook-twitter-g') ?></h3><img src="<?php echo $nxs_plurl; ?>img/gpPostTypesDiff6.png" width="600" height="285" alt="<?php _e('Google+ Post Types', 'social-networks-auto-poster-facebook-twitter-g') ?>"/></div>
      </td></tr>
          <?php if ($ntOpt['gpCommID']!='') { ?>
      <tr><th scope="row" style="text-align:right; width:150px; padding-top: 5px; padding-right:10px;">Community Category</th>
@@ -202,7 +202,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP {
                 </tr> 
                        <?php } ?>                
                <?php /* ## Message Format ## */ ?>         
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Message Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td>
                 
                  <?php if (1==1) { ?>
@@ -272,7 +272,7 @@ if (!function_exists("nxs_doPublishToGP")) { //## Second Function to Post to G+
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
-        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
           else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
           $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       }

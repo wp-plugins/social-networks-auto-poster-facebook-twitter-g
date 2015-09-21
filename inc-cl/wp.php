@@ -9,7 +9,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
       <div class="nxs_box_header"> 
         <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
           <?php $cbo = count($ntOpts); ?> 
-          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'social-networks-auto-poster-facebook-twitter-g'); echo ")"; ?></div><?php } ?>
         </div>
       </div>
       <div class="nxs_box_inside">
@@ -21,9 +21,9 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
            <?php } ?>
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
-            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
-          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
-          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+            <strong><?php  _e('Auto-publish to', 'social-networks-auto-poster-facebook-twitter-g'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'social-networks-auto-poster-facebook-twitter-g'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>
           </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div><?php //$pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
         }?>
       </div>
@@ -37,53 +37,53 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
     if (!isset($options['nDays'])) $options['nDays'] = 0; if (!isset($options['qTLng'])) $options['qTLng'] = '';  ?>
             <div id="doWP<?php echo $ii; ?>Div" class="insOneDiv<?php if ($isNew) echo " clNewNTSets"; ?>">     <input type="hidden" name="apDoSWP<?php echo $ii; ?>" value="0" id="apDoSWP<?php echo $ii; ?>" />
             
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"><?php $nType="Wordpress"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-wp-based-social-networks-auto-poster-wordpress/"><?php $nType="Wordpress"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
             
             <?php if ($isNew){ ?> <br/>You can setup any Wordpress based blog with activated XML-RPC support (WP Admin->Settimgs->Writing->Remote Publishing->Check XML-RPC). Wordpress.com and Blog.com supported as well.<br/><br/> <?php } ?> 
             
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input name="wp[<?php echo $ii; ?>][nName]" id="wpnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
             <?php echo nxs_addQTranslSel('wp', $ii, $options['qTLng']); ?> 
             
              <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
     
             
-            <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['wpURL'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />
+            <div style="width:100%;"><strong>XMLRPC URL:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPURL]" id="apWPURL" style="width: 50%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['wpURL'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />
             <p style="font-size: 11px; margin: 0px;">Usually its a URL of your Wordpress installation with /xmlrpc.php at the end.<br/> Please use <b style="color: #005800;">https://YourUserName.wordpress.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">https://nextscripts.wordpress.com/xmlrpc.php</i>) for Wordpress.com blogs. <br/> Please  use <b style="color: #005800;">http://YourUserName.blog.com/xmlrpc.php</b> (replace YourUserName with your user name - for example <i style="color: #005800;">http://nextscripts.blog.com/xmlrpc.php</i> for Blog.com blogs</p>
             
-            <div style="width:100%;"><br/><strong>Blog Username:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPUName]" id="apWPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['wpUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Blog Password:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPPass]" id="apWPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><br/><strong>Blog Username:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPUName]" id="apWPUName" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['wpUName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />                
+            <div style="width:100%;"><strong>Blog Password:</strong> </div><input name="wp[<?php echo $ii; ?>][apWPPass]" id="apWPPass" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['wpPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['wpPass'], 5)):$options['wpPass'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  <br/>                
             
             <?php if ($isNew) { ?> <input type="hidden" name="wp[<?php echo $ii; ?>][apDoWP]" value="1" id="apDoNewWP<?php echo $ii; ?>" /> <?php } ?>
             
             <br/>
               
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong>               
-(<a href="#" id="apWPMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)              
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong>               
+(<a href="#" id="apWPMsgTFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)              
               </div>
-  <input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;"  onfocus="mxs_showFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>');"  value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>" /> <?php nxs_doShowHint("apWPMsgTFrmt".$ii); ?>
+  <input name="wp[<?php echo $ii; ?>][apWPMsgTFrmt]" id="apWPMsgTFrmt" style="width: 50%;"  onfocus="mxs_showFrmtInfo('apWPMsgTFrmt<?php echo $ii; ?>');"  value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['wpMsgTFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?>" /> <?php nxs_doShowHint("apWPMsgTFrmt".$ii); ?>
   
             </div>            
             <div id="altFormat" style="">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'nxs_snap'); ?></strong>               
-              (<a href="#" id="apWPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong>               
+              (<a href="#" id="apWPMsgFrmt<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)
               </div>
               
     
-  <textarea cols="150" rows="3" id="wp<?php echo $ii; ?>SNAPformat" name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#wp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($options['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+  <textarea cols="150" rows="3" id="wp<?php echo $ii; ?>SNAPformat" name="wp[<?php echo $ii; ?>][apWPMsgFrmt]" style="width:51%;max-width: 650px;" onfocus="jQuery('#wp<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) echo "%EXCERPT%"; else _e(apply_filters('format_to_edit', htmlentities($options['wpMsgFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?></textarea>
   <?php nxs_doShowHint("apWPMsgFrmt".$ii); ?>
   
             </div><br/>    
             
             <?php if ($options['wpPass']!='') { ?>
             
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('WP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>      
+            <b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('WP', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a>      
                
             <?php } 
             
@@ -99,7 +99,7 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
     </div>  <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div></div><?php
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" /></div></div><?php
   }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ $code = 'WP'; $lcode = 'wp'; 
@@ -137,14 +137,14 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
       <?php if (!empty($ntOpt['tagsSelX'])) { ?>  <input type="hidden" class="nxs_TG" id="nxs_TG_<?php echo $ntU; ?><?php echo $ii; ?>" value="<?php echo $ntOpt['tagsSelX']; ?>" /> <?php } ?>
       <?php if ($isAvailWP) { ?><input class="nxsGrpDoChb" value="1" id="doWP<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="wp[<?php echo $ii; ?>][doWP]" <?php if ((int)$doWP == 1 ) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="wp[<?php echo $ii; ?>][doWP]" value="<?php echo $doWP;?>"> <?php } ?> <?php } ?>
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 'nxs_snap') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/wp16.png);">WP Blog - <?php _e('publish to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailWP) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToWP_repostButton" id="rePostToWP_button" value="<?php _e('Repost to WP Blog', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
                     <?php } ?>
                     
                      <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { $wpURL = str_ireplace('/xmlrpc.php', '', $ntOpt['wpURL']);
                         if (substr($wpURL, -1)=='/') $wpURL = substr($wpURL, 0, -1);  $wpURL = $wpURL."/";
                         ?> <span id="pstdWP<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-          <a style="font-size: 10px;" href="<?php echo $wpURL; ?>?p=<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Wordpress Blog"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?> <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+          <a style="font-size: 10px;" href="<?php echo $wpURL; ?>?p=<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Wordpress Blog"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?> <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -157,13 +157,13 @@ if (!class_exists("nxs_snapClassWP")) { class nxs_snapClassWP {
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>wp" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>                
                 </td></tr> <?php } ?>
                                 
-                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Title Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Title Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td><input value="<?php echo $wpMsgTFormat ?>" type="text" name="wp[<?php echo $ii; ?>][SNAPformatT]"  style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPTMsgFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apWPTMsgFrmt".$ii); ?></td></tr>
                 
-                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Text Format:', 'nxs_snap') ?></th>
+                <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow"><?php _e('Text Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
                 <td>               
                 <textarea cols="150" rows="1" id="wp<?php echo $ii; ?>SNAPformat" name="wp[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#wp<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apWPMsgFrmt<?php echo $ii; ?>');"><?php echo $wpMsgFormat; ?></textarea>
                 <?php nxs_doShowHint("apWPMsgFrmt".$ii); ?></td></tr>
@@ -235,7 +235,7 @@ if (!function_exists("nxs_doPublishToWP")) { //## Second Function to Post to WP
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
         if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
-        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
           else  { do_action('nxs_actOnWP', array('postID'=>$postID, 'pgID'=>$ret['postID'], 'wpURL'=>$options['wpURL'], 'ii'=>$ii)); 
             nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); 
           }

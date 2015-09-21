@@ -168,6 +168,10 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 == Changelog ==
 
+= 3.4.25 [09/21/2015] =
+
+* SNAP has been selected to be added to translate.wordpress.org. This release brings compatibility with it. 
+
 = 3.4.24 [09/16/2015] =
 
 * Bug Fix - [Critical] Some users have "Log/History" and "New Post" tabs blank after 3.4.23 update. 

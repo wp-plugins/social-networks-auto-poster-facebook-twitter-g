@@ -9,7 +9,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
       <div class="nxs_box_header"> 
         <div class="nsx_iconedTitle" style="margin-bottom:1px;background-image:url(<?php echo $nxs_plurl;?>img/<?php echo $ntInfo['lcode']; ?>16.png);"><?php echo $ntInfo['name']; ?>
           <?php $cbo = count($ntOpts); ?> 
-          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'nxs_snap'); echo ")"; ?></div><?php } ?>
+          <?php if ($cbo>1){ ?><div class="nsBigText"><?php echo "(".($cbo=='0'?'No':$cbo)." "; _e('accounts', 'social-networks-auto-poster-facebook-twitter-g'); echo ")"; ?></div><?php } ?>
         </div>
       </div>
       <div class="nxs_box_inside">
@@ -22,9 +22,9 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
            <?php } ?>
             <?php if (isset($pbo['catSel']) && (int)$pbo['catSel'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popOnlyCat');" onmouseover="nxs_showPopUpInfo('popOnlyCat', event);"><?php echo "*[".(substr_count($pbo['catSelEd'], ",")+1)."]*" ?></span><?php } ?>
             <?php if (isset($pbo['rpstOn']) && (int)$pbo['rpstOn'] == 1) { ?> <span onmouseout="nxs_hidePopUpInfo('popReActive');" onmouseover="nxs_showPopUpInfo('popReActive', event);"><?php echo "*[R]*" ?></span><?php } ?>
-            <strong><?php  _e('Auto-publish to', 'nxs_snap'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
-          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'nxs_snap'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'nxs_snap'); ?>]</a>&nbsp;&nbsp;
-          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'nxs_snap'); ?>]</a>
+            <strong><?php  _e('Auto-publish to', 'social-networks-auto-poster-facebook-twitter-g'); ?> <?php echo $ntInfo['name']; ?> <i style="color: #005800;"><?php if($pbo['nName']!='') echo "(".$pbo['nName'].")"; ?></i></strong>
+          &nbsp;&nbsp;<?php if ($ntInfo['tstReq'] && (!isset($pbo[$ntInfo['lcode'].'OK']) || $pbo[$ntInfo['lcode'].'OK']=='')){ ?><b style="color: #800000"><?php  _e('Attention requred. Unfinished setup', 'social-networks-auto-poster-facebook-twitter-g'); ?> ==&gt;</b><?php } ?><a id="do<?php echo $ntInfo['code'].$indx; ?>AG" href="#" onclick="doGetHideNTBlock('<?php echo $ntInfo['code'];?>' , '<?php echo $indx; ?>');return false;">[<?php  _e('Show Settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>&nbsp;&nbsp;
+          <a href="#" onclick="doDelAcct('<?php echo $ntInfo['lcode']; ?>', '<?php echo $indx; ?>', '<?php if (isset($pbo['bgBlogID'])) echo $pbo['nName']; ?>');return false;">[<?php  _e('Remove Account', 'social-networks-auto-poster-facebook-twitter-g'); ?>]</a>
           </p><div id="nxsNTSetDiv<?php echo $ntInfo['code'].$indx; ?>"></div><?php //$pbo['ntInfo'] = $ntInfo; $this->showNTSettings($indx, $pbo);             
         }?>
       </div>
@@ -41,23 +41,23 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
             <?php if(!function_exists('doConnectToRD')) {                
                  nxs_show_noLibWrn('Reddit API Library module NOT found.<br/><br/><span style="color:black;">Reddit does not have a free native API for automated posts yet.</span><br/><br/><span style="font-size: 12px;color:black;">You need to have a special API Library Module to be able to publish your content to Reddit.</span>'); echo "</div>"; return; }; ?>              
                                
-            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/rd16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-reddit-social-networks-auto-poster-wordpress/"><?php $nType="Reddit"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'nxs_snap' ), $nType); ?></a></div>
+            <div class="nsx_iconedTitle" style="float: right; background-image: url(<?php echo $nxs_plurl; ?>img/rd16.png);"><a style="font-size: 12px;" target="_blank"  href="http://www.nextscripts.com/setup-installation-reddit-social-networks-auto-poster-wordpress/"><?php $nType="Reddit"; printf( __( 'Detailed %s Installation/Configuration Instructions', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a></div>
             
-            <div style="width:100%;"><strong><?php _e('Account Nickname', 'nxs_snap'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'nxs_snap'); ?></i> </div><input name="rd[<?php echo $ii; ?>][nName]" id="rdnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" /><br/>
+            <div style="width:100%;"><strong><?php _e('Account Nickname', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> <i><?php _e('Just so you can easily identify it', 'social-networks-auto-poster-facebook-twitter-g'); ?></i> </div><input name="rd[<?php echo $ii; ?>][nName]" id="rdnName<?php echo $ii; ?>" style="font-weight: bold; color: #005800; border: 1px solid #ACACAC; width: 40%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['nName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" /><br/>
             <?php echo nxs_addQTranslSel('rd', $ii, $options['qTLng']); ?>
             
             
           <br/>
     <ul class="nsx_tabs">
-    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'nxs_snap'); ?></a></li>    
-    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'nxs_snap'); ?></a></li>  <?php } ?>
+    <li><a href="#nsx<?php echo $nt.$ii ?>_tab1"><?php _e('Account Info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>    
+    <?php if (!$isNew) { ?>  <li><a href="#nsx<?php echo $nt.$ii ?>_tab2"><?php _e('Advanced', 'social-networks-auto-poster-facebook-twitter-g'); ?></a></li>  <?php } ?>
     </ul>
     <div class="nsx_tab_container"><?php /* ######################## Account Tab ####################### */ ?>
     <div id="nsx<?php echo $nt.$ii ?>_tab1" class="nsx_tab_content" style="background-image: url(<?php echo $nxs_plurl; ?>img/<?php echo $nt; ?>-bg.png); background-repeat: no-repeat;  background-position:90% 10%;">
       
             
-            <div style="width:100%;"><strong>Reddit Username:</strong> </div><input name="rd[<?php echo $ii; ?>][uName]" id="apRDUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdUName'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />                
-            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  <br/>                
+            <div style="width:100%;"><strong>Reddit Username:</strong> </div><input name="rd[<?php echo $ii; ?>][uName]" id="apRDUName<?php echo $ii; ?>" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdUName'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />                
+            <div style="width:100%;"><strong>Reddit Password:</strong> </div><input autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" name="rd[<?php echo $ii; ?>][uPass]" id="apRDPass<?php echo $ii; ?>" type="password" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities(substr($options['rdPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['rdPass'], 5)):$options['rdPass'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  <br/>                
             
             <div style="width:100%;"><strong>Subreddit ID:</strong>                         
             Please <a href="#" onclick="nxs_getBrdsOrCats(jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDUName<?php echo $ii; ?>').val(),jQuery('<?php if ($isNew) echo "#nsx_addNT "; ?>#apRDPass<?php echo $ii; ?>').val(), 'rd' , '<?php echo $ii; ?>', 'rdSubReddit'); return false;">click here to retrieve your subreddits</a>
@@ -71,27 +71,27 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
             </select>
             
             <br/><br/>              
-            <?php /* <input name="rd[<?php echo $ii; ?>][rdSubReddit]" id="apRDPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdSubReddit'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />  */ ?>
+            <?php /* <input name="rd[<?php echo $ii; ?>][rdSubReddit]" id="apRDPage" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['rdSubReddit'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />  */ ?>
             <i style="color: #580000;">Please do not try to post to subredits that you do not own. Reddit is very serious about it's policy that prohibits sharing your own links. You will loose posting privileges and you account will be <b>banned</b> if you post to public subreddits. </i>
             <br/>  <br/>  
             
             <div id="altFormat" style="">
-  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'nxs_snap'); ?></strong> (<a href="#" id="rdTitleFormat<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('rdTitleFormat<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)</div>
-              <input name="rd[<?php echo $ii; ?>][rdTitleFormat]" id="rdTitleFormat<?php echo $ii; ?>" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['rdTitleFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?>"  onfocus="mxs_showFrmtInfo('rdTitleFormat<?php echo $ii; ?>');" /><?php nxs_doShowHint("rdTitleFormat".$ii); ?>
+  <div style="width:100%;"><strong id="altFormatText"><?php _e('Post Title Format', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong> (<a href="#" id="rdTitleFormat<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('rdTitleFormat<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)</div>
+              <input name="rd[<?php echo $ii; ?>][rdTitleFormat]" id="rdTitleFormat<?php echo $ii; ?>" style="width: 50%;" value="<?php if ($isNew) echo "%TITLE%"; else _e(apply_filters('format_to_edit', htmlentities($options['rdTitleFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?>"  onfocus="mxs_showFrmtInfo('rdTitleFormat<?php echo $ii; ?>');" /><?php nxs_doShowHint("rdTitleFormat".$ii); ?>
             </div><br/> 
             
      <div style="width:100%;"><strong id="altFormatText">Post Type:</strong></div>                      
       <div style="margin-left: 10px;">
-        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Link Post', 'nxs_snap'); ?>
+        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($options['postType']) || $options['postType'] == '' || $options['postType'] == 'A') echo 'checked="checked"'; ?> /> <?php _e('Link Post', 'social-networks-auto-poster-facebook-twitter-g'); ?>
         <br/>
-        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap'); ?> - <i><?php _e('set the text format below', 'nxs_snap'); ?></i>
+        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="T" <?php if ($options['postType'] == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'social-networks-auto-poster-facebook-twitter-g'); ?> - <i><?php _e('set the text format below', 'social-networks-auto-poster-facebook-twitter-g'); ?></i>
      </div><br/>
                       
             <div id="altFormat" style="margin-left: 20px;">
-              <div style="width:100%;"><strong id="altFormatText"><?php _e('Text Format', 'nxs_snap'); ?>:</strong> (<a href="#" id="rdTextFormat<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('rdTextFormat<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'nxs_snap'); ?></a>)
+              <div style="width:100%;"><strong id="altFormatText"><?php _e('Text Format', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong> (<a href="#" id="rdTextFormat<?php echo $ii; ?>HintInfo" onclick="mxs_showHideFrmtInfo('rdTextFormat<?php echo $ii; ?>'); return false;"><?php _e('Show format info', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)
               </div>
               
-              <textarea cols="150" rows="3" id="rd<?php echo $ii; ?>SNAPformat" name="rd[<?php echo $ii; ?>][rdTextFormat]" style="width:51%;max-width: 650px;" onfocus="jQuery('#rd<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apRDMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'nxs_snap'); else _e(apply_filters('format_to_edit', htmlentities($options['rdTextFormat'], ENT_COMPAT, "UTF-8")), 'nxs_snap'); ?></textarea>
+              <textarea cols="150" rows="3" id="rd<?php echo $ii; ?>SNAPformat" name="rd[<?php echo $ii; ?>][rdTextFormat]" style="width:51%;max-width: 650px;" onfocus="jQuery('#rd<?php echo $ii; ?>SNAPformat').attr('rows', 6); mxs_showFrmtInfo('apRDMsgFrmt<?php echo $ii; ?>');"><?php if ($isNew) _e("New post (%TITLE%) has been published on %SITENAME%", 'social-networks-auto-poster-facebook-twitter-g'); else _e(apply_filters('format_to_edit', htmlentities($options['rdTextFormat'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g'); ?></textarea>
               
               <?php nxs_doShowHint("rdTextFormat".$ii); ?>
             </div><br/>          
@@ -100,7 +100,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
             <?php if ($isNew) { ?> <input type="hidden" name="rd[<?php echo $ii; ?>][apDoRD]" value="1" id="apDoNewRD<?php echo $ii; ?>" /> <?php } ?>
             <?php if ($options['rdPass']!='') { ?>
             
-            <b><?php _e('Test your settings', 'nxs_snap'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('RD', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'nxs_snap' ), $nType); ?></a>              <?php } 
+            <b><?php _e('Test your settings', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>&nbsp;&nbsp;&nbsp; <a href="#" class="NXSButton" onclick="testPost('RD', '<?php echo $ii; ?>'); return false;"><?php printf( __( 'Submit Test Post to %s', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?></a>              <?php } 
             ?>
             </div>
             
@@ -115,7 +115,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
     </div>  <?php } ?> <?php /* #### End of Tab #### */ ?>
     </div><br/> <?php /* #### End of Tabs #### */ ?>
     
-    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'nxs_snap') ?>" /></div>
+    <div class="submitX nxclear" style="padding-bottom: 0px;"><input type="submit" class="button-primary" name="update_NS_SNAutoPoster_settings" value="<?php _e('Update Settings', 'social-networks-auto-poster-facebook-twitter-g') ?>" /></div>
             
             </div><?php
   }
@@ -165,14 +165,14 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
       <?php if ($isAvailRD) { ?><input class="nxsGrpDoChb" value="1" id="doRD<?php echo $ii; ?>" <?php if ($post->post_status == "publish") echo 'disabled="disabled"';?> type="checkbox" name="rd[<?php echo $ii; ?>][doRD]" <?php if ((int)$doRD == 1) echo 'checked="checked" title="def"';  ?> /> 
       <?php if ($post->post_status == "publish") { ?> <input type="hidden" name="rd[<?php echo $ii; ?>][doRD]" value="<?php echo $doRD;?>"> <?php } ?> <?php } ?>
       
-      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/rd16.png);">Reddit - <?php _e('publish to', 'nxs_snap') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
-                    if ($post->post_status == "publish" && $isAvailRD) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToRD_repostButton" id="rePostToRD_button" value="<?php _e('Repost to Reddit', 'nxs_snap') ?>" />
+      <div class="nsx_iconedTitle" style="display: inline; font-size: 13px; background-image: url(<?php echo $nxs_plurl; ?>img/rd16.png);">Reddit - <?php _e('publish to', 'social-networks-auto-poster-facebook-twitter-g') ?> (<i style="color: #005800;"><?php echo $ntOpt['nName']; ?></i>)</div></th> <td><?php //## Only show RePost button if the post is "published"
+                    if ($post->post_status == "publish" && $isAvailRD) { ?><input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" type="button" class="button" name="rePostToRD_repostButton" id="rePostToRD_button" value="<?php _e('Repost to Reddit', 'social-networks-auto-poster-facebook-twitter-g') ?>" />
                     <?php } ?>
                     
                     <?php  if (is_array($pMeta) && is_array($pMeta[$ii]) && isset($pMeta[$ii]['pgID']) ) { 
                         
                         ?> <span id="pstdRD<?php echo $ii; ?>" style="float: right;padding-top: 4px; padding-right: 10px;">
-                      <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Reddit"; printf( __( 'Posted on', 'nxs_snap' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
+                      <a style="font-size: 10px;" href="<?php echo $pMeta[$ii]['pgID']; ?>" target="_blank"><?php $nType="Reddit"; printf( __( 'Posted on', 'social-networks-auto-poster-facebook-twitter-g' ), $nType); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(" (".$pMeta[$ii]['pDate'].")"):""; ?></a>
                     </span><?php } ?>
                     
                 </td></tr>                
@@ -185,20 +185,20 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD {
                 <tr id="altFormat1" style=""><th scope="row" class="nxsTHRow">
                 <input value="0"  type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"/><input value="nxsi<?php echo $ii; ?>rd" type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstPostIncl]"  <?php if (!empty($ntOpt['rpstPostIncl'])) echo "checked"; ?> />
                 </th>
-                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'nxs_snap') ?>                
+                <td> <?php _e('Include in "Auto-Reposting" to this network.', 'social-networks-auto-poster-facebook-twitter-g') ?>                
                 </td></tr> <?php } ?>
                 
                 
-       <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'nxs_snap') ?></th>
+       <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Title Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
         <td><input value="<?php echo $rdMsgTFormat ?>" type="text" name="rd[<?php echo $ii; ?>][SNAPformatT]" style="width:60%;max-width: 610px;" onfocus="jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apRDMsgTFrmt<?php echo $ii; ?>');"/><?php nxs_doShowHint("apRDMsgTFrmt".$ii, '', '58'); ?></td></tr>  
                 
-       <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Post Type:', 'nxs_snap') ?> </th><td>             
-        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($rdPostType) || $rdPostType == '' || $rdPostType == 'A') echo 'checked="checked"'; ?> /><?php _e('Link Post', 'nxs_snap') ?>
+       <tr><th scope="row" style="text-align:right; width:150px; vertical-align:top; padding-top: 0px; padding-right:10px;"> <?php _e('Post Type:', 'social-networks-auto-poster-facebook-twitter-g') ?> </th><td>             
+        <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="A" <?php if ( !isset($rdPostType) || $rdPostType == '' || $rdPostType == 'A') echo 'checked="checked"'; ?> /><?php _e('Link Post', 'social-networks-auto-poster-facebook-twitter-g') ?>
         <br/>
-      <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="T" <?php if ($rdPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'nxs_snap') ?><br/>               
+      <input type="radio" name="rd[<?php echo $ii; ?>][postType]" value="T" <?php if ($rdPostType == 'T') echo 'checked="checked"'; ?> /> <?php _e('Text Post', 'social-networks-auto-poster-facebook-twitter-g') ?><br/>               
      </td></tr>
      
-                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'nxs_snap') ?></th><td>                
+                <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top;  padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Text Format:', 'social-networks-auto-poster-facebook-twitter-g') ?></th><td>                
                 
                 <textarea cols="150" rows="1" id="rd<?php echo $ii; ?>SNAPformat" name="rd[<?php echo $ii; ?>][SNAPformat]"  style="width:60%;max-width: 610px;" onfocus="jQuery('#rd<?php echo $ii; ?>SNAPformat').attr('rows', 4); jQuery('.nxs_FRMTHint').hide();mxs_showFrmtInfo('apRDMsgFrmt<?php echo $ii; ?>');"><?php echo $rdMsgFormat ?></textarea>                
                 
@@ -253,7 +253,7 @@ if (!function_exists("nxs_doPublishToRD")) { //## Second Function to Post to RD
       if (!is_array($ret) || $ret['isPosted']!='1') { //## Error 
          if ($postID=='0') prr($ret); nxs_addToLogN('E', 'Error', $logNT, '-=ERROR=- '.print_r($ret, true), $extInfo); 
       } else {  // ## All Good - log it.
-        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'nxs_snap'); } 
+        if ($postID=='0')  { nxs_addToLogN('S', 'Test', $logNT, 'OK - TEST Message Posted '); echo _e('OK - Message Posted, please see your '.$logNT.' Page. ', 'social-networks-auto-poster-facebook-twitter-g'); } 
           else  { nxs_metaMarkAsPosted($postID, $ntCd, $options['ii'], array('isPosted'=>'1', 'pgID'=>$ret['postID'], 'pDate'=>date('Y-m-d H:i:s'))); 
           $extInfo .= ' | <a href="'.$ret['postURL'].'" target="_blank">Post Link</a>'; nxs_addToLogN('S', 'Posted', $logNT, 'OK - Message Posted ', $extInfo); }
       }

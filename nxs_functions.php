@@ -276,7 +276,7 @@ if (!function_exists("nxs_jsPostToSNAP2")){ function nxs_jsPostToSNAP2() { globa
     });                       
   }
   function doLic(){ var lk = jQuery('#eLic').val();  jQuery.post(ajaxurl,{lk:lk, action: 'nxsDoLic', id: 0, _wpnonce: jQuery('input#doLic_wpnonce').val()}, function(j){ 
-      if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('<?php _e('Wrong key, please contact support', 'nxs_snap'); ?>');
+      if (jQuery.trim(j)=='OK') window.location = "<?php echo $nxs_snapThisPageUrl; ?>"; else alert('<?php _e('Wrong key, please contact support', 'social-networks-auto-poster-facebook-twitter-g'); ?>');
     }, "html")
   }
   function testPost(nt, nid){ jQuery(".blnkg").hide(); <?php foreach ($nxs_snapAvNts as $avNt) {?>
@@ -453,11 +453,11 @@ input[readonly]{ background-color:white; }
 <?php }}
 
 if (!function_exists('nxs_doShowHint')){ function nxs_doShowHint($t, $ex='', $wdth='79'){ ?>
-<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: <?php echo $wdth; ?>%; background: #fff; display: none;"><span class="nxs_hili">%TITLE%</span> - <?php _e('Inserts the Title of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%URL%</span> - <?php _e('Inserts the URL of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%SURL%</span> - <?php _e('Inserts the <b>shortened URL</b> of your post', 'nxs_snap'); ?>, <span class="nxs_hili">%IMG%</span> - <?php _e('Inserts the featured image URL', 'nxs_snap'); ?>, <span class="nxs_hili">%EXCERPT%</span> - <?php _e('Inserts the excerpt of the post (processed)', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWEXCERPT%</span> - <?php _e('Inserts the excerpt of the post (as typed)', 'nxs_snap'); ?>,  <span class="nxs_hili">%ANNOUNCE%</span> - <?php _e('Inserts the text till the &lt;!--more--&gt; tag or first N words of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%FULLTEXT%</span> - <?php _e('Inserts the processed body(text) of the post', 'nxs_snap'); ?>, <span class="nxs_hili">%RAWTEXT%</span> - <?php _e('Inserts the body(text) of the post as typed', 'nxs_snap'); ?>, <span class="nxs_hili">%TAGS%</span> - <?php _e('Inserts post tags', 'nxs_snap'); ?>, <span class="nxs_hili">%CATS%</span> - <?php _e('Inserts post categories', 'nxs_snap'); ?>, <span class="nxs_hili">%HTAGS%</span> - <?php _e('Inserts post tags as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%HCATS%</span> - <?php _e('Inserts post categories as hashtags', 'nxs_snap'); ?>, <span class="nxs_hili">%AUTHORNAME%</span> - <?php _e('Inserts the author\'s name', 'nxs_snap'); ?>, <span class="nxs_hili">%SITENAME%</span> - <?php _e('Inserts the the Blog/Site name', 'nxs_snap'); ?>. <?php echo $ex; ?></div>
+<div id="<?php echo $t; ?>Hint" class="nxs_FRMTHint" style="font-size: 11px; margin: 2px; margin-top: 0px; padding:7px; border: 1px solid #C0C0C0; width: <?php echo $wdth; ?>%; background: #fff; display: none;"><span class="nxs_hili">%TITLE%</span> - <?php _e('Inserts the Title of the post', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%URL%</span> - <?php _e('Inserts the URL of the post', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%SURL%</span> - <?php _e('Inserts the <b>shortened URL</b> of your post', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%IMG%</span> - <?php _e('Inserts the featured image URL', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%EXCERPT%</span> - <?php _e('Inserts the excerpt of the post (processed)', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%RAWEXCERPT%</span> - <?php _e('Inserts the excerpt of the post (as typed)', 'social-networks-auto-poster-facebook-twitter-g'); ?>,  <span class="nxs_hili">%ANNOUNCE%</span> - <?php _e('Inserts the text till the &lt;!--more--&gt; tag or first N words of the post', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%FULLTEXT%</span> - <?php _e('Inserts the processed body(text) of the post', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%RAWTEXT%</span> - <?php _e('Inserts the body(text) of the post as typed', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%TAGS%</span> - <?php _e('Inserts post tags', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%CATS%</span> - <?php _e('Inserts post categories', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%HTAGS%</span> - <?php _e('Inserts post tags as hashtags', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%HCATS%</span> - <?php _e('Inserts post categories as hashtags', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%AUTHORNAME%</span> - <?php _e('Inserts the author\'s name', 'social-networks-auto-poster-facebook-twitter-g'); ?>, <span class="nxs_hili">%SITENAME%</span> - <?php _e('Inserts the the Blog/Site name', 'social-networks-auto-poster-facebook-twitter-g'); ?>. <?php echo $ex; ?></div>
 <?php }}
 
 if (!function_exists('nxs_doSMAS')){ function nxs_doSMAS($nType, $typeii) { ?><div id="do<?php echo $typeii; ?>Div" class="clNewNTSets" style="margin-left: 10px; display:none; "><div style="font-size: 15px; text-align: center;"><br/><br/>
-<?php printf( __( 'You already have %s configured.  This plugin supports only one %s account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another %s account for auto-posting.', 'nxs_snap' ), $nType, $nType, $nType );  ?>
+<?php printf( __( 'You already have %s configured.  This plugin supports only one %s account. <br/><br/> Please consider getting <a target="_blank" href="http://www.nextscripts.com/social-networks-auto-poster-for-wp-multiple-accounts">Multiple Accounts Edition</a> if you would like to add another %s account for auto-posting.', 'social-networks-auto-poster-facebook-twitter-g' ), $nType, $nType, $nType );  ?>
 </div></div><?php 
 }}
 
@@ -545,7 +545,7 @@ if (!function_exists('nxs_addPostingDelaySel')){function nxs_addPostingDelaySel(
   if (function_exists('nxs_doSMAS4')) return nxs_doSMAS4($nt, $ii, $hrs, $min, $days); else return '<br/>';
 }}
 if (!function_exists('nxs_addPostingDelaySelV3')){function nxs_addPostingDelaySelV3($nt, $ii, $hrs=0, $min=0, $days=0){ 
-  if (function_exists('nxs_doSMAS4')) { ?> <div class="nxs_tls_cpt"><?php _e('Posting Delay', 'nxs_snap'); ?></div>  
+  if (function_exists('nxs_doSMAS4')) { ?> <div class="nxs_tls_cpt"><?php _e('Posting Delay', 'social-networks-auto-poster-facebook-twitter-g'); ?></div>  
     <div class="nxs_tls_bd"><?php  global $plgn_NS_SNAutoPoster, $nxs_plurl;  if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; 
       if ($options['nxsHTDP']=='I') _e('Not Compatible with "Publish Immediately"'); else  echo nxs_doSMAS4($nt, $ii, $hrs, $min, $days); ?></div>      
   <?php } else echo '<br/>';
@@ -765,9 +765,9 @@ if (!function_exists('nxs_doFormatMsg')){ function nxs_doFormatMsg($format, $mes
 }}
 //## Common Dialogs
 if (!function_exists('nxs_showImgToUseDlg')){ function nxs_showImgToUseDlg($nt, $ii, $imgToUse, $hide=false){ ?>
- <tr id="altFormatIMG<?php echo $nt.$ii; ?>" style="<?php echo $hide?'display:none;':''; ?>"><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Image(s) to use:', 'nxs_snap') ?></th>
-                  <td><input type="checkbox" class="isAutoImg" <?php if ($imgToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoImg-<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][isAutoImg]" value="A"/> <?php _e('Auto', 'nxs_snap'); ?>
-                  <?php if ($imgToUse!='') { ?> <a onclick="nxs_clPrvImgShow('<?php echo $nt; ?><?php echo $ii; ?>');return false;" href="#"><?php _e('Show all', 'nxs_snap'); ?></a><br/>  
+ <tr id="altFormatIMG<?php echo $nt.$ii; ?>" style="<?php echo $hide?'display:none;':''; ?>"><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('Image(s) to use:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
+                  <td><input type="checkbox" class="isAutoImg" <?php if ($imgToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoImg-<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][isAutoImg]" value="A"/> <?php _e('Auto', 'social-networks-auto-poster-facebook-twitter-g'); ?>
+                  <?php if ($imgToUse!='') { ?> <a onclick="nxs_clPrvImgShow('<?php echo $nt; ?><?php echo $ii; ?>');return false;" href="#"><?php _e('Show all', 'social-networks-auto-poster-facebook-twitter-g'); ?></a><br/>  
                     <div class="nxs_prevImagesDiv" id="nxs_<?php echo $nt; ?><?php echo $ii; ?>_idivD"><img class="nxs_prevImages" src="<?php echo $imgToUse; ?>"><div style="display:block;" class="nxs_checkIcon"><div class="media-modal-icon"></div></div></div>
                   <?php } else { ?><br/><?php } ?>
                     <div id="imgPrevList-<?php echo $nt; ?><?php echo $ii; ?>" class="nxs_imgPrevList"></div>  
@@ -775,12 +775,12 @@ if (!function_exists('nxs_showImgToUseDlg')){ function nxs_showImgToUseDlg($nt, 
                 </td></tr> 
 <?php }}
 if (!function_exists('nxs_showURLToUseDlg')){ function nxs_showURLToUseDlg($nt, $ii, $urlToUse){ ?>
- <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('URL to use:', 'nxs_snap') ?></th>
-                  <td><input type="checkbox" class="isAutoURL" <?php if ($urlToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoURL-<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][isAutoURL]" value="A"/> <?php _e('Auto', 'nxs_snap'); ?> - <i><?php _e('Post URL or globally defined URL will be used', 'nxs_snap'); ?></i>
+ <tr id="altFormat1" style=""><th scope="row" style="vertical-align:top; padding-top: 6px; text-align:right; width:60px; padding-right:10px;"><?php _e('URL to use:', 'social-networks-auto-poster-facebook-twitter-g') ?></th>
+                  <td><input type="checkbox" class="isAutoURL" <?php if ($urlToUse=='') { ?>checked="checked"<?php } ?>  id="isAutoURL-<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][isAutoURL]" value="A"/> <?php _e('Auto', 'social-networks-auto-poster-facebook-twitter-g'); ?> - <i><?php _e('Post URL or globally defined URL will be used', 'social-networks-auto-poster-facebook-twitter-g'); ?></i>
                   
                     <div class="nxs_prevURLDiv" <?php if (trim($urlToUse)=='') { ?> style="display:none;"<?php } ?> id="isAutoURLFld-<?php echo $nt; ?><?php echo $ii; ?>">
-                      &nbsp;&nbsp;&nbsp;<?php _e('URL:', 'nxs_snap') ?> <input size="90" type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][urlToUse]" value="<?php echo $urlToUse ?>" id="URLToUse-<?php echo $nt; ?><?php echo $ii; ?>" /> 
-                      <br/><span><?php _e('This will trigger "Network will decide attachment info". Image and other settings will be ignored.', 'nxs_snap') ?></span>
+                      &nbsp;&nbsp;&nbsp;<?php _e('URL:', 'social-networks-auto-poster-facebook-twitter-g') ?> <input size="90" type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][urlToUse]" value="<?php echo $urlToUse ?>" id="URLToUse-<?php echo $nt; ?><?php echo $ii; ?>" /> 
+                      <br/><span><?php _e('This will trigger "Network will decide attachment info". Image and other settings will be ignored.', 'social-networks-auto-poster-facebook-twitter-g') ?></span>
                     </div>
                   
                 </td></tr> 
@@ -848,17 +848,17 @@ function nxs_showCatTagsCTFilters($nt, $ii, $options){ global $nxs_snapAvNts, $n
   if (!isset($options['tagsSel'])) $options['tagsSel'] = ''; if (!isset($options['custTaxSel'])) $options['custTaxSel'] = '';
   ?> <div class="nxs_tls_cpt">
   
-  <?php _e('Filter Autoposting by', 'nxs_snap'); ?></div>
+  <?php _e('Filter Autoposting by', 'social-networks-auto-poster-facebook-twitter-g'); ?></div>
     <div class="nxs_tls_bd">
-    <div style="width:100%;"><strong><?php _e('Categories', 'nxs_snap'); ?>:</strong>
-       <input value="0" id="catSelA<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> <?php _e('All', 'nxs_snap'); ?>
-       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;"><?php _e('Selected', 'nxs_snap'); ?><?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
+    <div style="width:100%;"><strong><?php _e('Categories', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong>
+       <input value="0" id="catSelA<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] != 1) echo "checked"; ?> /> <?php _e('All', 'social-networks-auto-poster-facebook-twitter-g'); ?>
+       <input value="1" id="catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>" type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSel]" <?php if ((int)$options['catSel'] == 1) echo "checked"; ?> /> <a href="#" style="text-decoration: none;" class="showCats" id="nxs_SCA_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" onclick="jQuery('#catSelS<?php echo strtoupper($nt); ?><?php echo $ii; ?>').attr('checked', true); jQuery('#tmpCatSelNT').val('<?php echo strtoupper($nt); ?><?php echo $ii; ?>'); nxs_markCats( jQuery('#nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>').val() ); jQuery('#showCatSel').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, follow: [false, false], position: [75, 'auto']}); return false;"><?php _e('Selected', 'social-networks-auto-poster-facebook-twitter-g'); ?><?php if ($options['catSelEd']!='') echo "[".(substr_count($options['catSelEd'], ",")+1)."]"; ?></a>       
        <input type="hidden" name="<?php echo $nt; ?>[<?php echo $ii; ?>][catSelEd]" id="nxs_SC_<?php echo strtoupper($nt); ?><?php echo $ii; ?>" value="<?php echo $options['catSelEd']; ?>" />
-    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'nxs_snap'); ?></i></div> 
+    <br/><i><?php _e('Only selected categories will be autoposted to this account', 'social-networks-auto-poster-facebook-twitter-g'); ?></i></div> 
     <br/>
-    <div style="width:100%;"><strong><?php _e('Tags and Custom Taxonomies', 'nxs_snap'); ?>:</strong>
-       <input name="<?php echo $nt; ?>[<?php echo $ii; ?>][tagsSel]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['tagsSel'], ENT_COMPAT, "UTF-8")), 'nxs_snap') ?>" />     
-    <br/><i><?php _e('Only posts with those tags assigned will be autoposted to this account, you can include custom taxonomy tags in taxonomy_slug|tag format.', 'nxs_snap'); ?></i></div> 
+    <div style="width:100%;"><strong><?php _e('Tags and Custom Taxonomies', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</strong>
+       <input name="<?php echo $nt; ?>[<?php echo $ii; ?>][tagsSel]" style="width: 30%;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['tagsSel'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />     
+    <br/><i><?php _e('Only posts with those tags assigned will be autoposted to this account, you can include custom taxonomy tags in taxonomy_slug|tag format.', 'social-networks-auto-poster-facebook-twitter-g'); ?></i></div> 
     <br/>
     </div> <?php
 }
@@ -870,39 +870,39 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
 
   ?>
     <div class="nxs_tls_cpt">
-   <?php _e('Auto Reposting', 'nxs_snap'); ?>&nbsp;&nbsp;<span class="nxsInstrSpan"><a href="http://www.nextscripts.com/snap-features/old-posts-auto-reposting/" target="_blank"><?php _e('[Instructions]', 'nxs_snap'); ?></a> &nbsp;&nbsp; <b style="color: darkred;">Please note:</b> This feature is depreciated, <a href="http://www.nextscripts.com/blog/old-posts-reposting-no-longer-supported/" target="_blank">no longer supported</a> and will be replaced with something much better in the upcoming ver 3.5 </span>
+   <?php _e('Auto Reposting', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;&nbsp;<span class="nxsInstrSpan"><a href="http://www.nextscripts.com/snap-features/old-posts-auto-reposting/" target="_blank"><?php _e('[Instructions]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> &nbsp;&nbsp; <b style="color: darkred;">Please note:</b> This feature is depreciated, <a href="http://www.nextscripts.com/blog/old-posts-reposting-no-longer-supported/" target="_blank">no longer supported</a> and will be replaced with something much better in the upcoming ver 3.5 </span>
    </div>
    
    <?php $cr = get_option('NXS_cronCheck'); if (!empty($cr) && is_array($cr) && isset($cr['status']) && $cr['status']=='0') { 
       global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; 
        if (isset($gOptions['forceBrokenCron']) && $gOptions['forceBrokenCron'] =='1') { ?> 
-         <span style="color: red"> <?php _e('Your WP Cron is not working correctly. Auto Reposting service is active by force. <br/> This might cause problems. Please see the test results and recommendations', 'nxs_snap'); ?>
+         <span style="color: red"> <?php _e('Your WP Cron is not working correctly. Auto Reposting service is active by force. <br/> This might cause problems. Please see the test results and recommendations', 'social-networks-auto-poster-facebook-twitter-g'); ?>
          &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span>
-        <?php } else { ?> <span style="color: red"> <?php _e('Auto Reposting service is Disabled. Your WP Cron is not working correctly. Please see the test results and recommendations', 'nxs_snap'); ?>
+        <?php } else { ?> <span style="color: red"> <?php _e('Auto Reposting service is Disabled. Your WP Cron is not working correctly. Please see the test results and recommendations', 'social-networks-auto-poster-facebook-twitter-g'); ?>
      &nbsp;-&nbsp;<a target="_blank" href="<?php global $nxs_snapThisPageUrl; echo $nxs_snapThisPageUrl; ?>&do=crtest">WP Cron Test Results</a></span>
    <?php return; } } ?>
    
    
    <div class="nxs_tls_bd">
-     <div class="nxs_tls_sbInfo"><?php _e('Plugin could autorepost existing posts', 'nxs_snap'); ?></div>
+     <div class="nxs_tls_sbInfo"><?php _e('Plugin could autorepost existing posts', 'social-networks-auto-poster-facebook-twitter-g'); ?></div>
      <input value="1"  id="riC<?php echo $ii; ?>" <?php if (isset($options['rpstOn']) && trim($options['rpstOn'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOn]"/> 
-       <b><?php _e('Repost existing posts every', 'nxs_snap'); ?> </b>
+       <b><?php _e('Repost existing posts every', 'social-networks-auto-poster-facebook-twitter-g'); ?> </b>
      
-     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstDays]" style="width: 35px;" value="<?php echo isset($options['rpstDays'])?$options['rpstDays']:'0'; ?>" />&nbsp;<?php _e('Days', 'nxs_snap'); ?>&nbsp;&nbsp;
-     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstHrs]" style="width: 35px;" value="<?php echo isset($options['rpstHrs'])?$options['rpstHrs']:'2'; ?>" />&nbsp;<?php _e('Hours', 'nxs_snap'); ?>&nbsp;&nbsp;
-     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstMins]" style="width: 35px;" value="<?php echo isset($options['rpstMins'])?$options['rpstMins']:'0'; ?>" />&nbsp;<?php _e('Minutes', 'nxs_snap'); ?>     
+     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstDays]" style="width: 35px;" value="<?php echo isset($options['rpstDays'])?$options['rpstDays']:'0'; ?>" />&nbsp;<?php _e('Days', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;&nbsp;
+     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstHrs]" style="width: 35px;" value="<?php echo isset($options['rpstHrs'])?$options['rpstHrs']:'2'; ?>" />&nbsp;<?php _e('Hours', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;&nbsp;
+     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstMins]" style="width: 35px;" value="<?php echo isset($options['rpstMins'])?$options['rpstMins']:'0'; ?>" />&nbsp;<?php _e('Minutes', 'social-networks-auto-poster-facebook-twitter-g'); ?>     
      <div style="padding-left:10px;padding-top:10px;line-height:30px;"> 
      
-     <b><?php _e('Randomize posting time &#177;', 'nxs_snap'); ?> </b>
-     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstRndMins]" style="width: 35px;" value="<?php echo isset($options['rpstRndMins'])?$options['rpstRndMins']:'15'; ?>" onmouseout="hidePopShAtt('RPST1');" onmouseover="showPopShAtt('RPST1', event);" />&nbsp;<?php _e('Minutes', 'nxs_snap'); ?>
+     <b><?php _e('Randomize posting time &#177;', 'social-networks-auto-poster-facebook-twitter-g'); ?> </b>
+     <input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstRndMins]" style="width: 35px;" value="<?php echo isset($options['rpstRndMins'])?$options['rpstRndMins']:'15'; ?>" onmouseout="hidePopShAtt('RPST1');" onmouseover="showPopShAtt('RPST1', event);" />&nbsp;<?php _e('Minutes', 'social-networks-auto-poster-facebook-twitter-g'); ?>
      <br/>     
      <input value="1"  id="riOC<?php echo $ii; ?>" <?php if (isset($options['rpstOnlyPUP']) && trim($options['rpstOnlyPUP'])=='1') echo "checked"; ?> type="checkbox" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOnlyPUP]"/> 
-       <b><?php _e('Repost ONLY previously unautoposted posts', 'nxs_snap'); ?></b>
+       <b><?php _e('Repost ONLY previously unautoposted posts', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
      <br/>
      <?php $args=array('public'=>true, '_builtin'=>false);  $output = 'names';  $operator = 'and';  $post_types = array(); 
      if (function_exists('get_post_types')) $post_types=get_post_types($args, $output, $operator); 
        if (!empty($post_types) && is_array($post_types)) { ?>
-     <b><?php _e('Repost: (Choose Posts, Pages, Custom Post Types)', 'nxs_snap'); ?></b>
+     <b><?php _e('Repost: (Choose Posts, Pages, Custom Post Types)', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
      <?php $post_typesIncl = array('post'=>'post', 'page'=>'page'); $post_types = array_merge($post_typesIncl, $post_types);    if ($options['nxsCPTSeld']=='a:1:{i:0;s:1:"0";}') $options['nxsCPTSeld'] = '';
        if (!empty($options['nxsCPTSeld'])) $nxsCPTSeld = unserialize($options['nxsCPTSeld']); else $nxsCPTSeld = array('post');  
              ?> <div class="nxs_box_inside" style="padding: 0px;" > <div class="itemDiv"  style="padding: 0px;"> <div class="taxonomydiv"><div class="tabs-panel" style="padding: 10px;"><input type="hidden" name="nxsCPTSeld[]" value="0" /> <?php //prr($nxsCPTSeld); prr($post_types); prr($_POST['nxsCPTSeld']);              
@@ -912,7 +912,7 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
       ?></div></div> </div> </div>          
      <?php } ?>
      <?php if (function_exists('nxs_doSMAS41')) nxs_doSMAS41($nt, $ii, $options); ?>          
-     <b><?php _e('Get posts', 'nxs_snap'); ?></b>
+     <b><?php _e('Get posts', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>
        <select id="riS<?php echo $nt; ?><?php echo $ii; ?>" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstType]" onchange="nxs_actDeActTurnOff(jQuery(this).attr('id'));"><?php if (function_exists('nxs_doSMAS42')) nxs_doSMAS42($options); ?>        
         <option value="2" <?php  if (isset($options['rpstType']) && $options['rpstType']=='2') echo 'selected="selected"' ?>>One By One - Old to New</option><option value="3" <?php if (isset($options['rpstType']) && $options['rpstType']=='3') echo 'selected="selected"' ?>>One By One - New to Old</option>
         </select> 
@@ -920,19 +920,19 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
       <div style="padding-left: 15px;">
       <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstTimeType]" value="D" <?php if (isset($options['rpstTimeType']) && $options['rpstTimeType']=='D') echo 'checked="checked"'; ?> />
       
-      <?php _e('from', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstFromTime]" style="width: 75px;" value="<?php echo isset($options['rpstFromTime'])?$options['rpstFromTime']:''; ?>" />&nbsp;          
-      <?php _e('to', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstToTime]" style="width: 75px;" value="<?php echo isset($options['rpstToTime'])?$options['rpstToTime']:''; ?>" />
+      <?php _e('from', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstFromTime]" style="width: 75px;" value="<?php echo isset($options['rpstFromTime'])?$options['rpstFromTime']:''; ?>" />&nbsp;          
+      <?php _e('to', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstToTime]" style="width: 75px;" value="<?php echo isset($options['rpstToTime'])?$options['rpstToTime']:''; ?>" />
      <br/>
      <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstTimeType]" value="A" <?php if (!isset($options['rpstTimeType']) || $options['rpstTimeType']=='A') echo 'checked="checked"'; ?> />
-     <?php _e('Older then', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOLDays]" style="width: 35px;" value="<?php  echo isset($options['rpstOLDays'])?$options['rpstOLDays']:'30'; ?>" />&nbsp;<?php _e('Days', 'nxs_snap'); ?>          
-     <?php _e('and Newer then', 'nxs_snap'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstNWDays]" style="width: 35px;" value="<?php  echo isset($options['rpstNWDays'])?$options['rpstNWDays']:'365'; ?>" />&nbsp;<?php _e('Days', 'nxs_snap'); ?>     
+     <?php _e('Older then', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstOLDays]" style="width: 35px;" value="<?php  echo isset($options['rpstOLDays'])?$options['rpstOLDays']:'30'; ?>" />&nbsp;<?php _e('Days', 'social-networks-auto-poster-facebook-twitter-g'); ?>          
+     <?php _e('and Newer then', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;<input type="text" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstNWDays]" style="width: 35px;" value="<?php  echo isset($options['rpstNWDays'])?$options['rpstNWDays']:'365'; ?>" />&nbsp;<?php _e('Days', 'social-networks-auto-poster-facebook-twitter-g'); ?>     
      </div>
-     <div id="riS<?php echo $nt; ?><?php echo $ii; ?>xd"  style="padding-left: 0px;<?php if (isset($options['rpstType']) && $options['rpstType']=='1') echo "display:none;"; ?>"><b><?php _e('When finished', 'nxs_snap'); ?>:</b>       
-         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="O" <?php if (empty($options['rpstStop']) || (isset($options['rpstStop']) && trim($options['rpstStop'])=='O')) echo "checked"; ?>  /> <?php _e('Auto Turn Reposting Off', 'nxs_snap') ?>
+     <div id="riS<?php echo $nt; ?><?php echo $ii; ?>xd"  style="padding-left: 0px;<?php if (isset($options['rpstType']) && $options['rpstType']=='1') echo "display:none;"; ?>"><b><?php _e('When finished', 'social-networks-auto-poster-facebook-twitter-g'); ?>:</b>       
+         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="O" <?php if (empty($options['rpstStop']) || (isset($options['rpstStop']) && trim($options['rpstStop'])=='O')) echo "checked"; ?>  /> <?php _e('Auto Turn Reposting Off', 'social-networks-auto-poster-facebook-twitter-g') ?>
          &nbsp;&nbsp;&nbsp;
-         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="W" <?php if (isset($options['rpstStop']) && trim($options['rpstStop'])=='W') echo 'checked="cheXcked"'; ?> /> <?php _e('Wait for new posts', 'nxs_snap') ?>
+         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="W" <?php if (isset($options['rpstStop']) && trim($options['rpstStop'])=='W') echo 'checked="cheXcked"'; ?> /> <?php _e('Wait for new posts', 'social-networks-auto-poster-facebook-twitter-g') ?>
          &nbsp;&nbsp;&nbsp;
-         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="R" <?php if (isset($options['rpstStop']) && trim($options['rpstStop'])=='R') echo 'checked="cheTcked"'; ?> /> <?php _e('Loop it. Reset and Start from the begining', 'nxs_snap'); ?>
+         <input type="radio" name="<?php echo $nt; ?>[<?php echo $ii; ?>][rpstStop]" value="R" <?php if (isset($options['rpstStop']) && trim($options['rpstStop'])=='R') echo 'checked="cheTcked"'; ?> /> <?php _e('Loop it. Reset and Start from the begining', 'social-networks-auto-poster-facebook-twitter-g'); ?>
          </div>
     
      <hr/>
@@ -960,18 +960,18 @@ function nxs_showRepostSettings($nt, $ii, $options){ global $nxs_snapAvNts, $nxs
         echo "Total posts included in reposting: ".$query->found_posts;      
       ?><br/>
       
-     <?php _e('Set All Existing Posts to: ', 'nxs_snap'); ?>
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled for Repost]', 'nxs_snap'); ?></a> </span>
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Disabled for Repost]', 'nxs_snap'); ?></a> </span>        
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','2','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters]', 'nxs_snap'); ?></a> </span>        
+     <?php _e('Set All Existing Posts to: ', 'social-networks-auto-poster-facebook-twitter-g'); ?>
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','1','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled for Repost]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> </span>
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','0','<?php echo $ii; ?>'); return false;"><?php _e('[Disabled for Repost]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> </span>        
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','2','<?php echo $ii; ?>'); return false;"><?php _e('[Enabled/Disabled for Repost according to Categories/Tags/Taxonomies filters]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> </span>        
               
      </div><hr/>
-     <b><?php _e('Last post', 'nxs_snap'); ?></b>&nbsp;(ID:&nbsp;<?php echo !empty($options['rpstLastPostID'])?$options['rpstLastPostID']:''; ?>)&nbsp;<b><?php _e('was re-posted on:', 'nxs_snap'); ?></b>&nbsp;<?php echo $options['rpstLastShTime']>0?date_i18n('Y-m-d H:i', $options['rpstLastShTime']):'Never'; ?>
-        &nbsp;&nbsp;<b><?php _e('Next post will be ~', 'nxs_snap'); ?></b>&nbsp;<?php echo $options['rpstNxTime']>0?date_i18n('Y-m-d H:i', $options['rpstNxTime']):'Never'; ?> &lt;==
-        &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','X','<?php echo $ii; ?>'); return false;"><?php _e('[Reset]', 'nxs_snap'); ?></a> </span>
+     <b><?php _e('Last post', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>&nbsp;(ID:&nbsp;<?php echo !empty($options['rpstLastPostID'])?$options['rpstLastPostID']:''; ?>)&nbsp;<b><?php _e('was re-posted on:', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>&nbsp;<?php echo $options['rpstLastShTime']>0?date_i18n('Y-m-d H:i', $options['rpstLastShTime']):'Never'; ?>
+        &nbsp;&nbsp;<b><?php _e('Next post will be ~', 'social-networks-auto-poster-facebook-twitter-g'); ?></b>&nbsp;<?php echo $options['rpstNxTime']>0?date_i18n('Y-m-d H:i', $options['rpstNxTime']):'Never'; ?> &lt;==
+        &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','X','<?php echo $ii; ?>'); return false;"><?php _e('[Reset]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> </span>
      <br/>
-     <b><?php _e('Set "Last re-posted post ID" to:', 'nxs_snap'); ?>&nbsp;<input type="text" id="<?php echo $nt; ?><?php echo $ii; ?>SetLPID" style="width: 65px;" value="<?php echo $options['rpstLastPostID']; ?>" />
-     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','L','<?php echo $ii; ?>'); return false;"><?php _e('[Set]', 'nxs_snap'); ?></a> </span></b>
+     <b><?php _e('Set "Last re-posted post ID" to:', 'social-networks-auto-poster-facebook-twitter-g'); ?>&nbsp;<input type="text" id="<?php echo $nt; ?><?php echo $ii; ?>SetLPID" style="width: 65px;" value="<?php echo $options['rpstLastPostID']; ?>" />
+     &nbsp;&nbsp;<span class="nxsInstrSpan"><a href="#" onclick="nxs_setRpstAll('<?php echo $nt; ?>','L','<?php echo $ii; ?>'); return false;"><?php _e('[Set]', 'social-networks-auto-poster-facebook-twitter-g'); ?></a> </span></b>
      </div>      
    </div>      
     <?php 
